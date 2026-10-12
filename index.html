@@ -353,6 +353,22 @@ a.t{text-decoration:none;display:block}
 @media print{#p1 .mr p{line-height:1.75}#p1 .verse{margin-bottom:.6em}}
 #home h2.gh{margin-left:0;margin-right:0}
 @media print{#pv .pvh{break-after:avoid}#pv .pvs h2,#pv .pvref{break-after:avoid}}
+
+:root{--hdr:#fbe9cf;--hdrl:#efcf9f;--hdrt:#fff6e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-pref]){--hdr:#2a1d16;--hdrl:#4a3426;--hdrt:#1f1611}}
+:root[data-pref="dark"]{--hdr:#2a1d16;--hdrl:#4a3426;--hdrt:#1f1611}
+:root[data-pref="light"]{--hdr:#fbe9cf;--hdrl:#efcf9f;--hdrt:#fff6e8}
+:root[data-pref="sepia"]{--hdr:#e8cfa0;--hdrl:#d4b47f;--hdrt:#f1e1c2}
+:root:root:root[data-hc="1"]{--hdr:#000;--hdrl:#fff;--hdrt:#000}
+.ash header{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;margin:26px 0 18px;padding:12px 14px;background:var(--hdr);border:1px solid var(--hdrl);border-top:4px solid var(--accent);border-radius:12px;text-align:center}
+.ash header::after{display:none}
+.ash header h2{flex:0 1 auto;min-width:0}
+.ash header .tag{margin:0;background:var(--hdrt);border-color:var(--hdrl)}
+[data-lang="both"] .ash header h2 .en{margin-top:2px}
+.grp+.ash header{margin-top:14px}
+@media (orientation:landscape) and (max-height:520px){.ash header{margin:14px 0 10px;padding:8px 12px}}
+@media print{.ash header{background:none!important;border:1pt solid #bbb;border-top:3pt solid #7b1113;margin:6pt 0 10pt;padding:6pt 10pt}.ash header .tag{background:none}}
+[data-lang="both"] .rftop .lab .en::before{content:" · "}
 </style>
 <div class="bar"><a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
 <div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change"></button><button id="rb" type="button" aria-label="Refrain (dhrupad) after every verse" aria-pressed="false"></button><button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
@@ -407,14 +423,16 @@ function save(){try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 // Auto-fit: largest text size (up to the device default) at which every verse line fits the screen width on one row.
 var FR={};
 function segs(p){var o=[],t='';[].forEach.call(p.childNodes,function(n){if(n.nodeName==='BR'){o.push(t);t=''}else{t+=n.textContent}});o.push(t);var r=[];o.forEach(function(x){x.split('\u200b').forEach(function(y){y=y.trim();if(y)r.push(y)})});return r}
-function ratio(){var k=P.lang+'|'+P.view+'|'+(innerWidth>innerHeight?'l':'p');if(FR[k])return FR[k];
+function ratio(){var k=P.lang+'|'+P.view+'|'+P.ref+'|'+(innerWidth>innerHeight?'l':'p');if(FR[k])return FR[k];
  var m=document.createElement('span');m.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap';document.body.appendChild(m);
- var base=parseFloat(getComputedStyle(root).getPropertyValue('--fs'))||P.fs,r=0;
- [].forEach.call(document.querySelectorAll(P.lang==='en'?'.verse .en p':'.verse .mr p'),function(p){var cs=getComputedStyle(p),f=parseFloat(cs.fontSize);m.style.fontFamily=cs.fontFamily;m.style.fontSize=cs.fontSize;m.style.fontWeight=cs.fontWeight;
-  segs(p).forEach(function(t){m.textContent=t;var w=(m.getBoundingClientRect().width+f*0.5)/base;if(w>r)r=w})});
+ var base=parseFloat(getComputedStyle(root).getPropertyValue('--fs'))||P.fs,w=document.querySelector('.wrap'),W=w?w.clientWidth:innerWidth-32,r=0;
+ [].forEach.call(document.querySelectorAll(P.lang==='en'?'.verse .en p':'.verse .mr p'),function(p){if(!p.offsetParent)return;var cs=getComputedStyle(p),avail=p.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);if(!avail)return;var inset=(W-avail)/base;
+  m.style.fontFamily=cs.fontFamily;m.style.fontSize=cs.fontSize;m.style.fontWeight=cs.fontWeight;
+  segs(p).forEach(function(t){m.textContent=t;var q=m.getBoundingClientRect().width/base+inset;if(q>r)r=q})});
  m.remove();return FR[k]=r}
 function autoFs(){if(P.fsu)return;var w=document.querySelector('.wrap'),cw=w?w.clientWidth:innerWidth-32,r=ratio();if(!r||!cw)return;
  var f=Math.max(18,Math.min(dfs(),Math.floor(cw*0.98/r)));if(f!==P.fs){P.fs=f;root.style.setProperty('--fs',f+'px')}}
+
 if(!Array.isArray(P.seq))P.seq=[];var V={s:0,p:0};
 var pn=document.getElementById('panel'),aa=document.getElementById('aa'),sp=document.getElementById('sp'),sb=document.createElement('button'),jp=document.getElementById('jump'),hb=document.getElementById('home-btn'),vc=document.getElementById('vc');
 function cur(){var c=null,y=90;secs.forEach(function(x){if(x.getBoundingClientRect().top<=y)c=x});return c}
@@ -560,7 +578,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v41').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v43').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
