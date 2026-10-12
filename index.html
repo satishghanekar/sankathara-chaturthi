@@ -159,6 +159,18 @@ p.fl{animation:fl 1.6s ease-out}
 [data-view="verse"][data-home="1"] #home{display:block!important}
 [data-view="verse"][data-home="1"] .ash,[data-view="verse"][data-home="1"] #vnav{display:none!important}
 #hm{font-size:22px;padding-inline:12px}
+[hidden]{display:none!important}
+.row>label{min-width:74px}
+.phd{display:flex;align-items:center;justify-content:space-between;font:700 15px var(--lat);color:var(--muted)}
+.phd .xc{height:36px;min-width:0;padding:0 14px;font-size:14px}
+#panel,#pj{gap:8px;padding-block:10px;max-height:calc(100vh - 130px);max-height:calc(100dvh - 130px)}
+#panel button{height:40px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tgrid button{width:100%;height:auto;min-height:42px;padding:6px 8px;font-size:13.5px;line-height:1.2}
+#wrow{display:block}
+.wide{width:100%;height:42px;border-color:var(--accent);color:var(--accent)}
+#offrow{font:600 13px var(--lat);color:var(--muted);text-align:center}
+
 #pjb{margin:0 0 16px;text-align:center}#pjb button{height:52px;padding:0 22px;font-size:17px;border-color:var(--accent);color:var(--accent)}
 #pj ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
 #pj ul button{display:flex;align-items:center;gap:12px;width:100%;height:auto;min-height:48px;text-align:start;padding:6px 12px;font:400 17px/1.3 var(--head)}
@@ -185,21 +197,19 @@ p.fl{animation:fl 1.6s ease-out}
 }
 </style>
 <div class="bar"><div class="t" id="bt">आरती</div>
-<div class="tools"><button id="hm" type="button" aria-label="मुख्य पृष्ठ / Home">⌂</button><button id="home-btn" type="button" aria-label="अनुक्रमणिका / Contents" aria-expanded="false"><span class="mr">यादी</span><span class="en ui" lang="en">Index</span></button><button id="sb" type="button" aria-label="शोध / Search" aria-expanded="false"><span class="mr">शोध</span><span class="en ui" lang="en">Find</span></button><button id="aa" type="button" aria-label="पर्याय / Options" aria-expanded="false">Aa</button></div></div>
+<div class="tools"><button id="hm" type="button" aria-label="Home">⌂</button><button id="home-btn" type="button" aria-label="Contents" aria-expanded="false">Index</button><button id="sb" type="button" aria-label="Search" aria-expanded="false">Find</button><button id="aa" type="button" aria-label="Settings" aria-expanded="false">Aa</button></div></div>
 <div id="jump" hidden><ul></ul></div>
-<div class="panel" id="sp" hidden><input id="q" type="search" placeholder="शोधा / Search (मराठी किंवा English)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="शोध / Search"><div id="none" hidden>काही सापडले नाही / Nothing found</div><ul id="res"></ul></div>
-<div class="panel" id="pj" hidden><div class="hl2"><span class="mr">आरत्या ज्या क्रमाने टॅप कराल त्याच क्रमाने पूजा चालेल</span><span class="en ui" lang="en">Tap the aartis in the order you want them</span></div><ul id="pjl"></ul><div class="acts"><button type="button" id="pall"><span class="mr">सर्व</span><span class="en ui" lang="en">All</span></button><button type="button" id="pclr"><span class="mr">पुसा</span><span class="en ui" lang="en">Clear</span></button><button type="button" id="pgo"><span class="mr">▶ सुरू करा</span><span class="en ui" lang="en">▶ Start</span></button></div></div>
+<div class="panel" id="sp" hidden><input id="q" type="search" placeholder="Search (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search"><div id="none" hidden>Nothing found</div><ul id="res"></ul></div>
+<div class="panel" id="pj" hidden><div class="phd"><b>Puja sequence</b><button type="button" class="xc" id="xj">✕ Close</button></div><div class="hl2">Tap the aartis in the order you want them.</div><ul id="pjl"></ul><div class="acts"><button type="button" id="pall">All</button><button type="button" id="pclr">Clear</button><button type="button" id="pgo">▶ Start</button></div></div>
 <div class="panel" id="panel" hidden>
-<div class="row"><label><span class="mr">भाषा</span><span class="en ui" lang="en">Language</span></label><div class="seg" id="sl"><button type="button" data-v="mr">मराठी</button><button type="button" data-v="en">English</button><button type="button" data-v="both"><span class="mr">दोन्ही</span><span class="en ui" lang="en">Both</span></button></div></div>
-<div class="row"><label><span class="mr">आकार</span><span class="en ui" lang="en">Size</span></label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button></div></div>
-<div class="row"><label><span class="mr">रंग</span><span class="en ui" lang="en">Colour</span></label><div class="seg" id="st"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="sepia">Sepia</button><button type="button" data-v="dark">Dark</button></div></div>
-<div class="row"><label><span class="mr">वाचन</span><span class="en ui" lang="en">Reading</span></label><div class="seg" id="sv"><button type="button" data-v="scroll"><span class="mr">सलग</span><span class="en ui" lang="en">Scroll</span></button><button type="button" data-v="verse"><span class="mr">कडवे-कडवे</span><span class="en ui" lang="en">Verse by verse</span></button></div></div>
-<div class="row"><label><span class="mr">पर्याय</span><span class="en ui" lang="en">Options</span></label><div class="tg"><button class="tg" id="tr" type="button"><span class="mr">ध्रुपद एकदाच दाखवा</span><span class="en ui" lang="en">Show refrain once</span></button></div></div>
-<div class="row"><label></label><div class="tg"><button class="tg" id="tc" type="button"><span class="mr">उच्च कॉन्ट्रास्ट</span><span class="en ui" lang="en">High contrast</span></button></div></div>
-<div class="row"><label></label><div class="tg"><button class="tg" id="tp" type="button"><span class="mr">टॅपने पान पलटा (कडवे-कडवे)</span><span class="en ui" lang="en">Tap to turn page (verse mode)</span></button></div></div>
-<div class="row"><label><span class="mr">पूजा</span><span class="en ui" lang="en">Puja</span></label><div class="tg"><button class="tg" id="pjo" type="button"><span class="mr">▶ पूजा क्रम (आरत्यांचा क्रम ठरवा)</span><span class="en ui" lang="en">▶ Puja sequence (choose aarti order)</span></button></div></div>
-<div class="row" id="offrow" hidden><label></label><span id="offst"><span class="mr">✓ ऑफलाइन तयार</span><span class="en ui" lang="en">✓ Ready offline</span></span></div>
-<div class="row" id="wrow"><label></label><div class="tg"><button class="tg" id="tw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en ui" lang="en">Keep screen on</span></button></div></div>
+<div class="phd"><b>Settings</b><button type="button" class="xc" id="xc">✕ Close</button></div>
+<div class="row"><label>Language</label><div class="seg" id="sl"><button type="button" data-v="mr">Marathi</button><button type="button" data-v="en">English</button><button type="button" data-v="both">Both</button></div></div>
+<div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button></div></div>
+<div class="row"><label>Theme</label><div class="seg" id="st"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="sepia">Sepia</button><button type="button" data-v="dark">Dark</button></div></div>
+<div class="row"><label>Reading</label><div class="seg" id="sv"><button type="button" data-v="scroll">Scroll</button><button type="button" data-v="verse">Verse by verse</button></div></div>
+<div class="tgrid"><button id="tr" type="button">Show refrain once</button><button id="tc" type="button">High contrast</button><button id="tp" type="button">Tap to turn page</button><div id="wrow"><button id="tw" type="button">Keep screen on</button></div></div>
+<button class="wide" id="pjo" type="button">▶ Puja sequence</button>
+<div id="offrow" hidden>✓ Ready offline</div>
 </div>
 <div class="wrap">
 <main id="home"><h1><span class="mr">चतुर्थी आरती संग्रह</span><span class="en" lang="en">Chaturthi Aarti Sangraha</span></h1><p class="lead"><span class="mr">गणपती, देवी, शंकर, दत्त आणि इतर आरत्या</span><span class="en" lang="en">Aartis (Marathi and Hindi in English letters)</span></p>
@@ -267,6 +277,7 @@ function setP(o){pn.hidden=!o;aa.setAttribute('aria-expanded',String(o));if(o){s
 function setJ(o){jp.hidden=!o;hb.setAttribute('aria-expanded',String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');setS(false);setQ(false)}}
 function setS(o){sp.hidden=!o;sb.setAttribute('aria-expanded',String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');jp.hidden=true;hb.setAttribute('aria-expanded','false');setQ(false);setTimeout(function(){document.getElementById('q').focus()},30)}}
 document.getElementById('hm').onclick=function(){goHome();try{history.replaceState(null,'',location.pathname+location.search)}catch(x){}};
+document.getElementById('xc').onclick=function(){setP(false)};document.getElementById('xj').onclick=function(){setQ(false)};
 aa.onclick=function(){setP(pn.hidden)};
 hb.onclick=function(){setJ(jp.hidden)};
 sb.onclick=function(){setS(sp.hidden)};
@@ -316,7 +327,7 @@ if(P.wake)wake(true);
 if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
-  var st=document.getElementById('offst');if(!('caches' in window))return;
+  var st=null;if(!('caches' in window))return;
   caches.open('aarti-v1').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(location.href.split('#')[0]).catch(function(){});
    if(!css){done();return}
