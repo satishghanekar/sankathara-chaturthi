@@ -378,6 +378,19 @@ a.t{text-decoration:none;display:block}
  #pv .pvref{border:1pt dashed #999;border-left:1pt dashed #999;border-radius:6pt;padding:4pt 8pt}
  #pv .pvside tr.pvrefrow td.pvm{box-shadow:inset 1pt 0 0 #999}}
 .rftop .verse{margin-bottom:.35em}
+
+:root{--gold:#d8b27a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not([data-pref]){--gold:#8f6c3f}}
+:root[data-pref="dark"]{--gold:#8f6c3f}:root[data-pref="light"]{--gold:#d8b27a}:root[data-pref="sepia"]{--gold:#b8925a}
+:root:root:root[data-hc="1"]{--gold:#fff}
+.rftop{position:static;margin:6px 22px 1.3em;padding:0;border:0;border-radius:0;background:none}
+.rftop .lab{position:static;transform:none;max-width:none;white-space:normal;background:none;padding:0;margin:0 0 4px;font:600 11px/1.4 var(--body);color:var(--muted);letter-spacing:.03em}
+.rftop .verse{border-left:2px solid var(--gold);border-radius:0;padding:2px 0 2px 6px;margin:0}
+[data-hc="1"] .rftop{border:0}
+@media print{.rftop{border:0!important;background:none}.rftop .lab{background:none}.rftop .verse{border-left:1pt solid #999}
+ #pv .pvref{border:0!important;border-left:1pt solid #999!important;border-radius:0;padding:2pt 8pt}
+ #pv .pvside tr.pvrefrow td.pvm{box-shadow:inset 1pt 0 0 #999}}
+.rftop{margin:6px 10px 1.3em}
 </style>
 <div class="bar"><a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
 <div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change"></button><button id="rb" type="button" aria-label="Refrain (dhrupad) after every verse" aria-pressed="false"></button><button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
@@ -587,7 +600,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v44').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v45').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
