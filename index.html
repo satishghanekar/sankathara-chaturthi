@@ -183,6 +183,18 @@ html,body{touch-action:pan-x pan-y}
 #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:99px;font:600 17px var(--body);z-index:9;max-width:90vw;text-align:center}#toast[hidden]{display:none}
 #offst{font:600 13px var(--lat);color:var(--muted)}
 [data-view="verse"] .verse{font-size:1.1em}
+@media (orientation:landscape) and (max-height:520px){
+  body{line-height:1.5}
+  .bar{padding-block:4px}.bar button{height:38px}
+  .ash header{padding-block:10px 4px}.ash header::after{margin:8px auto 2px}
+  [data-view="verse"] .ash.act header{display:none}
+  [data-view="verse"] .ash.act .items{min-height:0;justify-content:flex-start}
+  [data-view="verse"] body{padding-bottom:60px}
+  #vnav{padding:6px 16px calc(6px + env(safe-area-inset-bottom))}[data-view="verse"] #vnav button{height:42px;font-size:15px}
+  .panel{max-height:calc(100dvh - 60px)}
+  .verse{margin-bottom:.7em}
+  [data-view="verse"] .verse{font-size:.9em}
+}
 @media print{
   :root:root:root:root[data-hc="1"]{--bg:#fff;--surface:#fff;--ink:#000;--muted:#444;--accent:#7b1113;--rule:#bbb;--hl:#fff;color-scheme:light}
   [data-hc="1"] body{font-weight:400}
@@ -206,7 +218,7 @@ html,body{touch-action:pan-x pan-y}
 <div class="panel" id="panel" hidden>
 <div class="phd"><b>Settings</b><button type="button" class="xc" id="xc">✕ Close</button></div>
 <div class="row"><label>Language</label><div class="seg" id="sl"><button type="button" data-v="mr">Marathi</button><button type="button" data-v="en">English</button><button type="button" data-v="both">Both</button></div></div>
-<div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button></div></div>
+<div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button><button id="sr" type="button" aria-label="Reset text size">Reset</button></div></div>
 <div class="row"><label>Theme</label><div class="seg" id="st"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="sepia">Sepia</button><button type="button" data-v="dark">Dark</button></div></div>
 <div class="row"><label>Reading</label><div class="seg" id="sv"><button type="button" data-v="scroll">Scroll</button><button type="button" data-v="verse">Verse by verse</button></div></div>
 <div class="tgrid"><button id="tr" type="button">Show refrain once</button><button id="tc" type="button">High contrast</button><button id="tp" type="button">Tap to turn page</button><div id="wrow"><button id="tw" type="button">Keep screen on</button></div></div>
@@ -235,8 +247,10 @@ html,body{touch-action:pan-x pan-y}
 <script>
 (function(){
 var root=document.documentElement,secs=[].slice.call(document.querySelectorAll('.ash')),bt=document.getElementById('bt');
-var K='aarti2-prefs',P={fs:(window.innerWidth>=820?23:21),th:'auto',lang:'mr',ref:0,view:'scroll',hc:0,wake:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
+var K='aarti2-prefs';function dfs(){var s=Math.min(screen.width||innerWidth,screen.height||innerHeight),w=Math.max(innerWidth,innerHeight),co=window.matchMedia&&matchMedia('(pointer:coarse)').matches;if(co&&s>=600)return 28;if(!co&&w>=820)return 24;return 24}
+var P={fs:dfs(),fsu:0,th:'auto',lang:'mr',ref:0,view:'scroll',hc:0,wake:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
 try{var s=JSON.parse(localStorage.getItem(K)||'{}');for(var k in P){if(s[k]!==undefined)P[k]=s[k]}}catch(e){}
+if(!P.fsu)P.fs=dfs();
 function save(){try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 if(!Array.isArray(P.seq))P.seq=[];var V={s:0,p:0};
 var pn=document.getElementById('panel'),aa=document.getElementById('aa'),sp=document.getElementById('sp'),sb=document.getElementById('sb'),jp=document.getElementById('jump'),hb=document.getElementById('home-btn'),vc=document.getElementById('vc');
@@ -259,8 +273,9 @@ function apply(){root.style.setProperty('--fs',P.fs+'px');if(P.th==='auto')root.
  [].forEach.call(document.querySelectorAll('#st button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.th)});
  [].forEach.call(document.querySelectorAll('#sv button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.view)});
  document.getElementById('tr').setAttribute('aria-pressed',String(!!P.ref));document.getElementById('tc').setAttribute('aria-pressed',String(!!P.hc));document.getElementById('tw').setAttribute('aria-pressed',String(!!P.wake));document.getElementById('tp').setAttribute('aria-pressed',String(!!P.tap));mark()}
-document.getElementById('lg').onclick=function(){P.fs=Math.min(52,P.fs+2);apply();save()};
-document.getElementById('sm').onclick=function(){P.fs=Math.max(16,P.fs-2);apply();save()};
+document.getElementById('lg').onclick=function(){P.fs=Math.min(52,P.fs+2);P.fsu=1;apply();save()};
+document.getElementById('sr').onclick=function(){P.fsu=0;P.fs=dfs();apply();save()};
+document.getElementById('sm').onclick=function(){P.fs=Math.max(16,P.fs-2);P.fsu=1;apply();save()};
 document.getElementById('sl').onclick=function(e){var v=(e.target.closest('button')||{dataset:{}}).dataset.v;if(v){var c=P.view==='verse'?null:cur();P.lang=v;apply();save();if(c)c.scrollIntoView()}};
 document.getElementById('st').onclick=function(e){var v=(e.target.closest('button')||{dataset:{}}).dataset.v;if(v){P.th=v;apply();save()}};
 document.getElementById('sv').onclick=function(e){var v=(e.target.closest('button')||{dataset:{}}).dataset.v;if(!v||v===P.view)return;
@@ -308,7 +323,7 @@ var pz=null,lastPz=0,szTm=0,szt=document.getElementById('szt');
 function dist(e){var a=e.touches[0],b=e.touches[1];return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
 function showSz(){szt.textContent='Text size '+Math.round((P.fs-16)/36*100)+'%';szt.classList.add('on');clearTimeout(szTm);szTm=setTimeout(function(){szt.classList.remove('on')},900)}
 document.addEventListener('touchstart',function(e){if(e.touches.length===2){pz={d:dist(e)||1,fs:P.fs};lastPz=Date.now()}},{passive:true});
-document.addEventListener('touchmove',function(e){if(pz&&e.touches.length===2){e.preventDefault();lastPz=Date.now();var v=Math.max(16,Math.min(52,Math.round(pz.fs*dist(e)/pz.d)));if(v!==P.fs){P.fs=v;root.style.setProperty('--fs',v+'px')}showSz()}},{passive:false});
+document.addEventListener('touchmove',function(e){if(pz&&e.touches.length===2){e.preventDefault();lastPz=Date.now();var v=Math.max(16,Math.min(52,Math.round(pz.fs*dist(e)/pz.d)));if(v!==P.fs){P.fs=v;P.fsu=1;root.style.setProperty('--fs',v+'px')}showSz()}},{passive:false});
 document.addEventListener('touchend',function(e){if(pz&&e.touches.length<2){pz=null;lastPz=Date.now();save()}},{passive:true});
 ['gesturestart','gesturechange'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()},{passive:false})});
 document.getElementById('vp').onclick=function(){step(-1)};document.getElementById('vn').onclick=function(){step(1)};
