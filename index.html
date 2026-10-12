@@ -391,6 +391,14 @@ a.t{text-decoration:none;display:block}
  #pv .pvref{border:0!important;border-left:1pt solid #999!important;border-radius:0;padding:2pt 8pt}
  #pv .pvside tr.pvrefrow td.pvm{box-shadow:inset 1pt 0 0 #999}}
 .rftop{margin:6px 10px 1.3em}
+
+[data-cols="2"] .wrap{max-width:76rem}
+[data-cols="2"] .bar{padding-inline:max(16px,calc((100vw - 76rem)/2))}
+[data-cols="2"] .ash header,[data-cols="2"] .rftop{max-width:46rem;margin-left:auto;margin-right:auto}
+[data-cols="2"] .items{column-count:2;column-gap:56px;column-rule:1px solid var(--rule)}
+[data-cols="2"] .items>*{break-inside:avoid}
+[data-cols="2"] #home{max-width:46rem;margin:0 auto}
+@media print{[data-cols="2"] .wrap{max-width:none}[data-cols="2"] .items{column-count:1;column-rule:none}[data-cols="2"] #home,[data-cols="2"] .ash header,[data-cols="2"] .rftop{max-width:none}}
 </style>
 <div class="bar"><a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
 <div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change"></button><button id="rb" type="button" aria-label="Refrain (dhrupad) after every verse" aria-pressed="false"></button><button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
@@ -400,7 +408,7 @@ a.t{text-decoration:none;display:block}
 <div class="panel" id="panel" hidden>
 <div class="phd"><b>Settings</b><button type="button" class="xc" id="xc">✕ Close</button></div>
 <div class="row" hidden><label>Language</label><div class="seg" id="sl"><button type="button" data-v="mr">Marathi</button><button type="button" data-v="en">English</button><button type="button" data-v="both">Both</button></div></div>
-<div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button><button id="sr" type="button" aria-label="Reset text size">Reset</button></div></div>
+<div class="row" id="colrow"><label>Layout</label><div class="seg" id="sc"><button type="button" data-v="1">1 column</button><button type="button" data-v="2">2 columns</button></div></div><div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button><button id="sr" type="button" aria-label="Reset text size">Reset</button></div></div>
 <div class="row"><label>Theme</label><div class="seg" id="st"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="sepia">Sepia</button><button type="button" data-v="dark">Dark</button></div></div>
 <div class="row" hidden><label>Reading</label><div class="seg" id="sv"><button type="button" data-v="scroll">Scroll</button><button type="button" data-v="verse">Verse by verse</button></div></div>
 <div class="tgrid"><button id="tr" type="button" hidden>Show refrain (dhrupad) once</button><button id="tc" type="button">High contrast</button><button id="tp" type="button" hidden>Tap to turn page</button><div id="wrow"><button id="tw" type="button">Keep screen on</button></div></div>
@@ -434,7 +442,7 @@ var LI={mr:'<svg viewBox="0 0 40 34" width="40" height="34" aria-hidden="true"><
 var RB_LOOP='<svg viewBox="0 0 38 38" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M31 19a12 12 0 1 1-4-8.9"/><path d="M27.5 5.5v5h-5"/><text x="19" y="24.5" text-anchor="middle" font-size="14" stroke="none" fill="currentColor" style="font-family:var(--head)">धृ</text></svg>',RB_ONCE='<svg viewBox="0 0 38 38" width="34" height="34" fill="none" aria-hidden="true"><text x="16.5" y="26" text-anchor="middle" font-size="19" fill="currentColor" style="font-family:var(--head)">धृ</text><text x="30" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" style="font-family:var(--lat)">1</text></svg>';
 function flash(m,e){var x=document.getElementById('szt');x.textContent=P.lang==='en'?e:m;x.classList.add('msg','on');clearTimeout(flash.t);flash.t=setTimeout(function(){x.classList.remove('on','msg')},1600)}
 var K='aarti2-prefs';function dfs(){var s=Math.min(screen.width||innerWidth,screen.height||innerHeight),w=Math.max(innerWidth,innerHeight),co=window.matchMedia&&matchMedia('(pointer:coarse)').matches;if(co&&s>=600)return 28;if(!co&&w>=820)return 24;return 24}
-var P={sv:0,fs:dfs(),fsu:0,th:'auto',lang:'mr',ref:1,view:'scroll',hc:0,wake:1,a2:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
+var P={sv:0,fs:dfs(),fsu:0,th:'auto',lang:'mr',ref:1,view:'scroll',hc:0,wake:1,a2:0,cols:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
 try{var s=JSON.parse(localStorage.getItem(K)||'{}');for(var k in P){if(s[k]!==undefined)P[k]=s[k]}}catch(e){}
 if(!P.sv){if(Array.isArray(P.seq))P.seq=P.seq.map(function(i){return i+1});if(P.vs>=0)P.vs+=1;P.sv=2;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 if(P.sv<3){P.ref=1;P.sv=3;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
@@ -445,7 +453,7 @@ function save(){try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 // Auto-fit: largest text size (up to the device default) at which every verse line fits the screen width on one row.
 var FR={};
 function segs(p){var o=[],t='';[].forEach.call(p.childNodes,function(n){if(n.nodeName==='BR'){o.push(t);t=''}else{t+=n.textContent}});o.push(t);var r=[];o.forEach(function(x){x.split('\u200b').forEach(function(y){y=y.trim();if(y)r.push(y)})});return r}
-function ratio(){var k=P.lang+'|'+P.view+'|'+P.ref+'|'+(innerWidth>innerHeight?'l':'p');if(FR[k])return FR[k];
+function ratio(){var k=P.lang+'|'+P.view+'|'+P.ref+'|'+root.getAttribute('data-cols')+'|'+(innerWidth>innerHeight?'l':'p');if(FR[k])return FR[k];
  var m=document.createElement('span');m.style.cssText='position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap';document.body.appendChild(m);
  var base=parseFloat(getComputedStyle(root).getPropertyValue('--fs'))||P.fs,w=document.querySelector('.wrap'),W=w?w.clientWidth:innerWidth-32,r=0;
  [].forEach.call(document.querySelectorAll(P.lang==='en'?'.verse .en p':'.verse .mr p'),function(p){if(!p.offsetParent)return;var cs=getComputedStyle(p),avail=p.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);if(!avail)return;var inset=(W-avail)/base;
@@ -471,7 +479,7 @@ function lineEl(id){var l=[].slice.call(document.querySelectorAll('[data-l="'+id
 function goLine(id,flash){var el=lineEl(id);if(!el)return;var sec=el.closest('.ash'),it=el.closest('.item');if(P.view==='verse'){showPage(idx(sec),+it.getAttribute('data-pg'))}else{el.scrollIntoView({block:'center'})}
  if(flash){[].forEach.call(document.querySelectorAll('[data-l="'+id+'"]'),function(p){p.classList.remove('fl');void p.offsetWidth;p.classList.add('fl')})}}
 function apply(){root.style.setProperty('--fs',P.fs+'px');if(P.th==='auto')root.removeAttribute('data-pref');else root.setAttribute('data-pref',P.th);
- root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));var rbb=document.getElementById('rb');rbb.disabled=P.view==='verse';var rOn=P.view==='verse'||!P.ref;if(rbb.getAttribute('data-s')!==String(rOn)){rbb.innerHTML=rOn?RB_LOOP:RB_ONCE;rbb.setAttribute('data-s',String(rOn))}rbb.setAttribute('aria-pressed',String(P.view==='verse'||!P.ref));rbb.setAttribute('aria-label',(P.view==='verse'||!P.ref)?'Refrain (dhrupad) after every verse. Tap to show it once':'Refrain (dhrupad) shown once. Tap to repeat after every verse');var LB={mr:[LI.mr,'Marathi'],en:[LI.en,'English'],both:[LI.both,'Marathi and English']}[P.lang];if(hb.getAttribute('data-l')!==P.lang){hb.innerHTML=LB[0];hb.setAttribute('data-l',P.lang)}hb.setAttribute('aria-label','Language: '+LB[1]+'. Tap to change');autoFs();root.style.setProperty('--fs',P.fs+'px');
+ root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));var wide=innerWidth>=900,two=wide&&(P.cols===2||(P.cols!==1&&innerWidth>=1000));root.setAttribute('data-cols',two?'2':'1');document.getElementById('colrow').hidden=!wide;[].forEach.call(document.querySelectorAll('#sc button'),function(b){b.setAttribute('aria-pressed',String(b.dataset.v===(two?'2':'1')))});var rbb=document.getElementById('rb');rbb.disabled=P.view==='verse';var rOn=P.view==='verse'||!P.ref;if(rbb.getAttribute('data-s')!==String(rOn)){rbb.innerHTML=rOn?RB_LOOP:RB_ONCE;rbb.setAttribute('data-s',String(rOn))}rbb.setAttribute('aria-pressed',String(P.view==='verse'||!P.ref));rbb.setAttribute('aria-label',(P.view==='verse'||!P.ref)?'Refrain (dhrupad) after every verse. Tap to show it once':'Refrain (dhrupad) shown once. Tap to repeat after every verse');var LB={mr:[LI.mr,'Marathi'],en:[LI.en,'English'],both:[LI.both,'Marathi and English']}[P.lang];if(hb.getAttribute('data-l')!==P.lang){hb.innerHTML=LB[0];hb.setAttribute('data-l',P.lang)}hb.setAttribute('aria-label','Language: '+LB[1]+'. Tap to change');autoFs();root.style.setProperty('--fs',P.fs+'px');
  [].forEach.call(document.querySelectorAll('#sl button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.lang)});
  [].forEach.call(document.querySelectorAll('#st button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.th)});
  [].forEach.call(document.querySelectorAll('#sv button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.view)});
@@ -552,7 +560,8 @@ var tk=0;window.addEventListener('scroll',function(){if(P.view==='verse'||tk)ret
 if(P.hl){[].forEach.call(document.querySelectorAll('[data-l="'+P.hl+'"]'),function(x){x.classList.add('hl')})}
 apply();buildCont();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){FR={};if(!P.fsu){apply()}});
-var rzT=0;window.addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){if(!P.fsu)apply()},150)});
+var rzT=0;window.addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){apply()},150)});
+document.getElementById('sc').onclick=function(e){var v=(e.target.closest('button')||{dataset:{}}).dataset.v;if(!v)return;var c=cur();P.cols=+v;apply();save();if(c)c.scrollIntoView()};;
 if(P.view==='verse'){if(P.vs>=0&&P.vs<secs.length&&P.vp<np(P.vs))showPage(P.vs,P.vp);else{var el0=P.hl&&lineEl(P.hl);if(el0)showPage(idx(el0.closest('.ash')),+el0.closest('.item').getAttribute('data-pg'));else showPage(0,0)}}
 else{var h=(location.hash||'').slice(1);if(h){var el=document.getElementById(h);if(el&&el.classList.contains('ash'))setTimeout(function(){el.scrollIntoView()},50)}}
 if(P.wake)wake(true);
@@ -600,7 +609,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v45').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v46').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
