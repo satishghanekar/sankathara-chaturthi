@@ -399,8 +399,8 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v12').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
-   c.add(location.href.split('#')[0]).catch(function(){});
+  caches.open('aarti-v13').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+   c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
   })}).catch(function(){})}
