@@ -395,8 +395,8 @@ a.t{text-decoration:none;display:block}
 [data-cols="2"] .wrap{max-width:76rem}
 [data-cols="2"] .bar{padding-inline:max(16px,calc((100vw - 76rem)/2))}
 [data-cols="2"] .ash header,[data-cols="2"] .rftop{max-width:46rem;margin-left:auto;margin-right:auto}
-[data-cols="2"] .items{column-count:2;column-gap:56px;column-rule:1px solid var(--rule)}
-[data-cols="2"] .items>*{break-inside:avoid}
+@media screen{[data-cols="2"] .items{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:64px;align-items:start}[data-cols="2"] .rftop .verse{width:fit-content;margin-inline:auto;padding-right:1em}[data-cols="2"] .pn{margin-inline:auto}}
+
 [data-cols="2"] #home{max-width:46rem;margin:0 auto}
 @media print{[data-cols="2"] .wrap{max-width:none}[data-cols="2"] .items{column-count:1;column-rule:none}[data-cols="2"] #home,[data-cols="2"] .ash header,[data-cols="2"] .rftop{max-width:none}}
 .no{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600;margin-right:.15em}
@@ -452,6 +452,14 @@ if(!P.sv){if(Array.isArray(P.seq))P.seq=P.seq.map(function(i){return i+1});if(P.
 if(P.sv<3){P.ref=1;P.sv=3;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 if(P.sv<4){P.wake=1;P.sv=4;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 P.view='scroll';P.run=0;
+// Two-column screens read across: stanza 1 | stanza 2, then 3 | 4. Each stanza keeps its own dhrupad marker/repeat under it.
+[].forEach.call(document.querySelectorAll('.items'),function(b){var row=1,pair=[],cur=null;
+ function flush(){if(!pair.length)return;var h=0;pair.forEach(function(g,i){g.forEach(function(e,k){e.style.gridRow=String(row+k);e.style.gridColumn=String(i+1);if(i)e.classList.add('c2')});h=Math.max(h,g.length)});row+=h;pair=[]}
+ function full(e){flush();e.style.gridRow=String(row++);e.style.gridColumn='1 / -1'}
+ [].forEach.call(b.children,function(e){var main=e.classList.contains('item')&&!e.classList.contains('rf');
+  if(main&&e.classList.contains('dh')){cur=null;full(e);return}
+  if(main){if(pair.length===2)flush();cur=[e];pair.push(cur);return}
+  if(cur)cur.push(e);else full(e)});flush()});
 // Stanza numbers at the end of each verse (the dhrupad is not counted)
 [].forEach.call(document.querySelectorAll('section.ash[id^="a"] .items'),function(b){var n=0;[].forEach.call(b.querySelectorAll('.item:not(.rf):not(.dh)'),function(it){n++;[['.mr',DV(n),'॥'],['.en',''+n,'||']].forEach(function(x){var ps=it.querySelectorAll('.verse>'+x[0]+'>p:not(.rf)'),p=ps[ps.length-1];if(!p)return;var e=document.createElement('span');e.className='sn';var end=p.textContent.trim();e.textContent=(end.slice(-x[2].length)===x[2]?' ':' '+x[2]+' ')+x[1]+' '+x[2];p.appendChild(e)})})});
 function DV(n){return String(n).replace(/[0-9]/g,function(d){return '०१२३४५६७८९'[d]})}
@@ -616,7 +624,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v47').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v48').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
