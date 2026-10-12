@@ -294,9 +294,10 @@ a.t{text-decoration:none;display:block}
 (function(){
 var root=document.documentElement,secs=[].slice.call(document.querySelectorAll('.ash')),bt=document.getElementById('bt');
 var K='aarti2-prefs';function dfs(){var s=Math.min(screen.width||innerWidth,screen.height||innerHeight),w=Math.max(innerWidth,innerHeight),co=window.matchMedia&&matchMedia('(pointer:coarse)').matches;if(co&&s>=600)return 28;if(!co&&w>=820)return 24;return 24}
-var P={sv:0,fs:dfs(),fsu:0,th:'auto',lang:'mr',ref:0,view:'scroll',hc:0,wake:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
+var P={sv:0,fs:dfs(),fsu:0,th:'auto',lang:'mr',ref:1,view:'scroll',hc:0,wake:0,hl:'',tap:1,vs:-1,vp:0,seq:[],run:0};
 try{var s=JSON.parse(localStorage.getItem(K)||'{}');for(var k in P){if(s[k]!==undefined)P[k]=s[k]}}catch(e){}
 if(!P.sv){if(Array.isArray(P.seq))P.seq=P.seq.map(function(i){return i+1});if(P.vs>=0)P.vs+=1;P.sv=2;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
+if(P.sv<3){P.ref=1;P.sv=3;try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 if(!P.fsu)P.fs=dfs();
 function save(){try{localStorage.setItem(K,JSON.stringify(P))}catch(e){}}
 // Auto-fit: largest text size (up to the device default) at which every verse line fits the screen width on one row.
@@ -415,7 +416,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v19').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v20').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
