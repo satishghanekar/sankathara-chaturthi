@@ -237,9 +237,10 @@ ol.toc li.soon .m{display:block;padding:14px 4px;color:var(--muted);font:400 .9e
 .tocg ol.toc li.soon .m{padding-left:4px}
 @media print{.sr{position:static!important;width:auto;height:auto;clip:auto;font:400 26pt var(--head);color:var(--accent);text-align:center;margin:0 0 10pt}}
 ol.toc a{box-sizing:border-box;justify-content:center}
+.bar .lb{font:600 17px/1 var(--body);min-width:48px;padding:0 8px}
 </style>
 <div class="bar"><div class="t site" id="bt">संकष्टी चतुर्थी</div>
-<div class="tools"><button id="hm" type="button" aria-label="Home">⌂</button><button id="home-btn" type="button" aria-label="Contents" aria-expanded="false">Index</button><button id="sb" type="button" aria-label="Search" aria-expanded="false">Find</button><button id="aa" type="button" aria-label="Settings" aria-expanded="false">Aa</button></div></div>
+<div class="tools"><button id="hm" type="button" aria-label="Home">⌂</button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change">अ</button><button id="sb" type="button" aria-label="Search" aria-expanded="false">Find</button><button id="aa" type="button" aria-label="Settings" aria-expanded="false">Aa</button></div></div>
 <div id="jump" hidden><ul></ul></div>
 <div class="panel" id="sp" hidden><input id="q" type="search" placeholder="Search (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search"><div id="none" hidden>Nothing found</div><ul id="res"></ul></div>
 <div class="panel" id="pj" hidden><div class="phd"><b>Puja sequence</b><button type="button" class="xc" id="xj">✕ Close</button></div><div class="hl2">Tap the aartis in the order you want them.</div><ul id="pjl"></ul><div class="acts"><button type="button" id="pall">All</button><button type="button" id="pclr">Clear</button><button type="button" id="pgo">▶ Start</button></div></div>
@@ -309,7 +310,7 @@ function lineEl(id){var l=[].slice.call(document.querySelectorAll('[data-l="'+id
 function goLine(id,flash){var el=lineEl(id);if(!el)return;var sec=el.closest('.ash'),it=el.closest('.item');if(P.view==='verse'){showPage(idx(sec),+it.getAttribute('data-pg'))}else{el.scrollIntoView({block:'center'})}
  if(flash){[].forEach.call(document.querySelectorAll('[data-l="'+id+'"]'),function(p){p.classList.remove('fl');void p.offsetWidth;p.classList.add('fl')})}}
 function apply(){root.style.setProperty('--fs',P.fs+'px');if(P.th==='auto')root.removeAttribute('data-pref');else root.setAttribute('data-pref',P.th);
- root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));autoFs();root.style.setProperty('--fs',P.fs+'px');
+ root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));var LB={mr:['अ','Marathi'],en:['A','English'],both:['अA','Marathi and English']}[P.lang];hb.textContent=LB[0];hb.setAttribute('aria-label','Language: '+LB[1]+'. Tap to change');autoFs();root.style.setProperty('--fs',P.fs+'px');
  [].forEach.call(document.querySelectorAll('#sl button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.lang)});
  [].forEach.call(document.querySelectorAll('#st button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.th)});
  [].forEach.call(document.querySelectorAll('#sv button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.view)});
@@ -331,14 +332,14 @@ if(!('wakeLock' in navigator))document.getElementById('wrow').hidden=true;
 document.getElementById('tw').onclick=function(){P.wake=P.wake?0:1;apply();save();wake(!!P.wake)};
 document.addEventListener('visibilitychange',function(){if(P.wake&&document.visibilityState==='visible'&&!wl)wake(true)});
 document.addEventListener('pointerdown',function(){if(P.wake&&!wl)wake(true)},{once:true});
-var pj=document.getElementById('pj');function setQ(o){pj.hidden=!o;if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');jp.hidden=true;hb.setAttribute('aria-expanded','false');sp.hidden=true;sb.setAttribute('aria-expanded','false')}}
+var pj=document.getElementById('pj');function setQ(o){pj.hidden=!o;if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');jp.hidden=true;void('false');sp.hidden=true;sb.setAttribute('aria-expanded','false')}}
 function setP(o){pn.hidden=!o;aa.setAttribute('aria-expanded',String(o));if(o){setJ(false);setS(false);setQ(false)}}
-function setJ(o){jp.hidden=!o;hb.setAttribute('aria-expanded',String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');setS(false);setQ(false)}}
-function setS(o){sp.hidden=!o;sb.setAttribute('aria-expanded',String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');jp.hidden=true;hb.setAttribute('aria-expanded','false');setQ(false);setTimeout(function(){document.getElementById('q').focus()},30)}}
+function setJ(o){jp.hidden=!o;void(String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');setS(false);setQ(false)}}
+function setS(o){sp.hidden=!o;sb.setAttribute('aria-expanded',String(o));if(o){pn.hidden=true;aa.setAttribute('aria-expanded','false');jp.hidden=true;void('false');setQ(false);setTimeout(function(){document.getElementById('q').focus()},30)}}
 document.getElementById('hm').onclick=function(){goHome();try{history.replaceState(null,'',location.pathname+location.search)}catch(x){}};
 document.getElementById('xc').onclick=function(){setP(false)};document.getElementById('xj').onclick=function(){setQ(false)};
 aa.onclick=function(){setP(pn.hidden)};
-hb.onclick=function(){setJ(jp.hidden)};
+hb.onclick=function(){var c=P.view==='verse'?null:cur(),o=['mr','en','both'];P.lang=o[(o.indexOf(P.lang)+1)%3];apply();save();if(c)c.scrollIntoView()};
 sb.onclick=function(){setS(sp.hidden)};
 var ul=jp.querySelector('ul');
 [].forEach.call(document.querySelectorAll('.tocg'),function(g){var as=g.querySelectorAll('ol.toc li a');if(!as.length)return;var h=document.createElement('li');h.className='jh';h.innerHTML=g.querySelector('.gh').innerHTML;ul.appendChild(h);[].forEach.call(as,function(a){var li=document.createElement('li'),b=document.createElement('a');b.href=a.getAttribute('href');b.setAttribute('data-go',a.getAttribute('data-go'));var m=a.querySelector('.m');b.innerHTML=m?m.innerHTML:a.innerHTML;li.appendChild(b);ul.appendChild(li)})});
@@ -396,7 +397,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v10').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v11').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(location.href.split('#')[0]).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
