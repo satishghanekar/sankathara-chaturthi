@@ -280,8 +280,16 @@ a.t{text-decoration:none;display:block}
 .qru{font:13px/1.4 var(--lat);color:var(--muted);margin:10px 0 14px;overflow-wrap:anywhere}
 [data-lang="both"] .qrc .en,[data-lang="both"] #qrb .en{display:none}
 @media print{#qrm{display:none!important}}
+
+.bar .t.site{display:flex;align-items:center;gap:6px;font-size:21px}
+.bar .t.site svg{flex:none;opacity:.85}
+.bar .t.site span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#jump li.jhome{grid-column:1/-1}
+#jhb{display:flex;align-items:center;gap:10px;width:100%;height:46px;justify-content:flex-start;padding:0 14px;font:500 17px/1 var(--body);color:var(--accent);border-color:var(--rule)}
+#jhb svg{flex:none}
+[data-lang="both"] #jhb .en{display:inline;margin-left:4px;color:var(--muted);font-size:.85em}
 </style>
-<div class="bar"><a class="t site" id="bt" href="./" aria-label="Home: contents">संकष्टी चतुर्थी</a>
+<div class="bar"><a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
 <div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change"></button><button id="rb" type="button" aria-label="Refrain (dhrupad) after every verse" aria-pressed="false"></button><button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
 <div id="jump" hidden><input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line"><div id="none" hidden>Nothing found</div><ul id="res"></ul><ul id="jl"></ul></div>
 <div class="panel" id="sp" hidden></div>
@@ -346,12 +354,12 @@ var pn=document.getElementById('panel'),aa=document.getElementById('aa'),sp=docu
 function cur(){var c=null,y=90;secs.forEach(function(x){if(x.getBoundingClientRect().top<=y)c=x});return c}
 function label(el){if(!el)return P.lang==='en'?'Sankashti Chaturthi':'संकष्टी चतुर्थी';var h=el.querySelector('h2'),s=h.querySelector(P.lang==='en'?'.en':'.mr');return (s||h).textContent}
 function idx(el){return secs.indexOf(el)}
-function mark(){var c=P.view==='verse'?secs[V.s]:cur();bt.textContent=P.lang==='en'?'Sankashti Chaturthi':'संकष्टी चतुर्थी';[].forEach.call(jp.querySelectorAll('a'),function(a){a.classList.toggle('on',!!c&&a.getAttribute('data-go')===c.id)})}
+function mark(){var c=P.view==='verse'?secs[V.s]:cur();document.getElementById('btt').textContent=P.lang==='en'?'Sankashti Chaturthi':'संकष्टी चतुर्थी';[].forEach.call(jp.querySelectorAll('a'),function(a){a.classList.toggle('on',!!c&&a.getAttribute('data-go')===c.id)})}
 function np(i){return +secs[i].getAttribute('data-np')}
 function showPage(si,pi){root.removeAttribute('data-home');V.s=si;V.p=pi;secs.forEach(function(x,i){x.classList.toggle('act',i===si)});[].forEach.call(secs[si].querySelectorAll('.item'),function(it){it.classList.toggle('on',+it.getAttribute('data-pg')===pi)});var k=P.run?P.seq.indexOf(si):-1;vc.textContent=(pi+1)+' / '+np(si)+(k>=0?' · '+(k+1)+'/'+P.seq.length:'');if(P.view==='verse'){P.vs=si;P.vp=pi;save()}mark();window.scrollTo(0,0)}
 function nbr(si,d){var n=si+d;if(P.run){var k=P.seq.indexOf(si);if(k>=0){n=(k+d>=0&&k+d<P.seq.length)?P.seq[k+d]:-1}}return(n>=0&&n<secs.length)?n:-1}
 function toast(){var x=document.getElementById('toast');x.hidden=false;setTimeout(function(){x.hidden=true},2600)}
-function goHome(){setP(false);setJ(false);setS(false);setQ(false);if(P.view==='verse'){root.setAttribute('data-home','1');bt.textContent=P.lang==='en'?'Sankashti Chaturthi':'संकष्टी चतुर्थी';bt.classList.add('site')}window.scrollTo(0,0)}
+function goHome(){setP(false);setJ(false);setS(false);setQ(false);if(P.view==='verse'){root.setAttribute('data-home','1');document.getElementById('btt').textContent=P.lang==='en'?'Sankashti Chaturthi':'संकष्टी चतुर्थी';bt.classList.add('site')}window.scrollTo(0,0)}
 function step(d){var si=V.s,pi=V.p+d;if(pi<0){var n=nbr(si,-1);if(n>=0)showPage(n,np(n)-1);return}if(pi>=np(si)){var m=nbr(si,1);if(m>=0)showPage(m,0);else if(P.run){P.run=0;save();goHome();toast()}return}showPage(si,pi)}
 function lineEl(id){var l=[].slice.call(document.querySelectorAll('[data-l="'+id+'"]'));for(var i=0;i<l.length;i++){if(l[i].offsetParent!==null)return l[i]}return l[0]||null}
 function goLine(id,flash){var el=lineEl(id);if(!el)return;var sec=el.closest('.ash'),it=el.closest('.item');if(P.view==='verse'){showPage(idx(sec),+it.getAttribute('data-pg'))}else{el.scrollIntoView({block:'center'})}
@@ -390,7 +398,7 @@ document.getElementById('xc').onclick=function(){setP(false)};document.getElemen
 aa.onclick=function(){setP(pn.hidden)};
 hb.onclick=function(){var c=P.view==='verse'?null:cur(),o=['mr','en','both'];P.lang=o[(o.indexOf(P.lang)+1)%3];apply();save();if(c)c.scrollIntoView();var L={mr:'मराठी',en:'English',both:'मराठी + English'}[P.lang];flash(L,L)};
 sb.onclick=function(){setS(sp.hidden)};
-var ul=document.getElementById('jl');
+var ul=document.getElementById('jl');(function(){var li=document.createElement('li');li.className='jhome';var b=document.createElement('button');b.type='button';b.id='jhb';b.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span class="mr">मुखपृष्ठ</span><span class="en" lang="en">Home</span>';b.onclick=function(){setJ(false);P.run=0;save();goHome();try{history.replaceState(null,'',location.pathname)}catch(x){}};li.appendChild(b);ul.appendChild(li)})();
 [].forEach.call(document.querySelectorAll('.tocg'),function(g){var as=g.querySelectorAll('ol.toc li a');if(!as.length)return;var h=document.createElement('li');h.className='jh';h.innerHTML=g.querySelector('.gh').innerHTML;ul.appendChild(h);[].forEach.call(as,function(a){var li=document.createElement('li'),b=document.createElement('a');b.href=a.getAttribute('href');b.setAttribute('data-go',a.getAttribute('data-go'));var m=a.querySelector('.m');b.innerHTML=m?m.innerHTML:a.innerHTML;li.appendChild(b);ul.appendChild(li)})});
 document.addEventListener('click',function(e){
  var a=e.target.closest&&e.target.closest('a[data-go]');
@@ -463,7 +471,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v27').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v28').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
