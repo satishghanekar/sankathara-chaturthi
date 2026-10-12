@@ -247,19 +247,25 @@ ol.toc a{box-sizing:border-box;justify-content:center}
 #jump #q{margin:0 0 10px}
 #jump #res{display:block;max-height:none;margin:0 0 4px}
 #jump #none{padding:6px 4px 10px}
+
+#rb{font:600 19px/1 var(--head);min-width:44px;padding:0 8px}
+#rb:disabled{opacity:.4;cursor:default}
+#aa svg{display:block;margin:auto}
+.tools{gap:5px}
+.bar .t{flex:1 1 auto}
 </style>
 <div class="bar"><div class="t site" id="bt">संकष्टी चतुर्थी</div>
-<div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change">अ</button><button id="aa" type="button" aria-label="Settings" aria-expanded="false">Aa</button></div></div>
+<div class="tools"><button id="hm" type="button" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button><button id="home-btn" class="lb" type="button" aria-label="Language: Marathi. Tap to change">अ</button><button id="rb" type="button" aria-label="Refrain (dhrupad) after every verse" aria-pressed="true">धृ</button><button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
 <div id="jump" hidden><input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line"><div id="none" hidden>Nothing found</div><ul id="res"></ul><ul id="jl"></ul></div>
 <div class="panel" id="sp" hidden></div>
 <div class="panel" id="pj" hidden><div class="phd"><b>Puja sequence</b><button type="button" class="xc" id="xj">✕ Close</button></div><div class="hl2">Tap the aartis in the order you want them.</div><ul id="pjl"></ul><div class="acts"><button type="button" id="pall">All</button><button type="button" id="pclr">Clear</button><button type="button" id="pgo">▶ Start</button></div></div>
 <div class="panel" id="panel" hidden>
 <div class="phd"><b>Settings</b><button type="button" class="xc" id="xc">✕ Close</button></div>
-<div class="row"><label>Language</label><div class="seg" id="sl"><button type="button" data-v="mr">Marathi</button><button type="button" data-v="en">English</button><button type="button" data-v="both">Both</button></div></div>
+<div class="row" hidden><label>Language</label><div class="seg" id="sl"><button type="button" data-v="mr">Marathi</button><button type="button" data-v="en">English</button><button type="button" data-v="both">Both</button></div></div>
 <div class="row"><label>Text size</label><div class="sz"><button id="sm" type="button" aria-label="Smaller">A−</button><button id="lg" type="button" aria-label="Larger">A+</button><button id="sr" type="button" aria-label="Reset text size">Reset</button></div></div>
 <div class="row"><label>Theme</label><div class="seg" id="st"><button type="button" data-v="auto">Auto</button><button type="button" data-v="light">Light</button><button type="button" data-v="sepia">Sepia</button><button type="button" data-v="dark">Dark</button></div></div>
 <div class="row"><label>Reading</label><div class="seg" id="sv"><button type="button" data-v="scroll">Scroll</button><button type="button" data-v="verse">Verse by verse</button></div></div>
-<div class="tgrid"><button id="tr" type="button">Show refrain (dhrupad) once</button><button id="tc" type="button">High contrast</button><button id="tp" type="button">Tap to turn page</button><div id="wrow"><button id="tw" type="button">Keep screen on</button></div></div>
+<div class="tgrid"><button id="tr" type="button" hidden>Show refrain (dhrupad) once</button><button id="tc" type="button">High contrast</button><button id="tp" type="button">Tap to turn page</button><div id="wrow"><button id="tw" type="button">Keep screen on</button></div></div>
 <button class="wide" id="pjo" type="button">▶ Puja sequence</button>
 <div id="offrow" hidden>✓ Ready offline</div>
 </div>
@@ -319,7 +325,7 @@ function lineEl(id){var l=[].slice.call(document.querySelectorAll('[data-l="'+id
 function goLine(id,flash){var el=lineEl(id);if(!el)return;var sec=el.closest('.ash'),it=el.closest('.item');if(P.view==='verse'){showPage(idx(sec),+it.getAttribute('data-pg'))}else{el.scrollIntoView({block:'center'})}
  if(flash){[].forEach.call(document.querySelectorAll('[data-l="'+id+'"]'),function(p){p.classList.remove('fl');void p.offsetWidth;p.classList.add('fl')})}}
 function apply(){root.style.setProperty('--fs',P.fs+'px');if(P.th==='auto')root.removeAttribute('data-pref');else root.setAttribute('data-pref',P.th);
- root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));var LB={mr:['अ','Marathi'],en:['A','English'],both:['अA','Marathi and English']}[P.lang];hb.textContent=LB[0];hb.setAttribute('aria-label','Language: '+LB[1]+'. Tap to change');autoFs();root.style.setProperty('--fs',P.fs+'px');
+ root.setAttribute('data-lang',P.lang);root.lang=P.lang==='en'?'en':'mr';root.setAttribute('data-view',P.view);root.setAttribute('data-ref',P.view==='verse'?'0':String(P.ref));root.setAttribute('data-hc',String(P.hc));var rbb=document.getElementById('rb');rbb.disabled=P.view==='verse';rbb.setAttribute('aria-pressed',String(P.view==='verse'||!P.ref));rbb.setAttribute('aria-label',(P.view==='verse'||!P.ref)?'Refrain (dhrupad) after every verse. Tap to show it once':'Refrain (dhrupad) shown once. Tap to repeat after every verse');var LB={mr:['अ','Marathi'],en:['A','English'],both:['अA','Marathi and English']}[P.lang];hb.textContent=LB[0];hb.setAttribute('aria-label','Language: '+LB[1]+'. Tap to change');autoFs();root.style.setProperty('--fs',P.fs+'px');
  [].forEach.call(document.querySelectorAll('#sl button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.lang)});
  [].forEach.call(document.querySelectorAll('#st button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.th)});
  [].forEach.call(document.querySelectorAll('#sv button'),function(b){b.setAttribute('aria-pressed',b.dataset.v===P.view)});
@@ -334,6 +340,9 @@ document.getElementById('sv').onclick=function(e){var v=(e.target.closest('butto
  else{var s0=V.s;P.view='scroll';apply();secs.forEach(function(x){x.classList.remove('act')});var h=P.hl&&lineEl(P.hl);if(h&&h.closest('.ash')===secs[s0])h.scrollIntoView({block:'center'});else secs[s0].scrollIntoView()}
  save()};
 document.getElementById('tr').onclick=function(){P.ref=P.ref?0:1;apply();save()};
+document.getElementById('rb').onclick=function(){if(P.view==='verse')return;var bb=document.querySelector('.bar').getBoundingClientRect().bottom,a=null,t=0;var ps=document.querySelectorAll('.verse p');for(var i=0;i<ps.length;i++){var r=ps[i].getBoundingClientRect();if(r.height&&r.bottom>bb+4){a=ps[i];t=r.top;break}}
+ if(a&&a.classList.contains('rf')&&!P.ref){var it=a.closest('.item');while(it&&it.classList.contains('rf'))it=it.previousElementSibling;var q=it&&it.querySelector('.verse p');if(q){a=q;t=q.getBoundingClientRect().top}}
+ P.ref=P.ref?0:1;apply();save();if(a&&a.offsetParent!==null){window.scrollBy(0,a.getBoundingClientRect().top-t)}else{var c=cur();if(c)c.scrollIntoView()}};
 document.getElementById('tc').onclick=function(){P.hc=P.hc?0:1;apply();save()};
 var wl=null;
 function wake(on){if(!('wakeLock' in navigator))return;if(on){navigator.wakeLock.request('screen').then(function(l){wl=l;l.addEventListener('release',function(){wl=null})}).catch(function(){})}else if(wl){try{wl.release()}catch(e){}wl=null}}
@@ -406,7 +415,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v16').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v17').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
