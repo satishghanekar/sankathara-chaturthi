@@ -2513,7 +2513,7 @@ a.t {
   }
 }
 
-/* ==== Tappable dhrupad marker (Aartis 1–5): sits right under the stanza; tap shows the dhrupad above ==== */
+/* ==== Tappable dhrupad marker (Aartis 1–5 and 7): sits right under the stanza; tap shows the dhrupad above ==== */
 @media screen {
   [data-ref="1"] .items > .rmk.rmkt {
     position: relative;
@@ -3810,6 +3810,17 @@ a.t {
           </div>
         </div>
       </div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="item rf">
+        <div class="verse">
+          <div class="mr">
+            <p class="rf" data-l="s7l4r">येई ओ विठ्ठले माझी माऊली ये ।​<br>येई ओ विठ्ठले माझी माऊली ये ॥ धृ. ॥</p>
+          </div>
+          <div class="en" lang="en">
+            <p class="rf" data-l="s7l4r">Yei O Vitthale Majhi Maauli Ye | Yei O Vitthale Majhi Maauli Ye || Dhr. ||</p>
+          </div>
+        </div>
+      </div>
       <div class="item">
         <div class="verse">
           <div class="mr">
@@ -4948,10 +4959,10 @@ a.t {
   });
 
 
-  // ---- Tappable dhrupad markers (Aartis 1–5) ----
+  // ---- Tappable dhrupad markers (Aartis 1–5 and 7) ----
   // Tapping ↻ ध्रुपद shows the dhrupad in a bubble just above the marker, over the stanza just sung,
   // so the next stanza stays clear. Tap again, tap elsewhere or press Escape to close; it also closes by itself.
-  var RMKTAP = ["a1", "a2", "a3", "a4", "a5"],
+  var RMKTAP = ["a1", "a2", "a3", "a4", "a5", "a7"],
     rmkPop = null;
   RMKTAP.forEach(function (id) {
     [].forEach.call(document.querySelectorAll("#" + id + " .items > .rmk"), function (m) {
@@ -6157,7 +6168,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v80").then(function (c) {
+          caches.open("aarti-v81").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
