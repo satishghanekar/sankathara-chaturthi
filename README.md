@@ -4,6 +4,8 @@ The texts our group recites at Sankashti Chaturthi puja: Pooja, Bhajans (coming 
 
 **Live site:** https://sankashti-chaturthi.pages.dev
 
+**Version:** 1.0 (shown as **v1.0** on the home card and as *Version 1.0* at the bottom of Settings)
+
 ## What the site does
 
 Everything runs on the phone or computer. Nothing is sent anywhere, and the site works offline once opened.
@@ -14,6 +16,8 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Dhrupad:** shown once at the top or after every stanza (the धृ button); in "once" mode, ↻ ध्रुपद under a stanza shows it for a few seconds.
 - **Next Sankashti card** (home page): today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
 - **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns reading down each column, or Marathi and English side by side) in the chosen language and English style.
+- **Saved for offline** (home card, under the buttons): "✓ Saved offline · v1.0 · Check for updates". Tapping it checks for a newer version and loads it, or shows "Up to date"; with no internet it turns amber.
+- **Settings:** menu language, English style, text size, theme, high contrast and keep screen on, styled like phone settings (two cards, small sliding controls, switches).
 - **Reading:** tap a line to highlight it, pinch or A−/A+ for text size, themes (light, sepia, dark), high contrast, keep the screen on, and it reopens where you were reading (within 12 hours).
 - **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="help"`).
 
@@ -42,7 +46,7 @@ To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankashti
 1. Open https://github.com/satishghanekar/sankashti-chaturthi and click `index.html`.
 2. Click the pencil icon (**Edit this file**).
 3. Use the browser's find (Ctrl+F / ⌘F) to locate the text you want (see *Finding things in index.html* below), and make the change.
-4. **Bump the cache version** (see below). This is a second small edit, in `index.html` and in `sw.js`.
+4. **Bump the version** (see below). This is a second small edit, in `index.html` and in `sw.js`.
 5. Click **Commit changes…**, write a short message (for example *Fix typo in Devi Aarti verse 2*), keep **Commit directly to the `main` branch** selected, and click **Commit changes**.
 6. Wait a minute or two, then check the live site (see *After publishing*).
 
@@ -61,7 +65,7 @@ Every time:
 
 ```sh
 git pull                      # get the latest version first
-# edit index.html (and sw.js for the cache version) in any text editor
+# edit index.html (and sw.js for the version) in any text editor
 python3 -m http.server 8000   # optional: preview at http://localhost:8000, Ctrl+C to stop
 git add -A
 git commit -m "Describe the change"
@@ -70,20 +74,26 @@ git push                      # publishes to the live site
 
 Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in plain-text mode, Notepad). Word processors will damage the file.
 
-### Bump the cache version on every change
+### Bump the version on every change
 
-Phones keep a saved copy of the site. The cache version tells them a new copy exists. It appears in **two** places, and both must always have the **same** number:
+Phones keep a saved copy of the site. The version tells them a new copy exists, and it is what the home card shows (v1.0). It appears in **two** places, and both must always be the **same**:
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v137';
+   const V='aarti-v1.0';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v137")
+   caches.open("aarti-v1.0")
    ```
 
-Add one to the number in both places (for example `aarti-v137` → `aarti-v138`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Change both together, using digits and dots only:
+
+- a small fix (a typo, a spacing tweak): add to the last part, `1.0` → `1.0.1` → `1.0.2`
+- a new feature or a new piece: raise the middle number, `1.0.2` → `1.1`
+- a big redesign: `1.x` → `2.0`
+
+Any change works as long as the new version differs from the old one. If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
@@ -187,7 +197,7 @@ To change a rule, edit `IA` and check the Atharvashirsha and Ganapati Aarti agai
 3. Replace the lines, giving every new line a new `data-l` id (for example `s11l1`, `s11l2`, …).
 4. Fix the *Previous / Next* links (`<nav class="pn">`) of the new piece and of its neighbours.
 5. Add a line for it in the home-page contents (`<ol class="toc">` under आरती).
-6. Bump the cache version, commit and push.
+6. Bump the version, commit and push.
 
 ## Checking a change
 

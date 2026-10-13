@@ -965,19 +965,6 @@ body {
 #panel button {
   height: 40px;
 }
-.tgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.tgrid button {
-  width: 100%;
-  height: auto;
-  min-height: 42px;
-  padding: 6px 8px;
-  font-size: 13.5px;
-  line-height: 1.2;
-}
 #wrow {
   display: block;
 }
@@ -5219,7 +5206,9 @@ a.t {
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
         </ul>
         It changes straight away and keeps your place.</li>
-      <li><b>Text size</b> (A− / A+ / ↺ to reset), <b>Theme</b> (Auto, Light, Sepia, Dark), <b>High contrast</b> and <b>Keep screen on</b>.</li>
+      <li><b>Text size</b> (A− / A+ / ↺ to reset) and <b>Theme</b> (Auto, Light, Sepia, Dark).</li>
+      <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off.</li>
+      <li>At the bottom: <b>App</b> (until it is installed), <b>Help</b> and the version number (Version 1.0). Tap ✕ at the top to close Settings.</li>
       <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
 
@@ -5241,7 +5230,7 @@ a.t {
 
     <h3>Good to know</h3>
     <ul>
-      <li><b>Saved for offline</b> (the line under the Share/QR/Print buttons): the site is saved on your phone and works without internet. The number after it (v136, say) is the version on your phone. Tap <b>Check for updates</b> to look for a newer version: it shows “Checking…”, then “Up to date” in green, or reloads with the new version. “No internet” in amber means the saved copy is in use.</li>
+      <li><b>Saved for offline</b> (the line under the Share/QR/Print buttons): the site is saved on your phone and works without internet. The number after it (for example v1.0) is the version on your phone. Tap <b>Check for updates</b> to look for a newer version: it shows “Checking…”, then “Up to date” in green, or reloads with the new version. “No internet” in amber means the saved copy is in use.</li>
       <li><b>Getting updates:</b> tap <b>Check for updates</b> on the home card, or close the site or app and open it again; new changes load in the background.</li>
       <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
       <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
@@ -5278,7 +5267,7 @@ a.t {
      Start-up                first paint, reading position, help
      Print                   builds the print view (#pv) just before printing
      Share, QR               reminder text, QR pop-up, install tip
-     Offline use             service worker (sw.js) and its cache version
+     Offline use             service worker (sw.js) and its version (aarti-v1.0)
    ===================================================================== */
 (function () {
   var root = document.documentElement;
@@ -7948,8 +7937,8 @@ a.t {
       m2.content = "संकष्टी चतुर्थी";
       hd.appendChild(m2);
     } catch (e) {}
-    // Offline line on the home card. Tapping fetches the page fresh: if its cache version (aarti-vN) is newer
-    // than this one, the page reloads with it; otherwise it shows "up to date".
+    // Offline line on the home card. Tapping fetches the page fresh: if its version (aarti-v1.0, say) differs
+    // from this one, the page reloads with it; otherwise it shows "up to date".
     var ofb = document.getElementById("ofb"),
       OFI = {
         idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved offline</span><span class="sep s2" aria-hidden="true">·</span><span class="lk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="mr">अपडेट तपासा</span><span class="en" lang="en">Check for updates</span></span>',
@@ -7965,17 +7954,17 @@ a.t {
         save: "Saving for offline",
         ok: "Up to date",
       };
-    // This copy's version, from the cache name below (the same text the check looks for in a fresh copy)
-    var RE = /caches\.open\("(aarti-v\d+)"/,
+    // This copy's version (e.g. "1.0"), from the cache name "aarti-v1.0" below: the same text the check looks for in a fresh copy
+    var RE = /caches\.open\("aarti-v([\d.]+)"/,
       me = ((document.scripts[document.scripts.length - 1] || {}).text || "").match(RE);
     me = me && me[1];
-    document.getElementById("ver").textContent = me ? "Version " + me.slice(7) : "";
+    document.getElementById("ver").textContent = me ? "Version " + me : "";
     function ofSet(st) {
       ofb.setAttribute("data-s", st);
-      // The version number sits after "Saved for offline" / "Up to date", e.g. "✓ Saved for offline · v136 · Check for updates"
-      var vn = me && (st === "idle" || st === "ok") ? '<span class="sep" aria-hidden="true">·</span><span class="vn">v' + me.slice(7) + "</span>" : "";
+      // The version sits after "Saved offline" / "Up to date", e.g. "✓ Saved offline · v1.0 · Check for updates"
+      var vn = me && (st === "idle" || st === "ok") ? '<span class="sep" aria-hidden="true">·</span><span class="vn">v' + me + "</span>" : "";
       ofb.innerHTML = OFI[st].replace(/(<span class="en" lang="en">[^<]*<\/span>)/, "$1" + vn);
-      ofb.setAttribute("aria-label", OFL[st] + (vn ? ". Version " + me.slice(7) : ""));
+      ofb.setAttribute("aria-label", OFL[st] + (vn ? ". Version " + me : ""));
     }
     ofSet(navigator.onLine === false ? "off" : "idle");
     addEventListener("online", function () {
@@ -8042,7 +8031,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v137").then(function (c) {
+          caches.open("aarti-v1.0").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
