@@ -1252,47 +1252,7 @@ a.t {
 }
 
 
-/* ==== "Keep it on your phone" tip, Share / QR / Print buttons, QR pop-up ==== */
-.a2 {
-  position: relative;
-  margin: 4px 0 18px;
-  padding: 14px 44px 14px 16px;
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--accent);
-  border-radius: 12px;
-  background: var(--surface);
-}
-.a2[hidden] {
-  display: none;
-}
-.a2t {
-  font: 600 16px/1.35 var(--body);
-  color: var(--accent);
-  margin-bottom: 4px;
-}
-.a2s {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.5;
-}
-.a2s b {
-  font-weight: 600;
-}
-.a2x {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  min-width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font-size: 16px;
-}
-#a2go {
-  margin-top: 10px;
-}
+/* ==== Share / QR / Print buttons, QR pop-up ==== */
 #shr {
   margin: 22px 0 0;
 }
@@ -1303,11 +1263,7 @@ a.t {
   height: 48px;
   font-size: 16px;
 }
-.a2[data-lang="both"] .en {
-  display: none;
-}
 @media print {
-  .a2,
   #shr {
     display: none !important;
   }
@@ -3195,7 +3151,6 @@ a.t {
       <div class="om">ॐ</div>
       <div class="hl1">॥ श्री गणेशाय नमः ॥</div>
     </div>
-    <div id="a2hs" class="a2" hidden><button type="button" class="a2x" id="a2x" aria-label="Close">✕</button><div class="a2t"><span class="mr">फोनवर ॲपसारखे ठेवा</span><span class="en" lang="en">Keep it on your phone like an app</span></div><p class="a2s" id="a2ios"><span class="mr">ब्राउझरचे शेअर <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> बटण दाबा, मग <b>Add to Home Screen</b> निवडा. नंतर इंटरनेटशिवायही उघडेल.</span><span class="en" lang="en">Tap your browser's Share button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>, then <b>Add to Home Screen</b>. It will then open even without internet.</span></p><p class="a2s" id="a2app" hidden><span class="mr">हे पान <b>Safari</b> किंवा <b>Chrome</b> मध्ये उघडा (⋯ किंवा शेअर → Open in Safari/Chrome), मग Share → <b>Add to Home Screen</b>.</span><span class="en" lang="en">Open this page in <b>Safari</b> or <b>Chrome</b> (⋯ or Share → Open in Safari/Chrome), then Share → <b>Add to Home Screen</b>.</span></p><p class="a2s" id="a2and" hidden><span class="mr">एका टॅपमध्ये होम स्क्रीनवर जोडा; नंतर इंटरनेटशिवायही उघडेल.</span><span class="en" lang="en">Add it to your home screen in one tap. It will then open even without internet.</span></p><button type="button" class="wide" id="a2go" hidden><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to home screen</span></button></div>
     <div id="skc" class="skc" hidden></div>
     <h1 class="sr"><span class="mr">संकष्टी चतुर्थी</span><span class="en" lang="en">Sankashti Chaturthi</span></h1>
     </div>
@@ -4999,7 +4954,6 @@ a.t {
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
     wake: 1, // keep the screen on
-    a2: 0, // 1 = "add to home screen" tip dismissed
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
@@ -7410,7 +7364,7 @@ a.t {
     });
   })();
 
-  // ---- Share, QR code and the "Keep it on your phone" tip ----
+  // ---- Share, QR code and the Add to Home Screen buttons ----
   (function () {
     var url = location.origin + location.pathname,
       title = "संकष्टी चतुर्थी";
@@ -7440,7 +7394,10 @@ a.t {
       var C = skCache,
         L = skLoc(),
         mr = P.ui === "mr";
-      if (!C || !L) return mr ? "संकष्टी चतुर्थी — पूजा आणि आरती\n" + url : title + "\n" + url;
+      var tip = mr
+        ? "\nफोनवर ॲपसारखे ठेवण्यासाठी: लिंक उघडा आणि होम स्क्रीनवर जोडा (Add to Home Screen) दाबा."
+        : "\nTip: open the link and tap Add to Home Screen to keep it on your phone like an app.";
+      if (!C || !L) return (mr ? "संकष्टी चतुर्थी — पूजा आणि आरती\n" + url : title + "\n" + url) + tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
         f = skFmt(o),
         t = skTemple(L),
@@ -7453,7 +7410,8 @@ a.t {
           (t ? " · पूजा सायं. ७:०० ते ८:३०, भारतीय हिंदू मंदिर, पॉवेल" : "") +
           (o.rise ? " · चंद्रोदय " + f.tmr : "") +
           "\nआरत्या: " +
-          url
+          url +
+          tip
         );
       return (
         ang +
@@ -7462,7 +7420,8 @@ a.t {
         (t ? " · Pooja 7:00–8:30 pm at Bharatiya Hindu Temple, Powell" : "") +
         (o.rise ? " · Moonrise " + f.ten : "") +
         "\nAartis: " +
-        url
+        url +
+        tip
       );
     }
     document.getElementById("shb").onclick = function () {
@@ -7488,12 +7447,7 @@ a.t {
         ios &&
         (/CriOS|FxiOS|EdgiOS/.test(ua) || /Safari\//.test(ua)) &&
         !/GSA\/|FBAN|FBAV|Instagram|WhatsApp|Line\/|Snapchat/.test(ua),
-      card = document.getElementById("a2hs"),
       deferred = null;
-    function show() {
-      if (P.a2 || standalone) return;
-      card.hidden = false;
-    }
     // Add to Home Screen buttons (home page and Settings), always there until the site is opened from its icon.
     // Chrome/Edge/Android: the browser's own install prompt when it offers one; otherwise (iPhone, or the prompt
     // already used or dismissed) a pop-up with the steps for this device.
@@ -7506,9 +7460,6 @@ a.t {
       });
     }
     function installed() {
-      card.hidden = true;
-      P.a2 = 1;
-      save();
       ibShow(false);
     }
     function steps(o) {
@@ -7554,27 +7505,9 @@ a.t {
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !im.hidden) steps(false);
     });
-    document.getElementById("a2x").onclick = function () {
-      card.hidden = true;
-      P.a2 = 1;
-      save();
-    };
-    if (ios && !standalone) {
-      if (!safari) {
-        document.getElementById("a2ios").hidden = true;
-        document.getElementById("a2app").hidden = false;
-      }
-      show();
-    }
     window.addEventListener("beforeinstallprompt", function (e) {
       e.preventDefault();
       deferred = e;
-      document.getElementById("a2ios").hidden = true;
-      document.getElementById("a2and").hidden = false;
-      var b = document.getElementById("a2go");
-      b.hidden = false;
-      b.onclick = install;
-      show();
     });
     window.addEventListener("appinstalled", installed);
   })();
@@ -7622,7 +7555,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v122").then(function (c) {
+          caches.open("aarti-v123").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
