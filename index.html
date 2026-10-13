@@ -3542,6 +3542,48 @@ a.t {
 .bar .t.site.pc[data-tl="en"] {
   font-size: 14.5px;
 }
+/* ==== Round 2 review (final rules) ==== */
+/* A+ is for the verses: the home page keeps its normal size, and very long names may wrap */
+#home {
+  font-size: min(var(--fs), 24px);
+}
+@media (min-width: 600px) {
+  #home {
+    font-size: min(var(--fs), 28px);
+  }
+}
+#home .tocg ol.toc a,
+#jump a {
+  overflow-wrap: anywhere;
+}
+/* Contents panel: the number beside the name, as on the home page */
+#jump a {
+  flex-flow: row wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  align-content: center;
+  column-gap: 0.3em;
+}
+#jump a > .mr,
+#jump a > .en {
+  flex: 1 1 0;
+  min-width: 0;
+}
+#jl[data-lang="both"] a .en {
+  flex-basis: 100%;
+}
+/* Side by side on wide screens: a soft gold band marks the refrain (a left line would sit far from the right-aligned Marathi), and one space before "· Refrain" */
+@media screen {
+  [data-cols="2"] [data-lang="both"] .rftop .verse {
+    border-left: 0;
+    border-radius: 12px;
+    padding: 8px 0;
+    background: color-mix(in srgb, var(--gold) 10%, transparent);
+  }
+  [data-cols="2"] [data-lang="both"] .rmk .en {
+    margin-left: 0.3em;
+  }
+}
 </style>
 </head>
 
@@ -5252,19 +5294,19 @@ a.t {
 </div>
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
-  <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
+  <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru" lang="en">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
 </div>
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
-  <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
+  <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (<span lang="mr">धृ</span>) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
 </div>
 <!-- ==== Add to Home Screen steps (shown when the browser can't install from a button: iPhone, or Chrome without its prompt) ==== -->
 <div id="inm" hidden role="dialog" aria-modal="true" aria-labelledby="inmt">
   <div class="qrc"><div class="qrt" id="inmt"><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></div>
-    <ol class="inl" id="inios" hidden><li><span class="mr">शेअर बटण <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> दाबा (Safari मध्ये खाली, Chrome मध्ये वर उजवीकडे).</span><span class="en" lang="en">Tap the <b>Share</b> button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> (at the bottom in Safari, top right in Chrome).</span></li><li><span class="mr">खाली स्क्रोल करून <b>Add to Home Screen</b> दाबा.</span><span class="en" lang="en">Scroll down and tap <b>Add to Home Screen</b>.</span></li><li><span class="mr"><b>Add</b> दाबा.</span><span class="en" lang="en">Tap <b>Add</b>.</span></li></ol>
-    <ol class="inl" id="inapp" hidden><li><span class="mr">हे पान <b>Safari</b> किंवा <b>Chrome</b> मध्ये उघडा (⋯ किंवा शेअर → Open in Safari/Chrome).</span><span class="en" lang="en">Open this page in <b>Safari</b> or <b>Chrome</b> (⋯ or Share → Open in Safari/Chrome).</span></li><li><span class="mr">मग शेअर <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b>Add to Home Screen</b> → <b>Add</b>.</span><span class="en" lang="en">Then Share <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b>Add to Home Screen</b> → <b>Add</b>.</span></li></ol>
-    <ol class="inl" id="inand" hidden><li><span class="mr">Chrome चा <b>⋮</b> मेनू (वर उजवीकडे) उघडा.</span><span class="en" lang="en">Open Chrome's <b>⋮</b> menu (top right).</span></li><li><span class="mr"><b>Add to Home screen</b> किंवा <b>Install app</b> दाबा.</span><span class="en" lang="en">Tap <b>Add to Home screen</b> or <b>Install app</b>.</span></li><li><span class="mr"><b>Install</b> किंवा <b>Add</b> दाबा.</span><span class="en" lang="en">Tap <b>Install</b> or <b>Add</b>.</span></li></ol>
-    <ol class="inl" id="indesk" hidden><li><span class="mr">पत्त्याच्या पट्टीच्या उजव्या टोकाला असलेले Install चिन्ह दाबा, किंवा ब्राउझरच्या मेनूतून <b>Install</b> निवडा.</span><span class="en" lang="en">Click the install icon at the right end of the address bar, or choose <b>Install</b> from the browser menu.</span></li></ol>
-    <ol class="inl" id="inmac" hidden><li><span class="mr">Safari च्या टूलबारवरील शेअर बटण <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> दाबा, किंवा <b>File</b> मेनू उघडा.</span><span class="en" lang="en">Click the <b>Share</b> button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> in Safari's toolbar, or open the <b>File</b> menu.</span></li><li><span class="mr"><b>Add to Dock</b> निवडा, मग <b>Add</b> दाबा.</span><span class="en" lang="en">Choose <b>Add to Dock</b>, then click <b>Add</b>.</span></li></ol>
+    <ol class="inl" id="inios" hidden><li><span class="mr">शेअर बटण <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> दाबा (Safari मध्ये खाली, Chrome मध्ये वर उजवीकडे).</span><span class="en" lang="en">Tap the <b lang="en">Share</b> button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> (at the bottom in Safari, top right in Chrome).</span></li><li><span class="mr">खाली स्क्रोल करून <b lang="en">Add to Home Screen</b> दाबा.</span><span class="en" lang="en">Scroll down and tap <b lang="en">Add to Home Screen</b>.</span></li><li><span class="mr"><b lang="en">Add</b> दाबा.</span><span class="en" lang="en">Tap <b lang="en">Add</b>.</span></li></ol>
+    <ol class="inl" id="inapp" hidden><li><span class="mr">हे पान <b lang="en">Safari</b> किंवा <b lang="en">Chrome</b> मध्ये उघडा (⋯ किंवा शेअर → Open in Safari/Chrome).</span><span class="en" lang="en">Open this page in <b lang="en">Safari</b> or <b lang="en">Chrome</b> (⋯ or Share → Open in Safari/Chrome).</span></li><li><span class="mr">मग शेअर <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b lang="en">Add to Home Screen</b> → <b lang="en">Add</b>.</span><span class="en" lang="en">Then Share <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b lang="en">Add to Home Screen</b> → <b lang="en">Add</b>.</span></li></ol>
+    <ol class="inl" id="inand" hidden><li><span class="mr">Chrome चा <b>⋮</b> मेनू (वर उजवीकडे) उघडा.</span><span class="en" lang="en">Open Chrome's <b>⋮</b> menu (top right).</span></li><li><span class="mr"><b lang="en">Add to Home screen</b> किंवा <b lang="en">Install app</b> दाबा.</span><span class="en" lang="en">Tap <b lang="en">Add to Home screen</b> or <b lang="en">Install app</b>.</span></li><li><span class="mr"><b lang="en">Install</b> किंवा <b lang="en">Add</b> दाबा.</span><span class="en" lang="en">Tap <b lang="en">Install</b> or <b lang="en">Add</b>.</span></li></ol>
+    <ol class="inl" id="indesk" hidden><li><span class="mr">पत्त्याच्या पट्टीच्या उजव्या टोकाला असलेले Install चिन्ह दाबा, किंवा ब्राउझरच्या मेनूतून <b lang="en">Install</b> निवडा.</span><span class="en" lang="en">Click the install icon at the right end of the address bar, or choose <b lang="en">Install</b> from the browser menu.</span></li></ol>
+    <ol class="inl" id="inmac" hidden><li><span class="mr">Safari च्या टूलबारवरील शेअर बटण <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> दाबा, किंवा <b lang="en">File</b> मेनू उघडा.</span><span class="en" lang="en">Click the <b lang="en">Share</b> button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> in Safari's toolbar, or open the <b lang="en">File</b> menu.</span></li><li><span class="mr"><b lang="en">Add to Dock</b> निवडा, मग <b lang="en">Add</b> दाबा.</span><span class="en" lang="en">Choose <b lang="en">Add to Dock</b>, then click <b lang="en">Add</b>.</span></li></ol>
     <ol class="inl" id="inff" hidden><li><span class="mr">Firefox मध्ये हे ॲप म्हणून जोडता येत नाही. हे पान Chrome, Edge किंवा Safari मध्ये उघडा आणि हे बटण पुन्हा दाबा.</span><span class="en" lang="en">Firefox can't add this site as an app. Open this page in Chrome, Edge or Safari and tap this button again.</span></li></ol>
     <p class="inn"><span class="mr">मग ते ॲपसारखे उघडेल, इंटरनेटशिवायही.</span><span class="en" lang="en">It will then open like an app, even without internet.</span></p>
     <button type="button" class="wide" id="inx"><span class="mr">ठीक आहे</span><span class="en" lang="en">OK</span></button></div>
@@ -5317,7 +5359,7 @@ a.t {
 
     <h3>Buttons at the top</h3>
     <ul>
-      <li><b>Home</b> (house and title): back to the start. While you read, the title shows the piece on screen (for example <i>५. दत्ताची आरती</i>).</li>
+      <li><b>Home</b> (house and title): back to the start. While you read, the title shows the piece on screen (for example <i lang="mr">५. दत्ताची आरती</i>).</li>
       <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it. Plain letters are enough, and spelling is forgiving: <i>sukhakarta</i>, <i>ganpati</i> and <i>vithal</i> find <i>sukhakartā</i>, <i>Ganapati</i> and <i>Vitthal</i>. The matching words are shown in bold; tap a result to go to that line. On a computer you can type straight away, and use ↑ ↓ and Enter.</li>
       <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
       <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
@@ -5326,7 +5368,7 @@ a.t {
 
     <h3>Settings</h3>
     <ul>
-      <li><b>Menu language:</b> English or मराठी for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
+      <li><b>Menu language:</b> English or <span lang="mr">मराठी</span> for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
       <li><b>English style:</b> how the English lines and the titles of the pieces are spelled.
         <ul>
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
@@ -5342,7 +5384,7 @@ a.t {
     <h3>While reading</h3>
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
-      <li><b>Pinch</b> or use A− / A+ in Settings to change the text size. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
+      <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
       <li><b>At the end of each aarti:</b> Previous and Next go to the neighbouring pieces; the small <b>house</b> and <b>contents-and-search</b> buttons between them work just like the ones at the top.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
@@ -6889,7 +6931,7 @@ a.t {
     [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#inm,#szt,#szr"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
-    root.lang = P.ui;
+    root.lang = "mr"; // the page is Marathi; English parts carry lang="en" themselves (screen readers pick the voice from this)
     [].forEach.call(document.querySelectorAll("#su button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
     });
@@ -7537,15 +7579,18 @@ a.t {
       b.type = "button";
       var s1 = document.createElement("span");
       s1.className = "rs";
+      s1.lang = P.lang === "en" ? "en" : "mr";
       s1.textContent = sectionTitle(r.sec);
       var s2 = document.createElement("span");
       s2.className = "rl";
+      s2.lang = P.lang === "en" ? "en" : "mr";
       mk(s2, P.lang === "en" ? r.e : r.m);
       b.appendChild(s1);
       b.appendChild(s2);
       if (P.lang === "both") {
         var s3 = document.createElement("span");
         s3.className = "rl2";
+        s3.lang = "en";
         mk(s3, r.e);
         b.appendChild(s3);
       }
