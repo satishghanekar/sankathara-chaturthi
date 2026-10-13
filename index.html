@@ -4439,7 +4439,7 @@ a.t {
 <div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="hlpt" lang="en">
   <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx">✕ Close</button></div>
   <div class="hlpin">
-    <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration. It works without internet once opened.</p>
+    <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
     <h3>Put it on your phone</h3>
     <h4>iPhone</h4>
@@ -4469,11 +4469,23 @@ a.t {
     <h3>Buttons at the top</h3>
     <ul>
       <li><b>Home</b> (house and title): back to the start.</li>
-      <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it.</li>
+      <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it. Plain letters are enough: <i>sukhakarta</i> finds <i>sukhakartā</i>.</li>
       <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
       <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
-      <li><b>⚙ Settings:</b> text size, theme (light, sepia, dark), high contrast, keep the screen on, one or two columns on wide screens, and <b>Menu language</b> (English or मराठी) for the card, buttons and settings.</li>
-      <li><b>English style</b> (in ⚙ Settings): the everyday spelling (<i>Sukhkarta</i>) or the scholarly one with exact sounds and, in the Atharvashirsha, the swara marks (<i>sukhakartā</i>, <i>bha̱draṃ</i>).</li>
+      <li><b>⚙ Settings:</b> menu language, English style, text size, theme, high contrast, keeping the screen on, and one or two columns on wide screens. See below.</li>
+    </ul>
+
+    <h3>Settings</h3>
+    <ul>
+      <li><b>Menu language:</b> English or मराठी for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
+      <li><b>English style:</b> how the English lines are spelled.
+        <ul>
+          <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
+          <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
+        </ul>
+        The page reloads when you change it and keeps your place.</li>
+      <li><b>Text size</b> (A− / A+ / Reset), <b>Theme</b> (Auto, Light, Sepia, Dark), <b>High contrast</b> and <b>Keep screen on</b>.</li>
+      <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
 
     <h3>While reading</h3>
@@ -4487,7 +4499,7 @@ a.t {
     <ul>
       <li><b>Share</b> sends a ready reminder with the next date, pooja time, moonrise and the link, for WhatsApp or messages.</li>
       <li><b>QR</b> shows a code others can scan with their camera to open the site.</li>
-      <li><b>Print</b> makes a printout or PDF of the contents and all the texts, in the language you have chosen, in one or two columns.</li>
+      <li><b>Print</b> makes a printout or PDF of the contents and all the texts, in the language and English style you have chosen, in one or two columns, or Marathi and English side by side.</li>
     </ul>
 
     <h3>Good to know</h3>
@@ -4508,6 +4520,26 @@ a.t {
    "// ---- name ----". Settings live in P and are saved on this device
    only (localStorage key "aarti2-prefs"); apply() turns P into the
    data-* switches on <html> that the styles react to.
+
+   Sections, in order:
+     Settings (P)            what the reader chose, and migrations
+     IAST transliteration    IA(): Devanagari line → scholarly English;
+                             run once at start-up when English style = sukhakartā
+     Layout helpers          two-column grid rows, contents rail
+     Astronomy               sunrise/moonrise and lunar dates (no internet)
+     Next Sankashti card     date, moonrise, location, date strip,
+                             calendar (.ics), on-the-day countdown
+     Dhrupad markers         tappable ↻ ध्रुपद pop-ups
+     Stanza numbers          ॥ १ ॥ added at the end of each stanza
+     Preferred line breaks   where long lines may wrap on phones
+     Auto-fit text size      largest size at which lines fit the screen
+     Current piece, apply()  menus follow the reader; P → page
+     Settings panel, buttons dhrupad, wake lock, overlays, clicks, pinch
+     Search                  every line in both scripts and both spellings
+     Start-up                first paint, reading position, help
+     Print                   builds the print view (#pv) just before printing
+     Share, QR               reminder text, QR pop-up, install tip
+     Offline use             service worker (sw.js) and its cache version
    ===================================================================== */
 (function () {
   var root = document.documentElement;
@@ -5199,6 +5231,7 @@ a.t {
     [25.32, 82.97, "वाराणसी", "Varanasi, Uttar Pradesh"],
     [22.57, 88.36, "कोलकाता", "Kolkata, West Bengal"]
   ];
+  // Name for a location: { lat, lon, mr, en }, with own = 1 when no listed city is close
   function skNear(lat, lon) {
     var best = null,
       bd = 1e9,
@@ -5376,7 +5409,6 @@ a.t {
         : '<button type="button" class="skl" id="skall"><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>');
     skShow(skCache.sel);
   }
-  // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
   // Hide the "·" before the place name when the name wraps onto its own line
   function skDot() {
     var p = document.querySelector("#skc .skp");
@@ -5393,6 +5425,7 @@ a.t {
   }
   addEventListener("resize", skDot);
   if (document.fonts) document.fonts.ready.then(skDot);
+  // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
   function skShow(k, focus) {
     var box = document.getElementById("skc"),
       L = skLoc(),
@@ -6621,6 +6654,8 @@ a.t {
       });
       return t;
     }
+    // Build the print view (#pv) from the page: contents, then every piece in the text language.
+    // mode: "two" (two columns), "one" (one column) or "side" (Marathi and English side by side)
     function build(mode) {
       pv.innerHTML = "";
       var h = document.createElement("h1");
@@ -7031,7 +7066,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v108").then(function (c) {
+          caches.open("aarti-v109").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;

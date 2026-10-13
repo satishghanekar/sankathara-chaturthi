@@ -4,6 +4,19 @@ The texts our group recites at Sankashti Chaturthi puja: Pooja, Bhajans (coming 
 
 **Live site:** https://sankashti-chaturthi.pages.dev
 
+## What the site does
+
+Everything runs on the phone or computer. Nothing is sent anywhere, and the site works offline once opened.
+
+- **Texts:** the Ganapati Atharvashirsha (with Vedic swara marks) and ten aartis, in Marathi, English, or both side by side (the अ/A button).
+- **English style** (Settings): the everyday spelling (*Sukhkarta*) or the scholarly spelling, IAST (*sukhakartā*, *bha̱draṃ*). The scholarly lines are not typed. The script builds them from the Marathi/Sanskrit lines when the page opens (see *How the scholarly English is made*).
+- **Menu language** (Settings): English (default) or मराठी for the date card, buttons and settings, independent of the text language.
+- **Dhrupad:** shown once at the top or after every stanza (the धृ button); in "once" mode, ↻ ध्रुपद under a stanza shows it for a few seconds.
+- **Next Sankashti card** (home page): today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
+- **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns, or Marathi and English side by side) in the chosen language and English style.
+- **Reading:** tap a line to highlight it, pinch or A−/A+ for text size, themes (light, sepia, dark), high contrast, keep the screen on, and it reopens where you were reading (within 12 hours).
+- **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="help"`).
+
 ## What is in this repository
 
 | File | What it is |
@@ -62,14 +75,14 @@ Phones keep a saved copy of the site. The cache version tells them a new copy ex
 
 1. `sw.js`, first line:
    ```js
-   const V='aarti-v72';
+   const V='aarti-v109';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v72")
+   caches.open("aarti-v109")
    ```
 
-Add one to the number in both places (for example `aarti-v72` → `aarti-v73`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Add one to the number in both places (for example `aarti-v109` → `aarti-v110`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
@@ -87,7 +100,7 @@ On GitHub, open **Commits** (the clock icon above the file list) and click the c
 1. `<head>`: title, fonts.
 2. `<style>`: all styling, in labelled sections (`/* ==== … ==== */`).
 3. `<body>`: the top bar, the settings panel, then the home page and every piece.
-4. `<script>`: all behaviour, in labelled sections (`// ---- … ----`).
+4. `<script>`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of the script lists the sections in order.
 
 Each piece is a `<section>` with an id. Search for the id to jump to it:
 
@@ -152,6 +165,19 @@ Or search for a few words of the line itself.
 - **Vedic svara marks** (॑ ॒ ᳚) in the Atharvashirsha must be kept exactly. A mark that belongs with a visarga goes **after** the ः, otherwise it shows as a dotted circle.
 - `<br>` inside a line forces a break at that point. An invisible zero-width space (written `&#8203;` if you need to type one) marks a place where a long line may break on a narrow phone. Put it after the space, e.g. `कर, &#8203;निढळावरी`, so the words keep their space when the line fits on one row. English lines need no marker: on a phone they break after a single `|` or a comma by themselves.
 - Keep `&` written as `&amp;` and `<` as `&lt;` if they ever appear in text.
+- **Only the Marathi/Sanskrit line and the everyday English line are typed.** The scholarly English (IAST) is made from the Marathi line, so a spelling fix in Marathi fixes the scholarly English too. If the everyday English should change as well, edit it by hand.
+
+## How the scholarly English is made
+
+When English style is set to *sukhakartā*, the script (section `// ---- IAST transliteration ----`, function `IA`) rewrites each English line from the Marathi/Sanskrit line beside it, before anything else runs. The rules:
+
+- Standard IAST letters: ā ī ū ṛ, ṭ ṭh ḍ ḍh ṇ, ś ṣ, ṅ ñ, ḷ for ळ, ḥ for the visarga, `'` for ऽ, om̐ for ॐ.
+- The inherent "a" is always written (*jaya deva*, *suravaravandanā*), as in strict IAST.
+- Anusvara (ं): before k/g it is ṅ, before c/j ñ, before ṭ/ḍ ṇ, before t/d/n n, before p/b/m m (*sarvāṅgī*, *sundara*, *vakratuṇḍa*, *lambodara*). Otherwise, and in Marathi plural endings and nasal vowels, it stays ṃ (*muktāphaḷāṃcī*, *sumanāṃcyā*, *kaiṃcā*). Chandrabindu (ँ) is m̐.
+- Swara marks in the Atharvashirsha: ॒ (anudatta) becomes a line under the vowel, ॑ (svarita) a tick above, ᳚ a double tick, matching the group's printed śivāñjali booklet.
+- Hindi nukta letters: ड़ ṛ, ढ़ ṛh.
+
+To change a rule, edit `IA` and check the Atharvashirsha and Ganapati Aarti against the printed booklet afterwards.
 
 ### Adding a new Aarti
 
@@ -166,6 +192,6 @@ Or search for a few words of the line itself.
 
 The texts are the point of the site, so after any edit:
 
-- Open the changed piece on the live site in Marathi, English and Both (the language button in the top bar).
+- Open the changed piece on the live site in Marathi, English and Both (the language button in the top bar), and in both English styles (Settings).
 - Check it on a phone and on a computer, and try **Print** if the layout changed.
 - If a line or a mark looks wrong, compare it with the source booklet before changing anything.
