@@ -861,6 +861,30 @@ body {
 #szt.on {
   opacity: 0.92;
 }
+/* After a pinch: a pill in the same place that puts the text size back to the default in one tap */
+#szr {
+  position: fixed;
+  left: 50%;
+  top: 84px;
+  transform: translateX(-50%);
+  z-index: 9;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 99px;
+  border: 0;
+  background: var(--accent);
+  color: var(--bg);
+  font: 700 15px var(--lat);
+  box-shadow: 0 2px 10px #0003;
+}
+#szr .mr {
+  font-family: var(--body);
+}
+@media print {
+  #szr {
+    display: none !important;
+  }
+}
 [hidden] {
   display: none !important;
 }
@@ -4587,7 +4611,7 @@ a.t {
     <h3>While reading</h3>
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
-      <li><b>Pinch</b> or use A− / A+ in Settings to change the text size.</li>
+      <li><b>Pinch</b> or use A− / A+ in Settings to change the text size. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -4608,6 +4632,7 @@ a.t {
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
+<button type="button" id="szr" hidden><span class="mr">↺ मूळ आकार</span><span class="en" lang="en">↺ Default size</span></button>
 
 <script>
 /* =====================================================================
@@ -5978,13 +6003,17 @@ a.t {
     m.remove();
     return (FR[k] = r);
   }
+  // FSA: the automatic size for this screen, worked out even when the reader has chosen a size,
+  // so the pinch bubble can show sizes as a percentage of it (100% = default)
+  var FSA = 0;
   function autoFs() {
-    if (P.fsu) return;
     var w = document.querySelector(".wrap"),
       cw = w ? w.clientWidth : innerWidth - 32,
       r = ratio();
     if (!r || !cw) return;
     var f = Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r)));
+    FSA = f;
+    if (P.fsu) return;
     if (f !== P.fs) {
       P.fs = f;
       root.style.setProperty("--fs", f + "px");
@@ -6070,7 +6099,7 @@ a.t {
     [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv,#home .tocg,#jl,#rail"), function (e) {
       e.setAttribute("data-lang", P.lang);
     });
-    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#szt"), function (e) {
+    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#szt,#szr"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
     root.lang = P.ui;
@@ -6403,14 +6432,24 @@ a.t {
   // ---- Pinch with two fingers to change the text size (the page itself never zooms) ----
   var pz = null,
     szTm = 0,
-    szt = document.getElementById("szt");
+    szrTm = 0,
+    szt = document.getElementById("szt"),
+    szr = document.getElementById("szr");
+  szr.onclick = function () {
+    szr.hidden = true;
+    P.fsu = 0;
+    P.fs = dfs();
+    apply();
+    save();
+    showSz();
+  };
   function dist(e) {
     var a = e.touches[0],
       b = e.touches[1];
     return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
   }
   function showSz() {
-    szt.textContent = "Text size " + Math.round(((P.fs - 16) / 36) * 100) + "%";
+    szt.textContent = (P.ui === "mr" ? "अक्षरांचा आकार " : "Text size ") + Math.round((P.fs / (FSA || dfs())) * 100) + "%";
     szt.classList.add("on");
     clearTimeout(szTm);
     szTm = setTimeout(function () {
@@ -6421,6 +6460,7 @@ a.t {
     "touchstart",
     function (e) {
       if (e.touches.length === 2) {
+        szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
       }
     },
@@ -6448,6 +6488,18 @@ a.t {
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
+        // Offer a one-tap way back to the default size for a few seconds
+        if (P.fs !== (FSA || dfs())) {
+          clearTimeout(szTm);
+          szTm = setTimeout(function () {
+            szt.classList.remove("on");
+            szr.hidden = false;
+            clearTimeout(szrTm);
+            szrTm = setTimeout(function () {
+              szr.hidden = true;
+            }, 4000);
+          }, 700);
+        }
       }
     },
     { passive: true },
@@ -7176,7 +7228,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v110").then(function (c) {
+          caches.open("aarti-v111").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
