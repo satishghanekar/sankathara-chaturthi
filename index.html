@@ -2304,6 +2304,21 @@ a.t {
 [data-lang="both"] .skc .skm .en {
   display: none;
 }
+/* Today's date, a small line at the top of the card */
+.skc .sktd {
+  margin: -4px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--hdrl);
+  font: 400 12.5px/1.4 var(--body);
+  color: var(--muted);
+}
+[data-lang="en"] .skc .sktd {
+  font-family: var(--lat);
+}
+[data-lang="both"] .skc .sktd .en {
+  display: block;
+  font: 400 12px/1.4 var(--lat);
+}
 .skc .ske {
   display: none;
 }
@@ -4697,6 +4712,7 @@ a.t {
       }, 50);
     }
     var en = P.lang === "en",
+      now = new Date(),
       chips = "",
       lastY = 0;
     skCache.list.forEach(function (o, k) {
@@ -4728,6 +4744,17 @@ a.t {
     });
     box.hidden = false;
     box.innerHTML =
+      '<div class="sktd"><span class="mr">आज: ' +
+      SKWM[now.getDay()] +
+      ", " +
+      skDV(now.getDate()) +
+      " " +
+      SKMM[now.getMonth()] +
+      " " +
+      skDV(now.getFullYear()) +
+      '</span><span class="en" lang="en">Today: ' +
+      now.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) +
+      "</span></div>" +
       '<div class="skt"></div>' +
       (skCache.part
         ? ""
@@ -5996,7 +6023,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v75").then(function (c) {
+          caches.open("aarti-v76").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
