@@ -150,7 +150,7 @@ Or search for a few words of the line itself.
 - **Stanza numbers (॥ १ ॥) are added automatically** at the end of each Aarti stanza. Do not type them. The Atharvashirsha keeps its own numbers, which are part of its text.
 - **Piece numbers** (`<span class="nm">१.</span><span class="ne">1.</span>`) are typed in two places: the piece's `<h2>` and its line in the home-page contents (search for `class="toc"`). The left-hand menu and the search list build themselves from the home-page contents.
 - **Vedic svara marks** (॑ ॒ ᳚) in the Atharvashirsha must be kept exactly. A mark that belongs with a visarga goes **after** the ः, otherwise it shows as a dotted circle.
-- `<br>` inside a line forces a break at that point. An invisible zero-width space (written `&#8203;` if you need to type one) marks a place where a long line may break on a narrow phone.
+- `<br>` inside a line forces a break at that point. An invisible zero-width space (written `&#8203;` if you need to type one) marks a place where a long line may break on a narrow phone. Put it after the space, e.g. `कर, &#8203;निढळावरी`, so the words keep their space when the line fits on one row. English lines need no marker: on a phone they break after a single `|` or a comma by themselves.
 - Keep `&` written as `&amp;` and `<` as `&lt;` if they ever appear in text.
 
 ### Adding a new Aarti
