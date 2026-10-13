@@ -1261,9 +1261,13 @@ a.t {
   font: 600 1.02em/1.3 var(--head);
   color: var(--accent);
   letter-spacing: 0;
-  margin: 30px 0 6px;
+  margin: 24px 0 6px;
   padding: 0 4px 6px;
   border-bottom: 2px solid var(--accent);
+}
+/* The first group right under the date card */
+#home .sr + .tocg .gh {
+  margin-top: 10px;
 }
 .tocg:first-child .gh {
   margin-top: 6px;
@@ -2699,7 +2703,7 @@ a.t {
         <li><a href="#p1" data-go="p1"><span class="m"><span class="no"><span class="nm">१.</span><span class="ne">1.</span></span> <span class="mr">गणपत्यथर्वशीर्षोपनिषत्</span><span class="en" lang="en">Ganapati Atharvashirsha</span></span></a></li>
       </ol>
     </div>
-    <div class="tocg">
+    <div class="tocg" hidden>
       <h2 class="gh"><span class="mr">भजने</span><span class="en" lang="en">Bhajans</span></h2>
       <ol class="toc">
         <li class="soon"><span class="m"><span class="mr">लवकरच येत आहे</span><span class="en" lang="en">Coming soon</span></span></li>
@@ -5142,7 +5146,13 @@ a.t {
       L.en +
       '<button type="button" class="skli" id="skl" aria-label="' +
       (P.ui === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
-      '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button></span></div>' +
+      '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button>' +
+      (o.day + 86400000 > Date.now()
+        ? '<button type="button" class="skli" id="skcal" aria-label="' +
+          (P.ui === "en" ? "Add to calendar" : "कॅलेंडरमध्ये जोडा") +
+          '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg></button>'
+        : "") +
+      '</span></div>' +
       '<div class="ske" lang="en">Moonrise ' +
       f.ten +
       "</div>";
@@ -5161,6 +5171,56 @@ a.t {
     st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
     if (focus) on.focus({ preventScroll: true });
   }
+  // Calendar button: an .ics event at moonrise (all-day when there is no moonrise), made on this device
+  function skIcs() {
+    var C = skCache,
+      L = skLoc();
+    if (!C || !L) return;
+    var o = C.list[C.sel],
+      f = skFmt(o),
+      p2 = function (n) {
+        return ("0" + n).slice(-2);
+      },
+      dt = function (d, t) {
+        return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + (t ? "T" + p2(d.getHours()) + p2(d.getMinutes()) + "00" : "");
+      },
+      d = new Date(o.day),
+      r = o.rise ? new Date(o.rise) : null,
+      nm = (f.ang ? "Angaraki " : "") + "Sankashti Chaturthi",
+      L2 = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//sankashti-chaturthi//EN",
+        "BEGIN:VEVENT",
+        "UID:sk-" + dt(d) + "@sankashti-chaturthi.pages.dev",
+        "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
+      ];
+    if (r) {
+      L2.push("DTSTART:" + dt(r, 1), "DTEND:" + dt(new Date(o.rise + 3600000), 1), "SUMMARY:" + nm + " · moonrise " + f.ten);
+      L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + nm, "TRIGGER:-PT2H", "END:VALARM");
+    } else {
+      L2.push("DTSTART;VALUE=DATE:" + dt(d), "DTEND;VALUE=DATE:" + dt(new Date(o.day + 86400000)), "SUMMARY:" + nm);
+    }
+    L2.push("LOCATION:" + L.en.replace(/,/g, "\\,"), "URL:https://sankashti-chaturthi.pages.dev/", "END:VEVENT", "END:VCALENDAR");
+    var txt = L2.join("\r\n") + "\r\n",
+      ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (ios) {
+      location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(txt);
+      return;
+    }
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([txt], { type: "text/calendar" }));
+    a.download = "sankashti-" + dt(d) + ".ics";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 1000);
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#skcal")) skIcs();
+  });
   // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankashti" returns
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skc .skch, #skb");
@@ -6435,7 +6495,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v91").then(function (c) {
+          caches.open("aarti-v92").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
