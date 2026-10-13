@@ -2513,7 +2513,7 @@ a.t {
   }
 }
 
-/* ==== Tappable dhrupad marker (trial on the first Ganapati Aarti): sits right under the stanza; tap shows the dhrupad above ==== */
+/* ==== Tappable dhrupad marker (Aartis 1–5): sits right under the stanza; tap shows the dhrupad above ==== */
 @media screen {
   [data-ref="1"] .items > .rmk.rmkt {
     position: relative;
@@ -4981,10 +4981,10 @@ a.t {
   });
 
 
-  // ---- Tappable dhrupad markers (trial: first Ganapati Aarti only) ----
+  // ---- Tappable dhrupad markers (Aartis 1–5) ----
   // Tapping ↻ ध्रुपद shows the dhrupad in a bubble just above the marker, over the stanza just sung,
   // so the next stanza stays clear. Tap again, tap elsewhere or press Escape to close; it also closes by itself.
-  var RMKTAP = ["a1"],
+  var RMKTAP = ["a1", "a2", "a3", "a4", "a5"],
     rmkPop = null;
   RMKTAP.forEach(function (id) {
     [].forEach.call(document.querySelectorAll("#" + id + " .items > .rmk"), function (m) {
@@ -5021,7 +5021,7 @@ a.t {
     var bar = document.querySelector("body > .bar");
     if (r.top < (bar ? bar.getBoundingClientRect().bottom : 56) + 4) el.classList.add("below");
     rmkPop = { m: m, el: el };
-    rmkClose.t = setTimeout(rmkClose, 10000);
+    rmkClose.t = setTimeout(rmkClose, 7000);
   }
   document.addEventListener("click", function (e) {
     var m = e.target.closest && e.target.closest(".rmkt");
@@ -6190,7 +6190,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v78").then(function (c) {
+          caches.open("aarti-v79").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
