@@ -5221,15 +5221,39 @@ a.t {
       location.href = u;
       return;
     }
-    var a = document.createElement("a");
-    a.href = u;
-    a.download = "sankashti-" + dt(d) + ".ics";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function () {
-      URL.revokeObjectURL(u);
-      a.remove();
-    }, 60000);
+    function save() {
+      var a = document.createElement("a");
+      a.href = u;
+      a.download = "sankashti-" + dt(d) + ".ics";
+      document.body.appendChild(a);
+      a.click();
+      flash("कॅलेंडर फाइल डाउनलोड झाली; ती उघडा", "Calendar file downloaded; open it to add the event");
+      setTimeout(function () {
+        URL.revokeObjectURL(u);
+        a.remove();
+      }, 60000);
+    }
+    // Android: ask the phone's calendar app for a new, filled-in event (stays on the phone);
+    // if no app opens (the page is still showing), download the .ics file instead
+    if (/Android/.test(navigator.userAgent)) {
+      var e = encodeURIComponent;
+      location.href =
+        "intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=" +
+        e(nm + " pooja") +
+        ";S.eventLocation=" +
+        e(loc) +
+        (r ? ";S.description=" + e("Moonrise " + f.ten) : "") +
+        ";l.beginTime=" +
+        t0.getTime() +
+        ";l.endTime=" +
+        t1.getTime() +
+        ";end";
+      setTimeout(function () {
+        if (!document.hidden) save();
+      }, 1500);
+      return;
+    }
+    save();
   }
   document.addEventListener("click", function (e) {
     if (e.target.closest && e.target.closest("#skcal")) skIcs();
@@ -6508,7 +6532,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v96").then(function (c) {
+          caches.open("aarti-v97").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
