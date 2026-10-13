@@ -4731,10 +4731,30 @@ a.t {
     "Pacific/Auckland": [-36.85, 174.76, "ऑकलंड", "Auckland"],
   };
   // Nearest city to the saved location, from a built-in list (nothing is sent anywhere):
-  // its name within 40 km, "near …" within 120 km (suburbs, marked 1, are skipped for "near"), otherwise "your location"
+  // a suburb when inside its radius (5th value, km); else a city within 40 km, "near …" within 120 km, otherwise "your location"
   var SKCITY = [
     [39.96, -83.00, "कोलंबस", "Columbus"],
-    [40.10, -83.11, "डब्लिन", "Dublin, Ohio", 1],
+    [40.10, -83.11, "डब्लिन", "Dublin, Ohio", 7],
+    [40.20, -83.01, "लुईस सेंटर", "Lewis Center", 7],
+    [40.16, -83.08, "पॉवेल", "Powell", 6],
+    [40.13, -82.93, "वेस्टरव्हिल", "Westerville", 7],
+    [40.09, -83.02, "वर्दिंग्टन", "Worthington", 4],
+    [40.30, -83.07, "डेलावेअर", "Delaware", 7],
+    [40.03, -83.16, "हिलियर्ड", "Hilliard", 6],
+    [39.99, -83.06, "अपर आर्लिंग्टन", "Upper Arlington", 4],
+    [39.98, -83.04, "ग्रँडव्ह्यू हाइट्स", "Grandview Heights", 2],
+    [39.97, -82.94, "बेक्सली", "Bexley", 2],
+    [40.02, -82.88, "गहाना", "Gahanna", 5],
+    [40.08, -82.81, "न्यू अल्बानी", "New Albany", 6],
+    [39.95, -82.81, "रेनॉल्ड्सबर्ग", "Reynoldsburg", 5],
+    [39.88, -82.75, "पिकरिंग्टन", "Pickerington", 6],
+    [39.84, -82.80, "कॅनाल विंचेस्टर", "Canal Winchester", 5],
+    [39.85, -82.88, "ग्रोव्हपोर्ट", "Groveport", 4],
+    [39.88, -83.09, "ग्रोव्ह सिटी", "Grove City", 6],
+    [40.11, -83.27, "प्लेन सिटी", "Plain City", 5],
+    [40.24, -83.37, "मेरीसव्हिल", "Marysville", 6],
+    [40.24, -82.86, "सनबरी", "Sunbury", 5],
+    [40.22, -82.88, "गलेना", "Galena", 3],
     [39.10, -84.51, "सिनसिनाटी", "Cincinnati"],
     [41.50, -81.69, "क्लीव्हलँड", "Cleveland"],
     [39.76, -84.19, "डेटन", "Dayton"],
@@ -4747,7 +4767,7 @@ a.t {
     [38.25, -85.76, "लुईव्हिल", "Louisville"],
     [38.04, -84.50, "लेक्सिंग्टन", "Lexington"],
     [41.88, -87.63, "शिकागो", "Chicago"],
-    [41.75, -88.15, "नेपरव्हिल", "Naperville", 1],
+    [41.75, -88.15, "नेपरव्हिल", "Naperville", 10],
     [43.04, -87.91, "मिलवॉकी", "Milwaukee"],
     [43.07, -89.40, "मॅडिसन", "Madison"],
     [44.98, -93.27, "मिनियापोलिस", "Minneapolis"],
@@ -4756,8 +4776,8 @@ a.t {
     [41.26, -95.93, "ओमाहा", "Omaha"],
     [41.59, -93.62, "डेस मॉइन", "Des Moines"],
     [40.71, -74.01, "न्यूयॉर्क", "New York"],
-    [40.73, -74.08, "जर्सी सिटी", "Jersey City", 1],
-    [40.52, -74.41, "एडिसन", "Edison", 1],
+    [40.73, -74.08, "जर्सी सिटी", "Jersey City", 10],
+    [40.52, -74.41, "एडिसन", "Edison", 10],
     [40.36, -74.67, "प्रिन्स्टन", "Princeton"],
     [39.95, -75.17, "फिलाडेल्फिया", "Philadelphia"],
     [42.36, -71.06, "बॉस्टन", "Boston"],
@@ -4786,7 +4806,7 @@ a.t {
     [29.95, -90.07, "न्यू ऑर्लिन्स", "New Orleans"],
     [29.76, -95.37, "ह्यूस्टन", "Houston"],
     [32.78, -96.80, "डॅलस", "Dallas"],
-    [33.02, -96.70, "प्लेनो", "Plano", 1],
+    [33.02, -96.70, "प्लेनो", "Plano", 10],
     [30.27, -97.74, "ऑस्टिन", "Austin"],
     [29.42, -98.49, "सॅन अँटोनियो", "San Antonio"],
     [35.47, -97.52, "ओक्लाहोमा सिटी", "Oklahoma City"],
@@ -4796,10 +4816,10 @@ a.t {
     [35.08, -106.65, "आल्बुकर्की", "Albuquerque"],
     [36.17, -115.14, "लास व्हेगस", "Las Vegas"],
     [34.05, -118.24, "लॉस एंजेलिस", "Los Angeles"],
-    [33.68, -117.83, "अर्व्हाइन", "Irvine", 1],
+    [33.68, -117.83, "अर्व्हाइन", "Irvine", 10],
     [32.72, -117.16, "सॅन डिएगो", "San Diego"],
     [37.34, -121.89, "सॅन होजे", "San Jose"],
-    [37.55, -121.99, "फ्रिमॉन्ट", "Fremont", 1],
+    [37.55, -121.99, "फ्रिमॉन्ट", "Fremont", 10],
     [37.77, -122.42, "सॅन फ्रान्सिस्को", "San Francisco"],
     [38.58, -121.49, "सॅक्रामेंटो", "Sacramento"],
     [36.74, -119.79, "फ्रेस्नो", "Fresno"],
@@ -4838,8 +4858,8 @@ a.t {
     [-31.95, 115.86, "पर्थ", "Perth"],
     [-36.85, 174.76, "ऑकलंड", "Auckland"],
     [19.08, 72.88, "मुंबई", "Mumbai"],
-    [19.22, 72.98, "ठाणे", "Thane", 1],
-    [19.03, 73.03, "नवी मुंबई", "Navi Mumbai", 1],
+    [19.22, 72.98, "ठाणे", "Thane", 10],
+    [19.03, 73.03, "नवी मुंबई", "Navi Mumbai", 10],
     [18.52, 73.86, "पुणे", "Pune"],
     [20.00, 73.79, "नाशिक", "Nashik"],
     [21.15, 79.09, "नागपूर", "Nagpur"],
@@ -4863,8 +4883,8 @@ a.t {
     [13.08, 80.27, "चेन्नई", "Chennai"],
     [9.93, 76.27, "कोची", "Kochi"],
     [28.61, 77.21, "दिल्ली", "Delhi"],
-    [28.46, 77.03, "गुरुग्राम", "Gurugram", 1],
-    [28.54, 77.39, "नोएडा", "Noida", 1],
+    [28.46, 77.03, "गुरुग्राम", "Gurugram", 10],
+    [28.54, 77.39, "नोएडा", "Noida", 10],
     [23.02, 72.57, "अहमदाबाद", "Ahmedabad"],
     [22.31, 73.18, "वडोदरा", "Vadodara"],
     [21.17, 72.83, "सुरत", "Surat"],
@@ -4879,18 +4899,27 @@ a.t {
     var best = null,
       bd = 1e9,
       r = Math.PI / 180;
+    var sub = null,
+      sd = 1e9;
     SKCITY.forEach(function (c) {
       var a = Math.sin(((c[0] - lat) * r) / 2),
         b = Math.sin(((c[1] - lon) * r) / 2),
         d = 12742 * Math.asin(Math.sqrt(a * a + Math.cos(lat * r) * Math.cos(c[0] * r) * b * b));
-      if (c[4] && d > 40) return;
-      if (d < bd) {
+      if (c[4]) {
+        if (d <= c[4] && d < sd) {
+          sd = d;
+          sub = c;
+        }
+      } else if (d < bd) {
         bd = d;
         best = c;
       }
     });
     var o = { lat: lat, lon: lon, mr: "तुमचे ठिकाण", en: "your location", own: 1 };
-    if (best && bd <= 40) {
+    if (sub) {
+      o.mr = sub[2];
+      o.en = sub[3];
+    } else if (best && bd <= 40) {
       o.mr = best[2];
       o.en = best[3];
     } else if (best && bd <= 120) {
@@ -6358,7 +6387,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v85").then(function (c) {
+          caches.open("aarti-v86").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
