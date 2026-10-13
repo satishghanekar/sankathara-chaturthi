@@ -2503,7 +2503,7 @@ a.t {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   width: auto;
   height: auto;
   min-width: 0;
@@ -2540,6 +2540,19 @@ a.t {
 }
 #ofb .sep {
   opacity: 0.5;
+}
+#ofb .vn {
+  font-variant-numeric: tabular-nums;
+}
+/* Narrow phones: "Check for updates" goes on its own line under "✓ Saved offline · v137" */
+@media (max-width: 389px) {
+  #ofb .s2 {
+    display: none;
+  }
+  #ofb .lk {
+    flex-basis: 100%;
+    justify-content: center;
+  }
 }
 #ofb .lk {
   color: var(--accent);
@@ -5228,7 +5241,7 @@ a.t {
 
     <h3>Good to know</h3>
     <ul>
-      <li><b>Saved for offline</b> (the line under the Share/QR/Print buttons): the site is saved on your phone and works without internet. Tap <b>Check for updates</b> to look for a newer version: it shows “Checking…”, then “Up to date” in green, or reloads with the new version. “No internet” in amber means the saved copy is in use.</li>
+      <li><b>Saved for offline</b> (the line under the Share/QR/Print buttons): the site is saved on your phone and works without internet. The number after it (v136, say) is the version on your phone. Tap <b>Check for updates</b> to look for a newer version: it shows “Checking…”, then “Up to date” in green, or reloads with the new version. “No internet” in amber means the saved copy is in use.</li>
       <li><b>Getting updates:</b> tap <b>Check for updates</b> on the home card, or close the site or app and open it again; new changes load in the background.</li>
       <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
       <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
@@ -7939,7 +7952,7 @@ a.t {
     // than this one, the page reloads with it; otherwise it shows "up to date".
     var ofb = document.getElementById("ofb"),
       OFI = {
-        idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved for offline</span><span class="sep" aria-hidden="true">·</span><span class="lk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="mr">अपडेट तपासा</span><span class="en" lang="en">Check for updates</span></span>',
+        idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved offline</span><span class="sep s2" aria-hidden="true">·</span><span class="lk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="mr">अपडेट तपासा</span><span class="en" lang="en">Check for updates</span></span>',
         busy: '<span class="oi spin"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span><span class="mr">तपासत आहे…</span><span class="en" lang="en">Checking…</span>',
         save: '<span class="oi spin"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span><span class="mr">ऑफलाइनसाठी जतन करत आहे…</span><span class="en" lang="en">Saving for offline…</span>',
         ok: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">सर्व अद्ययावत आहे</span><span class="en" lang="en">Up to date</span>',
@@ -7959,8 +7972,10 @@ a.t {
     document.getElementById("ver").textContent = me ? "Version " + me.slice(7) : "";
     function ofSet(st) {
       ofb.setAttribute("data-s", st);
-      ofb.innerHTML = OFI[st];
-      ofb.setAttribute("aria-label", OFL[st]);
+      // The version number sits after "Saved for offline" / "Up to date", e.g. "✓ Saved for offline · v136 · Check for updates"
+      var vn = me && (st === "idle" || st === "ok") ? '<span class="sep" aria-hidden="true">·</span><span class="vn">v' + me.slice(7) + "</span>" : "";
+      ofb.innerHTML = OFI[st].replace(/(<span class="en" lang="en">[^<]*<\/span>)/, "$1" + vn);
+      ofb.setAttribute("aria-label", OFL[st] + (vn ? ". Version " + me.slice(7) : ""));
     }
     ofSet(navigator.onLine === false ? "off" : "idle");
     addEventListener("online", function () {
@@ -8027,7 +8042,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v136").then(function (c) {
+          caches.open("aarti-v137").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
