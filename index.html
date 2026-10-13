@@ -2512,6 +2512,82 @@ a.t {
     margin-top: 10px;
   }
 }
+
+/* ==== Tappable dhrupad marker (trial on the first Ganapati Aarti): sits right under the stanza; tap shows the dhrupad above ==== */
+@media screen {
+  [data-ref="1"] .items > .rmk.rmkt {
+    position: relative;
+    margin-top: -1.6em;
+    margin-bottom: 2.2em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rmk.rmkt:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .rmk.rmkt[aria-expanded="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+  }
+  .rmkpop {
+    position: absolute;
+    z-index: 6;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: min(560px, calc(100vw - 16px));
+    box-sizing: border-box;
+    padding: 0.5em 1em 0.6em;
+    border: 1px solid var(--hdrl);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    color: var(--ink);
+    font-size: calc(var(--fs) * 0.85);
+    letter-spacing: 0;
+    text-align: center;
+    cursor: default;
+    animation: rmkin 0.15s ease-out;
+  }
+  .rmkpop.below {
+    bottom: auto;
+    top: calc(100% + 8px);
+  }
+  .rmkpop .verse {
+    display: block;
+    margin: 0;
+  }
+  .rmkpop .verse p {
+    margin: 0.1em 0;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+  [data-lang="both"] .rmkpop .verse .en p {
+    font-weight: 400;
+    font-size: 0.85em;
+    color: var(--muted);
+  }
+  @keyframes rmkin {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 4px);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rmkpop {
+    animation: none;
+  }
+}
+@media print {
+  .rmkpop {
+    display: none !important;
+  }
+}
 </style>
 </head>
 
@@ -4905,6 +4981,68 @@ a.t {
   });
 
 
+  // ---- Tappable dhrupad markers (trial: first Ganapati Aarti only) ----
+  // Tapping ↻ ध्रुपद shows the dhrupad in a bubble just above the marker, over the stanza just sung,
+  // so the next stanza stays clear. Tap again, tap elsewhere or press Escape to close; it also closes by itself.
+  var RMKTAP = ["a1"],
+    rmkPop = null;
+  RMKTAP.forEach(function (id) {
+    [].forEach.call(document.querySelectorAll("#" + id + " .items > .rmk"), function (m) {
+      m.classList.add("rmkt");
+      m.setAttribute("role", "button");
+      m.setAttribute("tabindex", "0");
+      m.setAttribute("aria-expanded", "false");
+    });
+  });
+  function rmkClose() {
+    if (!rmkPop) return;
+    clearTimeout(rmkClose.t);
+    rmkPop.m.setAttribute("aria-expanded", "false");
+    rmkPop.el.remove();
+    rmkPop = null;
+  }
+  function rmkOpen(m) {
+    var was = rmkPop && rmkPop.m === m;
+    rmkClose();
+    if (was) return;
+    var src = m.closest("section.ash").querySelector(".rftop .verse");
+    if (!src) return;
+    var el = document.createElement("div");
+    el.className = "rmkpop";
+    el.setAttribute("role", "status");
+    el.appendChild(src.cloneNode(true));
+    m.appendChild(el);
+    m.setAttribute("aria-expanded", "true");
+    // Keep the bubble on screen: shift it sideways if needed; if there is no room above (under the top bar), put it below
+    var r = el.getBoundingClientRect(),
+      pad = 8,
+      dx = r.left < pad ? pad - r.left : r.right > innerWidth - pad ? innerWidth - pad - r.right : 0;
+    if (dx) el.style.marginLeft = dx + "px";
+    var bar = document.querySelector("body > .bar");
+    if (r.top < (bar ? bar.getBoundingClientRect().bottom : 56) + 4) el.classList.add("below");
+    rmkPop = { m: m, el: el };
+    rmkClose.t = setTimeout(rmkClose, 10000);
+  }
+  document.addEventListener("click", function (e) {
+    var m = e.target.closest && e.target.closest(".rmkt");
+    if (m) {
+      e.stopPropagation();
+      rmkOpen(m);
+    } else rmkClose();
+  }, true);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && rmkPop) return rmkClose();
+    var m = e.target.closest && e.target.closest(".rmkt");
+    if (m && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      rmkOpen(m);
+    }
+  });
+  addEventListener("scroll", function () {
+    if (rmkPop && !rmkPop.m.getBoundingClientRect().height) rmkClose();
+  }, { passive: true });
+
+
   // ---- Stanza numbers ----
   // Stanza numbers at the end of each verse (the dhrupad is not counted)
   [].forEach.call(document.querySelectorAll('section.ash[id^="a"] .items'), function (b) {
@@ -6052,7 +6190,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v77").then(function (c) {
+          caches.open("aarti-v78").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
