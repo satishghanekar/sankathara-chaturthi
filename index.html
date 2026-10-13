@@ -6189,6 +6189,61 @@ a.t {
       }, 50);
   }
   if (P.wake) wake(true);
+  // Reading position: phones often reload a home-screen app after switching away, so remember
+  // the piece and how far into it you were, and return there when reopened within 12 hours
+  var PK = "aarti2-pos",
+    posT = 0;
+  function savePos() {
+    var c = cur(),
+      y = c ? scrollY - (c.getBoundingClientRect().top + scrollY) : scrollY;
+    try {
+      localStorage.setItem(PK, JSON.stringify({ id: c ? c.id : "", y: Math.round(y), t: Date.now() }));
+    } catch (e) {}
+  }
+  window.addEventListener(
+    "scroll",
+    function () {
+      clearTimeout(posT);
+      posT = setTimeout(savePos, 400);
+    },
+    { passive: true },
+  );
+  window.addEventListener("pagehide", savePos);
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) savePos();
+  });
+  var sp = null;
+  try {
+    sp = JSON.parse(localStorage.getItem(PK) || "null");
+  } catch (e) {}
+  // A link to a piece wins, unless it is the piece you were already reading
+  if (!h || (sp && sp.id === h)) {
+    if (sp && Date.now() - sp.t < 12 * 3600000 && (sp.id || sp.y > 0)) {
+      var moved = false,
+        goPos = function () {
+          if (moved) return;
+          var el = sp.id && document.getElementById(sp.id);
+          scrollTo(0, el ? el.getBoundingClientRect().top + scrollY + sp.y : sp.y);
+        };
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      setTimeout(goPos, 50);
+      setTimeout(goPos, 400);
+      // Text sizes settle once the fonts load; go there again unless the reader has already moved
+      if (document.fonts && document.fonts.ready)
+        document.fonts.ready.then(function () {
+          setTimeout(goPos, 60);
+        });
+      ["touchstart", "wheel", "keydown"].forEach(function (ev) {
+        addEventListener(
+          ev,
+          function () {
+            moved = true;
+          },
+          { once: true, passive: true },
+        );
+      });
+    }
+  }
 
   // ---- Print ----
   // Print: single column (as on screen), two columns, or Marathi | English side by side.
@@ -6636,7 +6691,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v99").then(function (c) {
+          caches.open("aarti-v100").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
