@@ -9,8 +9,21 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Tiro+Devanagari+Marathi&family=Tiro+Devanagari+Sanskrit&display=swap">
 <style>
-/* Layout: one narrow centred column, one ashtak at a time, contents list as home screen.
-   Palette: paper, ink, a maroon accent taken from the printed booklets. */
+/* =====================================================================
+   STYLES
+   Rules are in the order they were added: a later rule for the same
+   element refines an earlier one. To change a look, search for the
+   selector and edit the LAST rule that sets that property.
+
+   Themes are sets of colour variables (--bg, --ink, --accent, …) on :root.
+   Light is the default; dark follows the device unless a theme is picked
+   in Settings (data-pref="light|sepia|dark"); data-hc="1" = high contrast.
+   Other switches on <html>: data-lang (mr|en|both), data-ref (dhrupad
+   1 = once, 0 = after every stanza), data-cols (1|2), data-rail (left
+   menu shown), data-print (print layout being printed).
+   ===================================================================== */
+
+/* ==== Theme colours and fonts ==== */
 :root {
   --bg: #fcf9f4;
   --surface: #f4ecd8;
@@ -37,16 +50,7 @@
     color-scheme: dark;
   }
 }
-:root[data-theme="dark"]:not([data-pref]) {
-  --bg: #17110e;
-  --surface: #241a15;
-  --ink: #efe3d4;
-  --muted: #b4a08f;
-  --accent: #e8a98c;
-  --rule: #3a2d25;
-  --bar: #17110eee;
-  color-scheme: dark;
-}
+
 :root[data-pref="dark"] {
   --bg: #17110e;
   --surface: #241a15;
@@ -77,6 +81,8 @@
   --bar: #efe0c3ee;
   color-scheme: light;
 }
+
+/* ==== Page, top bar and buttons ==== */
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -121,8 +127,7 @@ body {
   gap: 6px;
   flex: none;
 }
-button,
-.btn {
+button {
   font: 600 15px/1 var(--body);
   min-width: 44px;
   height: 44px;
@@ -143,6 +148,8 @@ button[aria-pressed="true"] {
   color: var(--bg);
   border-color: var(--accent);
 }
+
+/* ==== Home page contents list ==== */
 #home {
   padding-block: 28px 24px;
 }
@@ -153,12 +160,7 @@ button[aria-pressed="true"] {
   text-align: center;
   text-wrap: balance;
 }
-#home .lead {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.82em;
-  margin: 0 0 22px;
-}
+
 ol.toc {
   list-style: none;
   margin: 0;
@@ -184,11 +186,9 @@ ol.toc .m {
   font: 400 1.05em/1.3 var(--head);
   color: var(--ink);
 }
-ol.toc .s {
-  font-size: 0.76em;
-  color: var(--muted);
-  line-height: 1.4;
-}
+
+
+/* ==== Pieces: header, verses, previous / next links ==== */
 .ash header {
   padding-block: 26px 8px;
   text-align: center;
@@ -199,11 +199,7 @@ ol.toc .s {
   margin: 0;
   text-wrap: balance;
 }
-.ash .sub {
-  margin: 2px 0 0;
-  color: var(--muted);
-  font-size: 0.8em;
-}
+
 .ash header::after {
   content: "";
   display: block;
@@ -218,26 +214,14 @@ ol.toc .s {
   margin: 0 0 1.15em;
   padding: 0.1em 0;
 }
-.verse p,
-.note,
-.outro {
+.verse p {
   margin: 0;
   text-wrap: pretty;
 }
-.verse.bold p,
-.outro {
+.verse.bold p {
   font-weight: 700;
 }
-.note {
-  text-align: center;
-  color: var(--muted);
-  margin: 0 0 1em;
-}
-.outro {
-  text-align: center;
-  margin: 0.6em 0 1em;
-  color: var(--accent);
-}
+
 .verse p {
   overflow-wrap: anywhere;
 }
@@ -273,6 +257,8 @@ ol.toc .s {
   display: block;
 }
 
+
+/* ==== Language switching: .mr and .en parts shown according to data-lang ==== */
 :root {
   --lat: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
@@ -284,9 +270,7 @@ ol.toc .s {
   font-family: var(--lat);
 }
 
-.verse .en p,
-.en.note,
-.outro .en {
+.verse .en p {
   font-size: 0.86em;
   line-height: 1.6;
 }
@@ -301,20 +285,14 @@ ol.toc .s {
 }
 
 [data-lang="both"] h2 .en,
-[data-lang="both"] .sub .en,
 [data-lang="both"] ol.toc .en,
-[data-lang="both"] .pn .en,
-[data-lang="both"] .note .en,
-[data-lang="both"] .outro .en {
+[data-lang="both"] .pn .en {
   display: block;
   font-size: 0.55em;
   color: var(--muted);
   font-weight: 400;
 }
-[data-lang="both"] .sub .en,
-[data-lang="both"] ol.toc .s .en {
-  font-size: 0.85em;
-}
+
 [data-lang="en"] h2,
 [data-lang="en"] ol.toc .m {
   font-family: var(--lat);
@@ -331,6 +309,8 @@ ol.toc .s {
   font-size: 0.95em;
   font-weight: 600;
 }
+
+/* ==== Settings panel ==== */
 .panel {
   position: sticky;
   top: 61px;
@@ -387,6 +367,8 @@ ol.toc .s {
 .sz button {
   flex: 1;
 }
+
+/* ==== Wider screens (820px and up) ==== */
 @media (min-width: 820px) {
   .wrap {
     max-width: 46rem;
@@ -413,15 +395,14 @@ ol.toc .s {
     font-size: 1.05em;
   }
 }
-[data-lang="both"] #home h1 .en,
-[data-lang="both"] #home .lead .en {
+[data-lang="both"] #home h1 .en {
   display: block;
   font-size: 0.55em;
   color: var(--muted);
 }
-[data-lang="both"] #home .lead .en {
-  font-size: 0.9em;
-}
+
+
+/* ==== Piece spacing; contents + search overlay (#jump) ==== */
 .bar {
   padding-inline: max(16px, calc((100vw - 46rem) / 2));
 }
@@ -486,11 +467,9 @@ ol.toc .s {
   display: block;
   opacity: 0.8;
 }
-#jump .sub,
-#jump .s {
-  display: none;
-}
 
+
+/* ==== Reduced motion; print (first set of print rules, more further down) ==== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -578,6 +557,8 @@ ol.toc .s {
   }
 }
 
+
+/* ==== Tapped-line highlight, high contrast, language tag ==== */
 :root {
   --hl: #f9e4a6;
 }
@@ -644,6 +625,8 @@ ol.toc .s {
 p.fl {
   animation: fl 1.6s ease-out;
 }
+
+/* ==== Dhrupad: data-ref="1" shows it once at the top (.rftop) and hides the repeats (.rf); .rmk marks where it is sung ==== */
 .item.rf p,
 .verse p.rf,
 .rftop p {
@@ -686,18 +669,13 @@ p.fl {
 .items {
   display: block;
 }
+
+/* ==== Search box and results, status message (#szt), settings panel details ==== */
 .panel {
   max-height: calc(100vh - 80px);
   overflow: auto;
 }
-.row .tg {
-  flex: 1;
-  min-width: 0;
-}
-.row button.tg {
-  width: 100%;
-  font-size: 14px;
-}
+
 #q {
   width: 100%;
   box-sizing: border-box;
@@ -831,11 +809,8 @@ body {
   text-align: center;
 }
 
-#offst {
-  font: 600 13px var(--lat);
-  color: var(--muted);
-}
 
+/* ==== Phones held sideways ==== */
 @media (orientation: landscape) and (max-height: 520px) {
   body {
     line-height: 1.5;
@@ -883,6 +858,8 @@ body {
   }
 }
 
+
+/* ==== Group headings (पूजा / भजने / आरती) in the contents; "coming soon"; section dividers ==== */
 .gh {
   font: 700 0.74em/1.2 var(--body);
   color: var(--accent);
@@ -962,6 +939,8 @@ ol.toc li.soon .m {
     break-after: avoid;
   }
 }
+
+/* ==== Atharvashirsha: Vedic text in Tiro Devanagari Sanskrit ==== */
 #p1 .mr p {
   font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", "Sanskrit 2003", "Kohinoor Devanagari", var(--body);
   line-height: 2.1;
@@ -970,6 +949,8 @@ ol.toc li.soon .m {
   font-size: 1.05em;
 }
 
+
+/* ==== Top-bar title, heading for screen readers, contents overlay refinements ==== */
 .sr {
   position: absolute !important;
   width: 1px;
@@ -1063,10 +1044,7 @@ ol.toc a {
   min-width: 44px;
   padding: 0 8px;
 }
-#rb:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
+
 #aa svg {
   display: block;
   margin: auto;
@@ -1101,6 +1079,8 @@ a.t {
   margin: auto;
 }
 
+
+/* ==== "Keep it on your phone" tip, Share / QR / Print buttons, QR pop-up ==== */
 .a2 {
   position: relative;
   margin: 4px 0 18px;
@@ -1151,8 +1131,7 @@ a.t {
   height: 48px;
   font-size: 16px;
 }
-[data-lang="both"] .a2 .en,
-[data-lang="both"] #shb .en {
+[data-lang="both"] .a2 .en {
   display: none;
 }
 @media print {
@@ -1214,16 +1193,15 @@ a.t {
   margin: 10px 0 14px;
   overflow-wrap: anywhere;
 }
-[data-lang="both"] .qrc .en,
-[data-lang="both"] #qrb .en {
-  display: none;
-}
+
 @media print {
   #qrm {
     display: none !important;
   }
 }
 
+
+/* ==== Top-bar title with house icon; Home button in the contents overlay ==== */
 .bar .t.site {
   display: flex;
   align-items: center;
@@ -1264,6 +1242,8 @@ a.t {
   font-size: 0.85em;
 }
 
+
+/* ==== Contents headings (refined) ==== */
 .tocg .gh {
   font: 600 1.02em/1.3 var(--head);
   color: var(--accent);
@@ -1306,6 +1286,8 @@ a.t {
   }
 }
 
+
+/* ==== Share / QR / Print row; print pop-up (#prm); print view (#pv, built by the script just before printing) ==== */
 #shr {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1517,17 +1499,13 @@ a.t {
   #pv .pvside .pvm {
     border-right: 0.5pt solid #bbb;
   }
-  #pv .pvside .pvm .verse,
-  #pv .pvside .pve .verse {
-    margin: 0;
-  }
+
   #pv .pvside .mr,
   #pv .pvside .en {
     display: block !important;
     text-align: left;
   }
-  #pv .pvside .en,
-  #pv .pvside .en p {
+  #pv .pvside .en {
     font-size: 0.92em !important;
     color: #000 !important;
     line-height: 1.45;
@@ -1554,12 +1532,7 @@ a.t {
     font-size: 0.7em;
     color: #555;
   }
-  #pv .pvside .verse {
-    text-align: left;
-  }
-  #pv .pvside .verse p {
-    text-align: left;
-  }
+
   #pv .pvs[data-sid="p1"] .mr p {
     font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", var(--body);
     line-height: 1.9;
@@ -1628,6 +1601,8 @@ a.t {
   }
 }
 
+
+/* ==== Piece header card (saffron, maroon top edge) ==== */
 :root {
   --hdr: #fbe9cf;
   --hdrl: #efcf9f;
@@ -1710,6 +1685,8 @@ a.t {
     background: none;
   }
 }
+
+/* ==== Dhrupad at the top: small label above, thin rule on the left (final look below) ==== */
 [data-lang="both"] .rftop .lab .en::before {
   content: " · ";
 }
@@ -1844,6 +1821,8 @@ a.t {
   margin: 6px 10px 1.3em;
 }
 
+
+/* ==== Two columns on wide screens (data-cols="2"); the script assigns each stanza its grid row ==== */
 [data-cols="2"] .wrap {
   max-width: 76rem;
 }
@@ -1891,6 +1870,8 @@ a.t {
     max-width: none;
   }
 }
+
+/* ==== Piece numbers (.no) and stanza numbers (.sn, added by the script) ==== */
 .no {
   font-variant-numeric: tabular-nums;
   color: var(--accent);
@@ -1925,6 +1906,8 @@ a.t {
     padding-left: 10pt;
   }
 }
+
+/* ==== Share / QR / Print use the Latin font ==== */
 #shr button,
 #prm .qrt,
 #prm .prn,
@@ -1945,6 +1928,8 @@ a.t {
   margin-right: 8px !important;
   vertical-align: 0 !important;
 }
+
+/* ==== Both languages on wide screens: each Marathi line with its transliteration beside it ==== */
 @media screen {
   [data-cols="2"][data-lang="both"] .items {
     display: block;
@@ -1994,7 +1979,8 @@ a.t {
   }
 }
 
-/* ---- 1. contents rail on wide screens ---- */
+
+/* ==== Left menu (contents) on screens 1100px and wider ==== */
 #rail {
   display: none;
 }
@@ -2094,7 +2080,8 @@ a.t {
     color: var(--accent);
   }
 }
-/* ---- 4. reading progress line ---- */
+
+/* ==== Reading progress line under the top bar ==== */
 .bar {
   position: sticky;
 }
@@ -2110,7 +2097,8 @@ a.t {
   transform-origin: 0 50%;
   pointer-events: none;
 }
-/* ---- 3. dhrupad markers as small pills ---- */
+
+/* ==== Dhrupad markers (↻ ध्रुपद) as small pills ==== */
 @media screen {
   [data-ref="1"] .rmk {
     display: block;
@@ -2131,7 +2119,8 @@ a.t {
     justify-self: center;
   }
 }
-/* ---- 2. end-of-piece ornament ---- */
+
+/* ==== Lotus ornament at the end of each piece ==== */
 .fin {
   display: flex;
   justify-content: center;
@@ -2143,7 +2132,8 @@ a.t {
   max-width: 60%;
   height: auto;
 }
-/* ---- 5. home header band ---- */
+
+/* ==== Home page saffron band with ॐ ==== */
 .hero {
   display: flex;
   flex-direction: column;
@@ -2182,7 +2172,8 @@ a.t {
 [data-lang="both"] .hero .hl2 .en {
   margin-left: 0.6em;
 }
-/* ---- 8. calmer headers ---- */
+
+/* ==== Quieter piece number and language tag in headers ==== */
 .ash header .no {
   font-weight: 400;
   font-size: 0.86em;
@@ -2196,7 +2187,8 @@ a.t {
   color: var(--ink);
   font-weight: 500;
 }
-/* ---- 9. gentle fade-in ---- */
+
+/* ==== Gentle fade-in on scroll (class added and removed by the script) ==== */
 @keyframes fxin {
   from {
     opacity: 0;
@@ -2231,7 +2223,8 @@ a.t {
   }
 }
 
-/* ---- Next Sankashti card ---- */
+
+/* ==== Next Sankashti card (home page) ==== */
 .skc {
   margin: -6px 0 20px;
   padding: 14px 16px;
@@ -2321,7 +2314,8 @@ a.t {
   }
 }
 
-/* desktop: the left menu replaces the contents list on the home page */
+
+/* ==== Desktop: the left menu replaces the home-page contents list ==== */
 @media screen and (min-width: 1100px) {
   [data-rail="1"] #home .tocg {
     display: none;
@@ -2354,7 +2348,8 @@ a.t {
   }
 }
 
-/* section dividers (पूजा / आरती): label between two thin lines */
+
+/* ==== Section dividers (पूजा · POOJA): label between two thin fading lines ==== */
 @media screen {
   .grp {
     display: flex;
@@ -2404,7 +2399,9 @@ a.t {
 }
 </style>
 </head>
+
 <body>
+<!-- ==== Top bar: home link, then Contents+search, Language, Dhrupad and Settings buttons (icons filled in by the script) ==== -->
 <div class="bar">
   <div id="prog" aria-hidden="true"></div>
   <a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
@@ -2415,12 +2412,14 @@ a.t {
     <button id="aa" type="button" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
 </div>
+<!-- ==== Contents + search overlay (list filled in by the script) ==== -->
 <div id="jump" hidden>
   <input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line">
   <div id="none" hidden>Nothing found</div>
   <ul id="res"></ul>
   <ul id="jl"></ul>
 </div>
+<!-- ==== Settings panel ==== -->
 <div class="panel" id="panel" hidden>
   <div class="phd">
     <b>Settings</b>
@@ -2456,7 +2455,9 @@ a.t {
   </div>
   <div id="offrow" hidden>✓ Ready offline</div>
 </div>
+<!-- ==== Page: home, then every piece ==== -->
 <div class="wrap">
+  <!-- ==== Home page ==== -->
   <main id="home">
     <div class="hero" aria-hidden="true">
       <div class="om">ॐ</div>
@@ -2499,7 +2500,9 @@ a.t {
       <button type="button" class="wide" id="prb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span lang="en">Print</span></button>
     </div>
   </main>
+  <!-- ==================== पूजा / POOJA ==================== -->
   <div class="grp" id="g-pooja"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></div>
+  <!-- ---- Pooja 1. गणपत्यथर्वशीर्षोपनिषत् / Ganapati Atharvashirsha ---- -->
   <section id="p1" class="ash" lang="sa">
     <header>
       <h2><span class="no"><span class="nm">१.</span><span class="ne">1.</span></span> <span class="mr">गणपत्यथर्वशीर्षोपनिषत्</span><span class="en" lang="en">Ganapati Atharvashirsha</span></h2>
@@ -2831,7 +2834,9 @@ a.t {
       <a class="next" href="#a1" data-go="a1"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></a>
     </nav>
   </section>
+  <!-- ==================== आरती / AARTI ==================== -->
   <div class="grp" id="g-aarti"><span class="mr">आरती</span><span class="en" lang="en">Aarti</span></div>
+  <!-- ---- Aarti 1. गणपतीची आरती / Ganapati Aarti ---- -->
   <section id="a1" class="ash">
     <header>
       <h2><span class="no"><span class="nm">१.</span><span class="ne">1.</span></span> <span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></h2>
@@ -2953,6 +2958,7 @@ a.t {
       <a class="next" href="#a2" data-go="a2"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 2. गणपतीची आरती (हिंदी) / Ganapati Aarti (Hindi) ---- -->
   <section id="a2" class="ash" lang="hi">
     <header>
       <h2><span class="no"><span class="nm">२.</span><span class="ne">2.</span></span> <span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></h2>
@@ -3074,6 +3080,7 @@ a.t {
       <a class="next" href="#a3" data-go="a3"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 3. देवीची आरती / Devi Aarti ---- -->
   <section id="a3" class="ash">
     <header>
       <h2><span class="no"><span class="nm">३.</span><span class="ne">3.</span></span> <span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></h2>
@@ -3195,6 +3202,7 @@ a.t {
       <a class="next" href="#a4" data-go="a4"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 4. शंकराची आरती / Shankar Aarti ---- -->
   <section id="a4" class="ash">
     <header>
       <h2><span class="no"><span class="nm">४.</span><span class="ne">4.</span></span> <span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></h2>
@@ -3347,6 +3355,7 @@ a.t {
       <a class="next" href="#a5" data-go="a5"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 5. दत्ताची आरती / Dattatreya Aarti ---- -->
   <section id="a5" class="ash">
     <header>
       <h2><span class="no"><span class="nm">५.</span><span class="ne">5.</span></span> <span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></h2>
@@ -3499,6 +3508,7 @@ a.t {
       <a class="next" href="#a6" data-go="a6"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 6. ज्ञानेश्वरांची आरती / Dnyaneshwar Aarti ---- -->
   <section id="a6" class="ash">
     <header>
       <h2><span class="no"><span class="nm">६.</span><span class="ne">6.</span></span> <span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></h2>
@@ -3606,6 +3616,7 @@ a.t {
       <a class="next" href="#a7" data-go="a7"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 7. विठ्ठलाची आरती / Vitthal Aarti ---- -->
   <section id="a7" class="ash">
     <header>
       <h2><span class="no"><span class="nm">७.</span><span class="ne">7.</span></span> <span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></h2>
@@ -3727,6 +3738,7 @@ a.t {
       <a class="next" href="#a8" data-go="a8"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 8. घालीन लोटांगण / Ghalin Lotangan ---- -->
   <section id="a8" class="ash">
     <header>
       <h2><span class="no"><span class="nm">८.</span><span class="ne">8.</span></span> <span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></h2>
@@ -3817,6 +3829,7 @@ a.t {
       <a class="next" href="#a9" data-go="a9"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 9. आरती जय गणेश देवा / Aarti Jai Ganesh Deva ---- -->
   <section id="a9" class="ash" lang="hi">
     <header>
       <h2><span class="no"><span class="nm">९.</span><span class="ne">9.</span></span> <span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></h2>
@@ -3914,6 +3927,7 @@ a.t {
       <a class="next" href="#a10" data-go="a10"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></a>
     </nav>
   </section>
+  <!-- ---- Aarti 10. आरती जय जगदीश हरे / Aarti Jai Jagdish Hare ---- -->
   <section id="a10" class="ash" lang="hi">
     <header>
       <h2><span class="no"><span class="nm">१०.</span><span class="ne">10.</span></span> <span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></h2>
@@ -4068,6 +4082,7 @@ a.t {
     </nav>
   </section>
 </div>
+<!-- ==== Pop-ups (QR code, print options), left menu, print view, status message ==== -->
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
   <div class="qrc"><div class="qrt"><span lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span lang="en">Close</span></button></div>
 </div>
@@ -4079,22 +4094,33 @@ a.t {
 <div id="szt" role="status" aria-live="polite"></div>
 
 <script>
+/* =====================================================================
+   SCRIPT
+   Everything runs once when the page loads. Sections are marked
+   "// ---- name ----". Settings live in P and are saved on this device
+   only (localStorage key "aarti2-prefs"); apply() turns P into the
+   data-* switches on <html> that the styles react to.
+   ===================================================================== */
 (function () {
   var root = document.documentElement;
+  // Safari and every iOS browser (WebKit) need a different print layout trick; mark them with class "wk"
   (function (u) {
     if (/AppleWebKit/.test(u) && !/Chrome\/|Chromium|Edg\/|OPR\//.test(u)) root.classList.add("wk");
   })(navigator.userAgent);
   var secs = [].slice.call(document.querySelectorAll(".ash")),
     bt = document.getElementById("bt");
+  // Icons for the language button (Marathi / English / Both)
   var LI = {
     mr: '<svg viewBox="0 0 40 34" width="40" height="34" aria-hidden="true"><rect x="14" y="3" width="20" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/><text x="24" y="16.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:currentColor;font-family:var(--lat)" opacity=".55">A</text><rect x="4" y="11" width="20" height="18" rx="4" style="fill:var(--accent)"/><text x="14" y="25" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text></svg>',
     en: '<svg viewBox="0 0 40 34" width="40" height="34" aria-hidden="true"><rect x="4" y="3" width="20" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/><text x="14" y="16.5" text-anchor="middle" font-size="13" style="fill:currentColor;font-family:var(--head)" opacity=".55">अ</text><rect x="14" y="11" width="20" height="18" rx="4" style="fill:var(--accent)"/><text x="24" y="24.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text></svg>',
     both: '<svg viewBox="0 0 44 34" width="42" height="34" aria-hidden="true"><rect x="2" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="11.5" y="22" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text><rect x="23" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="32.5" y="21.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text></svg>',
   };
+  // Icons for the dhrupad button: repeated after every stanza / shown once
   var RB_LOOP =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M31 19a12 12 0 1 1-4-8.9"/><path d="M27.5 5.5v5h-5"/><text x="19" y="24.5" text-anchor="middle" font-size="14" stroke="none" fill="currentColor" style="font-family:var(--head)">धृ</text></svg>',
     RB_ONCE =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" aria-hidden="true"><text x="16.5" y="26" text-anchor="middle" font-size="19" fill="currentColor" style="font-family:var(--head)">धृ</text><text x="30" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" style="font-family:var(--lat)">1</text></svg>';
+  // Short message in the middle of the screen (Marathi text m, English text e)
   function flash(m, e) {
     var x = document.getElementById("szt");
     x.textContent = P.lang === "en" ? e : m;
@@ -4104,6 +4130,8 @@ a.t {
       x.classList.remove("on", "msg");
     }, 1600);
   }
+
+  // ---- Settings (P), loaded from this device ----
   var K = "aarti2-prefs";
   // Default text size: 28px on tablets, 24px on phones and computers (auto-fit may lower it).
   function dfs() {
@@ -4138,6 +4166,8 @@ a.t {
     P.sv = 4;
     save();
   }
+
+  // ---- Layout helpers that run once ----
   // Two-column screens read across: stanza 1 | stanza 2, then 3 | 4. Each stanza keeps its own dhrupad marker/repeat under it.
   [].forEach.call(document.querySelectorAll(".items"), function (b) {
     var row = 1,
@@ -4246,6 +4276,8 @@ a.t {
       ready = true;
     }, 400);
   })();
+
+  // ---- Astronomy for the Next Sankashti card ----
   // Low-precision sun & moon positions (Meeus, Astronomical Algorithms ch. 25 & 47, main terms),
   // lunar day (tithi), moonrise, and the Sankashti rule: Krishna-paksha Chaturthi prevailing at moonrise.
   var SK = (function () {
@@ -4482,6 +4514,7 @@ a.t {
   })();
 
   // ---- Next Sankashti card (computed on this device; works offline) ----
+  // Default place for each time zone: [latitude, longitude, Marathi name, English name]
   var SKTZ = {
     "America/New_York": [39.96, -83.0, "कोलंबस", "Columbus"],
     "America/Detroit": [42.33, -83.05, "डेट्रॉइट", "Detroit"],
@@ -4611,6 +4644,7 @@ a.t {
       (L.own ? "📍 Update my location" : "📍 Use my location") +
       '</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>';
   }
+  // "Use my location" button on the card
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skl");
     if (!b) return;
@@ -4633,6 +4667,8 @@ a.t {
     );
   });
 
+
+  // ---- Stanza numbers ----
   // Stanza numbers at the end of each verse (the dhrupad is not counted)
   [].forEach.call(document.querySelectorAll('section.ash[id^="a"] .items'), function (b) {
     var n = 0;
@@ -4653,6 +4689,7 @@ a.t {
       });
     });
   });
+  // Latin digits → Devanagari digits
   function DV(n) {
     return String(n).replace(/[0-9]/g, function (d) {
       return "०१२३४५६७८९"[d];
@@ -4664,6 +4701,8 @@ a.t {
       localStorage.setItem(K, JSON.stringify(P));
     } catch (e) {}
   }
+
+  // ---- Auto-fit text size ----
   // Auto-fit: largest text size (up to the device default) at which every verse line fits the screen width on one row.
   var FR = {};
   function segs(p) {
@@ -4746,10 +4785,13 @@ a.t {
     } catch (e) {}
   }
 
+
+  // ---- Current piece, menus and apply() ----
   var pn = document.getElementById("panel"),
     aa = document.getElementById("aa"),
     jp = document.getElementById("jump"),
     hb = document.getElementById("home-btn");
+  // The piece being read: the last one whose top has passed just under the top bar
   function cur() {
     var c = null,
       y = 90;
@@ -4758,6 +4800,7 @@ a.t {
     });
     return c;
   }
+  // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
     document.getElementById("btt").textContent = P.lang === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
@@ -4787,6 +4830,7 @@ a.t {
     }
     return l[0] || null;
   }
+  // Scroll to a line (from search) and flash it
   function goLine(id, flash) {
     var el = lineEl(id);
     if (!el) return;
@@ -4799,6 +4843,7 @@ a.t {
       });
     }
   }
+  // Apply every setting in P to the page
   function apply() {
     root.style.setProperty("--fs", P.fs + "px");
     if (P.th === "auto") root.removeAttribute("data-pref");
@@ -5304,7 +5349,10 @@ a.t {
   }
   if (P.wake) wake(true);
 
-  // print: single column (as on screen), two columns, or Marathi | English side by side
+  // ---- Print ----
+  // Print: single column (as on screen), two columns, or Marathi | English side by side.
+  // A separate print view (#pv) is built from the visible text just before printing, so that
+  // a heading always stays with its dhrupad and first stanza and stanzas are never split.
   (function () {
     var pm = document.getElementById("prm"),
       pv = document.getElementById("pv"),
@@ -5593,7 +5641,7 @@ a.t {
     });
   })();
 
-  // share + add-to-home-screen
+  // ---- Share, QR code and the "Keep it on your phone" tip ----
   (function () {
     var url = location.origin + location.pathname,
       title = "संकष्टी चतुर्थी";
@@ -5686,6 +5734,8 @@ a.t {
       save();
     });
   })();
+  // ---- Offline use: home-screen app details and the service worker (sw.js) ----
+  // The cache name below must match the one in sw.js; change both on every deploy.
   if (/^https?:$/.test(location.protocol)) {
     try {
       var hd = document.head,
