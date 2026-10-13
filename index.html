@@ -6509,18 +6509,47 @@ a.t {
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !qm.hidden) qr(false);
     });
+    // Share: a ready reminder for the group chat (next Sankashti, pooja time near the temple, moonrise) plus the link
+    function shareText() {
+      var C = skCache,
+        L = skLoc(),
+        mr = P.ui === "mr";
+      if (!C || !L) return mr ? "संकष्टी चतुर्थी — पूजा आणि आरती\n" + url : title + "\n" + url;
+      var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
+        f = skFmt(o),
+        t = skTemple(L),
+        ang = f.ang ? (mr ? "अंगारकी " : "Angaraki ") : "";
+      if (mr)
+        return (
+          ang +
+          "संकष्टी चतुर्थी: " +
+          f.dmr +
+          (t ? " · पूजा सायं. ७:०० ते ८:३०, भारतीय हिंदू मंदिर, पॉवेल" : "") +
+          (o.rise ? " · चंद्रोदय " + f.tmr : "") +
+          "\nआरत्या: " +
+          url
+        );
+      return (
+        ang +
+        "Sankashti Chaturthi: " +
+        f.den +
+        (t ? " · Pooja 7:00–8:30 pm at Bharatiya Hindu Temple, Powell" : "") +
+        (o.rise ? " · Moonrise " + f.ten : "") +
+        "\nAartis: " +
+        url
+      );
+    }
     document.getElementById("shb").onclick = function () {
+      var txt = shareText();
       if (navigator.share) {
-        navigator
-          .share({ title: title, text: "संकष्टी चतुर्थी — पूजा, भजने आणि आरती", url: url })
-          .catch(function () {});
+        navigator.share({ text: txt }).catch(function () {});
       } else {
         try {
-          navigator.clipboard.writeText(url).then(function () {
-            flash("लिंक कॉपी झाली", "Link copied");
+          navigator.clipboard.writeText(txt).then(function () {
+            flash("संदेश कॉपी झाला", "Message copied");
           });
         } catch (e) {
-          window.open("https://wa.me/?text=" + encodeURIComponent(title + " " + url));
+          window.open("https://wa.me/?text=" + encodeURIComponent(txt));
         }
       }
     };
@@ -6607,7 +6636,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v98").then(function (c) {
+          caches.open("aarti-v99").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
