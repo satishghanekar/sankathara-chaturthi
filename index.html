@@ -4641,7 +4641,12 @@ a.t {
         }
         o += v + acc + tail;
       }
-      return o;
+      // An anusvara inside a word before a stop takes that stop's nasal: sarvāṅgī, sundara, vakratuṇḍa, lambodara.
+      // Marathi plural endings keep ṃ: sumanāṃcyā, ḍoḷyāṃnī, kleśāṃpāsuni.
+      return o.replace(/(ā?)ṃ(?=(k|g)|(c|j)|(ṭ|ḍ)|(t|d|n)|(p|b|m))/g, function (x, l, a, b, c, d, e, i) {
+        if (l && /^(c(?!h)|n|pās)/.test(o.slice(i + x.length))) return x;
+        return l + (a ? "ṅ" : b ? "ñ" : c ? "ṇ" : d ? "n" : "m");
+      });
     };
   })();
   // IAST style: each English line is rebuilt from its Marathi/Sanskrit line before anything else touches the lines.
@@ -7024,7 +7029,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v104").then(function (c) {
+          caches.open("aarti-v105").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
