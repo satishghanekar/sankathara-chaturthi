@@ -4893,7 +4893,7 @@ a.t {
     <h3>Settings</h3>
     <ul>
       <li><b>Menu language:</b> English or मराठी for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
-      <li><b>English style:</b> how the English lines are spelled.
+      <li><b>English style:</b> how the English lines and the titles of the pieces are spelled.
         <ul>
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
@@ -5114,6 +5114,16 @@ a.t {
         if (id) ENS[id] = p.textContent;
         p.innerHTML = m.innerHTML.split(/<br\s*\/?>/).map(IA).join("<br>");
         p.classList.add("ia");
+      });
+    });
+  // Piece titles follow the same style (headings, contents, Previous/Next; the left menu and search list copy the contents)
+  if (P.tr === "iast")
+    [].forEach.call(document.querySelectorAll(".ash header h2, ol.toc li:not(.soon) .m, .pn > a"), function (t) {
+      var m = t.querySelector(":scope > .mr"),
+        e = t.querySelector(":scope > .en");
+      if (!m || !e) return;
+      e.textContent = IA(m.textContent).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
+        return a + c.toUpperCase();
       });
     });
 
@@ -7605,7 +7615,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v128").then(function (c) {
+          caches.open("aarti-v129").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
