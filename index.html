@@ -5177,7 +5177,7 @@ a.t {
     st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
     if (focus) on.focus({ preventScroll: true });
   }
-  // Calendar button: an .ics event at moonrise (all-day when there is no moonrise), made on this device
+  // Calendar button: an .ics event for the program (7:00–8:30 pm), made on this device
   function skIcs() {
     var C = skCache,
       L = skLoc();
@@ -5201,12 +5201,12 @@ a.t {
         "UID:sk-" + dt(d) + "@sankashti-chaturthi.pages.dev",
         "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
       ];
-    if (r) {
-      L2.push("DTSTART:" + dt(r, 1), "DTEND:" + dt(new Date(o.rise + 3600000), 1), "SUMMARY:" + nm + " · moonrise " + f.ten);
-      L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + nm, "TRIGGER:-PT2H", "END:VALARM");
-    } else {
-      L2.push("DTSTART;VALUE=DATE:" + dt(d), "DTEND;VALUE=DATE:" + dt(new Date(o.day + 86400000)), "SUMMARY:" + nm);
-    }
+    // The group's program runs 7:00–8:30 pm on the day, whatever the moonrise time
+    var t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0),
+      t1 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20, 30);
+    L2.push("DTSTART:" + dt(t0, 1), "DTEND:" + dt(t1, 1), "SUMMARY:" + nm + " pooja");
+    if (r) L2.push("DESCRIPTION:Moonrise " + f.ten);
+    L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + nm, "TRIGGER:-PT2H", "END:VALARM");
     L2.push("LOCATION:" + L.en.replace(/,/g, "\\,"), "URL:https://sankashti-chaturthi.pages.dev/", "END:VEVENT", "END:VCALENDAR");
     var txt = L2.join("\r\n") + "\r\n",
       u = URL.createObjectURL(new Blob([txt], { type: "text/calendar" }));
@@ -6502,7 +6502,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v93").then(function (c) {
+          caches.open("aarti-v94").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
