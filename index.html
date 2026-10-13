@@ -974,7 +974,8 @@ ol.toc li.soon .m {
   font: 400 23px/1.25 var(--head);
   color: var(--accent);
 }
-.bar[data-lang="en"] .t.site {
+/* Title follows the text language: English only when the text is English */
+.bar .t.site[data-tl="en"] {
   font: 600 19px/1.25 var(--lat);
 }
 #home {
@@ -5457,7 +5458,8 @@ a.t {
   // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
-    document.getElementById("btt").textContent = P.ui === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
+    document.getElementById("btt").textContent = P.lang === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
+    document.getElementById("bt").setAttribute("data-tl", P.lang === "en" ? "en" : "mr");
     [].forEach.call(document.querySelectorAll("#jump a,#rail a"), function (a) {
       var g = a.getAttribute("data-go"),
         on = c ? g === c.id : g === "home" && !!a.closest("#rail");
@@ -6440,7 +6442,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v88").then(function (c) {
+          caches.open("aarti-v89").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
