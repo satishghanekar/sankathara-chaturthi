@@ -6170,7 +6170,7 @@ a.t {
     save();
   };
   document.getElementById("sm").onclick = function () {
-    P.fs = Math.max(16, P.fs - 2);
+    P.fs = Math.max(14, P.fs - 2);
     P.fsu = 1;
     apply();
     save();
@@ -6471,7 +6471,7 @@ a.t {
     function (e) {
       if (pz && e.touches.length === 2) {
         e.preventDefault();
-        var v = Math.max(16, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
+        var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
         if (v !== P.fs) {
           P.fs = v;
           P.fsu = 1;
@@ -7228,7 +7228,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v111").then(function (c) {
+          caches.open("aarti-v112").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
