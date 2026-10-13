@@ -7814,6 +7814,16 @@ a.t {
         });
     };
     if ("serviceWorker" in navigator) {
+      // The badge shows straight away. On a first visit (no service worker in charge yet) it spins while
+      // the files are saved; it never waits more than 8 s, because some phones are slow to report back.
+      ofb.hidden = false;
+      var ofSaved = function () {
+        if (ofb.getAttribute("data-s") === "busy") ofSet("idle");
+      };
+      if (!navigator.serviceWorker.controller && navigator.onLine !== false) {
+        ofSet("busy");
+        setTimeout(ofSaved, 8000);
+      }
       navigator.serviceWorker
         .register("sw.js")
         .then(function () {
@@ -7821,11 +7831,9 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v130").then(function (c) {
+          caches.open("aarti-v131").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
-            var done = function () {
-              ofb.hidden = false;
-            };
+            var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
             Promise.all(
               FONTS.map(function (u) {
