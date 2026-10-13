@@ -2593,6 +2593,32 @@ a.t {
 [data-ref] .ash.norf p.rf {
   display: block;
 }
+
+/* ==== Repeated dhrupad (repeat mode, and Aarti 6's always-shown line): lighter, smaller, thin gold rule; the main stanza stays the focus ==== */
+@media screen {
+  [data-ref="0"] .item.rf p,
+  [data-ref="0"] .verse p.rf,
+  .ash.norf .verse p.rf {
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.9em;
+  }
+  [data-ref="0"] .items > .item.rf > .verse {
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-inline: auto;
+    padding-inline-start: 0.6em;
+    border-inline-start: 2px solid var(--gold);
+  }
+  /* Desktop Both (Marathi | English side by side): keep the grid full width, no rule */
+  [data-ref="0"][data-cols="2"][data-lang="both"] .items > .item.rf > .verse {
+    width: auto;
+    margin-inline: 0;
+    padding-inline-start: 0;
+    border-inline-start: 0;
+  }
+}
 </style>
 </head>
 
@@ -6177,7 +6203,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v83").then(function (c) {
+          caches.open("aarti-v84").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
