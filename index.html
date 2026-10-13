@@ -18,7 +18,10 @@
    Themes are sets of colour variables (--bg, --ink, --accent, …) on :root.
    Light is the default; dark follows the device unless a theme is picked
    in Settings (data-pref="light|sepia|dark"); data-hc="1" = high contrast.
-   Other switches on <html>: data-lang (mr|en|both), data-ref (dhrupad
+   data-lang (mr|en|both) is set on each region, not on <html>: the
+   pieces, group headings and printout carry the text language; the bar,
+   menus, settings, home page and dialogs carry the menu language (en|mr).
+   Other switches on <html>: data-ref (dhrupad
    1 = once, 0 = after every stanza), data-cols (1|2), data-rail (left
    menu shown), data-print (print layout being printed).
    ===================================================================== */
@@ -395,7 +398,7 @@ ol.toc .m {
     font-size: 1.05em;
   }
 }
-[data-lang="both"] #home h1 .en {
+#home[data-lang="both"] h1 .en {
   display: block;
   font-size: 0.55em;
   color: var(--muted);
@@ -463,7 +466,7 @@ ol.toc .m {
 #jump .en {
   font-size: 0.8em;
 }
-[data-lang="both"] #jump .en {
+#jump[data-lang="both"] .en {
   display: block;
   opacity: 0.8;
 }
@@ -615,7 +618,7 @@ ol.toc .m {
   background: var(--hl);
 }
 /* the transliteration under a tapped line keeps full contrast on the highlight */
-html:not([data-hc="1"])[data-lang="both"] .verse .en p.hl {
+html:not([data-hc="1"]) [data-lang="both"] .verse .en p.hl {
   color: var(--ink);
 }
 /* parts of a long line between preferred break points (see "Preferred line breaks" in the script) */
@@ -906,7 +909,7 @@ ol.toc li.soon .m {
 #jump li.jh:first-child {
   padding-top: 0;
 }
-[data-lang="both"] #jump li.jh .en {
+#jump[data-lang="both"] li.jh .en {
   display: inline;
   margin-left: 0.5em;
   opacity: 0.8;
@@ -926,7 +929,7 @@ ol.toc li.soon .m {
 .grp + .ash {
   border-top: 0;
 }
-[data-lang="both"] .grp .en {
+.grp[data-lang="both"] .en {
   margin-left: 0.6em;
   color: var(--muted);
 }
@@ -971,7 +974,7 @@ ol.toc li.soon .m {
   font: 400 23px/1.25 var(--head);
   color: var(--accent);
 }
-[data-lang="en"] .bar .t.site {
+.bar[data-lang="en"] .t.site {
   font: 600 19px/1.25 var(--lat);
 }
 #home {
@@ -1270,7 +1273,7 @@ a.t {
   font: 600 16px/1.3 var(--head);
   padding: 10px 2px 2px;
 }
-[data-lang="en"] #jump li.jh {
+#jump[data-lang="en"] li.jh {
   font: 600 15px/1.3 var(--lat);
 }
 .tocg ol.toc {
@@ -1385,10 +1388,10 @@ a.t {
   #pv .pvs h2 .en {
     display: none;
   }
-  [data-lang="en"] #pv .pvs h2 .en {
+  #pv[data-lang="en"] .pvs h2 .en {
     display: inline;
   }
-  [data-lang="en"] #pv .pvs h2 .mr {
+  #pv[data-lang="en"] .pvs h2 .mr {
     display: none;
   }
   #pv .pvt {
@@ -1481,17 +1484,17 @@ a.t {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-  [data-lang="both"] #pv .pvtoc .en {
+  #pv[data-lang="both"] .pvtoc .en {
     display: block;
     font: 400 10pt/1.3 var(--lat);
     color: #555;
   }
-  [data-lang="both"] #pv .pvtoc h3 .en {
+  #pv[data-lang="both"] .pvtoc h3 .en {
     display: inline;
     margin-left: 0.5em;
   }
-  [data-lang="en"] #pv .pvtoc li,
-  [data-lang="en"] #pv .pvtoc h3 {
+  #pv[data-lang="en"] .pvtoc li,
+  #pv[data-lang="en"] .pvtoc h3 {
     font-family: var(--lat);
   }
   :root[data-print="one"] #pv .verse {
@@ -1553,10 +1556,10 @@ a.t {
   #pv .pvh .en {
     display: none;
   }
-  [data-lang="en"] #pv .pvh .en {
+  #pv[data-lang="en"] .pvh .en {
     display: inline;
   }
-  [data-lang="en"] #pv .pvh .mr {
+  #pv[data-lang="en"] .pvh .mr {
     display: none;
   }
   #pv .pvside td {
@@ -1671,7 +1674,7 @@ a.t {
   background: var(--hdrt);
   border-color: var(--hdrl);
 }
-[data-lang="both"] .ash header h2 .en {
+.ash[data-lang="both"] header h2 .en {
   margin-top: 2px;
 }
 .grp + .ash header {
@@ -1941,49 +1944,49 @@ a.t {
 
 /* ==== Both languages on wide screens: each Marathi line with its transliteration beside it ==== */
 @media screen {
-  [data-cols="2"][data-lang="both"] .items {
+  [data-cols="2"] [data-lang="both"] .items {
     display: block;
   }
-  [data-cols="2"][data-lang="both"] .verse {
+  [data-cols="2"] [data-lang="both"] .verse {
     display: grid;
     grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
     column-gap: 40px;
     align-items: baseline;
   }
-  [data-cols="2"][data-lang="both"] .verse > .mr,
-  [data-cols="2"][data-lang="both"] .verse > .en {
+  [data-cols="2"] [data-lang="both"] .verse > .mr,
+  [data-cols="2"] [data-lang="both"] .verse > .en {
     display: contents;
   }
-  [data-cols="2"][data-lang="both"] .verse > .mr > p {
+  [data-cols="2"] [data-lang="both"] .verse > .mr > p {
     grid-column: 1;
     text-align: right;
   }
-  [data-cols="2"][data-lang="both"] .verse > .en {
+  [data-cols="2"] [data-lang="both"] .verse > .en {
     font-size: 0.8em;
     line-height: 1.5;
   }
-  [data-cols="2"][data-lang="both"] .verse > .en > p {
+  [data-cols="2"] [data-lang="both"] .verse > .en > p {
     grid-column: 2;
     text-align: left;
     font-size: 1em;
     margin: 0;
   }
-  [data-cols="2"][data-lang="both"] .rftop {
+  [data-cols="2"] [data-lang="both"] .rftop {
     max-width: none;
   }
-  [data-cols="2"][data-lang="both"] .rmk .en {
+  [data-cols="2"] [data-lang="both"] .rmk .en {
     margin-left: 0.6em;
   }
-  [data-cols="2"][data-lang="both"] .rftop .verse {
+  [data-cols="2"] [data-lang="both"] .rftop .verse {
     width: auto;
     border-left: 0;
     padding: 0;
   }
-  [data-cols="2"][data-lang="both"] .rftop .lab {
+  [data-cols="2"] [data-lang="both"] .rftop .lab {
     text-align: center;
   }
-  [data-cols="2"][data-lang="both"] .items .item,
-  [data-cols="2"][data-lang="both"] .items .rmk {
+  [data-cols="2"] [data-lang="both"] .items .item,
+  [data-cols="2"] [data-lang="both"] .items .rmk {
     grid-row: auto !important;
     grid-column: auto !important;
   }
@@ -2039,7 +2042,7 @@ a.t {
   #rail .rg .en {
     display: none;
   }
-  [data-lang="en"] #rail .rg .en {
+  #rail[data-lang="en"] .rg .en {
     display: inline;
   }
   #rail ul {
@@ -2056,19 +2059,19 @@ a.t {
     text-decoration: none;
     font: 400 15px/1.35 var(--head);
   }
-  [data-lang="en"] #rail a {
+  #rail[data-lang="en"] a {
     font: 500 14px/1.35 var(--lat);
   }
   #rail a .en {
     display: none;
   }
-  [data-lang="en"] #rail a .en {
+  #rail[data-lang="en"] a .en {
     display: inline;
   }
-  [data-lang="en"] #rail a .mr {
+  #rail[data-lang="en"] a .mr {
     display: none;
   }
-  [data-lang="both"] #rail a .en {
+  #rail[data-lang="both"] a .en {
     display: block;
     font: 400 11.5px/1.3 var(--lat);
     color: var(--muted);
@@ -2441,19 +2444,19 @@ a.t {
     font: 600 15px/1.35 var(--head);
     color: var(--accent);
   }
-  [data-lang="en"] #rail .rhome {
+  #rail[data-lang="en"] .rhome {
     font: 600 14px/1.35 var(--lat);
   }
   #rail .rhome .en {
     display: none;
   }
-  [data-lang="en"] #rail .rhome .en {
+  #rail[data-lang="en"] .rhome .en {
     display: inline;
   }
-  [data-lang="en"] #rail .rhome .mr {
+  #rail[data-lang="en"] .rhome .mr {
     display: none;
   }
-  [data-lang="both"] #rail .rhome .en {
+  #rail[data-lang="both"] .rhome .en {
     display: inline;
     font: 400 12px var(--lat);
     color: var(--muted);
@@ -2494,14 +2497,14 @@ a.t {
     letter-spacing: 0.14em;
     text-transform: uppercase;
   }
-  [data-lang="en"] .grp .en {
+  .grp[data-lang="en"] .en {
     font-size: 0.78em;
   }
-  [data-lang="both"] .grp .en {
+  .grp[data-lang="both"] .en {
     margin-left: 0;
     color: var(--muted);
   }
-  [data-lang="both"] .grp .mr::after {
+  .grp[data-lang="both"] .mr::after {
     content: "·";
     margin: 0 0.55em;
     color: var(--muted);
@@ -2610,7 +2613,7 @@ a.t {
     border-inline-start: 2px solid var(--gold);
   }
   /* Desktop Both (Marathi | English side by side): keep the grid full width, no rule */
-  [data-ref="0"][data-cols="2"][data-lang="both"] .items > .item.rf > .verse {
+  [data-ref="0"][data-cols="2"] [data-lang="both"] .items > .item.rf > .verse {
     width: auto;
     margin-inline: 0;
     padding-inline-start: 0;
@@ -2635,45 +2638,52 @@ a.t {
 <!-- ==== Contents + search overlay (list filled in by the script) ==== -->
 <div id="jump" hidden>
   <input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line">
-  <div id="none" hidden>Nothing found</div>
+  <div id="none" hidden><span class="mr">काही सापडले नाही</span><span class="en" lang="en">Nothing found</span></div>
   <ul id="res"></ul>
   <ul id="jl"></ul>
 </div>
 <!-- ==== Settings panel ==== -->
 <div class="panel" id="panel" hidden>
   <div class="phd">
-    <b>Settings</b>
-    <button type="button" class="xc" id="xc">✕ Close</button>
+    <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></b>
+    <button type="button" class="xc" id="xc">✕ <span class="mr">बंद</span><span class="en" lang="en">Close</span></button>
+  </div>
+  <div class="row">
+    <label><span class="mr">मेनूची भाषा</span><span class="en" lang="en">Menu language</span></label>
+    <div class="seg" id="su" role="group" aria-label="Menu language">
+      <button type="button" data-v="en" lang="en">English</button>
+      <button type="button" data-v="mr" lang="mr">मराठी</button>
+    </div>
   </div>
   <div class="row" id="colrow">
-    <label>Layout</label>
+    <label><span class="mr">मांडणी</span><span class="en" lang="en">Layout</span></label>
     <div class="seg" id="sc" role="group" aria-label="Layout">
-      <button type="button" data-v="1">1 column</button>
-      <button type="button" data-v="2">2 columns</button>
+      <button type="button" data-v="1"><span class="mr">१ स्तंभ</span><span class="en" lang="en">1 column</span></button>
+      <button type="button" data-v="2"><span class="mr">२ स्तंभ</span><span class="en" lang="en">2 columns</span></button>
     </div>
   </div>
   <div class="row">
-    <label>Text size</label>
+    <label><span class="mr">अक्षरांचा आकार</span><span class="en" lang="en">Text size</span></label>
     <div class="sz" role="group" aria-label="Text size">
       <button id="sm" type="button" aria-label="Smaller">A−</button>
       <button id="lg" type="button" aria-label="Larger">A+</button>
-      <button id="sr" type="button" aria-label="Reset text size">Reset</button>
+      <button id="sr" type="button" aria-label="Reset text size"><span class="mr">मूळ</span><span class="en" lang="en">Reset</span></button>
     </div>
   </div>
   <div class="row">
-    <label>Theme</label>
+    <label><span class="mr">रंगसंगती</span><span class="en" lang="en">Theme</span></label>
     <div class="seg" id="st" role="group" aria-label="Theme">
-      <button type="button" data-v="auto">Auto</button>
-      <button type="button" data-v="light">Light</button>
-      <button type="button" data-v="sepia">Sepia</button>
-      <button type="button" data-v="dark">Dark</button>
+      <button type="button" data-v="auto"><span class="mr">आपोआप</span><span class="en" lang="en">Auto</span></button>
+      <button type="button" data-v="light"><span class="mr">फिकट</span><span class="en" lang="en">Light</span></button>
+      <button type="button" data-v="sepia"><span class="mr">सेपिया</span><span class="en" lang="en">Sepia</span></button>
+      <button type="button" data-v="dark"><span class="mr">गडद</span><span class="en" lang="en">Dark</span></button>
     </div>
   </div>
   <div class="tgrid">
-    <button id="tc" type="button">High contrast</button>
-    <div id="wrow"><button id="tw" type="button">Keep screen on</button></div>
+    <button id="tc" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
+    <div id="wrow"><button id="tw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
   </div>
-  <div id="offrow" hidden>✓ Ready offline</div>
+  <div id="offrow" hidden>✓ <span class="mr">इंटरनेटशिवायही चालेल</span><span class="en" lang="en">Ready offline</span></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
 <nav id="rail" aria-label="Contents"></nav>
@@ -2717,9 +2727,9 @@ a.t {
       </ol>
     </div>
     <div id="shr">
-      <button type="button" class="wide" id="shb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span lang="en">Share</span></button>
-      <button type="button" class="wide" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span lang="en">QR</span></button>
-      <button type="button" class="wide" id="prb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span lang="en">Print</span></button>
+      <button type="button" class="wide" id="shb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span class="mr">शेअर</span><span class="en" lang="en">Share</span></button>
+      <button type="button" class="wide" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR कोड</span><span class="en" lang="en">QR</span></button>
+      <button type="button" class="wide" id="prb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span class="mr">प्रिंट</span><span class="en" lang="en">Print</span></button>
     </div>
   </main>
   <!-- ==================== पूजा / POOJA ==================== -->
@@ -4288,10 +4298,10 @@ a.t {
 </div>
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
-  <div class="qrc"><div class="qrt"><span lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span lang="en">Close</span></button></div>
+  <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
 </div>
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
-  <div class="qrc"><div class="qrt"><span lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span lang="en">Cancel</span></button></div>
+  <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
@@ -4326,7 +4336,7 @@ a.t {
   // Short message in the middle of the screen (Marathi text m, English text e)
   function flash(m, e) {
     var x = document.getElementById("szt");
-    x.textContent = P.lang === "en" ? e : m;
+    x.textContent = P.ui === "en" ? e : m;
     x.classList.add("msg", "on");
     clearTimeout(flash.t);
     flash.t = setTimeout(function () {
@@ -4348,6 +4358,7 @@ a.t {
     fsu: 0, // 1 = the reader chose the size (A−/A+/pinch), so auto-fit leaves it alone
     th: "auto", // theme: auto | light | sepia | dark
     lang: "mr", // mr | en | both
+    ui: "en", // menus, home page and buttons: en | mr
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
     wake: 1, // keep the screen on
@@ -4985,7 +4996,7 @@ a.t {
     if (!L) {
       box.hidden = false;
       box.innerHTML =
-        '<div class="skh"><span class="mr">पुढील संकष्टी चतुर्थी</span><span class="en" lang="en">Next Sankashti Chaturthi</span></div><button type="button" class="skl" id="skl"><span lang="en">📍 Use my location to show the date and moonrise</span></button>';
+        '<div class="skh"><span class="mr">पुढील संकष्टी चतुर्थी</span><span class="en" lang="en">Next Sankashti Chaturthi</span></div><button type="button" class="skl" id="skl">📍 <span class="mr">तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा</span><span class="en" lang="en">Use my location to show the date and moonrise</span></button>';
       return;
     }
     // The next Sankashti first (fast); then, a moment later, every Sankashti from 1 January last year
@@ -5020,7 +5031,7 @@ a.t {
         } catch (e) {}
       }, 50);
     }
-    var en = P.lang === "en",
+    var en = P.ui === "en",
       now = new Date(),
       chips = "",
       lastY = 0;
@@ -5136,7 +5147,7 @@ a.t {
       '</span><span class="skp" lang="en"><span class="skdt">· </span>' +
       L.en +
       '<button type="button" class="skli" id="skl" aria-label="' +
-      (P.lang === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
+      (P.ui === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
       '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button></span></div>' +
       '<div class="ske" lang="en">Moonrise ' +
       f.ten +
@@ -5446,7 +5457,7 @@ a.t {
   // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
-    document.getElementById("btt").textContent = P.lang === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
+    document.getElementById("btt").textContent = P.ui === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
     [].forEach.call(document.querySelectorAll("#jump a,#rail a"), function (a) {
       var g = a.getAttribute("data-go"),
         on = c ? g === c.id : g === "home" && !!a.closest("#rail");
@@ -5491,8 +5502,20 @@ a.t {
     root.style.setProperty("--fs", P.fs + "px");
     if (P.th === "auto") root.removeAttribute("data-pref");
     else root.setAttribute("data-pref", P.th);
-    root.setAttribute("data-lang", P.lang);
-    root.lang = P.lang === "en" ? "en" : "mr";
+    // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
+    [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv"), function (e) {
+      e.setAttribute("data-lang", P.lang);
+    });
+    [].forEach.call(document.querySelectorAll(".bar,#jump,#panel,#rail,#home,#qrm,#prm,#szt"), function (e) {
+      e.setAttribute("data-lang", P.ui);
+    });
+    root.lang = P.ui;
+    [].forEach.call(document.querySelectorAll("#su button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
+    });
+    var qi = document.getElementById("q");
+    qi.placeholder = P.ui === "mr" ? "ओळ शोधा (मराठी किंवा इंग्रजी अक्षरे)" : "Find a line (Marathi or English letters)";
+    qi.setAttribute("aria-label", P.ui === "mr" ? "ओळ शोधा" : "Find a line");
     root.setAttribute("data-ref", String(P.ref));
     root.setAttribute("data-hc", String(P.hc));
     var wide = innerWidth >= 900,
@@ -5555,6 +5578,14 @@ a.t {
     P.fsu = 1;
     apply();
     save();
+  };
+  document.getElementById("su").onclick = function (e) {
+    var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
+    if (v) {
+      P.ui = v;
+      apply();
+      save();
+    }
   };
   document.getElementById("st").onclick = function (e) {
     var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
@@ -5895,7 +5926,7 @@ a.t {
     none = document.getElementById("none");
   function sectionTitle(id) {
     var h = document.getElementById(id).querySelector("h2"),
-      s = h.querySelector(P.lang === "en" ? ".en" : ".mr");
+      s = h.querySelector(P.ui === "en" ? ".en" : ".mr");
     return (s || h).textContent;
   }
   q.addEventListener("input", function () {
@@ -6238,21 +6269,23 @@ a.t {
       }, 60);
     }
     document.getElementById("prb").onclick = function () {
+      var M = P.ui === "mr",
+        tl = P.lang === "en" ? (M ? " (इंग्रजी)" : " (English)") : M ? " (मराठी)" : " (Marathi)";
       if (P.lang === "both") {
-        b1.textContent = "Side by side: Marathi | English";
+        b1.textContent = M ? "शेजारी शेजारी: मराठी | इंग्रजी" : "Side by side: Marathi | English";
         b1.onclick = function () {
           go("side");
         };
-        b2.textContent = "Stacked: Marathi above English";
+        b2.textContent = M ? "वर मराठी, खाली इंग्रजी" : "Stacked: Marathi above English";
         b2.onclick = function () {
           go("as");
         };
       } else {
-        b1.textContent = "Two columns" + (P.lang === "en" ? " (English)" : " (Marathi)");
+        b1.textContent = (M ? "दोन स्तंभ" : "Two columns") + tl;
         b1.onclick = function () {
           go("two");
         };
-        b2.textContent = "Single column" + (P.lang === "en" ? " (English)" : " (Marathi)");
+        b2.textContent = (M ? "एक स्तंभ" : "Single column") + tl;
         b2.onclick = function () {
           go("as");
         };
@@ -6317,7 +6350,7 @@ a.t {
       } else {
         try {
           navigator.clipboard.writeText(url).then(function () {
-            flash("Link copied", "Link copied");
+            flash("लिंक कॉपी झाली", "Link copied");
           });
         } catch (e) {
           window.open("https://wa.me/?text=" + encodeURIComponent(title + " " + url));
@@ -6407,7 +6440,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v87").then(function (c) {
+          caches.open("aarti-v88").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
