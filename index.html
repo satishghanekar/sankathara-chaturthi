@@ -1365,9 +1365,6 @@ a.t {
 #inb:not([hidden]) + #shr {
   margin-top: 10px;
 }
-#inb2 {
-  margin: 4px 0 14px;
-}
 .inl {
   text-align: left;
   font: 16px/1.5 var(--lat);
@@ -2180,14 +2177,17 @@ a.t {
   vertical-align: 0 !important;
 }
 
-/* ==== Home page button row (final rules): App, Share, QR, Print, Help on one line, styled like the top menu ==== */
-#shr {
+/* ==== Button rows (final rules), styled like the top menu: home page (#shr: App, Share, QR, Print, Help)
+   and the bottom of Settings (#shr2: App, Help) ==== */
+#shr,
+#shr2 {
   display: flex;
   gap: 6px;
   justify-content: center;
   margin: 18px 0 6px;
 }
-#shr button {
+#shr button,
+#shr2 button {
   flex: 1 1 0;
   min-width: 0;
   max-width: 128px;
@@ -2207,21 +2207,28 @@ a.t {
   text-decoration: none;
   white-space: nowrap;
 }
-#shr button[hidden] {
+#shr button[hidden],
+#shr2 button[hidden] {
   display: none;
 }
-#shr button .mr {
+#shr button .mr,
+#shr2 button .mr {
   font-family: var(--body);
 }
-#shr button svg {
+#shr button svg,
+#shr2 button svg {
   flex: none;
   width: 18px;
   height: 18px;
   margin: 0 !important;
 }
+#shr2 {
+  margin: 16px 0 4px;
+}
 /* Narrow phones: icons only (each button keeps its spoken name in aria-label) */
 @media (max-width: 379px) {
-  #shr button span {
+  #shr button span,
+  #shr2 button span {
     display: none !important;
   }
 }
@@ -2970,23 +2977,6 @@ a.t {
 }
 
 /* ==== Help (English, phone-first) ==== */
-#hlp2 {
-  display: block;
-  margin: 14px auto 4px;
-  padding: 8px 12px;
-  min-height: 40px;
-  border: 0;
-  background: none;
-  color: var(--accent);
-  font: 500 14px/1.3 var(--lat);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-#hlp2 {
-  margin: 10px 0 0;
-  padding-left: 0;
-}
 #help {
   position: fixed;
   inset: 0;
@@ -3152,7 +3142,6 @@ a.t {
     <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></b>
     <button type="button" class="xc" id="xc">✕ <span class="mr">बंद</span><span class="en" lang="en">Close</span></button>
   </div>
-  <button type="button" class="wide inb" id="inb2" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></button>
   <div class="row">
     <label><span class="mr">मेनूची भाषा</span><span class="en" lang="en">Menu language</span></label>
     <div class="seg" id="su" role="group" aria-label="Menu language">
@@ -3195,7 +3184,11 @@ a.t {
     <button id="tc" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
     <div id="wrow"><button id="tw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
   </div>
-  <button type="button" id="hlp2" lang="en">? Help &amp; how to use</button>
+  <!-- Same quiet row as the home page: App (hidden once installed) and Help -->
+  <div id="shr2">
+    <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
+    <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
+  </div>
   <div id="offrow" hidden>✓ <span class="mr">इंटरनेटशिवायही चालेल</span><span class="en" lang="en">Ready offline</span></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
@@ -4849,7 +4842,7 @@ a.t {
     <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
     <h3>Put it on your phone</h3>
-    <p>Tap <b>App</b> (phone with an arrow) in the row of buttons on the home page, or <b>Add to Home Screen</b> at the top of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
+    <p>Tap <b>App</b> (phone with an arrow) in the row of buttons on the home page, or at the bottom of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
     <h4>iPhone (Safari or Chrome)</h4>
     <ol>
       <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp, Mail or Messages, tap the compass or ⋯ icon to open it in Safari first; those built-in viewers don't have the option.</li>
@@ -7612,7 +7605,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v127").then(function (c) {
+          caches.open("aarti-v128").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
