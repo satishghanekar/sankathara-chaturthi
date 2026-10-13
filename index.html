@@ -19,8 +19,9 @@
    Light is the default; dark follows the device unless a theme is picked
    in Settings (data-pref="light|sepia|dark"); data-hc="1" = high contrast.
    data-lang (mr|en|both) is set on each region, not on <html>: the
-   pieces, group headings and printout carry the text language; the bar,
-   menus, settings, home page and dialogs carry the menu language (en|mr).
+   pieces, group headings, printout and contents lists carry the text
+   language; the bar, settings, date card, buttons and dialogs carry the
+   menu language (en|mr).
    Other switches on <html>: data-ref (dhrupad
    1 = once, 0 = after every stanza), data-cols (1|2), data-rail (left
    menu shown), data-print (print layout being printed).
@@ -398,7 +399,7 @@ ol.toc .m {
     font-size: 1.05em;
   }
 }
-#home[data-lang="both"] h1 .en {
+#home h1[data-lang="both"] .en {
   display: block;
   font-size: 0.55em;
   color: var(--muted);
@@ -463,10 +464,10 @@ ol.toc .m {
   color: var(--bg);
   border-color: var(--accent);
 }
-#jump .en {
+#jl .en {
   font-size: 0.8em;
 }
-#jump[data-lang="both"] .en {
+#jl[data-lang="both"] .en {
   display: block;
   opacity: 0.8;
 }
@@ -909,7 +910,7 @@ ol.toc li.soon .m {
 #jump li.jh:first-child {
   padding-top: 0;
 }
-#jump[data-lang="both"] li.jh .en {
+#jl[data-lang="both"] li.jh .en {
   display: inline;
   margin-left: 0.5em;
   opacity: 0.8;
@@ -1143,7 +1144,7 @@ a.t {
   height: 48px;
   font-size: 16px;
 }
-[data-lang="both"] .a2 .en {
+.a2[data-lang="both"] .en {
   display: none;
 }
 @media print {
@@ -1267,14 +1268,14 @@ a.t {
 .tocg:first-child .gh {
   margin-top: 6px;
 }
-[data-lang="en"] .tocg .gh {
+.tocg[data-lang="en"] .gh {
   font: 600 0.95em/1.3 var(--lat);
 }
 #jump li.jh {
   font: 600 16px/1.3 var(--head);
   padding: 10px 2px 2px;
 }
-#jump[data-lang="en"] li.jh {
+#jl[data-lang="en"] li.jh {
   font: 600 15px/1.3 var(--lat);
 }
 .tocg ol.toc {
@@ -2183,7 +2184,7 @@ a.t {
   font-size: 0.78em;
   color: var(--muted);
 }
-[data-lang="both"] .hero .hl2 .en {
+.hero[data-lang="both"] .hl2 .en {
   margin-left: 0.6em;
 }
 
@@ -2324,13 +2325,13 @@ a.t {
   text-underline-offset: 3px;
   cursor: pointer;
 }
-[data-lang="both"] .skc .skh .en,
-[data-lang="both"] .skc .skd .en {
+.skc[data-lang="both"] .skh .en,
+.skc[data-lang="both"] .skd .en {
   display: block;
   font: 400 12px/1.4 var(--lat);
   color: var(--muted);
 }
-[data-lang="both"] .skc .skm .en {
+.skc[data-lang="both"] .skm .en {
   display: none;
 }
 /* Today's date, a small line at the top of the card */
@@ -2341,22 +2342,22 @@ a.t {
   font: 500 15px/1.4 var(--body);
   color: var(--ink);
 }
-[data-lang="en"] .skc .sktd {
+.skc[data-lang="en"] .sktd {
   font-family: var(--lat);
 }
-[data-lang="both"] .skc .sktd .en {
+.skc[data-lang="both"] .sktd .en {
   display: block;
   font: 400 12px/1.4 var(--lat);
 }
 .skc .ske {
   display: none;
 }
-[data-lang="both"] .skc .ske {
+.skc[data-lang="both"] .ske {
   display: block;
   font: 400 12px/1.4 var(--lat);
   color: var(--muted);
 }
-[data-lang="en"] .skc .skd {
+.skc[data-lang="en"] .skd {
   font: 600 1.1em/1.35 var(--lat);
 }
 /* Date strip: every Sankashti from last January to the end of next year; tap one to show it above */
@@ -2388,10 +2389,10 @@ a.t {
   display: block;
   font: 600 18px/1.2 var(--body);
 }
-[data-lang="en"] .skc .skch b {
+.skc[data-lang="en"] .skch b {
   font-family: var(--lat);
 }
-[data-lang="both"] .skc .skch .en {
+.skc[data-lang="both"] .skch .en {
   display: none;
 }
 .skc .skch.past {
@@ -2419,10 +2420,10 @@ a.t {
   font: 600 10px/1.2 var(--lat);
   font-style: normal;
 }
-[data-lang="both"] .skc .skch i .en {
+.skc[data-lang="both"] .skch i .en {
   display: none;
 }
-[data-lang="both"] .skc #skb .en {
+.skc[data-lang="both"] #skb .en {
   display: none;
 }
 @media print {
@@ -5505,10 +5506,10 @@ a.t {
     if (P.th === "auto") root.removeAttribute("data-pref");
     else root.setAttribute("data-pref", P.th);
     // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
-    [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv"), function (e) {
+    [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv,#home .tocg,#jl,#rail"), function (e) {
       e.setAttribute("data-lang", P.lang);
     });
-    [].forEach.call(document.querySelectorAll(".bar,#jump,#panel,#rail,#home,#qrm,#prm,#szt"), function (e) {
+    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#szt"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
     root.lang = P.ui;
@@ -5928,7 +5929,7 @@ a.t {
     none = document.getElementById("none");
   function sectionTitle(id) {
     var h = document.getElementById(id).querySelector("h2"),
-      s = h.querySelector(P.ui === "en" ? ".en" : ".mr");
+      s = h.querySelector(P.lang === "en" ? ".en" : ".mr");
     return (s || h).textContent;
   }
   q.addEventListener("input", function () {
@@ -6442,7 +6443,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v89").then(function (c) {
+          caches.open("aarti-v90").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
