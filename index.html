@@ -3044,6 +3044,66 @@ a.t {
 #help li::marker {
   color: var(--accent);
 }
+/* Help pictures of where to tap (drawn, not screenshots) */
+#help .hfigs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 10px 0 6px;
+}
+#help .hfig {
+  margin: 0;
+}
+#help .hfig svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+  font-family: var(--lat);
+}
+#help .hfig figcaption {
+  margin-top: 4px;
+  font: 600 14px/1.3 var(--lat);
+  color: var(--muted);
+}
+#help .hfig .sc {
+  fill: var(--surface);
+  stroke: var(--rule);
+}
+#help .hfig .pl {
+  fill: var(--bg);
+  stroke: var(--rule);
+}
+#help .hfig .dv {
+  stroke: var(--rule);
+}
+#help .hfig .ln {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#help .hfig .hl {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+#help .hfig .k {
+  fill: var(--ink);
+}
+#help .hfig .m {
+  fill: var(--muted);
+}
+#help .hfig .a {
+  fill: var(--accent);
+}
+#help .hfig .ic {
+  fill: #7b1113;
+}
+#help .hfig .ic2 {
+  fill: #f4d58d;
+}
 #hlpb:focus-visible,
 #hlp2:focus-visible,
 #hlpx:focus-visible {
@@ -4782,18 +4842,32 @@ a.t {
 
     <h3>Put it on your phone</h3>
     <p>Tap <b>Add to Home Screen</b> on the home page or at the top of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
-    <h4>iPhone</h4>
+    <h4>iPhone (Safari or Chrome)</h4>
     <ol>
-      <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp or another app, tap ⋯ or the share icon and choose <b>Open in Safari</b> first.</li>
-      <li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari.</li>
-      <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp, Mail or Messages, tap the compass or ⋯ icon to open it in Safari first; those built-in viewers don't have the option.</li>
+      <li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari. On iOS 26, tap <b>⋯</b> first, then <b>Share</b>. In Chrome it is at the top right.</li>
+      <li>Swipe the list up (or tap <b>View More</b>) and tap <b>Add to Home Screen</b>. Not there? Tap <b>Edit Actions…</b> at the bottom of the list and turn it on.</li>
+      <li>Tap <b>Add</b>.</li>
     </ol>
+    <div class="hfigs"><figure class="hfig"><svg viewBox="0 0 240 120" role="img" aria-label="Safari's bottom bar with the Share button circled"><rect class="sc" x="1" y="1" width="238" height="118" rx="12"/><rect class="pl" x="14" y="16" width="212" height="30" rx="15"/><text class="m" x="120" y="36" font-size="11" text-anchor="middle">sankashti-chaturthi.pages.dev</text><text class="m" x="30" y="88" font-size="24" text-anchor="middle">‹</text><text class="m" x="75" y="88" font-size="24" text-anchor="middle">›</text><g class="ln" transform="translate(112 72)"><path d="M8 1v11M4 5l4-4 4 4M1 9v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/></g><rect class="hl" x="102" y="62" width="36" height="40" rx="8"/><rect class="ln" x="157" y="73" width="16" height="16" rx="2"/><rect class="ln" x="196" y="73" width="14" height="14" rx="2"/><rect class="ln" x="200" y="69" width="14" height="14" rx="2"/></svg><figcaption>1. Tap Share</figcaption></figure><figure class="hfig"><svg viewBox="0 0 240 120" role="img" aria-label="iOS 26 Safari bottom bar with the more button circled"><rect class="sc" x="1" y="1" width="238" height="118" rx="12"/><rect class="pl" x="56" y="70" width="140" height="30" rx="15"/><text class="m" x="126" y="90" font-size="11" text-anchor="middle">sankashti…</text><circle class="pl" cx="30" cy="85" r="15"/><text class="m" x="30" y="90" font-size="18" text-anchor="middle">‹</text><circle class="pl" cx="214" cy="85" r="15"/><text class="k" x="214" y="90" font-size="16" font-weight="600" text-anchor="middle">⋯</text><rect class="hl" x="195" y="66" width="38" height="38" rx="19"/><text class="m" x="120.0" y="34" font-size="11" text-anchor="middle">iOS 26: tap ⋯, then Share</text></svg><figcaption>On iOS 26: ⋯ first</figcaption></figure><figure class="hfig"><svg viewBox="0 0 240 170" role="img" aria-label="The Share list with Add to Home Screen circled"><rect class="sc" x="1" y="1" width="238" height="168" rx="12"/><text class="m" x="120.0" y="24" font-size="11" text-anchor="middle">Share list (scroll down)</text><line class="dv" x1="14" x2="226" y1="64" y2="64"/><text class="k" x="20" y="53" font-size="13" text-anchor="start">Copy</text><text class="m" x="218" y="53" font-size="14" text-anchor="end">⧉</text><line class="dv" x1="14" x2="226" y1="96" y2="96"/><text class="k" x="20" y="85" font-size="13" text-anchor="start">Add to Reading List</text><text class="m" x="218" y="85" font-size="14" text-anchor="end">○○</text><line class="dv" x1="14" x2="226" y1="128" y2="128"/><text class="k" x="20" y="117" font-size="13" text-anchor="start">Add Bookmark</text><text class="m" x="218" y="117" font-size="14" text-anchor="end">□</text><line class="dv" x1="14" x2="226" y1="160" y2="160"/><text class="k" x="20" y="149" font-size="13" font-weight="600" text-anchor="start">Add to Home Screen</text><text class="m" x="218" y="149" font-size="14" text-anchor="end">⊞</text><rect class="hl" x="10" y="130" width="220" height="28" rx="8"/></svg><figcaption>2. Add to Home Screen</figcaption></figure><figure class="hfig"><svg viewBox="0 0 240 120" role="img" aria-label="The Add to Home Screen page with Add circled"><rect class="sc" x="1" y="1" width="238" height="118" rx="12"/><text class="a" x="14" y="30" font-size="12" text-anchor="start">Cancel</text><text class="k" x="122" y="30" font-size="11" font-weight="600" text-anchor="middle">Add to Home Screen</text><text class="a" x="220" y="30" font-size="14" font-weight="600" text-anchor="end">Add</text><rect class="hl" x="182" y="12" width="46" height="28" rx="8"/><rect class="ic" x="20" y="54" width="44" height="44" rx="10"/><text class="ic2" x="42" y="83" font-size="20" text-anchor="middle">ॐ</text><text class="k" x="78" y="72" font-size="13" text-anchor="start">संकष्टी चतुर्थी</text><text class="m" x="78" y="92" font-size="11" text-anchor="start">sankashti-chaturthi…</text></svg><figcaption>3. Tap Add</figcaption></figure></div>
     <h4>Android</h4>
     <ol>
       <li>Open the site in <b>Chrome</b>.</li>
       <li>Tap the <b>⋮</b> menu at the top right.</li>
       <li>Tap <b>Add to Home screen</b> or <b>Install app</b>, then <b>Install</b> or <b>Add</b>.</li>
     </ol>
+    <div class="hfigs"><figure class="hfig"><svg viewBox="0 0 240 90" role="img" aria-label="Chrome's address bar with the three-dot menu circled"><rect class="sc" x="1" y="1" width="238" height="88" rx="12"/><rect class="pl" x="40" y="26" width="160" height="32" rx="16"/><text class="m" x="120" y="47" font-size="11" text-anchor="middle">sankashti-chaturthi…</text><text class="m" x="22" y="48" font-size="16" text-anchor="middle">⌂</text><text class="k" x="220" y="49" font-size="20" font-weight="600" text-anchor="middle">⋮</text><rect class="hl" x="206" y="24" width="28" height="36" rx="8"/></svg><figcaption>1. Tap ⋮</figcaption></figure><figure class="hfig"><svg viewBox="0 0 240 170" role="img" aria-label="Chrome's menu with Add to Home screen circled"><rect class="sc" x="1" y="1" width="238" height="168" rx="12"/><line class="dv" x1="14" x2="226" y1="46" y2="46"/><text class="k" x="20" y="35" font-size="13" text-anchor="start">New tab</text><line class="dv" x1="14" x2="226" y1="78" y2="78"/><text class="k" x="20" y="67" font-size="13" text-anchor="start">History</text><line class="dv" x1="14" x2="226" y1="110" y2="110"/><text class="k" x="20" y="99" font-size="13" text-anchor="start">Share…</text><line class="dv" x1="14" x2="226" y1="142" y2="142"/><text class="k" x="20" y="131" font-size="13" font-weight="600" text-anchor="start">Add to Home screen</text><rect class="hl" x="10" y="112" width="220" height="28" rx="8"/><text class="m" x="20" y="163" font-size="11" text-anchor="start">(or “Install app”)</text></svg><figcaption>2. Add to Home screen</figcaption></figure><figure class="hfig"><svg viewBox="0 0 240 110" role="img" aria-label="Chrome's install box with Install circled"><rect class="sc" x="1" y="1" width="238" height="108" rx="12"/><text class="k" x="20" y="30" font-size="14" font-weight="600" text-anchor="start">Install app</text><rect class="ic" x="20" y="44" width="30" height="30" rx="8"/><text class="ic2" x="35" y="65" font-size="14" text-anchor="middle">ॐ</text><text class="k" x="60" y="64" font-size="12" text-anchor="start">संकष्टी चतुर्थी</text><text class="a" x="140" y="98" font-size="13" text-anchor="middle">Cancel</text><text class="a" x="200" y="98" font-size="13" font-weight="600" text-anchor="middle">Install</text><rect class="hl" x="172" y="80" width="56" height="26" rx="8"/></svg><figcaption>3. Tap Install</figcaption></figure></div>
+    <h4>Mac (Safari)</h4>
+    <ol>
+      <li>Click <b>File</b> in the menu bar at the top of the screen (or the Share button in Safari's toolbar).</li>
+      <li>Click <b>Add to Dock…</b>, then <b>Add</b>. This needs macOS Sonoma or newer.</li>
+    </ol>
+    <div class="hfigs"><figure class="hfig"><svg viewBox="0 0 280 170" role="img" aria-label="Safari's File menu on a Mac with Add to Dock circled"><rect class="sc" x="1" y="1" width="278" height="168" rx="12"/><rect class="pl" x="1" y="1" width="278" height="26" rx="12"/><text class="k" x="40" y="19" font-size="12" font-weight="600" text-anchor="start">Safari</text><text class="k" x="92" y="19" font-size="12" font-weight="600" text-anchor="start">File</text><rect class="hl" x="82" y="4" width="44" height="20" rx="5"/><text class="k" x="140" y="19" font-size="12" text-anchor="start">Edit</text><text class="k" x="178" y="19" font-size="12" text-anchor="start">View</text><rect class="sc" x="82" y="30" width="180" height="132" rx="8"/><text class="k" x="96" y="52" font-size="12" text-anchor="start">New Window</text><text class="k" x="96" y="74" font-size="12" text-anchor="start">New Tab</text><text class="k" x="96" y="96" font-size="12" text-anchor="start">Open File…</text><text class="k" x="96" y="118" font-size="12" text-anchor="start">Share</text><text class="k" x="96" y="146" font-size="12" font-weight="600" text-anchor="start">Add to Dock…</text><rect class="hl" x="88" y="130" width="168" height="24" rx="5"/></svg><figcaption>File → Add to Dock…</figcaption></figure></div>
+    <h4>Computer (Chrome or Edge)</h4>
+    <ol>
+      <li>Click the install icon at the right end of the address bar (or the button above), then <b>Install</b>.</li>
+    </ol>
+    <div class="hfigs"><figure class="hfig"><svg viewBox="0 0 280 80" role="img" aria-label="Chrome's address bar with the install icon circled"><rect class="sc" x="1" y="1" width="278" height="78" rx="12"/><rect class="pl" x="14" y="24" width="252" height="32" rx="16"/><text class="m" x="30" y="45" font-size="11" text-anchor="start">sankashti-chaturthi.pages.dev</text><g class="ln" transform="translate(220 31)"><rect x="1" y="1" width="16" height="12" rx="2"/><path d="M5 17h8M9 4v6M6.5 7.5 9 10l2.5-2.5"/></g><rect class="hl" x="212" y="26" width="34" height="28" rx="14"/><text class="m" x="250" y="46" font-size="13" text-anchor="middle">☆</text></svg><figcaption>Click the install icon</figcaption></figure></div>
     <p>The icon opens the site like an app, even without internet. If you switch away and come back, it returns to where you were reading.</p>
 
     <h3>The date card</h3>
@@ -7554,7 +7628,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v120").then(function (c) {
+          caches.open("aarti-v121").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
