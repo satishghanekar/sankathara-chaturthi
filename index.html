@@ -2779,6 +2779,13 @@ a.t {
       <button type="button" data-v="mr" lang="mr">मराठी</button>
     </div>
   </div>
+  <div class="row">
+    <label><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English style</span></label>
+    <div class="seg" id="str" role="group" aria-label="English style">
+      <button type="button" data-v="simple" lang="en">Sukhkarta</button>
+      <button type="button" data-v="iast" lang="en">sukhakartā</button>
+    </div>
+  </div>
   <div class="row" id="colrow">
     <label><span class="mr">मांडणी</span><span class="en" lang="en">Layout</span></label>
     <div class="seg" id="sc" role="group" aria-label="Layout">
@@ -4466,6 +4473,7 @@ a.t {
       <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
       <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
       <li><b>⚙ Settings:</b> text size, theme (light, sepia, dark), high contrast, keep the screen on, one or two columns on wide screens, and <b>Menu language</b> (English or मराठी) for the card, buttons and settings.</li>
+      <li><b>English style</b> (in ⚙ Settings): the everyday spelling (<i>Sukhkarta</i>) or the scholarly one with exact sounds and, in the Atharvashirsha, the swara marks (<i>sukhakartā</i>, <i>bha̱draṃ</i>).</li>
     </ul>
 
     <h3>While reading</h3>
@@ -4553,6 +4561,7 @@ a.t {
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
+    tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
   };
   try {
     var s = JSON.parse(localStorage.getItem(K) || "{}");
@@ -4567,6 +4576,90 @@ a.t {
     P.sv = 4;
     save();
   }
+
+  // ---- IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) ----
+  var IA = (function () {
+    var C = {
+      क: "k", ख: "kh", ग: "g", घ: "gh", ङ: "ṅ", च: "c", छ: "ch", ज: "j", झ: "jh", ञ: "ñ",
+      ट: "ṭ", ठ: "ṭh", ड: "ḍ", ढ: "ḍh", ण: "ṇ", त: "t", थ: "th", द: "d", ध: "dh", न: "n",
+      प: "p", फ: "ph", ब: "b", भ: "bh", म: "m", य: "y", र: "r", ल: "l", ळ: "ḷ", व: "v",
+      श: "ś", ष: "ṣ", स: "s", ह: "h",
+    };
+    var NK = { ड: "ṛ", ढ: "ṛh", क: "q", ख: "x", ग: "ġ", ज: "z", फ: "f" }; // with nukta (Hindi)
+    var V = { अ: "a", आ: "ā", इ: "i", ई: "ī", उ: "u", ऊ: "ū", ऋ: "ṛ", ॠ: "ṝ", ऌ: "ḷ", ए: "e", ऐ: "ai", ओ: "o", औ: "au" };
+    var M = { "ा": "ā", "ि": "i", "ी": "ī", "ु": "u", "ू": "ū", "ृ": "ṛ", "ॄ": "ṝ", "े": "e", "ै": "ai", "ो": "o", "ौ": "au" };
+    var S = { "॑": "̍", "॒": "̱", "᳚": "̎" }; // svarita, anudatta, dirgha svarita
+    var O = { "ॐ": "om̐", "ऽ": "'", "।": "|", "॥": "||" };
+    return function (t) {
+      var o = "",
+        i = 0,
+        n = t.length,
+        c,
+        v;
+      while (i < n) {
+        c = t[i];
+        v = null;
+        if (C[c]) {
+          var k = C[c];
+          i++;
+          if (t[i] === "़") {
+            k = NK[c] || k;
+            i++;
+          }
+          if (t[i] === "्") {
+            o += k;
+            i++;
+            continue;
+          }
+          if (M[t[i]]) v = M[t[i++]];
+          else v = "a";
+          o += k;
+        } else if (V[c]) {
+          v = V[c];
+          i++;
+        } else if (O[c]) {
+          o += O[c];
+          i++;
+          continue;
+        } else if (c >= "०" && c <= "९") {
+          o += c.charCodeAt(0) - 0x966;
+          i++;
+          continue;
+        } else {
+          // a stray mark attaches to what came before; anything else passes through
+          o += S[c] || (c === "ं" ? "ṃ" : c === "ः" ? "ḥ" : c === "ँ" ? "m̐" : c);
+          i++;
+          continue;
+        }
+        // the syllable's accent marks go on its vowel, then any anusvara / visarga / chandrabindu
+        var acc = "",
+          tail = "";
+        while (i < n && (S[t[i]] || t[i] === "ं" || t[i] === "ः" || t[i] === "ँ")) {
+          c = t[i++];
+          if (S[c]) acc += S[c];
+          else tail += c === "ं" ? "ṃ" : c === "ः" ? "ḥ" : "m̐";
+        }
+        o += v + acc + tail;
+      }
+      return o;
+    };
+  })();
+  // IAST style: each English line is rebuilt from its Marathi/Sanskrit line before anything else touches the lines.
+  // The simple English text is kept (ENS) so search still finds "sukhakarta".
+  var ENS = {};
+  if (P.tr === "iast")
+    [].forEach.call(document.querySelectorAll(".verse"), function (v) {
+      // Marathi and English lines pair up by position (refrain boxes have no data-l)
+      var ms = v.querySelectorAll(":scope>.mr>p");
+      [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
+        var id = p.getAttribute("data-l"),
+          m = ms[i];
+        if (!m) return;
+        if (id) ENS[id] = p.textContent;
+        p.innerHTML = m.innerHTML.split(/<br\s*\/?>/).map(IA).join("<br>");
+        p.classList.add("ia");
+      });
+    });
 
   // ---- Layout helpers that run once ----
   // Two-column screens read across: stanza 1 | stanza 2, then 3 | 4. Each stanza keeps its own dhrupad marker/repeat under it.
@@ -5848,6 +5941,9 @@ a.t {
     [].forEach.call(document.querySelectorAll("#su button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
     });
+    [].forEach.call(document.querySelectorAll("#str button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.v === P.tr));
+    });
     var qi = document.getElementById("q");
     qi.placeholder = P.ui === "mr" ? "ओळ शोधा (मराठी किंवा इंग्रजी अक्षरे)" : "Find a line (Marathi or English letters)";
     qi.setAttribute("aria-label", P.ui === "mr" ? "ओळ शोधा" : "Find a line");
@@ -5913,6 +6009,18 @@ a.t {
     P.fsu = 1;
     apply();
     save();
+  };
+  // English style: the lines are rebuilt at start-up, so the page reloads (reading place and Settings stay open)
+  document.getElementById("str").onclick = function (e) {
+    var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
+    if (v && v !== P.tr) {
+      P.tr = v;
+      save();
+      try {
+        sessionStorage.setItem("aarti2-panel", "1");
+      } catch (x) {}
+      location.reload();
+    }
   };
   document.getElementById("su").onclick = function (e) {
     var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
@@ -6228,6 +6336,8 @@ a.t {
   var IX = [];
   function nz(s) {
     return s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // IAST letters match plain ones: ā → a, ṣ → s
       .replace(/[\u200b\u200c\u200d\u0951\u0952\u1CDA]/g, "")
       .replace(/[।॥|,.\-]/g, " ")
       .toLowerCase()
@@ -6251,9 +6361,10 @@ a.t {
               .replace(/&amp;/g, "&")
           : "",
         k = sec.id + "|" + nz(m);
+      if (ENS[id]) e += " \u0000" + ENS[id];
       if (seen[k]) return;
       seen[k] = 1;
-      IX.push({ id: id, sec: sec.id, m: m, e: e, t: nz(m) + " " + nz(e) });
+      IX.push({ id: id, sec: sec.id, m: m, e: e.split(" \u0000")[0], t: nz(m) + " " + nz(e) });
     });
   })();
   var q = document.getElementById("q"),
@@ -6412,6 +6523,14 @@ a.t {
       });
     }
   }
+
+  // After changing the English style the page reloads; reopen Settings where the reader left it
+  try {
+    if (sessionStorage.getItem("aarti2-panel")) {
+      sessionStorage.removeItem("aarti2-panel");
+      setP(true);
+    }
+  } catch (e) {}
 
   // ---- Help: opens over the page; the phone's Back button closes it ----
   (function () {
@@ -6905,7 +7024,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v103").then(function (c) {
+          caches.open("aarti-v104").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
