@@ -1079,14 +1079,6 @@ a.t {
   padding: 10px 18px;
   white-space: nowrap;
 }
-#szt.msg.long {
-  white-space: normal;
-  box-sizing: border-box;
-  width: max-content;
-  max-width: min(440px, calc(100vw - 32px));
-  border-radius: 14px;
-  text-align: center;
-}
 .bar .lb {
   padding: 0 3px;
 }
@@ -4326,16 +4318,14 @@ a.t {
     RB_ONCE =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" aria-hidden="true"><text x="16.5" y="26" text-anchor="middle" font-size="19" fill="currentColor" style="font-family:var(--head)">धृ</text><text x="30" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" style="font-family:var(--lat)">1</text></svg>';
   // Short message in the middle of the screen (Marathi text m, English text e)
-  // Short status message; pass ms for a longer one, which may wrap onto two lines
-  function flash(m, e, ms) {
+  function flash(m, e) {
     var x = document.getElementById("szt");
     x.textContent = P.lang === "en" ? e : m;
     x.classList.add("msg", "on");
-    x.classList.toggle("long", !!ms);
     clearTimeout(flash.t);
     flash.t = setTimeout(function () {
-      x.classList.remove("on", "msg", "long");
-    }, ms || 1600);
+      x.classList.remove("on", "msg");
+    }, 1600);
   }
 
   // ---- Settings (P), loaded from this device ----
@@ -4740,9 +4730,178 @@ a.t {
     "Australia/Melbourne": [-37.81, 144.96, "मेलबर्न", "Melbourne"],
     "Pacific/Auckland": [-36.85, 174.76, "ऑकलंड", "Auckland"],
   };
+  // Nearest city to the saved location, from a built-in list (nothing is sent anywhere):
+  // its name within 40 km, "near …" within 120 km (suburbs, marked 1, are skipped for "near"), otherwise "your location"
+  var SKCITY = [
+    [39.96, -83.00, "कोलंबस", "Columbus"],
+    [40.10, -83.11, "डब्लिन", "Dublin, Ohio", 1],
+    [39.10, -84.51, "सिनसिनाटी", "Cincinnati"],
+    [41.50, -81.69, "क्लीव्हलँड", "Cleveland"],
+    [39.76, -84.19, "डेटन", "Dayton"],
+    [41.65, -83.54, "टोलीडो", "Toledo"],
+    [41.08, -81.52, "ॲक्रन", "Akron"],
+    [40.44, -79.99, "पिट्सबर्ग", "Pittsburgh"],
+    [42.33, -83.05, "डेट्रॉइट", "Detroit"],
+    [42.28, -83.74, "ॲन आर्बर", "Ann Arbor"],
+    [39.77, -86.16, "इंडियानापोलिस", "Indianapolis"],
+    [38.25, -85.76, "लुईव्हिल", "Louisville"],
+    [38.04, -84.50, "लेक्सिंग्टन", "Lexington"],
+    [41.88, -87.63, "शिकागो", "Chicago"],
+    [41.75, -88.15, "नेपरव्हिल", "Naperville", 1],
+    [43.04, -87.91, "मिलवॉकी", "Milwaukee"],
+    [43.07, -89.40, "मॅडिसन", "Madison"],
+    [44.98, -93.27, "मिनियापोलिस", "Minneapolis"],
+    [38.63, -90.20, "सेंट लुईस", "St. Louis"],
+    [39.10, -94.58, "कॅन्सस सिटी", "Kansas City"],
+    [41.26, -95.93, "ओमाहा", "Omaha"],
+    [41.59, -93.62, "डेस मॉइन", "Des Moines"],
+    [40.71, -74.01, "न्यूयॉर्क", "New York"],
+    [40.73, -74.08, "जर्सी सिटी", "Jersey City", 1],
+    [40.52, -74.41, "एडिसन", "Edison", 1],
+    [40.36, -74.67, "प्रिन्स्टन", "Princeton"],
+    [39.95, -75.17, "फिलाडेल्फिया", "Philadelphia"],
+    [42.36, -71.06, "बॉस्टन", "Boston"],
+    [41.76, -72.69, "हार्टफर्ड", "Hartford"],
+    [41.05, -73.54, "स्टॅमफर्ड", "Stamford"],
+    [42.65, -73.76, "अल्बानी", "Albany"],
+    [42.89, -78.88, "बफेलो", "Buffalo"],
+    [43.16, -77.61, "रॉचेस्टर", "Rochester"],
+    [43.05, -76.15, "सिरॅक्यूज", "Syracuse"],
+    [38.91, -77.04, "वॉशिंग्टन डी.सी.", "Washington, D.C."],
+    [39.29, -76.61, "बाल्टिमोर", "Baltimore"],
+    [37.54, -77.44, "रिचमंड", "Richmond"],
+    [35.78, -78.64, "रॅले", "Raleigh"],
+    [35.99, -78.90, "डरहॅम", "Durham"],
+    [35.23, -80.84, "शार्लट", "Charlotte"],
+    [35.72, -77.92, "विल्सन", "Wilson"],
+    [36.07, -79.79, "ग्रीन्सबरो", "Greensboro"],
+    [33.75, -84.39, "अटलांटा", "Atlanta"],
+    [36.16, -86.78, "नॅशव्हिल", "Nashville"],
+    [35.15, -90.05, "मेम्फिस", "Memphis"],
+    [33.52, -86.80, "बर्मिंगहॅम", "Birmingham, Alabama"],
+    [30.33, -81.66, "जॅक्सनव्हिल", "Jacksonville"],
+    [28.54, -81.38, "ऑर्लँडो", "Orlando"],
+    [27.95, -82.46, "टॅम्पा", "Tampa"],
+    [25.76, -80.19, "मायामी", "Miami"],
+    [29.95, -90.07, "न्यू ऑर्लिन्स", "New Orleans"],
+    [29.76, -95.37, "ह्यूस्टन", "Houston"],
+    [32.78, -96.80, "डॅलस", "Dallas"],
+    [33.02, -96.70, "प्लेनो", "Plano", 1],
+    [30.27, -97.74, "ऑस्टिन", "Austin"],
+    [29.42, -98.49, "सॅन अँटोनियो", "San Antonio"],
+    [35.47, -97.52, "ओक्लाहोमा सिटी", "Oklahoma City"],
+    [39.74, -104.99, "डेन्व्हर", "Denver"],
+    [40.76, -111.89, "सॉल्ट लेक सिटी", "Salt Lake City"],
+    [33.45, -112.07, "फिनिक्स", "Phoenix"],
+    [35.08, -106.65, "आल्बुकर्की", "Albuquerque"],
+    [36.17, -115.14, "लास व्हेगस", "Las Vegas"],
+    [34.05, -118.24, "लॉस एंजेलिस", "Los Angeles"],
+    [33.68, -117.83, "अर्व्हाइन", "Irvine", 1],
+    [32.72, -117.16, "सॅन डिएगो", "San Diego"],
+    [37.34, -121.89, "सॅन होजे", "San Jose"],
+    [37.55, -121.99, "फ्रिमॉन्ट", "Fremont", 1],
+    [37.77, -122.42, "सॅन फ्रान्सिस्को", "San Francisco"],
+    [38.58, -121.49, "सॅक्रामेंटो", "Sacramento"],
+    [36.74, -119.79, "फ्रेस्नो", "Fresno"],
+    [45.52, -122.68, "पोर्टलंड", "Portland"],
+    [47.61, -122.33, "सिॲटल", "Seattle"],
+    [21.31, -157.86, "होनोलुलु", "Honolulu"],
+    [43.65, -79.38, "टोरोंटो", "Toronto"],
+    [45.42, -75.70, "ओटावा", "Ottawa"],
+    [45.50, -73.57, "मॉन्ट्रियल", "Montreal"],
+    [49.90, -97.14, "विनिपेग", "Winnipeg"],
+    [51.05, -114.07, "कॅलगरी", "Calgary"],
+    [53.55, -113.49, "एडमंटन", "Edmonton"],
+    [49.28, -123.12, "व्हँकुव्हर", "Vancouver"],
+    [51.51, -0.13, "लंडन", "London"],
+    [52.49, -1.89, "बर्मिंगहॅम", "Birmingham"],
+    [52.64, -1.13, "लेस्टर", "Leicester"],
+    [53.48, -2.24, "मँचेस्टर", "Manchester"],
+    [53.35, -6.26, "डब्लिन", "Dublin"],
+    [48.86, 2.35, "पॅरिस", "Paris"],
+    [52.37, 4.90, "ॲमस्टरडॅम", "Amsterdam"],
+    [50.11, 8.68, "फ्रँकफर्ट", "Frankfurt"],
+    [52.52, 13.40, "बर्लिन", "Berlin"],
+    [47.38, 8.54, "झुरिक", "Zurich"],
+    [25.20, 55.27, "दुबई", "Dubai"],
+    [24.45, 54.38, "अबू धाबी", "Abu Dhabi"],
+    [25.29, 51.53, "दोहा", "Doha"],
+    [23.59, 58.41, "मस्कत", "Muscat"],
+    [1.35, 103.82, "सिंगापूर", "Singapore"],
+    [3.14, 101.69, "क्वालालंपूर", "Kuala Lumpur"],
+    [22.32, 114.17, "हाँगकाँग", "Hong Kong"],
+    [35.68, 139.69, "टोकियो", "Tokyo"],
+    [-33.87, 151.21, "सिडनी", "Sydney"],
+    [-37.81, 144.96, "मेलबर्न", "Melbourne"],
+    [-27.47, 153.03, "ब्रिस्बेन", "Brisbane"],
+    [-34.93, 138.60, "ॲडलेड", "Adelaide"],
+    [-31.95, 115.86, "पर्थ", "Perth"],
+    [-36.85, 174.76, "ऑकलंड", "Auckland"],
+    [19.08, 72.88, "मुंबई", "Mumbai"],
+    [19.22, 72.98, "ठाणे", "Thane", 1],
+    [19.03, 73.03, "नवी मुंबई", "Navi Mumbai", 1],
+    [18.52, 73.86, "पुणे", "Pune"],
+    [20.00, 73.79, "नाशिक", "Nashik"],
+    [21.15, 79.09, "नागपूर", "Nagpur"],
+    [19.88, 75.34, "छत्रपती संभाजीनगर", "Chhatrapati Sambhajinagar"],
+    [16.70, 74.24, "कोल्हापूर", "Kolhapur"],
+    [17.66, 75.91, "सोलापूर", "Solapur"],
+    [16.85, 74.58, "सांगली", "Sangli"],
+    [17.68, 74.02, "सातारा", "Satara"],
+    [16.99, 73.31, "रत्नागिरी", "Ratnagiri"],
+    [19.09, 74.74, "अहिल्यानगर", "Ahilyanagar"],
+    [20.93, 77.75, "अमरावती", "Amravati"],
+    [20.70, 77.00, "अकोला", "Akola"],
+    [21.00, 75.56, "जळगाव", "Jalgaon"],
+    [18.40, 76.56, "लातूर", "Latur"],
+    [19.15, 77.31, "नांदेड", "Nanded"],
+    [15.49, 73.83, "पणजी", "Panaji"],
+    [15.85, 74.50, "बेळगाव", "Belagavi"],
+    [12.97, 77.59, "बंगळुरू", "Bengaluru"],
+    [12.30, 76.64, "म्हैसूर", "Mysuru"],
+    [17.39, 78.49, "हैदराबाद", "Hyderabad"],
+    [13.08, 80.27, "चेन्नई", "Chennai"],
+    [9.93, 76.27, "कोची", "Kochi"],
+    [28.61, 77.21, "दिल्ली", "Delhi"],
+    [28.46, 77.03, "गुरुग्राम", "Gurugram", 1],
+    [28.54, 77.39, "नोएडा", "Noida", 1],
+    [23.02, 72.57, "अहमदाबाद", "Ahmedabad"],
+    [22.31, 73.18, "वडोदरा", "Vadodara"],
+    [21.17, 72.83, "सुरत", "Surat"],
+    [22.72, 75.86, "इंदूर", "Indore"],
+    [23.26, 77.41, "भोपाळ", "Bhopal"],
+    [26.91, 75.79, "जयपूर", "Jaipur"],
+    [26.85, 80.95, "लखनौ", "Lucknow"],
+    [25.32, 82.97, "वाराणसी", "Varanasi"],
+    [22.57, 88.36, "कोलकाता", "Kolkata"]
+  ];
+  function skNear(lat, lon) {
+    var best = null,
+      bd = 1e9,
+      r = Math.PI / 180;
+    SKCITY.forEach(function (c) {
+      var a = Math.sin(((c[0] - lat) * r) / 2),
+        b = Math.sin(((c[1] - lon) * r) / 2),
+        d = 12742 * Math.asin(Math.sqrt(a * a + Math.cos(lat * r) * Math.cos(c[0] * r) * b * b));
+      if (c[4] && d > 40) return;
+      if (d < bd) {
+        bd = d;
+        best = c;
+      }
+    });
+    var o = { lat: lat, lon: lon, mr: "तुमचे ठिकाण", en: "your location", own: 1 };
+    if (best && bd <= 40) {
+      o.mr = best[2];
+      o.en = best[3];
+    } else if (best && bd <= 120) {
+      o.mr = best[2] + " जवळ";
+      o.en = "near " + best[3];
+    }
+    return o;
+  }
   function skLoc() {
     if (P.loc && typeof P.loc.lat === "number")
-      return { lat: P.loc.lat, lon: P.loc.lon, mr: "तुमचे ठिकाण", en: "your location", own: 1 };
+      return skNear(P.loc.lat, P.loc.lon);
     var z = "";
     try {
       z = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -4971,9 +5130,6 @@ a.t {
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skl");
     if (!b) return;
-    var nm = "वेळा छापील दिनदर्शिकांपेक्षा काही मिनिटांनी वेगळ्या असू शकतात.",
-      ne = "Times may differ by a few minutes from printed calendars.";
-    flash(nm, ne, 4000);
     if (!navigator.geolocation) {
       flash("हे ब्राउझर ठिकाण देऊ शकत नाही", "Location is not available in this browser");
       return;
@@ -4984,7 +5140,6 @@ a.t {
         save();
         skCache = null;
         skRender();
-        flash("ठिकाण जतन केले. " + nm, "Location saved on this device. " + ne, 4000);
       },
       function () {
         flash("ठिकाण मिळाले नाही", "Could not get your location");
@@ -6203,7 +6358,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v84").then(function (c) {
+          caches.open("aarti-v85").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
