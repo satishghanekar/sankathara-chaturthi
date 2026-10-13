@@ -76,14 +76,14 @@ Phones keep a saved copy of the site. The cache version tells them a new copy ex
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v130';
+   const V='aarti-v131';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v130")
+   caches.open("aarti-v131")
    ```
 
-Add one to the number in both places (for example `aarti-v130` → `aarti-v131`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Add one to the number in both places (for example `aarti-v131` → `aarti-v132`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
