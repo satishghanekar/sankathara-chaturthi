@@ -9,6 +9,17 @@
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Link previews (share sheet, WhatsApp, Messages) read these; they need full https addresses -->
+<meta name="description" content="Pooja and aarti texts for Sankashti Chaturthi, in Marathi and English, with the next date and moonrise.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="संकष्टी चतुर्थी">
+<meta property="og:title" content="संकष्टी चतुर्थी · Sankashti Chaturthi">
+<meta property="og:description" content="Pooja and aarti texts in Marathi and English, with the next date and moonrise.">
+<meta property="og:url" content="https://sankashti-chaturthi.pages.dev/">
+<meta property="og:image" content="https://sankashti-chaturthi.pages.dev/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
@@ -7390,14 +7401,15 @@ a.t {
       if (e.key === "Escape" && !qm.hidden) qr(false);
     });
     // Share: a ready reminder for the group chat (next Sankashti, pooja time near the temple, moonrise) plus the link
-    function shareText() {
+    // sep = true: leave the link out, because the share sheet is given it separately (it lands at the end)
+    function shareText(sep) {
       var C = skCache,
         L = skLoc(),
         mr = P.ui === "mr";
       var tip = mr
         ? "\nफोनवर ॲपसारखे ठेवण्यासाठी: लिंक उघडा आणि होम स्क्रीनवर जोडा (Add to Home Screen) दाबा."
         : "\nTip: open the link and tap Add to Home Screen to keep it on your phone like an app.";
-      if (!C || !L) return (mr ? "संकष्टी चतुर्थी — पूजा आणि आरती\n" + url : title + "\n" + url) + tip;
+      if (!C || !L) return (mr ? "संकष्टी चतुर्थी — पूजा आणि आरती" : title) + (sep ? "" : "\n" + url) + tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
         f = skFmt(o),
         t = skTemple(L),
@@ -7409,8 +7421,7 @@ a.t {
           f.dmr +
           (t ? " · पूजा सायं. ७:०० ते ८:३०, भारतीय हिंदू मंदिर, पॉवेल" : "") +
           (o.rise ? " · चंद्रोदय " + f.tmr : "") +
-          "\nआरत्या: " +
-          url +
+          (sep ? "" : "\nआरत्या: " + url) +
           tip
         );
       return (
@@ -7419,15 +7430,16 @@ a.t {
         f.den +
         (t ? " · Pooja 7:00–8:30 pm at Bharatiya Hindu Temple, Powell" : "") +
         (o.rise ? " · Moonrise " + f.ten : "") +
-        "\nAartis: " +
-        url +
+        (sep ? "" : "\nAartis: " + url) +
         tip
       );
     }
     document.getElementById("shb").onclick = function () {
       var txt = shareText();
       if (navigator.share) {
-        navigator.share({ text: txt }).catch(function () {});
+        // The link goes in url, not inside the text, so the iPhone/Android share sheet shows the site's
+        // icon and name, and WhatsApp/Messages show a link card (from the og: tags in <head>).
+        navigator.share({ title: title, text: shareText(true), url: url }).catch(function () {});
       } else {
         try {
           navigator.clipboard.writeText(txt).then(function () {
@@ -7555,7 +7567,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v123").then(function (c) {
+          caches.open("aarti-v124").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
