@@ -1079,6 +1079,14 @@ a.t {
   padding: 10px 18px;
   white-space: nowrap;
 }
+#szt.msg.long {
+  white-space: normal;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(440px, calc(100vw - 32px));
+  border-radius: 14px;
+  text-align: center;
+}
 .bar .lb {
   padding: 0 3px;
 }
@@ -2237,7 +2245,7 @@ a.t {
 /* ==== Next Sankashti card (home page) ==== */
 .skc {
   margin: -6px 0 20px;
-  padding: 14px 16px;
+  padding: 10px 14px 12px;
   border: 1px solid var(--hdrl);
   border-radius: 14px;
   background: var(--surface);
@@ -2253,9 +2261,36 @@ a.t {
   letter-spacing: 0.02em;
 }
 .skc .skd {
-  font: 400 1.25em/1.35 var(--head);
+  font: 400 1.25em/1.3 var(--head);
   color: var(--ink);
-  margin: 2px 0;
+  margin: 0;
+}
+/* Pin button after the place name: use / update my location */
+.skc .skli {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -4px -6px -2px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+.skc .skm .skli svg {
+  color: inherit;
+}
+.skc .skli:focus-visible,
+.skc #skb:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+.skc #skb:not([hidden]) {
+  display: block;
+  margin: 6px auto 0;
 }
 .skc .skm {
   display: flex;
@@ -2273,13 +2308,6 @@ a.t {
   color: var(--muted);
   font-size: 0.9em;
 }
-.skc .skf {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-}
 .skc .skl {
   background: none;
   border: 0;
@@ -2290,10 +2318,6 @@ a.t {
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
-}
-.skc .skn {
-  font: 400 11.5px/1.3 var(--lat);
-  color: var(--muted);
 }
 [data-lang="both"] .skc .skh .en,
 [data-lang="both"] .skc .skd .en {
@@ -2306,11 +2330,11 @@ a.t {
 }
 /* Today's date, a small line at the top of the card */
 .skc .sktd {
-  margin: -4px 0 8px;
+  margin: 0 0 6px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--hdrl);
-  font: 400 12.5px/1.4 var(--body);
-  color: var(--muted);
+  font: 500 15px/1.4 var(--body);
+  color: var(--ink);
 }
 [data-lang="en"] .skc .sktd {
   font-family: var(--lat);
@@ -2339,8 +2363,8 @@ a.t {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  margin: 10px -6px 0;
-  padding: 12px 6px 6px;
+  margin: 8px -6px 0;
+  padding: 12px 6px 4px;
   border-top: 1px solid var(--hdrl);
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
@@ -4213,14 +4237,16 @@ a.t {
     RB_ONCE =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" aria-hidden="true"><text x="16.5" y="26" text-anchor="middle" font-size="19" fill="currentColor" style="font-family:var(--head)">धृ</text><text x="30" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" style="font-family:var(--lat)">1</text></svg>';
   // Short message in the middle of the screen (Marathi text m, English text e)
-  function flash(m, e) {
+  // Short status message; pass ms for a longer one, which may wrap onto two lines
+  function flash(m, e, ms) {
     var x = document.getElementById("szt");
     x.textContent = P.lang === "en" ? e : m;
     x.classList.add("msg", "on");
+    x.classList.toggle("long", !!ms);
     clearTimeout(flash.t);
     flash.t = setTimeout(function () {
-      x.classList.remove("on", "msg");
-    }, 1600);
+      x.classList.remove("on", "msg", "long");
+    }, ms || 1600);
   }
 
   // ---- Settings (P), loaded from this device ----
@@ -4763,9 +4789,7 @@ a.t {
           '">' +
           chips +
           "</div>") +
-      '<div class="skf"><button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button><button type="button" class="skl" id="skl"><span lang="en">' +
-      (L.own ? "📍 Update my location" : "📍 Use my location") +
-      '</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>';
+      '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button>';
     skShow(skCache.sel);
   }
   // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
@@ -4814,7 +4838,9 @@ a.t {
       L.mr +
       '</span><span class="en" lang="en">' +
       L.en +
-      "</span></span></div>" +
+      '</span></span><button type="button" class="skli" id="skl" aria-label="' +
+      (P.lang === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
+      '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button></div>' +
       '<div class="ske" lang="en">Moonrise ' +
       f.ten +
       " · " +
@@ -4856,6 +4882,9 @@ a.t {
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skl");
     if (!b) return;
+    var nm = "वेळा छापील दिनदर्शिकांपेक्षा काही मिनिटांनी वेगळ्या असू शकतात.",
+      ne = "Times may differ by a few minutes from printed calendars.";
+    flash(nm, ne, 4000);
     if (!navigator.geolocation) {
       flash("हे ब्राउझर ठिकाण देऊ शकत नाही", "Location is not available in this browser");
       return;
@@ -4866,7 +4895,7 @@ a.t {
         save();
         skCache = null;
         skRender();
-        flash("ठिकाण जतन केले", "Location saved on this device");
+        flash("ठिकाण जतन केले. " + nm, "Location saved on this device. " + ne, 4000);
       },
       function () {
         flash("ठिकाण मिळाले नाही", "Could not get your location");
@@ -6023,7 +6052,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v76").then(function (c) {
+          caches.open("aarti-v77").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
