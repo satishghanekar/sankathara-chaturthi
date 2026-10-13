@@ -325,36 +325,73 @@ ol.toc .m {
 .verse p {
   overflow-wrap: anywhere;
 }
+/* End of each piece: ‹ Previous | Home + Search | Next › (the search button works like the top bar's) */
 .pn {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 30px;
-  padding-top: 18px;
-  border-top: 1px solid var(--rule);
+  grid-template-columns: 1fr 46px 1fr;
+  gap: 8px;
+  margin-top: 22px;
 }
-.pn a {
+.pn > a {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
+  gap: 4px;
   padding: 12px 14px;
   border: 1px solid var(--rule);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
-  font: 500 17px/1.3 var(--body);
-  min-height: 56px;
+  font: 500 16.5px/1.3 var(--head);
+  min-height: 64px;
 }
 .pn small {
-  font-size: 12px;
-  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font: 600 12.5px/1 var(--body);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+.pn small span {
+  display: inline;
 }
 .pn .next {
   text-align: right;
 }
+.pn .next small {
+  justify-content: flex-end;
+}
 .pn span {
   display: block;
+}
+.pn svg {
+  flex: none;
+}
+.pnq {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pnq a,
+.pnq button {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.pn > a:active,
+.pnq a:active,
+.pnq button:active {
+  background: var(--rule);
 }
 
 
@@ -386,7 +423,7 @@ ol.toc .m {
 
 [data-lang="both"] h2 .en,
 [data-lang="both"] ol.toc .en,
-[data-lang="both"] .pn .en {
+[data-lang="both"] .pn > a > .en {
   display: block;
   font-size: 0.55em;
   color: var(--muted);
@@ -3315,7 +3352,8 @@ a.t {
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
       <span></span>
-      <a class="next" href="#a1" data-go="a1"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a1" data-go="a1"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></a>
     </nav>
   </section>
   <!-- ==================== आरती / AARTI ==================== -->
@@ -3438,8 +3476,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#p1" data-go="p1"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">गणपत्यथर्वशीर्षोपनिषत्</span><span class="en" lang="en">Ganapati Atharvashirsha</span></a>
-      <a class="next" href="#a2" data-go="a2"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></a>
+      <a class="prev" href="#p1" data-go="p1"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">गणपत्यथर्वशीर्षोपनिषत्</span><span class="en" lang="en">Ganapati Atharvashirsha</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a2" data-go="a2"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 2. गणपतीची आरती (हिंदी) / Ganapati Aarti (Hindi) ---- -->
@@ -3560,8 +3599,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a1" data-go="a1"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></a>
-      <a class="next" href="#a3" data-go="a3"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></a>
+      <a class="prev" href="#a1" data-go="a1"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a3" data-go="a3"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 3. देवीची आरती / Devi Aarti ---- -->
@@ -3682,8 +3722,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a2" data-go="a2"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></a>
-      <a class="next" href="#a4" data-go="a4"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></a>
+      <a class="prev" href="#a2" data-go="a2"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">गणपतीची आरती (हिंदी)</span><span class="en" lang="en">Ganapati Aarti (Hindi)</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a4" data-go="a4"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 4. शंकराची आरती / Shankar Aarti ---- -->
@@ -3835,8 +3876,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a3" data-go="a3"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></a>
-      <a class="next" href="#a5" data-go="a5"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></a>
+      <a class="prev" href="#a3" data-go="a3"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">देवीची आरती</span><span class="en" lang="en">Devi Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a5" data-go="a5"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 5. दत्ताची आरती / Dattatreya Aarti ---- -->
@@ -3988,8 +4030,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a4" data-go="a4"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></a>
-      <a class="next" href="#a6" data-go="a6"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></a>
+      <a class="prev" href="#a4" data-go="a4"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">शंकराची आरती</span><span class="en" lang="en">Shankar Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a6" data-go="a6"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 6. ज्ञानेश्वरांची आरती / Dnyaneshwar Aarti ---- -->
@@ -4058,8 +4101,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a5" data-go="a5"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></a>
-      <a class="next" href="#a7" data-go="a7"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></a>
+      <a class="prev" href="#a5" data-go="a5"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">दत्ताची आरती</span><span class="en" lang="en">Dattatreya Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a7" data-go="a7"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 7. विठ्ठलाची आरती / Vitthal Aarti ---- -->
@@ -4200,8 +4244,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a6" data-go="a6"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></a>
-      <a class="next" href="#a8" data-go="a8"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></a>
+      <a class="prev" href="#a6" data-go="a6"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">ज्ञानेश्वरांची आरती</span><span class="en" lang="en">Dnyaneshwar Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a8" data-go="a8"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 8. घालीन लोटांगण / Ghalin Lotangan ---- -->
@@ -4291,8 +4336,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a7" data-go="a7"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></a>
-      <a class="next" href="#a9" data-go="a9"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></a>
+      <a class="prev" href="#a7" data-go="a7"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">विठ्ठलाची आरती</span><span class="en" lang="en">Vitthal Aarti</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a9" data-go="a9"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 9. आरती जय गणेश देवा / Aarti Jai Ganesh Deva ---- -->
@@ -4389,8 +4435,9 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a8" data-go="a8"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></a>
-      <a class="next" href="#a10" data-go="a10"><small><span class="mr">पुढील ›</span><span class="en" lang="en">Next ›</span></small><span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></a>
+      <a class="prev" href="#a8" data-go="a8"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">घालीन लोटांगण</span><span class="en" lang="en">Ghalin Lotangan</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
+      <a class="next" href="#a10" data-go="a10"><small><span class="mr">पुढील</span><span class="en" lang="en">Next</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></small><span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></a>
     </nav>
   </section>
   <!-- ---- Aarti 10. आरती जय जगदीश हरे / Aarti Jai Jagdish Hare ---- -->
@@ -4543,7 +4590,8 @@ a.t {
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
-      <a class="prev" href="#a9" data-go="a9"><small><span class="mr">‹ मागील</span><span class="en" lang="en">‹ Previous</span></small><span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></a>
+      <a class="prev" href="#a9" data-go="a9"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागील</span><span class="en" lang="en">Previous</span></small><span class="mr">आरती जय गणेश देवा</span><span class="en" lang="en">Aarti Jai Ganesh Deva</span></a>
+      <div class="pnq"><a class="pnh" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></a><button type="button" class="pns" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button></div>
       <span></span>
     </nav>
   </section>
@@ -4612,6 +4660,7 @@ a.t {
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
+      <li><b>At the end of each aarti:</b> Previous and Next go to the neighbouring pieces; the small <b>house</b> and <b>contents-and-search</b> buttons between them work just like the ones at the top.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -6307,7 +6356,9 @@ a.t {
       jp.style.top = Math.round(bb.bottom) + "px";
     }
     jp.hidden = !o;
-    document.getElementById("hm").setAttribute("aria-expanded", String(o));
+    [].forEach.call(document.querySelectorAll("#hm,.pns"), function (b) {
+      b.setAttribute("aria-expanded", String(o));
+    });
     if (o) {
       pn.hidden = true;
       aa.setAttribute("aria-expanded", "false");
@@ -6324,6 +6375,19 @@ a.t {
   hmb.onclick = function () {
     setJ(jp.hidden);
   };
+  // Home and Search at the end of each piece do exactly what the top bar's buttons do
+  [].forEach.call(document.querySelectorAll(".pnh"), function (h) {
+    h.addEventListener("click", function (e) {
+      e.preventDefault();
+      goHome();
+      try {
+        history.replaceState(null, "", location.pathname);
+      } catch (x) {}
+    });
+  });
+  [].forEach.call(document.querySelectorAll(".pns"), function (b) {
+    b.onclick = hmb.onclick;
+  });
   document.getElementById("xc").onclick = function () {
     setP(false);
   };
@@ -7228,7 +7292,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v112").then(function (c) {
+          caches.open("aarti-v113").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
