@@ -2283,13 +2283,29 @@ a.t {
   color: inherit;
 }
 .skc .skli:focus-visible,
-.skc #skb:focus-visible {
+.skc #skb:focus-visible,
+.skc #skall:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 1px;
 }
-.skc #skb:not([hidden]) {
+.skc #skb:not([hidden]),
+.skc #skall {
   display: block;
   margin: 6px auto 0;
+}
+.skc #skall {
+  margin: 2px auto -6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* On the day: pooja time and moonrise countdown */
+.skc .skcd {
+  margin-top: 2px;
+  font: 600 13px/1.4 var(--lat);
+  color: var(--accent);
+}
+.skc .skcd .mr {
+  font-family: var(--body);
 }
 .skc .skm {
   display: flex;
@@ -5086,7 +5102,10 @@ a.t {
           '">' +
           chips +
           "</div>") +
-      '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button>';
+      '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button>' +
+      (skCache.part
+        ? ""
+        : '<button type="button" class="skl" id="skall"><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>');
     skShow(skCache.sel);
   }
   // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
@@ -5161,9 +5180,11 @@ a.t {
       '</span></div>' +
       '<div class="ske" lang="en">Moonrise ' +
       f.ten +
-      "</div>";
+      "</div>" +
+      '<div class="skcd" hidden></div>';
     skDot();
     requestAnimationFrame(skDot);
+    skCd();
     box.querySelector("#skb").hidden = k === C.ni;
     var st = box.querySelector(".sks"),
       on = null;
@@ -5177,46 +5198,98 @@ a.t {
     st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
     if (focus) on.focus({ preventScroll: true });
   }
-  // Calendar button: an .ics event for the program (7:00–8:30 pm), made on this device
-  function skIcs() {
+  // True within 120 km of Bharatiya Hindu Temple, Powell OH, where the group meets 7:00–8:30 pm
+  function skTemple(L) {
+    var r0 = Math.PI / 180,
+      a = Math.sin(((L.lat - 40.2148) * r0) / 2),
+      b = Math.sin(((L.lon + 83.1067) * r0) / 2);
+    return 12742 * Math.asin(Math.sqrt(a * a + Math.cos(L.lat * r0) * Math.cos(40.2148 * r0) * b * b)) <= 120;
+  }
+  // On the day: "Pooja today at 7:00 pm" (central Ohio) and "Moonrise in 2 h 10 min"; refreshed every minute
+  function skCd() {
+    var x = document.querySelector("#skc .skcd"),
+      C = skCache,
+      L = skLoc();
+    if (!x || !C || !L) return;
+    var o = C.list[C.sel],
+      now = Date.now(),
+      m = [],
+      e = [];
+    if (Math.round((o.day - skMid()) / 86400000) !== 0) {
+      x.hidden = true;
+      return;
+    }
+    if (skTemple(L)) {
+      var d = new Date(o.day),
+        t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0).getTime(),
+        t1 = t0 + 90 * 60000;
+      if (now < t0) {
+        m.push("आज पूजा सायं. ७:०० वाजता");
+        e.push("Pooja today at 7:00 pm");
+      } else if (now < t1) {
+        m.push("पूजा सुरू आहे");
+        e.push("Pooja in progress");
+      }
+    }
+    if (o.rise && now < o.rise) {
+      var mins = Math.ceil((o.rise - now) / 60000),
+        h = Math.floor(mins / 60),
+        mm = mins % 60;
+      m.push("चंद्रोदयाला " + (h ? skDV(h) + " तास " : "") + skDV(mm) + " मिनिटे");
+      e.push("Moonrise in " + (h ? h + " h " : "") + mm + " min");
+    }
+    x.hidden = !m.length;
+    x.innerHTML = '<span class="mr">' + m.join(" · ") + '</span><span class="en" lang="en">' + e.join(" · ") + "</span>";
+  }
+  setInterval(skCd, 60000);
+  // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.
+  // all = every upcoming Sankashti in the strip; otherwise the one shown in the card
+  function skIcs(all) {
     var C = skCache,
       L = skLoc();
     if (!C || !L) return;
-    var o = C.list[C.sel],
-      f = skFmt(o),
-      p2 = function (n) {
+    var p2 = function (n) {
         return ("0" + n).slice(-2);
       },
       dt = function (d, t) {
         return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + (t ? "T" + p2(d.getHours()) + p2(d.getMinutes()) + "00" : "");
       },
-      d = new Date(o.day),
-      r = o.rise ? new Date(o.rise) : null,
-      nm = (f.ang ? "Angaraki " : "") + "Sankashti Chaturthi",
-      L2 = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//sankashti-chaturthi//EN",
-        "BEGIN:VEVENT",
-        "UID:sk-" + dt(d) + "@sankashti-chaturthi.pages.dev",
-        "DTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
-      ];
+      // Central Ohio: the group meets at the temple; elsewhere, the place name
+      loc = skTemple(L) ? "Bharatiya Hindu Temple, 3671 Hyatts Rd, Powell, OH 43065" : L.en,
+      today = skMid(),
+      items = all
+        ? C.list.filter(function (o) {
+            return o.day >= today;
+          })
+        : [C.list[C.sel]],
+      stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
+      L2 = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//sankashti-chaturthi//EN"];
+    if (!items.length) return;
     // The group's program runs 7:00–8:30 pm on the day, whatever the moonrise time
-    var t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0),
-      t1 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20, 30);
-    L2.push("DTSTART:" + dt(t0, 1), "DTEND:" + dt(t1, 1), "SUMMARY:" + nm + " pooja");
-    if (r) L2.push("DESCRIPTION:Moonrise " + f.ten);
-    L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + nm, "TRIGGER:-PT2H", "END:VALARM");
-    // Central Ohio: the group meets at the temple; elsewhere, the place name
-    var r0 = Math.PI / 180,
-      ha = Math.sin(((L.lat - 40.2148) * r0) / 2),
-      hb2 = Math.sin(((L.lon + 83.1067) * r0) / 2),
-      km = 12742 * Math.asin(Math.sqrt(ha * ha + Math.cos(L.lat * r0) * Math.cos(40.2148 * r0) * hb2 * hb2)),
-      loc = km <= 120 ? "Bharatiya Hindu Temple, 3671 Hyatts Rd, Powell, OH 43065" : L.en;
-    L2.push("LOCATION:" + loc.replace(/,/g, "\\,"), "END:VEVENT", "END:VCALENDAR");
+    function ev(o) {
+      var f = skFmt(o),
+        d = new Date(o.day);
+      return {
+        d: d,
+        f: f,
+        nm: (f.ang ? "Angaraki " : "") + "Sankashti Chaturthi",
+        t0: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0),
+        t1: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20, 30),
+      };
+    }
+    items.forEach(function (o) {
+      var v = ev(o);
+      L2.push("BEGIN:VEVENT", "UID:sk-" + dt(v.d) + "@sankashti-chaturthi.pages.dev", "DTSTAMP:" + stamp);
+      L2.push("DTSTART:" + dt(v.t0, 1), "DTEND:" + dt(v.t1, 1), "SUMMARY:" + v.nm + " pooja");
+      if (o.rise) L2.push("DESCRIPTION:Moonrise " + v.f.ten);
+      L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + v.nm, "TRIGGER:-PT2H", "END:VALARM");
+      L2.push("LOCATION:" + loc.replace(/,/g, "\\,"), "END:VEVENT");
+    });
+    L2.push("END:VCALENDAR");
     var txt = L2.join("\r\n") + "\r\n",
-      u = URL.createObjectURL(new Blob([txt], { type: "text/calendar" }));
-    // iPhone/iPad: opening the file shows Calendar's "Add" sheet; elsewhere it downloads as an .ics file
+      u = URL.createObjectURL(new Blob([txt], { type: "text/calendar" })),
+      v1 = ev(items[0]);
+    // iPhone/iPad: opening the file shows Calendar's "Add" / "Add All" sheet; elsewhere it downloads as an .ics file
     if (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
       location.href = u;
       return;
@@ -5224,29 +5297,29 @@ a.t {
     function save() {
       var a = document.createElement("a");
       a.href = u;
-      a.download = "sankashti-" + dt(d) + ".ics";
+      a.download = all ? "sankashti-all.ics" : "sankashti-" + dt(v1.d) + ".ics";
       document.body.appendChild(a);
       a.click();
-      flash("कॅलेंडर फाइल डाउनलोड झाली; ती उघडा", "Calendar file downloaded; open it to add the event");
+      flash("कॅलेंडर फाइल डाउनलोड झाली; ती उघडा", "Calendar file downloaded; open it to add " + (all ? "the events" : "the event"));
       setTimeout(function () {
         URL.revokeObjectURL(u);
         a.remove();
       }, 60000);
     }
-    // Android: ask the phone's calendar app for a new, filled-in event (stays on the phone);
+    // Android, one date: ask the phone's calendar app for a new, filled-in event (stays on the phone);
     // if no app opens (the page is still showing), download the .ics file instead
-    if (/Android/.test(navigator.userAgent)) {
+    if (!all && /Android/.test(navigator.userAgent)) {
       var e = encodeURIComponent;
       location.href =
         "intent:#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir/event;S.title=" +
-        e(nm + " pooja") +
+        e(v1.nm + " pooja") +
         ";S.eventLocation=" +
         e(loc) +
-        (r ? ";S.description=" + e("Moonrise " + f.ten) : "") +
+        (items[0].rise ? ";S.description=" + e("Moonrise " + v1.f.ten) : "") +
         ";l.beginTime=" +
-        t0.getTime() +
+        v1.t0.getTime() +
         ";l.endTime=" +
-        t1.getTime() +
+        v1.t1.getTime() +
         ";end";
       setTimeout(function () {
         if (!document.hidden) save();
@@ -5256,7 +5329,9 @@ a.t {
     save();
   }
   document.addEventListener("click", function (e) {
-    if (e.target.closest && e.target.closest("#skcal")) skIcs();
+    if (!e.target.closest) return;
+    if (e.target.closest("#skcal")) skIcs();
+    else if (e.target.closest("#skall")) skIcs(true);
   });
   // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankashti" returns
   document.addEventListener("click", function (e) {
@@ -6532,7 +6607,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v97").then(function (c) {
+          caches.open("aarti-v98").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
