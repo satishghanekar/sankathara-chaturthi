@@ -2477,7 +2477,7 @@ a.t {
 }
 
 /* ==== Offline badge (#ofb) at the top right of the home card ====
-   A cloud icon inside a slowly turning gold ring (saved for offline use). Tapping checks for a newer
+   A cloud icon inside a still gold ring (saved for offline use). Tapping checks for a newer
    version: the ring spins fast, then bursts green ("up to date"). With no internet: dashed amber ring. */
 :root {
   --ok: #1f8a4c;
@@ -2530,7 +2530,6 @@ a.t {
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: ofspin 6s linear infinite;
 }
 #ofb svg {
   display: block;
@@ -2538,7 +2537,7 @@ a.t {
 }
 #ofb[data-s="busy"]::before {
   background: conic-gradient(var(--accent), transparent 70%);
-  animation-duration: 0.8s;
+  animation: ofspin 0.8s linear infinite;
 }
 #ofb[data-s="ok"] {
   color: var(--bg);
@@ -7835,7 +7834,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v132").then(function (c) {
+          caches.open("aarti-v133").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
