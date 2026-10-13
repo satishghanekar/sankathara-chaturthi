@@ -2220,6 +2220,13 @@ a.t {
 #shr2 {
   margin: 16px 0 4px;
 }
+/* Version number under the Settings buttons, so we can tell which copy a phone is showing */
+#ver {
+  font: 500 12px var(--lat);
+  color: var(--muted);
+  text-align: center;
+  margin-top: 6px;
+}
 /* Narrow phones: icons only (each button keeps its spoken name in aria-label) */
 @media (max-width: 379px) {
   #shr button span,
@@ -2502,9 +2509,10 @@ a.t {
   display: grid;
   place-items: center;
   padding: 0;
+  min-width: 0;
   border: 0;
   border-radius: 50%;
-  background: none;
+  background: var(--surface);
   color: var(--accent);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -2524,14 +2532,6 @@ a.t {
   mask-composite: exclude;
   animation: ofspin 6s linear infinite;
 }
-#ofb::after {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: 50%;
-  background: var(--surface);
-  z-index: -1;
-}
 #ofb svg {
   display: block;
   position: relative;
@@ -2547,7 +2547,7 @@ a.t {
   background: var(--ok);
   animation: none;
 }
-#ofb[data-s="ok"]::after {
+#ofb[data-s="ok"] {
   background: var(--ok);
   box-shadow:
     0 0 0 6px color-mix(in srgb, var(--ok) 22%, transparent),
@@ -2563,7 +2563,7 @@ a.t {
   background: repeating-conic-gradient(var(--warn) 0 18deg, transparent 18deg 30deg);
   animation: none;
 }
-#ofb[data-s="off"]::after {
+#ofb[data-s="off"] {
   background: var(--warnbg);
 }
 #ofb .spin {
@@ -3323,6 +3323,7 @@ a.t {
     <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
     <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
   </div>
+  <div id="ver" lang="en"></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
 <nav id="rail" aria-label="Contents"></nav>
@@ -7758,6 +7759,11 @@ a.t {
         busy: "Checking for updates",
         ok: "Up to date",
       };
+    // This copy's version, from the cache name below (the same text the check looks for in a fresh copy)
+    var RE = /caches\.open\("(aarti-v\d+)"/,
+      me = ((document.scripts[document.scripts.length - 1] || {}).text || "").match(RE);
+    me = me && me[1];
+    document.getElementById("ver").textContent = me ? "Version " + me.slice(7) : "";
     function ofSet(st) {
       ofb.setAttribute("data-s", st);
       ofb.innerHTML = OFI[st];
@@ -7779,9 +7785,7 @@ a.t {
         return;
       }
       ofSet("busy");
-      var RE = /caches\.open\("(aarti-v\d+)"/,
-        me = (document.documentElement.innerHTML.match(RE) || [])[1],
-        t0 = Date.now();
+      var t0 = Date.now();
       fetch("./", { cache: "no-store" })
         .then(function (r) {
           return r.ok ? r.text() : Promise.reject();
@@ -7831,7 +7835,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v131").then(function (c) {
+          caches.open("aarti-v132").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
