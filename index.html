@@ -987,11 +987,6 @@ body {
   border-color: var(--accent);
   color: var(--accent);
 }
-#offrow {
-  font: 600 13px var(--lat);
-  color: var(--muted);
-  text-align: center;
-}
 
 
 /* ==== Phones held sideways ==== */
@@ -2474,6 +2469,145 @@ a.t {
   }
 }
 
+/* ==== Offline badge (#ofb) at the top right of the home card ====
+   A cloud icon inside a slowly turning gold ring (saved for offline use). Tapping checks for a newer
+   version: the ring spins fast, then bursts green ("up to date"). With no internet: dashed amber ring. */
+:root {
+  --ok: #1f8a4c;
+  --warn: #a8650a;
+  --warnbg: #fbefd9;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-pref]) {
+    --ok: #5fd08e;
+    --warn: #f0b35a;
+    --warnbg: #3a2a12;
+  }
+}
+:root[data-pref="dark"] {
+  --ok: #5fd08e;
+  --warn: #f0b35a;
+  --warnbg: #3a2a12;
+}
+.top {
+  position: relative;
+}
+#ofb {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#ofb[hidden] {
+  display: none;
+}
+#ofb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(var(--gold), color-mix(in srgb, var(--gold) 15%, transparent), var(--gold));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ofspin 6s linear infinite;
+}
+#ofb::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--surface);
+  z-index: -1;
+}
+#ofb svg {
+  display: block;
+  position: relative;
+}
+#ofb[data-s="busy"]::before {
+  background: conic-gradient(var(--accent), transparent 70%);
+  animation-duration: 0.8s;
+}
+#ofb[data-s="ok"] {
+  color: var(--bg);
+}
+#ofb[data-s="ok"]::before {
+  background: var(--ok);
+  animation: none;
+}
+#ofb[data-s="ok"]::after {
+  background: var(--ok);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--ok) 22%, transparent),
+    0 0 18px color-mix(in srgb, var(--ok) 60%, transparent);
+}
+#ofb[data-s="ok"] svg {
+  animation: ofpop 0.45s ease-out;
+}
+#ofb[data-s="off"] {
+  color: var(--warn);
+}
+#ofb[data-s="off"]::before {
+  background: repeating-conic-gradient(var(--warn) 0 18deg, transparent 18deg 30deg);
+  animation: none;
+}
+#ofb[data-s="off"]::after {
+  background: var(--warnbg);
+}
+#ofb .spin {
+  animation: ofspin 0.9s linear infinite;
+}
+#ofb:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@keyframes ofspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ofpop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ofb::before,
+  #ofb svg,
+  #ofb .spin {
+    animation: none !important;
+  }
+}
+@media screen and (min-width: 1100px) {
+  [data-rail="1"] #ofb {
+    top: 10px;
+    right: 10px;
+  }
+}
+@media print {
+  #ofb {
+    display: none !important;
+  }
+}
+
 /* ==== Lotus ornament at the end of each piece ==== */
 .fin {
   display: flex;
@@ -3189,7 +3323,6 @@ a.t {
     <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
     <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
   </div>
-  <div id="offrow" hidden>✓ <span class="mr">इंटरनेटशिवायही चालेल</span><span class="en" lang="en">Ready offline</span></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
 <nav id="rail" aria-label="Contents"></nav>
@@ -3198,6 +3331,8 @@ a.t {
   <!-- ==== Home page ==== -->
   <main id="home">
     <div class="top">
+    <!-- Offline badge: saved for offline use (gold ring), checking (spinning), up to date (green), no internet (amber). Tap to check for updates. -->
+    <button type="button" id="ofb" hidden aria-label="Ready offline. Tap to check for updates"></button>
     <div class="hero" aria-hidden="true">
       <div class="om">ॐ</div>
       <div class="hl1">॥ श्री गणेशाय नमः ॥</div>
@@ -4921,7 +5056,8 @@ a.t {
 
     <h3>Good to know</h3>
     <ul>
-      <li><b>Getting updates:</b> close the site or app and open it again; new changes load in the background.</li>
+      <li><b>Offline badge</b> (cloud in a gold ring, top right of the home card): the site is saved on your phone and works without internet. Tap it to check for a newer version: it spins, then turns green when you are up to date, or reloads with the new version. A dashed amber ring means there is no internet right now and the saved copy is in use.</li>
+      <li><b>Getting updates:</b> tap the offline badge, or close the site or app and open it again; new changes load in the background.</li>
       <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
       <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
     </ul>
@@ -7607,6 +7743,76 @@ a.t {
       m2.content = "संकष्टी चतुर्थी";
       hd.appendChild(m2);
     } catch (e) {}
+    // Offline badge on the home card. Tapping fetches the page fresh: if its cache version (aarti-vN) is newer
+    // than this one, the page reloads with it; otherwise it shows "up to date".
+    var ofb = document.getElementById("ofb"),
+      OFI = {
+        idle: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.4 9.1 4.5 4.5 0 0 0 7 18z"/><path d="M9.5 13.5l2 2 3.5-3.5"/></svg>',
+        off: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10.5a4 4 0 0 0 1.6-.33M20.8 14.5A4 4 0 0 0 18.1 10.05 6 6 0 0 0 9.2 5.6M6.4 9.1A4.5 4.5 0 0 0 7 18"/><path d="M3 3l18 18"/></svg>',
+        busy: '<svg class="spin" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-3-6.25"/></svg>',
+        ok: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+      },
+      OFL = {
+        idle: "Ready offline. Tap to check for updates",
+        off: "No internet. Using the saved copy",
+        busy: "Checking for updates",
+        ok: "Up to date",
+      };
+    function ofSet(st) {
+      ofb.setAttribute("data-s", st);
+      ofb.innerHTML = OFI[st];
+      ofb.setAttribute("aria-label", OFL[st]);
+    }
+    ofSet(navigator.onLine === false ? "off" : "idle");
+    addEventListener("online", function () {
+      if (ofb.getAttribute("data-s") === "off") ofSet("idle");
+    });
+    addEventListener("offline", function () {
+      ofSet("off");
+    });
+    ofb.onclick = function () {
+      var st = ofb.getAttribute("data-s");
+      if (st === "busy") return;
+      if (navigator.onLine === false) {
+        ofSet("off");
+        flash("इंटरनेट नाही. जतन केलेली प्रत वापरत आहे.", "No internet. Using the saved copy.");
+        return;
+      }
+      ofSet("busy");
+      var RE = /caches\.open\("(aarti-v\d+)"/,
+        me = (document.documentElement.innerHTML.match(RE) || [])[1],
+        t0 = Date.now();
+      fetch("./", { cache: "no-store" })
+        .then(function (r) {
+          return r.ok ? r.text() : Promise.reject();
+        })
+        .then(function (h) {
+          var v = (h.match(RE) || [])[1];
+          setTimeout(function () {
+            if (v && me && v !== me) {
+              flash("नवीन आवृत्ती, उघडत आहे…", "New version, loading…");
+              try {
+                navigator.serviceWorker.getRegistration().then(function (g) {
+                  if (g) g.update();
+                });
+              } catch (e) {}
+              setTimeout(function () {
+                location.reload();
+              }, 700);
+              return;
+            }
+            ofSet("ok");
+            flash("सर्व अद्ययावत आहे", "Up to date");
+            setTimeout(function () {
+              if (ofb.getAttribute("data-s") === "ok") ofSet("idle");
+            }, 2000);
+          }, Math.max(0, 900 - (Date.now() - t0)));
+        })
+        .catch(function () {
+          ofSet("off");
+          flash("इंटरनेट नाही. जतन केलेली प्रत वापरत आहे.", "No internet. Using the saved copy.");
+        });
+    };
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("sw.js")
@@ -7615,10 +7821,10 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v129").then(function (c) {
-            // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
+          caches.open("aarti-v130").then(function (c) {
+            // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = function () {
-              document.getElementById("offrow").hidden = false;
+              ofb.hidden = false;
             };
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
             Promise.all(
