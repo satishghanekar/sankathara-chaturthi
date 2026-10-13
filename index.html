@@ -2111,6 +2111,14 @@ a.t {
     break-after: page;
     page-break-after: always;
   }
+  /* contents in two columns read top to bottom; a grid, because Safari ignores CSS columns in print */
+  #pv .pvtoc ol {
+    columns: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: column;
+    column-gap: 28pt;
+  }
   /* two columns: stanzas run down the left column to the foot of the page, then down the right */
   #pv .pvhd {
     break-after: avoid;
@@ -6990,6 +6998,7 @@ a.t {
           li.innerHTML = m ? m.innerHTML : a.innerHTML;
           ol.appendChild(li);
         });
+        ol.style.gridTemplateRows = "repeat(" + Math.ceil(as.length / 2) + ", auto)"; // two columns, top to bottom
         tc.appendChild(ol);
       });
       pv.appendChild(tc);
@@ -7133,15 +7142,77 @@ a.t {
           });
           if (wait2.length) gs2.push(wait2);
           gs2.forEach(function (g) {
-            [].forEach.call(g, function (u) {
+            g.forEach(function (u) {
               u.removeAttribute("style"); // drop the on-screen grid placement
             });
-            cols.appendChild(keep(g));
           });
-          var hk = keep(head);
-          hk.classList.add("pvhd");
-          box.appendChild(hk);
-          box.appendChild(cols);
+          if (root.classList.contains("wk")) {
+            // Safari and iOS browsers ignore CSS columns when printing. Instead, cut the piece into
+            // blocks small enough for one page (even sideways) and fill each block's left column
+            // first, then its right one. A short piece is a single block.
+            var CAP = 22; // estimated printed lines per column in one block
+            function gl(g) {
+              var n = 0;
+              g.forEach(function (u) {
+                if (u.classList.contains("rmk")) {
+                  n += 1;
+                  return;
+                }
+                [].forEach.call(u.querySelectorAll(".verse ." + (P.lang === "en" ? "en" : "mr") + " p"), function (x) {
+                  n += Math.ceil(x.textContent.length / (P.lang === "en" ? 42 : 48)) || 1;
+                });
+                n += 1;
+              });
+              return n;
+            }
+            var blocks = [],
+              cur2 = [],
+              cn2 = 4; // the heading and dhrupad share the first block's page
+            gs2.forEach(function (g) {
+              var n = gl(g);
+              if (cur2.length && cn2 + n > 2 * CAP) {
+                blocks.push(cur2);
+                cur2 = [];
+                cn2 = 0;
+              }
+              cur2.push(g);
+              cn2 += n;
+            });
+            if (cur2.length) blocks.push(cur2);
+            blocks.forEach(function (bk, bi) {
+              var ls = bk.map(gl),
+                tot = ls.reduce(function (a, b) {
+                  return a + b;
+                }, 0),
+                k = bk.length,
+                best = 1e9,
+                l = 0;
+              for (var j = 1; j <= bk.length; j++) {
+                l += ls[j - 1];
+                var m = Math.max(l, tot - l);
+                if (m < best) {
+                  best = m;
+                  k = j;
+                }
+              }
+              var t2 = document.createElement("table");
+              t2.className = "pvt pv2";
+              var tr2 = document.createElement("tr");
+              tr2.appendChild(td([].concat.apply([], bk.slice(0, k))));
+              tr2.appendChild(td([].concat.apply([], bk.slice(k))));
+              t2.appendChild(tr2);
+              box.appendChild(keep(bi ? [t2] : head.concat([t2])));
+            });
+            if (!blocks.length) box.appendChild(keep(head));
+          } else {
+            gs2.forEach(function (g) {
+              cols.appendChild(keep(g));
+            });
+            var hk = keep(head);
+            hk.classList.add("pvhd");
+            box.appendChild(hk);
+            box.appendChild(cols);
+          }
         }
         pv.appendChild(box);
       });
@@ -7374,7 +7445,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v117").then(function (c) {
+          caches.open("aarti-v118").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
