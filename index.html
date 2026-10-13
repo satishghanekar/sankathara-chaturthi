@@ -1464,10 +1464,11 @@ a.t {
     letter-spacing: 0.04em;
     margin: 6pt 0 0;
   }
+  /* Contents at the top of page 1; the first piece follows straight after (no page to itself) */
   #pv .pvtoc {
-    break-after: page;
-    page-break-after: always;
-    margin: 10pt 0 0;
+    margin: 10pt 0 14pt;
+    padding-bottom: 10pt;
+    border-bottom: 1px solid #bbb;
   }
   #pv .pvtoc h3 {
     font: 600 13pt/1.3 var(--head);
@@ -2640,6 +2641,109 @@ a.t {
     border-inline-start: 0;
   }
 }
+
+/* ==== Help (English, phone-first) ==== */
+#hlpb,
+#hlp2 {
+  display: block;
+  margin: 14px auto 4px;
+  padding: 8px 12px;
+  min-height: 40px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: 500 14px/1.3 var(--lat);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+#hlp2 {
+  margin: 10px 0 0;
+  padding-left: 0;
+}
+#help {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font: 400 16px/1.55 var(--lat);
+}
+#help[hidden] {
+  display: none;
+}
+#help .hlpbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--rule);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+#help h2 {
+  margin: 0;
+  font: 600 20px/1.2 var(--lat);
+  color: var(--accent);
+}
+#hlpx {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 15px/1 var(--lat);
+  cursor: pointer;
+}
+#help .hlpin {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+}
+#help .hlead {
+  color: var(--muted);
+}
+#help h3 {
+  margin: 26px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--accent);
+  font: 600 17px/1.3 var(--lat);
+  color: var(--accent);
+}
+#help h4 {
+  margin: 14px 0 4px;
+  font: 600 15px/1.3 var(--lat);
+}
+#help ol,
+#help ul {
+  margin: 0;
+  padding-left: 1.3em;
+}
+#help li {
+  margin: 6px 0;
+}
+#help li::marker {
+  color: var(--accent);
+}
+#hlpb:focus-visible,
+#hlp2:focus-visible,
+#hlpx:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media print {
+  #help,
+  #hlpb {
+    display: none !important;
+  }
+}
 </style>
 </head>
 
@@ -2703,6 +2807,7 @@ a.t {
     <button id="tc" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
     <div id="wrow"><button id="tw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
   </div>
+  <button type="button" id="hlp2" lang="en">? Help &amp; how to use</button>
   <div id="offrow" hidden>✓ <span class="mr">इंटरनेटशिवायही चालेल</span><span class="en" lang="en">Ready offline</span></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
@@ -2750,6 +2855,7 @@ a.t {
       <button type="button" class="wide" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR कोड</span><span class="en" lang="en">QR</span></button>
       <button type="button" class="wide" id="prb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span class="mr">प्रिंट</span><span class="en" lang="en">Print</span></button>
     </div>
+    <button type="button" id="hlpb" lang="en">? Help &amp; how to use</button>
   </main>
   <!-- ==================== पूजा / POOJA ==================== -->
   <div class="grp" id="g-pooja"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></div>
@@ -4321,6 +4427,68 @@ a.t {
 </div>
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
   <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
+</div>
+<!-- ==== Help (English only), opened from the home page and Settings ==== -->
+<div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="hlpt" lang="en">
+  <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx">✕ Close</button></div>
+  <div class="hlpin">
+    <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration. It works without internet once opened.</p>
+
+    <h3>Put it on your phone</h3>
+    <h4>iPhone</h4>
+    <ol>
+      <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp or another app, tap ⋯ or the share icon and choose <b>Open in Safari</b> first.</li>
+      <li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari.</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+    </ol>
+    <h4>Android</h4>
+    <ol>
+      <li>Open the site in <b>Chrome</b>.</li>
+      <li>Tap the <b>⋮</b> menu at the top right.</li>
+      <li>Tap <b>Add to Home screen</b> or <b>Install app</b>, then <b>Install</b> or <b>Add</b>.</li>
+    </ol>
+    <p>The icon opens the site like an app, even without internet. If you switch away and come back, it returns to where you were reading.</p>
+
+    <h3>The date card</h3>
+    <ul>
+      <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
+      <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
+      <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
+      <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
+      <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
+      <li>On the day itself, the card shows the pooja time and how long until moonrise.</li>
+    </ul>
+
+    <h3>Buttons at the top</h3>
+    <ul>
+      <li><b>Home</b> (house and title): back to the start.</li>
+      <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it.</li>
+      <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
+      <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
+      <li><b>⚙ Settings:</b> text size, theme (light, sepia, dark), high contrast, keep the screen on, one or two columns on wide screens, and <b>Menu language</b> (English or मराठी) for the card, buttons and settings.</li>
+    </ul>
+
+    <h3>While reading</h3>
+    <ul>
+      <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
+      <li><b>Pinch</b> or use A− / A+ in Settings to change the text size.</li>
+      <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
+    </ul>
+
+    <h3>Share, QR and Print</h3>
+    <ul>
+      <li><b>Share</b> sends a ready reminder with the next date, pooja time, moonrise and the link, for WhatsApp or messages.</li>
+      <li><b>QR</b> shows a code others can scan with their camera to open the site.</li>
+      <li><b>Print</b> makes a printout or PDF of the contents and all the texts, in the language you have chosen, in one or two columns.</li>
+    </ul>
+
+    <h3>Good to know</h3>
+    <ul>
+      <li><b>Getting updates:</b> close the site or app and open it again; new changes load in the background.</li>
+      <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
+      <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
+    </ul>
+  </div>
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
@@ -6245,6 +6413,49 @@ a.t {
     }
   }
 
+  // ---- Help: opens over the page; the phone's Back button closes it ----
+  (function () {
+    var hp = document.getElementById("help");
+    function open() {
+      setP(false);
+      hp.hidden = false;
+      hp.scrollTop = 0;
+      document.documentElement.style.overflow = "hidden";
+      try {
+        history.pushState({ help: 1 }, "", "#help");
+      } catch (e) {}
+      document.getElementById("hlpx").focus();
+    }
+    function close(fromPop) {
+      if (hp.hidden) return;
+      hp.hidden = true;
+      document.documentElement.style.overflow = "";
+      if (!fromPop) {
+        try {
+          if (history.state && history.state.help) history.back();
+          else history.replaceState(null, "", location.pathname);
+        } catch (e) {}
+      }
+    }
+    document.getElementById("hlpb").onclick = open;
+    document.getElementById("hlp2").onclick = open;
+    document.getElementById("hlpx").onclick = function () {
+      close();
+    };
+    addEventListener("popstate", function () {
+      close(true);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close();
+    });
+    if (location.hash === "#help") {
+      try {
+        history.replaceState(null, "", location.pathname);
+      } catch (e) {}
+      open();
+    }
+  })();
+
   // ---- Print ----
   // Print: single column (as on screen), two columns, or Marathi | English side by side.
   // A separate print view (#pv) is built from the visible text just before printing, so that
@@ -6528,9 +6739,12 @@ a.t {
     pm.addEventListener("click", function (e) {
       if (e.target === pm) pm.hidden = true;
     });
+    // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view,
+    // single column: contents, then every piece in the chosen text language, never the home page
     window.addEventListener("beforeprint", function () {
       if (!busy) {
-        root.removeAttribute("data-print");
+        build("one");
+        root.setAttribute("data-print", "one");
       }
     });
     window.addEventListener("afterprint", function () {
@@ -6691,7 +6905,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v100").then(function (c) {
+          caches.open("aarti-v102").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
