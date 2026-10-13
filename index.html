@@ -21,6 +21,8 @@
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<!-- In the page itself (not added by script) so iPhone share sheets and link previews, which don't run scripts, find the icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
 /* =====================================================================
@@ -7546,10 +7548,6 @@ a.t {
       l1.rel = "manifest";
       l1.href = "manifest.json";
       hd.appendChild(l1);
-      var l2 = document.createElement("link");
-      l2.rel = "apple-touch-icon";
-      l2.href = "icon-180.png";
-      hd.appendChild(l2);
       var m1 = document.createElement("meta");
       m1.name = "apple-mobile-web-app-capable";
       m1.content = "yes";
@@ -7567,7 +7565,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v125").then(function (c) {
+          caches.open("aarti-v126").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
