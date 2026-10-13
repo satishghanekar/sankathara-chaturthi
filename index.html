@@ -6241,6 +6241,7 @@ a.t {
       ten: r ? h12 + ":" + mi + (h >= 12 ? " pm" : " am") + (late ? " (after midnight)" : "") : "—",
     };
   }
+  var skKey = "";
   function skRender() {
     var box = document.getElementById("skc");
     if (!box) return;
@@ -6817,9 +6818,13 @@ a.t {
   // FSA: the automatic size for this screen, worked out even when the reader has chosen a size,
   // so the pinch bubble can show sizes as a percentage of it (100% = default)
   var FSA = 0;
+  // The column width depends only on the window and layout, not on the text size or language,
+  // so it is remembered: reading it would make the browser lay out the whole page an extra time
+  var CW = {};
   function autoFs() {
-    var w = document.querySelector(".wrap"),
-      cw = w ? w.clientWidth : innerWidth - 32,
+    var wk = [innerWidth, root.getAttribute("data-cols"), root.getAttribute("data-rail")].join("|"),
+      w = document.querySelector(".wrap"),
+      cw = CW[wk] || (CW[wk] = w ? w.clientWidth : innerWidth - 32),
       r = ratio();
     if (!r || !cw) return;
     var f = Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r)));
@@ -6946,9 +6951,6 @@ a.t {
     var wide = innerWidth >= 900,
       two = wide && (P.cols === 2 || (P.cols !== 1 && innerWidth >= 1000));
     root.setAttribute("data-cols", two ? "2" : "1");
-    try {
-      skRender();
-    } catch (e) {}
     if (innerWidth >= 1100) root.setAttribute("data-rail", "1");
     else root.removeAttribute("data-rail");
     document.getElementById("colrow").hidden = !wide;
@@ -6977,6 +6979,15 @@ a.t {
     hb.setAttribute("aria-label", "Language: " + LB[1] + ". Tap to change");
     autoFs();
     root.style.setProperty("--fs", P.fs + "px");
+    // The date card is rebuilt only when the menu language or the day changes (rebuilding it on
+    // every language switch cost a second page layout on slow phones); otherwise just re-check its wrap
+    var sk = P.ui + new Date().toDateString();
+    try {
+      if (sk !== skKey) {
+        skKey = sk;
+        skRender();
+      } else skDot();
+    } catch (e) {}
     [].forEach.call(document.querySelectorAll("#st button"), function (b) {
       b.setAttribute("aria-pressed", b.dataset.v === P.th);
     });
