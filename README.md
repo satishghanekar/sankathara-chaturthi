@@ -25,6 +25,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
 | `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
 | `icon-180.png`, `icon-192.png`, `icon-512.png` | Home-screen icons. |
+| `fonts/` | The four fonts, served from the site itself so nothing is fetched from Google and they work offline (see `fonts/README.md`). |
 
 There is no build step. The files in this repository are exactly what the site serves.
 
@@ -73,16 +74,16 @@ Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in pla
 
 Phones keep a saved copy of the site. The cache version tells them a new copy exists. It appears in **two** places, and both must always have the **same** number:
 
-1. `sw.js`, first line:
+1. `sw.js`, near the top:
    ```js
-   const V='aarti-v109';
+   const V='aarti-v110';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v109")
+   caches.open("aarti-v110")
    ```
 
-Add one to the number in both places (for example `aarti-v109` → `aarti-v110`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Add one to the number in both places (for example `aarti-v110` → `aarti-v111`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
@@ -97,8 +98,8 @@ On GitHub, open **Commits** (the clock icon above the file list) and click the c
 
 `index.html` is laid out top to bottom as:
 
-1. `<head>`: title, fonts.
-2. `<style>`: all styling, in labelled sections (`/* ==== … ==== */`).
+1. `<head>`: title, and preloading of the main font files.
+2. `<style>`: all styling, in labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`.
 3. `<body>`: the top bar, the settings panel, then the home page and every piece.
 4. `<script>`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of the script lists the sections in order.
 
