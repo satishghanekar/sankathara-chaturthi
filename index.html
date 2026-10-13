@@ -2318,6 +2318,72 @@ a.t {
 [data-lang="en"] .skc .skd {
   font: 600 1.1em/1.35 var(--lat);
 }
+/* Date strip: every Sankashti from last January to the end of next year; tap one to show it above */
+.skc .sks {
+  position: relative;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin: 10px -6px 0;
+  padding: 12px 6px 6px;
+  border-top: 1px solid var(--hdrl);
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.skc .skch {
+  flex: none;
+  position: relative;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 4px 6px;
+  border: 1px solid var(--hdrl);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 12px/1.25 var(--body);
+  cursor: pointer;
+}
+.skc .skch b {
+  display: block;
+  font: 600 18px/1.2 var(--body);
+}
+[data-lang="en"] .skc .skch b {
+  font-family: var(--lat);
+}
+[data-lang="both"] .skc .skch .en {
+  display: none;
+}
+.skc .skch.past {
+  color: var(--muted);
+}
+.skc .skch.ang {
+  border-color: var(--gold);
+}
+.skc .skch.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.skc .skch:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.skc .skch i {
+  position: absolute;
+  top: -8px;
+  left: 4px;
+  padding: 0 3px;
+  background: var(--surface);
+  color: var(--muted);
+  font: 600 10px/1.2 var(--lat);
+  font-style: normal;
+}
+[data-lang="both"] .skc .skch i .en {
+  display: none;
+}
+[data-lang="both"] .skc #skb .en {
+  display: none;
+}
 @media print {
   .skc {
     display: none !important;
@@ -4560,6 +4626,34 @@ a.t {
       return "०१२३४५६७८९"[d];
     });
   }
+  var SKWM = ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+    SKMM = ["जानेवारी", "फेब्रुवारी", "मार्च", "एप्रिल", "मे", "जून", "जुलै", "ऑगस्ट", "सप्टेंबर", "ऑक्टोबर", "नोव्हेंबर", "डिसेंबर"],
+    SKMS = ["जाने.", "फेब्रु.", "मार्च", "एप्रि.", "मे", "जून", "जुलै", "ऑग.", "सप्टें.", "ऑक्टो.", "नोव्हें.", "डिसें."];
+  function skMid(t) {
+    var d = t ? new Date(t) : new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  }
+  // Date (with the year when it is not this year) and moonrise text for one Sankashti, in Marathi and English
+  function skFmt(o) {
+    var d = new Date(o.day),
+      yr = d.getFullYear() !== new Date().getFullYear(),
+      r = o.rise ? new Date(o.rise) : null,
+      h = r ? r.getHours() : 0,
+      mi = r ? ("0" + r.getMinutes()).slice(-2) : "",
+      h12 = r ? ((h + 11) % 12) + 1 : 0,
+      late = r && r.getDate() !== d.getDate();
+    return {
+      d: d,
+      ang: d.getDay() === 2,
+      dmr: SKWM[d.getDay()] + ", " + skDV(d.getDate()) + " " + SKMM[d.getMonth()] + (yr ? " " + skDV(d.getFullYear()) : ""),
+      den: d.toLocaleDateString(
+        "en-US",
+        yr ? { weekday: "short", day: "numeric", month: "short", year: "numeric" } : { weekday: "short", day: "numeric", month: "short" },
+      ),
+      tmr: r ? (h >= 20 || h < 4 ? "रात्री " : h >= 16 ? "सायं. " : "") + skDV(h12) + ":" + skDV(mi) + (late ? " (मध्यरात्रीनंतर)" : "") : "—",
+      ten: r ? h12 + ":" + mi + (h >= 12 ? " pm" : " am") + (late ? " (after midnight)" : "") : "—",
+    };
+  }
   function skRender() {
     var box = document.getElementById("skc");
     if (!box) return;
@@ -4570,91 +4664,167 @@ a.t {
         '<div class="skh"><span class="mr">पुढील संकष्टी चतुर्थी</span><span class="en" lang="en">Next Sankashti Chaturthi</span></div><button type="button" class="skl" id="skl"><span lang="en">📍 Use my location to show the date and moonrise</span></button>';
       return;
     }
+    // The next Sankashti first (fast); then, a moment later, every Sankashti from 1 January last year
+    // to the end of next year for the date strip under the card (a few hundred ms on a slow phone)
     var key = L.lat + "," + L.lon + "," + new Date().toDateString();
     if (!skCache || skCache.key !== key) {
       try {
-        skCache = { key: key, list: SK.upcoming(Date.now(), L.lat, L.lon, 1) };
+        var first = SK.upcoming(Date.now(), L.lat, L.lon, 1);
       } catch (e) {
         box.hidden = true;
         return;
       }
+      if (!first[0]) {
+        box.hidden = true;
+        return;
+      }
+      skCache = { key: key, list: first, ni: 0, sel: 0, part: 1 };
+      setTimeout(function () {
+        if (!skCache || skCache.key !== key) return;
+        try {
+          var y = new Date().getFullYear(),
+            list = SK.upcoming(new Date(y - 1, 0, 1).getTime(), L.lat, L.lon, 40).filter(function (o) {
+              return new Date(o.day).getFullYear() <= y + 1;
+            }),
+            today = skMid();
+          for (var k = 0; k < list.length; k++)
+            if (list[k].day >= today) {
+              skCache = { key: key, list: list, ni: k, sel: k };
+              skRender();
+              return;
+            }
+        } catch (e) {}
+      }, 50);
     }
-    var o = skCache.list[0];
-    if (!o) {
-      box.hidden = true;
-      return;
-    }
-    var d = new Date(o.day),
-      today = new Date();
-    today = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-    var dd = Math.round((o.day - today) / 86400000);
-    var WM = ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
-      MM = [
-        "जानेवारी",
-        "फेब्रुवारी",
-        "मार्च",
-        "एप्रिल",
-        "मे",
-        "जून",
-        "जुलै",
-        "ऑगस्ट",
-        "सप्टेंबर",
-        "ऑक्टोबर",
-        "नोव्हेंबर",
-        "डिसेंबर",
-      ];
-    var ang = d.getDay() === 2,
-      r = o.rise ? new Date(o.rise) : null,
-      h = r ? r.getHours() : 0,
-      mi = r ? ("0" + r.getMinutes()).slice(-2) : "",
-      h12 = r ? ((h + 11) % 12) + 1 : 0;
-    var late = r && new Date(r).getDate() !== d.getDate(),
-      tmr = r ? (h >= 20 || h < 4 ? "रात्री " : h >= 16 ? "सायं. " : "") + skDV(h12) + ":" + skDV(mi) : "—",
-      ten = r ? h12 + ":" + mi + (h >= 12 ? " pm" : " am") : "—";
-    var hm = dd === 0 ? "आज संकष्टी चतुर्थी" : dd === 1 ? "उद्या संकष्टी चतुर्थी" : "पुढील संकष्टी चतुर्थी",
+    var en = P.lang === "en",
+      chips = "",
+      lastY = 0;
+    skCache.list.forEach(function (o, k) {
+      var f = skFmt(o),
+        d = f.d,
+        Y = d.getFullYear();
+      chips +=
+        '<button type="button" role="option" class="skch' +
+        (k < skCache.ni ? " past" : "") +
+        (f.ang ? " ang" : "") +
+        '" data-k="' +
+        k +
+        '" aria-label="' +
+        (en
+          ? d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + (f.ang ? ", Angaraki" : "")
+          : SKWM[d.getDay()] + ", " + skDV(d.getDate()) + " " + SKMM[d.getMonth()] + " " + skDV(Y) + (f.ang ? ", अंगारकी" : "")) +
+        '"><span class="mr"><b>' +
+        skDV(d.getDate()) +
+        "</b>" +
+        SKMS[d.getMonth()] +
+        '</span><span class="en" lang="en"><b>' +
+        d.getDate() +
+        "</b>" +
+        d.toLocaleDateString("en-US", { month: "short" }) +
+        "</span>" +
+        (Y !== lastY ? '<i aria-hidden="true"><span class="mr">' + skDV(Y) + '</span><span class="en">' + Y + "</span></i>" : "") +
+        "</button>";
+      lastY = Y;
+    });
+    box.hidden = false;
+    box.innerHTML =
+      '<div class="skt"></div>' +
+      (skCache.part
+        ? ""
+        : '<div class="sks" role="listbox" aria-orientation="horizontal" aria-label="' +
+          (en ? "Sankashti dates" : "संकष्टी चतुर्थीच्या तारखा") +
+          '">' +
+          chips +
+          "</div>") +
+      '<div class="skf"><button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button><button type="button" class="skl" id="skl"><span lang="en">' +
+      (L.own ? "📍 Update my location" : "📍 Use my location") +
+      '</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>';
+    skShow(skCache.sel);
+  }
+  // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
+  function skShow(k, focus) {
+    var box = document.getElementById("skc"),
+      L = skLoc(),
+      C = skCache;
+    if (!box || !L || !C) return;
+    k = Math.max(0, Math.min(C.list.length - 1, k));
+    C.sel = k;
+    var o = C.list[k],
+      f = skFmt(o),
+      dd = Math.round((o.day - skMid()) / 86400000);
+    var hm = dd === 0 ? "आज संकष्टी चतुर्थी" : dd === 1 ? "उद्या संकष्टी चतुर्थी" : k === C.ni ? "पुढील संकष्टी चतुर्थी" : k < C.ni ? "मागील संकष्टी चतुर्थी" : "आगामी संकष्टी चतुर्थी",
       he =
-        dd === 0 ? "Sankashti Chaturthi today" : dd === 1 ? "Sankashti Chaturthi tomorrow" : "Next Sankashti Chaturthi";
-    if (ang) {
+        dd === 0
+          ? "Sankashti Chaturthi today"
+          : dd === 1
+            ? "Sankashti Chaturthi tomorrow"
+            : k === C.ni
+              ? "Next Sankashti Chaturthi"
+              : k < C.ni
+                ? "Previous Sankashti Chaturthi"
+                : "Upcoming Sankashti Chaturthi";
+    if (f.ang) {
       hm = hm.replace("संकष्टी", "अंगारकी संकष्टी");
       he = he.replace("Sankashti", "Angaraki Sankashti");
     }
     box.className = "skc" + (dd === 0 ? " today" : "");
-    box.hidden = false;
-    box.innerHTML =
+    box.querySelector(".skt").innerHTML =
       '<div class="skh"><span class="mr">' +
       hm +
       '</span><span class="en" lang="en">' +
       he +
       "</span></div>" +
       '<div class="skd"><span class="mr">' +
-      WM[d.getDay()] +
-      ", " +
-      skDV(d.getDate()) +
-      " " +
-      MM[d.getMonth()] +
+      f.dmr +
       '</span><span class="en" lang="en">' +
-      d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short" }) +
+      f.den +
       "</span></div>" +
       '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय ' +
-      tmr +
-      (late ? " (मध्यरात्रीनंतर)" : "") +
+      f.tmr +
       '</span><span class="en" lang="en">Moonrise ' +
-      ten +
-      (late ? " (after midnight)" : "") +
+      f.ten +
       '</span><span class="skp">· <span class="mr">' +
       L.mr +
       '</span><span class="en" lang="en">' +
       L.en +
       "</span></span></div>" +
       '<div class="ske" lang="en">Moonrise ' +
-      ten +
-      (late ? " (after midnight)" : "") +
+      f.ten +
       " · " +
       L.en +
-      '</div><div class="skf"><button type="button" class="skl" id="skl"><span lang="en">' +
-      (L.own ? "📍 Update my location" : "📍 Use my location") +
-      '</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>';
+      "</div>";
+    box.querySelector("#skb").hidden = k === C.ni;
+    var st = box.querySelector(".sks"),
+      on = null;
+    if (!st) return;
+    [].forEach.call(st.children, function (b, i) {
+      b.classList.toggle("on", i === k);
+      b.setAttribute("aria-selected", String(i === k));
+      b.tabIndex = i === k ? 0 : -1;
+      if (i === k) on = b;
+    });
+    st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
+    if (focus) on.focus({ preventScroll: true });
   }
+  // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankashti" returns
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("#skc .skch, #skb");
+    if (!b || !skCache) return;
+    if (b.id === "skb") {
+      skShow(skCache.ni);
+      var on = document.querySelector("#skc .skch.on");
+      if (on) on.focus({ preventScroll: true });
+    } else skShow(+b.dataset.k);
+  });
+  document.addEventListener("keydown", function (e) {
+    var b = e.target.closest && e.target.closest("#skc .skch");
+    if (!b || !skCache) return;
+    var k = skCache.sel,
+      n = { ArrowLeft: k - 1, ArrowRight: k + 1, Home: 0, End: skCache.list.length - 1 }[e.key];
+    if (n === undefined) return;
+    e.preventDefault();
+    skShow(n, true);
+  });
   // "Use my location" button on the card
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skl");
@@ -5826,7 +5996,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v74").then(function (c) {
+          caches.open("aarti-v75").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
