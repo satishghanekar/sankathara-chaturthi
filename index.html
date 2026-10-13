@@ -5033,7 +5033,7 @@ a.t {
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
         </ul>
-        The page reloads when you change it and keeps your place.</li>
+        It changes straight away and keeps your place.</li>
       <li><b>Text size</b> (A− / A+ / Reset), <b>Theme</b> (Auto, Light, Sepia, Dark), <b>High contrast</b> and <b>Keep screen on</b>.</li>
       <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
@@ -5236,32 +5236,57 @@ a.t {
       });
     };
   })();
-  // IAST style: each English line is rebuilt from its Marathi/Sanskrit line before anything else touches the lines.
-  // The simple English text is kept (ENS) so search still finds "sukhakarta".
-  var ENS = {};
-  if (P.tr === "iast")
-    [].forEach.call(document.querySelectorAll(".verse"), function (v) {
-      // Marathi and English lines pair up by position (refrain boxes have no data-l)
-      var ms = v.querySelectorAll(":scope>.mr>p");
-      [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
-        var id = p.getAttribute("data-l"),
-          m = ms[i];
-        if (!m) return;
-        if (id) ENS[id] = p.textContent;
-        p.innerHTML = m.innerHTML.split(/<br\s*\/?>/).map(IA).join("<br>");
-        p.classList.add("ia");
-      });
+  // English style. Each English line keeps its everyday text and its Marathi/Sanskrit source (taken here, before
+  // anything else touches the lines), so the style switches in place without reloading (trSet). The scholarly
+  // (IAST) text is made the first time it is needed. ENS keeps the everyday text so search still finds "sukhakarta".
+  var ENS = {},
+    TRL = [],
+    TRT = [];
+  [].forEach.call(document.querySelectorAll(".verse"), function (v) {
+    // Marathi and English lines pair up by position (refrain boxes have no data-l)
+    var ms = v.querySelectorAll(":scope>.mr>p");
+    [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
+      var id = p.getAttribute("data-l"),
+        m = ms[i];
+      if (!m) return;
+      if (id) ENS[id] = p.textContent;
+      TRL.push({ p: p, s: p.innerHTML, m: m.innerHTML, i: null });
     });
-  // Piece titles follow the same style (headings, contents, Previous/Next; the left menu and search list copy the contents)
-  if (P.tr === "iast")
-    [].forEach.call(document.querySelectorAll(".ash header h2, ol.toc li:not(.soon) .m, .pn > a"), function (t) {
-      var m = t.querySelector(":scope > .mr"),
-        e = t.querySelector(":scope > .en");
-      if (!m || !e) return;
-      e.textContent = IA(m.textContent).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
-        return a + c.toUpperCase();
-      });
+  });
+  // Piece titles: headings, contents, Previous/Next, and the left menu and search list (copies of the contents)
+  [].forEach.call(document.querySelectorAll(".ash"), function (sec) {
+    var h = sec.querySelector("header h2"),
+      m = h && h.querySelector(":scope > .mr"),
+      e = h && h.querySelector(":scope > .en");
+    if (m && e) TRT.push({ id: sec.id, s: e.textContent, m: m.textContent, i: null });
+  });
+  // fin: the stanza numbers and line-break parts are already in place, so carry them over
+  function trSet(st, fin) {
+    var ia = st === "iast";
+    TRL.forEach(function (x) {
+      var p = x.p,
+        sn = fin && p.querySelector(".sn");
+      if (ia && x.i === null) x.i = x.m.split(/<br\s*\/?>/).map(IA).join("<br>");
+      p.innerHTML = ia ? x.i : x.s;
+      p.classList.toggle("ia", ia);
+      if (sn) p.appendChild(sn);
+      if (fin) zsplit(p, enCut, "");
     });
+    TRT.forEach(function (t) {
+      if (ia && t.i === null)
+        t.i = IA(t.m).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
+          return a + c.toUpperCase();
+        });
+      var v = ia ? t.i : t.s;
+      [].forEach.call(
+        document.querySelectorAll("#" + t.id + ' header h2 > .en, a[data-go="' + t.id + '"] .en'),
+        function (e) {
+          if (!e.closest("small")) e.textContent = v;
+        },
+      );
+    });
+  }
+  if (P.tr === "iast") trSet("iast", false);
 
   // ---- Layout helpers that run once ----
   // Two-column screens read across: stanza 1 | stanza 2, then 3 | 4. Each stanza keeps its own dhrupad marker/repeat under it.
@@ -6617,16 +6642,16 @@ a.t {
     apply();
     save();
   };
-  // English style: the lines are rebuilt at start-up, so the page reloads (reading place and Settings stay open)
+  // English style: switched in place (lines, titles, search list), then the text size is fitted again
   document.getElementById("str").onclick = function (e) {
     var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
     if (v && v !== P.tr) {
       P.tr = v;
       save();
-      try {
-        sessionStorage.setItem("aarti2-panel", "1");
-      } catch (x) {}
-      location.reload();
+      trSet(v, true);
+      buildIX();
+      refit();
+      apply();
     }
   };
   document.getElementById("su").onclick = function (e) {
@@ -6989,8 +7014,9 @@ a.t {
       .replace(/\s+/g, " ")
       .trim();
   }
-  (function () {
+  function buildIX() {
     var seen = {};
+    IX = [];
     [].forEach.call(document.querySelectorAll(".mr p[data-l]"), function (p) {
       var id = p.getAttribute("data-l"),
         en = document.querySelector('.en p[data-l="' + id + '"]'),
@@ -7011,7 +7037,8 @@ a.t {
       seen[k] = 1;
       IX.push({ id: id, sec: sec.id, m: m, e: e.split(" \u0000")[0], t: nz(m) + " " + nz(e) });
     });
-  })();
+  }
+  buildIX();
   var q = document.getElementById("q"),
     res = document.getElementById("res"),
     none = document.getElementById("none");
@@ -7169,13 +7196,6 @@ a.t {
     }
   }
 
-  // After changing the English style the page reloads; reopen Settings where the reader left it
-  try {
-    if (sessionStorage.getItem("aarti2-panel")) {
-      sessionStorage.removeItem("aarti2-panel");
-      setP(true);
-    }
-  } catch (e) {}
 
   // ---- Help: opens over the page; the phone's Back button closes it ----
   (function () {
@@ -7834,7 +7854,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v133").then(function (c) {
+          caches.open("aarti-v134").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});

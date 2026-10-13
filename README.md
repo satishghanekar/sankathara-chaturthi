@@ -9,7 +9,7 @@ The texts our group recites at Sankashti Chaturthi puja: Pooja, Bhajans (coming 
 Everything runs on the phone or computer. Nothing is sent anywhere, and the site works offline once opened.
 
 - **Texts:** the Ganapati Atharvashirsha (with Vedic swara marks) and ten aartis, in Marathi, English, or both side by side (the अ/A button).
-- **English style** (Settings): the everyday spelling (*Sukhkarta*) or the scholarly spelling, IAST (*sukhakartā*, *bha̱draṃ*). The scholarly lines are not typed. The script builds them from the Marathi/Sanskrit lines when the page opens (see *How the scholarly English is made*).
+- **English style** (Settings): the everyday spelling (*Sukhkarta*) or the scholarly spelling, IAST (*sukhakartā*, *bha̱draṃ*). The scholarly lines are not typed. The script builds them from the Marathi/Sanskrit lines, along with the piece titles, the first time they are needed; switching style happens in place, without reloading (see *How the scholarly English is made*).
 - **Menu language** (Settings): English (default) or मराठी for the date card, buttons and settings, independent of the text language.
 - **Dhrupad:** shown once at the top or after every stanza (the धृ button); in "once" mode, ↻ ध्रुपद under a stanza shows it for a few seconds.
 - **Next Sankashti card** (home page): today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
@@ -76,14 +76,14 @@ Phones keep a saved copy of the site. The cache version tells them a new copy ex
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v133';
+   const V='aarti-v134';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v133")
+   caches.open("aarti-v134")
    ```
 
-Add one to the number in both places (for example `aarti-v133` → `aarti-v134`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Add one to the number in both places (for example `aarti-v134` → `aarti-v135`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
@@ -170,7 +170,7 @@ Or search for a few words of the line itself.
 
 ## How the scholarly English is made
 
-When English style is set to *sukhakartā*, the script (section `// ---- IAST transliteration ----`, function `IA`) rewrites each English line from the Marathi/Sanskrit line beside it, before anything else runs. The rules:
+When English style is set to *sukhakartā*, the script (section `// ---- IAST transliteration ----`, function `IA`) rewrites each English line from the Marathi/Sanskrit line beside it (function `trSet`, which keeps both spellings so the switch is instant). The rules:
 
 - Standard IAST letters: ā ī ū ṛ, ṭ ṭh ḍ ḍh ṇ, ś ṣ, ṅ ñ, ḷ for ळ, ḥ for the visarga, `'` for ऽ, om̐ for ॐ.
 - The inherent "a" is always written (*jaya deva*, *suravaravandanā*), as in strict IAST.
