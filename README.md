@@ -24,7 +24,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `index.html` | The whole site: page text, styles (`<style>`) and script (`<script>`) in one file. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
 | `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
-| `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. |
+| `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png`, `apple-touch-icon.png`, `apple-touch-icon-precomposed.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. The two `apple-touch-icon` files are copies of `icon-180.png` at the site root, where iPhone also looks when it adds the site to the Home Screen. |
 | `fonts/` | The four fonts, served from the site itself so nothing is fetched from Google and they work offline (see `fonts/README.md`). |
 
 There is no build step. The files in this repository are exactly what the site serves.
@@ -76,14 +76,14 @@ Phones keep a saved copy of the site. The cache version tells them a new copy ex
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v134';
+   const V='aarti-v135';
    ```
 2. `index.html`, near the end (search for `aarti-v`):
    ```js
-   caches.open("aarti-v134")
+   caches.open("aarti-v135")
    ```
 
-Add one to the number in both places (for example `aarti-v134` → `aarti-v135`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
+Add one to the number in both places (for example `aarti-v135` → `aarti-v135`). If you forget, the change is still published, but phones that already have the site may keep showing the old version for longer.
 
 ### After publishing
 
