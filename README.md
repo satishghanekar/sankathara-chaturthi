@@ -24,7 +24,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `index.html` | The whole site: page text, styles (`<style>`) and script (`<script>`) in one file. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
 | `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
-| `icon-180.png`, `icon-192.png`, `icon-512.png` | Home-screen icons. |
+| `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. |
 | `fonts/` | The four fonts, served from the site itself so nothing is fetched from Google and they work offline (see `fonts/README.md`). |
 
 There is no build step. The files in this repository are exactly what the site serves.
