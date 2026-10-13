@@ -5207,7 +5207,13 @@ a.t {
     L2.push("DTSTART:" + dt(t0, 1), "DTEND:" + dt(t1, 1), "SUMMARY:" + nm + " pooja");
     if (r) L2.push("DESCRIPTION:Moonrise " + f.ten);
     L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + nm, "TRIGGER:-PT2H", "END:VALARM");
-    L2.push("LOCATION:" + L.en.replace(/,/g, "\\,"), "URL:https://sankashti-chaturthi.pages.dev/", "END:VEVENT", "END:VCALENDAR");
+    // Central Ohio: the group meets at the temple; elsewhere, the place name
+    var r0 = Math.PI / 180,
+      ha = Math.sin(((L.lat - 40.2148) * r0) / 2),
+      hb2 = Math.sin(((L.lon + 83.1067) * r0) / 2),
+      km = 12742 * Math.asin(Math.sqrt(ha * ha + Math.cos(L.lat * r0) * Math.cos(40.2148 * r0) * hb2 * hb2)),
+      loc = km <= 120 ? "Bharatiya Hindu Temple, 3671 Hyatts Rd, Powell, OH 43065" : L.en;
+    L2.push("LOCATION:" + loc.replace(/,/g, "\\,"), "URL:https://sankashti-chaturthi.pages.dev/", "END:VEVENT", "END:VCALENDAR");
     var txt = L2.join("\r\n") + "\r\n",
       u = URL.createObjectURL(new Blob([txt], { type: "text/calendar" }));
     // iPhone/iPad: opening the file shows Calendar's "Add" sheet; elsewhere it downloads as an .ics file
@@ -6502,7 +6508,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v94").then(function (c) {
+          caches.open("aarti-v95").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
