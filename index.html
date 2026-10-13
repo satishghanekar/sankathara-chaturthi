@@ -4642,9 +4642,11 @@ a.t {
         o += v + acc + tail;
       }
       // An anusvara inside a word before a stop takes that stop's nasal: sarvāṅgī, sundara, vakratuṇḍa, lambodara.
-      // Marathi plural endings keep ṃ: sumanāṃcyā, ḍoḷyāṃnī, kleśāṃpāsuni.
+      // Marathi plural endings keep ṃ: sumanāṃcyā, ḍoḷyāṃnī, kleśāṃpāsuni; so do nasal vowels: kaiṃcā, bāṃjhana.
       return o.replace(/(ā?)ṃ(?=(k|g)|(c|j)|(ṭ|ḍ)|(t|d|n)|(p|b|m))/g, function (x, l, a, b, c, d, e, i) {
-        if (l && /^(c(?!h)|n|pās)/.test(o.slice(i + x.length))) return x;
+        var r = o.slice(i + x.length);
+        if (l && /^(c(?!h)|n|pās|jh)/.test(r)) return x;
+        if (o.slice(i - 2, i) === "ai" && /^c/.test(r)) return x;
         return l + (a ? "ṅ" : b ? "ñ" : c ? "ṇ" : d ? "n" : "m");
       });
     };
@@ -7029,7 +7031,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v106").then(function (c) {
+          caches.open("aarti-v107").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
