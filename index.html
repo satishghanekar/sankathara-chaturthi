@@ -610,7 +610,7 @@ var SK=(function(){
   var gmst=n360(280.46061837+360.98564736629*(jd(t)-2451545)+0.000387933*x*x),H=(gmst+lon)*D2R-ra,p=lat*D2R;
   return Math.asin(Math.sin(p)*Math.sin(dec)+Math.cos(p)*Math.cos(dec)*Math.cos(H))/D2R}
  // moonrise within [t0,t1): first upward crossing of +0.125 deg (centre, refraction, semidiameter, parallax)
- function rise(t0,t1,lat,lon){var h0=0.125,st=10*60000,a=altMoon(t0,lat,lon)-h0;for(var t=t0+st;t<=t1;t+=st){var b=altMoon(t,lat,lon)-h0;if(a<0&&b>=0){var lo=t-st,hi=t;for(var i=0;i<12;i++){var m=(lo+hi)/2;if(altMoon(m,lat,lon)-h0<0)lo=m;else hi=m}return hi}a=b}return null}
+ function rise(t0,t1,lat,lon){var h0=1.1,st=10*60000,a=altMoon(t0,lat,lon)-h0;for(var t=t0+st;t<=t1;t+=st){var b=altMoon(t,lat,lon)-h0;if(a<0&&b>=0){var lo=t-st,hi=t;for(var i=0;i<12;i++){var m=(lo+hi)/2;if(altMoon(m,lat,lon)-h0<0)lo=m;else hi=m}return hi}a=b}return null}
  // Sankashti = Krishna Chaturthi (elongation 216-228 deg). Observed on the local date whose moonrise falls inside it
  // (first such date if two); if no moonrise falls inside, the date on which it is in effect at sunrise (~06:30).
  // Dates and times use the device's own time zone.
@@ -620,8 +620,8 @@ var SK=(function(){
  function upcoming(from,lat,lon,count){var out=[],t=from-3*86400000,end=from+(count+1)*31*86400000,h=3600000,p=elong(t);
   for(;t<end&&out.length<count+1;t+=h){var e=elong(t+h);if(p<216&&e>=216&&e<240){var s=cross(t,t+h,216),en=s;
      var q=s;while(elong(q)<228&&q-s<3*86400000)q+=h;en=cross(q-h,q,228);
-     var pick=null,rs=null;for(var d=mid(s);d<en;d=addDay(d)){var r=rise(d,addDay(d),lat,lon);if(r!==null&&r>=s&&r<en){pick=d;rs=r;break}}
-     if(pick===null){for(var d2=mid(s);d2<en;d2=addDay(d2)){var sr=d2+6.5*h;if(sr>=s&&sr<en){pick=d2;break}}if(pick===null)pick=mid(en);rs=rise(pick,addDay(pick),lat,lon)}
+     var pick=null,rs=null;for(var d=mid(s)-86400000;d<en;d=addDay(d)){var r=rise(d+12*h,addDay(d)+12*h,lat,lon);if(r!==null&&r>=s&&r<en){pick=d;rs=r;break}}
+     if(pick===null){for(var d2=mid(s);d2<en;d2=addDay(d2)){var sr=d2+6.5*h;if(sr>=s&&sr<en){pick=d2;break}}if(pick===null)pick=mid(en);rs=rise(pick+12*h,addDay(pick)+12*h,lat,lon)}
      if(addDay(pick)>from)out.push({day:pick,rise:rs,start:s,end:en,atRise:rs!==null&&rs>=s&&rs<en})}
    p=e}
   return out.slice(0,count)}
@@ -629,7 +629,7 @@ var SK=(function(){
 })();
 
 // ---- Next Sankashti card (computed on this device; works offline) ----
-var SKTZ={'America/New_York':[40.71,-74.01,'न्यूयॉर्क','New York'],'America/Detroit':[42.33,-83.05,'डेट्रॉइट','Detroit'],'America/Toronto':[43.65,-79.38,'टोरोंटो','Toronto'],'America/Chicago':[41.88,-87.63,'शिकागो','Chicago'],'America/Denver':[39.74,-104.99,'डेन्व्हर','Denver'],'America/Phoenix':[33.45,-112.07,'फिनिक्स','Phoenix'],'America/Los_Angeles':[34.05,-118.24,'लॉस एंजेलिस','Los Angeles'],'America/Vancouver':[49.28,-123.12,'व्हँकुव्हर','Vancouver'],'Europe/London':[51.51,-0.13,'लंडन','London'],'Asia/Kolkata':[18.52,73.86,'पुणे','Pune'],'Asia/Calcutta':[18.52,73.86,'पुणे','Pune'],'Asia/Dubai':[25.2,55.27,'दुबई','Dubai'],'Asia/Singapore':[1.35,103.82,'सिंगापूर','Singapore'],'Australia/Sydney':[-33.87,151.21,'सिडनी','Sydney'],'Australia/Melbourne':[-37.81,144.96,'मेलबर्न','Melbourne'],'Pacific/Auckland':[-36.85,174.76,'ऑकलंड','Auckland']};
+var SKTZ={'America/New_York':[39.96,-83.00,'कोलंबस','Columbus'],'America/Detroit':[42.33,-83.05,'डेट्रॉइट','Detroit'],'America/Toronto':[43.65,-79.38,'टोरोंटो','Toronto'],'America/Chicago':[41.88,-87.63,'शिकागो','Chicago'],'America/Denver':[39.74,-104.99,'डेन्व्हर','Denver'],'America/Phoenix':[33.45,-112.07,'फिनिक्स','Phoenix'],'America/Los_Angeles':[34.05,-118.24,'लॉस एंजेलिस','Los Angeles'],'America/Vancouver':[49.28,-123.12,'व्हँकुव्हर','Vancouver'],'Europe/London':[51.51,-0.13,'लंडन','London'],'Asia/Kolkata':[18.52,73.86,'पुणे','Pune'],'Asia/Calcutta':[18.52,73.86,'पुणे','Pune'],'Asia/Dubai':[25.2,55.27,'दुबई','Dubai'],'Asia/Singapore':[1.35,103.82,'सिंगापूर','Singapore'],'Australia/Sydney':[-33.87,151.21,'सिडनी','Sydney'],'Australia/Melbourne':[-37.81,144.96,'मेलबर्न','Melbourne'],'Pacific/Auckland':[-36.85,174.76,'ऑकलंड','Auckland']};
 function skLoc(){if(P.loc&&typeof P.loc.lat==='number')return {lat:P.loc.lat,lon:P.loc.lon,mr:'तुमचे ठिकाण',en:'your location',own:1};var z='';try{z=Intl.DateTimeFormat().resolvedOptions().timeZone}catch(e){}var c=SKTZ[z];return c?{lat:c[0],lon:c[1],mr:c[2],en:c[3]}:null}
 var skCache=null;
 function skDV(n){return String(n).replace(/[0-9]/g,function(d){return '०१२३४५६७८९'[d]})}
@@ -640,14 +640,14 @@ function skRender(){var box=document.getElementById('skc');if(!box)return;var L=
  var d=new Date(o.day),today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime();var dd=Math.round((o.day-today)/86400000);
  var WM=['रविवार','सोमवार','मंगळवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'],MM=['जानेवारी','फेब्रुवारी','मार्च','एप्रिल','मे','जून','जुलै','ऑगस्ट','सप्टेंबर','ऑक्टोबर','नोव्हेंबर','डिसेंबर'];
  var ang=d.getDay()===2,r=o.rise?new Date(o.rise):null,h=r?r.getHours():0,mi=r?('0'+r.getMinutes()).slice(-2):'',h12=r?((h+11)%12+1):0;
- var tmr=r?((h>=20||h<4)?'रात्री ':(h>=16?'सायं. ':''))+skDV(h12)+':'+skDV(mi):'—',ten=r?h12+':'+mi+(h>=12?' pm':' am'):'—';
+ var late=r&&new Date(r).getDate()!==d.getDate(),tmr=r?((h>=20||h<4)?'रात्री ':(h>=16?'सायं. ':''))+skDV(h12)+':'+skDV(mi):'—',ten=r?h12+':'+mi+(h>=12?' pm':' am'):'—';
  var hm=dd===0?'आज संकष्टी चतुर्थी':dd===1?'उद्या संकष्टी चतुर्थी':'पुढील संकष्टी चतुर्थी',he=dd===0?'Sankashti Chaturthi today':dd===1?'Sankashti Chaturthi tomorrow':'Next Sankashti Chaturthi';
  if(ang){hm=hm.replace('संकष्टी','अंगारकी संकष्टी');he=he.replace('Sankashti','Angaraki Sankashti')}
  box.className='skc'+(dd===0?' today':'');box.hidden=false;
  box.innerHTML='<div class="skh"><span class="mr">'+hm+'</span><span class="en" lang="en">'+he+'</span></div>'
   +'<div class="skd"><span class="mr">'+WM[d.getDay()]+', '+skDV(d.getDate())+' '+MM[d.getMonth()]+'</span><span class="en" lang="en">'+d.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'})+'</span></div>'
-  +'<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय '+tmr+'</span><span class="en" lang="en">Moonrise '+ten+'</span><span class="skp">· <span class="mr">'+L.mr+'</span><span class="en" lang="en">'+L.en+'</span></span></div>'
-  +'<div class="ske" lang="en">Moonrise '+ten+' · '+L.en+'</div><div class="skf"><button type="button" class="skl" id="skl"><span lang="en">'+(L.own?'📍 Update my location':'📍 Use my location')+'</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>'}
+  +'<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय '+tmr+(late?' (मध्यरात्रीनंतर)':'')+'</span><span class="en" lang="en">Moonrise '+ten+(late?' (after midnight)':'')+'</span><span class="skp">· <span class="mr">'+L.mr+'</span><span class="en" lang="en">'+L.en+'</span></span></div>'
+  +'<div class="ske" lang="en">Moonrise '+ten+(late?' (after midnight)':'')+' · '+L.en+'</div><div class="skf"><button type="button" class="skl" id="skl"><span lang="en">'+(L.own?'📍 Update my location':'📍 Use my location')+'</span></button><span class="skn"><span lang="en">Times may differ by a few minutes from printed calendars.</span></span></div>'}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#skl');if(!b)return;if(!navigator.geolocation){flash('हे ब्राउझर ठिकाण देऊ शकत नाही','Location is not available in this browser');return}
  navigator.geolocation.getCurrentPosition(function(p){P.loc={lat:Math.round(p.coords.latitude*100)/100,lon:Math.round(p.coords.longitude*100)/100};save();skCache=null;skRender();flash('ठिकाण जतन केले','Location saved on this device')},function(){flash('ठिकाण मिळाले नाही','Could not get your location')},{timeout:15000,maximumAge:86400000})});
 
@@ -848,7 +848,7 @@ if(/^https?:$/.test(location.protocol)){
  try{var hd=document.head,l1=document.createElement('link');l1.rel='manifest';l1.href='manifest.json';hd.appendChild(l1);var l2=document.createElement('link');l2.rel='apple-touch-icon';l2.href='icon-180.png';hd.appendChild(l2);var m1=document.createElement('meta');m1.name='apple-mobile-web-app-capable';m1.content='yes';hd.appendChild(m1);var m2=document.createElement('meta');m2.name='apple-mobile-web-app-title';m2.content='संकष्टी चतुर्थी';hd.appendChild(m2)}catch(e){}
  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready}).then(function(){
   var st=null;if(!('caches' in window))return;
-  caches.open('aarti-v65').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
+  caches.open('aarti-v66').then(function(c){var css=document.querySelector('link[href*="fonts.googleapis.com/css2"]');var done=function(){document.getElementById('offrow').hidden=false};
    c.add(new Request('./',{cache:'reload'})).catch(function(){});
    if(!css){done();return}
    fetch(css.href).then(function(r){var cl=r.clone();c.put(css.href,cl);return r.text()}).then(function(tx){var us=tx.match(/https:\/\/fonts\.gstatic\.com[^)]+/g)||[];return Promise.all(us.map(function(u){return c.match(u).then(function(h){return h||fetch(u).then(function(r){return c.put(u,r)})})}))}).then(done).catch(function(){done()})
