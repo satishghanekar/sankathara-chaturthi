@@ -1325,7 +1325,8 @@ a.t {
   height: 48px;
   font-size: 16px;
 }
-#qrm {
+#qrm,
+#inm {
   position: fixed;
   inset: 0;
   z-index: 20;
@@ -1335,7 +1336,8 @@ a.t {
   justify-content: center;
   padding: 20px;
 }
-#qrm[hidden] {
+#qrm[hidden],
+#inm[hidden] {
   display: none;
 }
 .qrc {
@@ -1367,9 +1369,55 @@ a.t {
 }
 
 @media print {
-  #qrm {
+  #qrm,
+  #inm,
+  .inb {
     display: none !important;
   }
+}
+
+/* ==== Add to Home Screen: button on the home page and in Settings, steps pop-up (#inm) ==== */
+.inb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: auto;
+  min-height: 48px;
+  margin: 22px 0 0;
+  font: 16px/1.3 var(--lat);
+}
+.inb .mr {
+  font-family: var(--body);
+}
+.inb[hidden] {
+  display: none;
+}
+#inb:not([hidden]) + #shr {
+  margin-top: 10px;
+}
+#inb2 {
+  margin: 4px 0 14px;
+}
+.inl {
+  text-align: left;
+  font: 16px/1.5 var(--lat);
+  margin: 0 0 10px;
+  padding-left: 24px;
+}
+.inl .mr {
+  font-family: var(--body);
+}
+.inl li + li {
+  margin-top: 6px;
+}
+.inn {
+  font: 14px/1.45 var(--lat);
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+.inn .mr {
+  font-family: var(--body);
 }
 
 
@@ -3036,6 +3084,7 @@ a.t {
     <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></b>
     <button type="button" class="xc" id="xc">✕ <span class="mr">बंद</span><span class="en" lang="en">Close</span></button>
   </div>
+  <button type="button" class="wide inb" id="inb2" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></button>
   <div class="row">
     <label><span class="mr">मेनूची भाषा</span><span class="en" lang="en">Menu language</span></label>
     <div class="seg" id="su" role="group" aria-label="Menu language">
@@ -3123,6 +3172,7 @@ a.t {
         <li><a href="#a10" data-go="a10"><span class="m"><span class="no"><span class="nm">१०.</span><span class="ne">10.</span></span> <span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></span></a></li>
       </ol>
     </div>
+    <button type="button" class="wide inb" id="inb" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></button>
     <div id="shr">
       <button type="button" class="wide" id="shb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span class="mr">शेअर</span><span class="en" lang="en">Share</span></button>
       <button type="button" class="wide" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR कोड</span><span class="en" lang="en">QR</span></button>
@@ -4712,6 +4762,16 @@ a.t {
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
   <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
 </div>
+<!-- ==== Add to Home Screen steps (shown when the browser can't install from a button: iPhone, or Chrome without its prompt) ==== -->
+<div id="inm" hidden role="dialog" aria-modal="true" aria-labelledby="inmt">
+  <div class="qrc"><div class="qrt" id="inmt"><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></div>
+    <ol class="inl" id="inios" hidden><li><span class="mr">शेअर बटण <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> दाबा (Safari मध्ये खाली, Chrome मध्ये वर उजवीकडे).</span><span class="en" lang="en">Tap the <b>Share</b> button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> (at the bottom in Safari, top right in Chrome).</span></li><li><span class="mr">खाली स्क्रोल करून <b>Add to Home Screen</b> दाबा.</span><span class="en" lang="en">Scroll down and tap <b>Add to Home Screen</b>.</span></li><li><span class="mr"><b>Add</b> दाबा.</span><span class="en" lang="en">Tap <b>Add</b>.</span></li></ol>
+    <ol class="inl" id="inapp" hidden><li><span class="mr">हे पान <b>Safari</b> किंवा <b>Chrome</b> मध्ये उघडा (⋯ किंवा शेअर → Open in Safari/Chrome).</span><span class="en" lang="en">Open this page in <b>Safari</b> or <b>Chrome</b> (⋯ or Share → Open in Safari/Chrome).</span></li><li><span class="mr">मग शेअर <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b>Add to Home Screen</b> → <b>Add</b>.</span><span class="en" lang="en">Then Share <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> → <b>Add to Home Screen</b> → <b>Add</b>.</span></li></ol>
+    <ol class="inl" id="inand" hidden><li><span class="mr">Chrome चा <b>⋮</b> मेनू (वर उजवीकडे) उघडा.</span><span class="en" lang="en">Open Chrome's <b>⋮</b> menu (top right).</span></li><li><span class="mr"><b>Add to Home screen</b> किंवा <b>Install app</b> दाबा.</span><span class="en" lang="en">Tap <b>Add to Home screen</b> or <b>Install app</b>.</span></li><li><span class="mr"><b>Install</b> किंवा <b>Add</b> दाबा.</span><span class="en" lang="en">Tap <b>Install</b> or <b>Add</b>.</span></li></ol>
+    <ol class="inl" id="indesk" hidden><li><span class="mr"><b>Chrome / Edge:</b> पत्त्याच्या पट्टीच्या उजव्या टोकाला असलेले Install चिन्ह दाबा, किंवा ब्राउझरच्या मेनूतून <b>Install</b> निवडा.</span><span class="en" lang="en"><b>Chrome or Edge:</b> click the install icon at the right end of the address bar, or choose <b>Install</b> from the browser menu.</span></li><li><span class="mr"><b>Mac वरील Safari:</b> File → <b>Add to Dock</b>.</span><span class="en" lang="en"><b>Safari on a Mac:</b> File → <b>Add to Dock</b>.</span></li></ol>
+    <p class="inn"><span class="mr">मग ते ॲपसारखे उघडेल, इंटरनेटशिवायही.</span><span class="en" lang="en">It will then open like an app, even without internet.</span></p>
+    <button type="button" class="wide" id="inx"><span class="mr">ठीक आहे</span><span class="en" lang="en">OK</span></button></div>
+</div>
 <!-- ==== Help (English only), opened from the home page and Settings ==== -->
 <div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="hlpt" lang="en">
   <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx">✕ Close</button></div>
@@ -4719,6 +4779,7 @@ a.t {
     <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
     <h3>Put it on your phone</h3>
+    <p>Tap <b>Add to Home Screen</b> on the home page or at the top of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps below for your phone.</p>
     <h4>iPhone</h4>
     <ol>
       <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp or another app, tap ⋯ or the share icon and choose <b>Open in Safari</b> first.</li>
@@ -6257,7 +6318,7 @@ a.t {
     [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv,#home .tocg,#jl,#rail"), function (e) {
       e.setAttribute("data-lang", P.lang);
     });
-    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#szt,#szr"), function (e) {
+    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#inm,#szt,#szr"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
     root.lang = P.ui;
@@ -7363,6 +7424,56 @@ a.t {
       if (P.a2 || standalone) return;
       card.hidden = false;
     }
+    // Add to Home Screen buttons (home page and Settings), always there until the site is opened from its icon.
+    // Chrome/Edge/Android: the browser's own install prompt when it offers one; otherwise (iPhone, or the prompt
+    // already used or dismissed) a pop-up with the steps for this device.
+    var ib = [document.getElementById("inb"), document.getElementById("inb2")],
+      im = document.getElementById("inm"),
+      ibFrom = null;
+    function ibShow(o) {
+      ib.forEach(function (b) {
+        b.hidden = !o;
+      });
+    }
+    function installed() {
+      card.hidden = true;
+      P.a2 = 1;
+      save();
+      ibShow(false);
+    }
+    function steps(o) {
+      im.hidden = !o;
+      if (o) {
+        var which = ios ? (safari ? "inios" : "inapp") : /Android/.test(ua) ? "inand" : "indesk";
+        ["inios", "inapp", "inand", "indesk"].forEach(function (id) {
+          document.getElementById(id).hidden = id !== which;
+        });
+        document.getElementById("inx").focus();
+      } else if (ibFrom) ibFrom.focus();
+    }
+    function install(e) {
+      ibFrom = e && e.currentTarget;
+      if (!deferred) return steps(true);
+      var d = deferred;
+      deferred = null;
+      d.prompt();
+      d.userChoice.then(function (c) {
+        if (c && c.outcome === "accepted") installed();
+      });
+    }
+    ibShow(!standalone);
+    ib.forEach(function (b) {
+      b.onclick = install;
+    });
+    document.getElementById("inx").onclick = function () {
+      steps(false);
+    };
+    im.addEventListener("click", function (e) {
+      if (e.target === im) steps(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !im.hidden) steps(false);
+    });
     document.getElementById("a2x").onclick = function () {
       card.hidden = true;
       P.a2 = 1;
@@ -7382,24 +7493,10 @@ a.t {
       document.getElementById("a2and").hidden = false;
       var b = document.getElementById("a2go");
       b.hidden = false;
-      b.onclick = function () {
-        deferred.prompt();
-        deferred.userChoice.then(function (c) {
-          if (c && c.outcome === "accepted") {
-            card.hidden = true;
-            P.a2 = 1;
-            save();
-          }
-          deferred = null;
-        });
-      };
+      b.onclick = install;
       show();
     });
-    window.addEventListener("appinstalled", function () {
-      card.hidden = true;
-      P.a2 = 1;
-      save();
-    });
+    window.addEventListener("appinstalled", installed);
   })();
   // ---- Offline use: home-screen app details and the service worker (sw.js) ----
   // The cache name below must match the one in sw.js; change both on every deploy.
@@ -7445,7 +7542,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v118").then(function (c) {
+          caches.open("aarti-v119").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
