@@ -7413,26 +7413,46 @@ a.t {
       szt.classList.remove("on");
     }, 900);
   }
+  // Pinch changes the text size, never the page zoom. The two-finger touch is cancelled as soon as it
+  // starts (not only when the fingers move), so Safari can't begin its own zoom first; the size is
+  // applied once per frame, so the page keeps up with the fingers; and if the page still ends up
+  // zoomed (a pinch that began mid-scroll can't be cancelled), it is put back to normal straight away.
+  var pzF = 0;
+  function unzoom() {
+    var vv = window.visualViewport,
+      vm = document.querySelector('meta[name="viewport"]');
+    if (!vv || !vm || vv.scale < 1.01) return;
+    var c = vm.getAttribute("content");
+    vm.setAttribute("content", c + ",maximum-scale=1");
+    setTimeout(function () {
+      vm.setAttribute("content", c);
+    }, 300);
+  }
   document.addEventListener(
     "touchstart",
     function (e) {
       if (e.touches.length === 2) {
+        if (e.cancelable) e.preventDefault();
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
       }
     },
-    { passive: true },
+    { passive: false },
   );
   document.addEventListener(
     "touchmove",
     function (e) {
       if (pz && e.touches.length === 2) {
-        e.preventDefault();
+        if (e.cancelable) e.preventDefault();
         var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
         if (v !== P.fs) {
           P.fs = v;
           P.fsu = 1;
-          root.style.setProperty("--fs", v + "px");
+          if (!pzF)
+            pzF = requestAnimationFrame(function () {
+              pzF = 0;
+              root.style.setProperty("--fs", P.fs + "px");
+            });
         }
         showSz();
       }
@@ -7442,6 +7462,7 @@ a.t {
   document.addEventListener(
     "touchend",
     function (e) {
+      if (e.touches.length < 2) unzoom();
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
@@ -7461,6 +7482,7 @@ a.t {
     },
     { passive: true },
   );
+  addEventListener("gestureend", unzoom);
   ["gesturestart", "gesturechange"].forEach(function (n) {
     document.addEventListener(
       n,
