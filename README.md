@@ -13,7 +13,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Menu language** (Settings): English (default) or मराठी for the date card, buttons and settings, independent of the text language.
 - **Dhrupad:** shown once at the top or after every stanza (the धृ button); in "once" mode, ↻ ध्रुपद under a stanza shows it for a few seconds.
 - **Next Sankashti card** (home page): today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
-- **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns, or Marathi and English side by side) in the chosen language and English style.
+- **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns reading down each column, or Marathi and English side by side) in the chosen language and English style.
 - **Reading:** tap a line to highlight it, pinch or A−/A+ for text size, themes (light, sepia, dark), high contrast, keep the screen on, and it reopens where you were reading (within 12 hours).
 - **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="help"`).
 
