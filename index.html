@@ -2180,6 +2180,52 @@ a.t {
   vertical-align: 0 !important;
 }
 
+/* ==== Home page button row (final rules): App, Share, QR, Print, Help on one line, styled like the top menu ==== */
+#shr {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 18px 0 6px;
+}
+#shr button {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 128px;
+  height: 44px;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 2px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 500 13.5px/1 var(--lat);
+  text-decoration: none;
+  white-space: nowrap;
+}
+#shr button[hidden] {
+  display: none;
+}
+#shr button .mr {
+  font-family: var(--body);
+}
+#shr button svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0 !important;
+}
+/* Narrow phones: icons only (each button keeps its spoken name in aria-label) */
+@media (max-width: 379px) {
+  #shr button span {
+    display: none !important;
+  }
+}
+
 /* ==== Both languages on wide screens: each Marathi line with its transliteration beside it ==== */
 @media screen {
   [data-cols="2"] [data-lang="both"] .items {
@@ -2924,7 +2970,6 @@ a.t {
 }
 
 /* ==== Help (English, phone-first) ==== */
-#hlpb,
 #hlp2 {
   display: block;
   margin: 14px auto 4px;
@@ -3166,13 +3211,14 @@ a.t {
     </div>
     <div id="skc" class="skc" hidden></div>
     <h1 class="sr"><span class="mr">संकष्टी चतुर्थी</span><span class="en" lang="en">Sankashti Chaturthi</span></h1>
-    <button type="button" class="wide inb" id="inb" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to Home Screen</span></button>
+    <!-- One quiet row like the top menu: App (Add to Home Screen, hidden once installed), Share, QR, Print, Help -->
     <div id="shr">
-      <button type="button" class="wide" id="shb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span class="mr">शेअर</span><span class="en" lang="en">Share</span></button>
-      <button type="button" class="wide" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR कोड</span><span class="en" lang="en">QR</span></button>
-      <button type="button" class="wide" id="prb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-4px;margin-right:8px"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span class="mr">प्रिंट</span><span class="en" lang="en">Print</span></button>
+      <button type="button" id="inb" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
+      <button type="button" id="shb" aria-label="Share"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg><span class="mr">शेअर</span><span class="en" lang="en">Share</span></button>
+      <button type="button" id="qrb" aria-label="QR code"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR</span><span class="en" lang="en">QR</span></button>
+      <button type="button" id="prb" aria-label="Print"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span class="mr">प्रिंट</span><span class="en" lang="en">Print</span></button>
+      <button type="button" id="hlpb" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
     </div>
-    <button type="button" id="hlpb" lang="en">? Help &amp; how to use</button>
     </div>
     <div class="tocg">
       <h2 class="gh"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></h2>
@@ -4803,7 +4849,7 @@ a.t {
     <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
     <h3>Put it on your phone</h3>
-    <p>Tap <b>Add to Home Screen</b> on the home page or at the top of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
+    <p>Tap <b>App</b> (phone with an arrow) in the row of buttons on the home page, or <b>Add to Home Screen</b> at the top of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
     <h4>iPhone (Safari or Chrome)</h4>
     <ol>
       <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp, Mail or Messages, tap the compass or ⋯ icon to open it in Safari first; those built-in viewers don't have the option.</li>
@@ -4873,6 +4919,7 @@ a.t {
     </ul>
 
     <h3>Share, QR and Print</h3>
+    <p>These sit in one row at the bottom of the top card on the home page, with App and Help. On narrow phones the row shows icons only.</p>
     <ul>
       <li><b>Share</b> sends a ready reminder with the next date, pooja time, moonrise and the link, for WhatsApp or messages.</li>
       <li><b>QR</b> shows a code others can scan with their camera to open the site.</li>
@@ -7565,7 +7612,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v126").then(function (c) {
+          caches.open("aarti-v127").then(function (c) {
             // Keep the page and every font file, then show "Ready offline" (sw.js caches the same files)
             var done = function () {
               document.getElementById("offrow").hidden = false;
