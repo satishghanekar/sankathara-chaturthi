@@ -876,6 +876,13 @@ p.fl {
 #res .rl {
   display: block;
 }
+#res mark {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: inherit;
+  font-weight: 700;
+  border-radius: 3px;
+  padding: 0 1px;
+}
 #res .rl2 {
   display: block;
   font: 14px var(--lat);
@@ -3415,6 +3422,126 @@ a.t {
     transition: none;
   }
 }
+
+/* ==== Polish after the 1.0 review (final rules) ==== */
+/* Previous / Next cards at the end of each piece: always the same width; readable English names */
+.pn {
+  grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+}
+[data-lang="both"] .pn > a > .en {
+  font: 400 12.5px/1.3 var(--lat);
+}
+.pn > a {
+  padding: 10px 12px;
+  font-size: 15.5px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 420px) {
+  .pn {
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
+    gap: 6px;
+  }
+  .pn > a {
+    padding-inline: 10px;
+    font-size: 14.5px;
+  }
+}
+/* Refrain marker in Marathi + English: one arrow ("↻ ध्रुपद · Refrain"), and a taller area to tap */
+@media screen {
+  [data-lang="both"] .rmk .ra {
+    display: none;
+  }
+  [data-lang="both"] .rmk .en::before {
+    content: "· ";
+  }
+  [data-ref="1"] .rmk .en {
+    margin-left: 0.3em;
+  }
+  .rmk.rmkt::after {
+    content: "";
+    position: absolute;
+    inset: -7px -8px;
+  }
+}
+/* Help's close button: the same round ✕ as Settings */
+#hlpx {
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--muted);
+}
+/* Small labels a little larger */
+.rftop .lab {
+  font-size: 12.5px;
+}
+.ash header .tag {
+  font-size: 12.5px;
+}
+/* Date card: the calendar and pin buttons keep their look but get a full 44 px area to tap;
+   the date strip fades out at its edges, so dates cut off at the side read as "swipe for more" */
+.skc .skli {
+  position: relative;
+}
+.skc .skli::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+.skc .sks {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+}
+/* Home page contents: the same two-column cards as the Contents panel (a group with one piece spans both columns) */
+@media screen {
+  #home .tocg ol.toc {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    border: 0;
+  }
+  #home .tocg ol.toc li {
+    border: 0;
+  }
+  #home .tocg ol.toc li:only-child {
+    grid-column: 1 / -1;
+  }
+  #home .tocg ol.toc a {
+    height: 100%;
+    min-height: 56px;
+    padding: 8px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  #home .tocg ol.toc a:active {
+    background: var(--rule);
+  }
+  #home .tocg ol.toc .m {
+    font-size: 1em;
+  }
+  #home .tocg[data-lang="both"] ol.toc .en {
+    font: 400 12.5px/1.3 var(--lat);
+    margin-top: 2px;
+  }
+  #home .tocg .gh {
+    margin-bottom: 10px;
+  }
+}
+/* Top bar showing the piece being read: a little smaller, so most names fit */
+.bar .t.site.pc {
+  font-size: 16.5px;
+  gap: 4px;
+}
+.bar .t.site.pc[data-tl="en"] {
+  font-size: 14.5px;
+}
 </style>
 </head>
 
@@ -3923,7 +4050,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -3954,7 +4081,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -3985,7 +4112,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4046,7 +4173,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4077,7 +4204,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4108,7 +4235,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4169,7 +4296,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4200,7 +4327,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4231,7 +4358,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4292,7 +4419,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4323,7 +4450,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4354,7 +4481,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4385,7 +4512,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4446,7 +4573,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4477,7 +4604,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4508,7 +4635,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4539,7 +4666,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4651,7 +4778,7 @@ a.t {
       </div>
     </div>
     <div class="items">
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4676,7 +4803,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4703,7 +4830,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4730,7 +4857,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4757,7 +4884,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4859,7 +4986,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ३ वेळा</span><span class="en" lang="en">↻ 3 times</span></div>
+      <div class="rmk"><span class="mr">↻ ३ वेळा</span><span class="en" lang="en"><i class="ra">↻ </i>3 times</span></div>
     </div>
     <div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>
     <nav class="pn">
@@ -4888,7 +5015,7 @@ a.t {
       </div>
     </div>
     <div class="items">
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4917,7 +5044,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -4946,7 +5073,7 @@ a.t {
           </div>
         </div>
       </div>
-      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en">↻ Refrain</span></div>
+      <div class="rmk"><span class="mr">↻ ध्रुपद</span><span class="en" lang="en"><i class="ra">↻ </i>Refrain</span></div>
       <div class="item rf">
         <div class="verse">
           <div class="mr">
@@ -5144,7 +5271,7 @@ a.t {
 </div>
 <!-- ==== Help (English only), opened from the home page and Settings ==== -->
 <div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="hlpt" lang="en">
-  <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx">✕ Close</button></div>
+  <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx" aria-label="Close help"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="hlpin">
     <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
@@ -5190,8 +5317,8 @@ a.t {
 
     <h3>Buttons at the top</h3>
     <ul>
-      <li><b>Home</b> (house and title): back to the start.</li>
-      <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it. Plain letters are enough: <i>sukhakarta</i> finds <i>sukhakartā</i>.</li>
+      <li><b>Home</b> (house and title): back to the start. While you read, the title shows the piece on screen (for example <i>५. दत्ताची आरती</i>).</li>
+      <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it. Plain letters are enough, and spelling is forgiving: <i>sukhakarta</i>, <i>ganpati</i> and <i>vithal</i> find <i>sukhakartā</i>, <i>Ganapati</i> and <i>Vitthal</i>. The matching words are shown in bold; tap a result to go to that line. On a computer you can type straight away, and use ↑ ↓ and Enter.</li>
       <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
       <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
       <li><b>⚙ Settings:</b> menu language, English style, text size, theme, high contrast, keeping the screen on, and one or two columns on wide screens. See below.</li>
@@ -5216,6 +5343,7 @@ a.t {
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
+      <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
       <li><b>At the end of each aarti:</b> Previous and Next go to the neighbouring pieces; the small <b>house</b> and <b>contents-and-search</b> buttons between them work just like the ones at the top.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
@@ -6690,8 +6818,19 @@ a.t {
   // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
-    document.getElementById("btt").textContent = P.lang === "en" ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी";
-    document.getElementById("bt").setAttribute("data-tl", P.lang === "en" ? "en" : "mr");
+    // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
+    var en = P.lang === "en",
+      tt = en ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी",
+      bt0 = document.getElementById("bt"),
+      hd = c && c.querySelector("header");
+    if (hd && hd.getBoundingClientRect().bottom < 64) {
+      var no = c.querySelector("h2 .no ." + (en ? "ne" : "nm")),
+        nm = c.querySelector("h2 > ." + (en ? "en" : "mr"));
+      if (nm) tt = (no ? no.textContent + " " : "") + nm.textContent;
+      bt0.classList.add("pc");
+    } else bt0.classList.remove("pc");
+    if (document.getElementById("btt").textContent !== tt) document.getElementById("btt").textContent = tt;
+    bt0.setAttribute("data-tl", en ? "en" : "mr");
     [].forEach.call(document.querySelectorAll("#jump a,#rail a"), function (a) {
       var g = a.getAttribute("data-go"),
         on = c ? g === c.id : g === "home" && !!a.closest("#rail");
@@ -6722,7 +6861,14 @@ a.t {
   function goLine(id, flash) {
     var el = lineEl(id);
     if (!el) return;
-    el.scrollIntoView({ block: "center" });
+    // A line that is hidden in the current dhrupad mode: go to the start of its piece instead
+    if (el.offsetParent === null) {
+      var sec = el.closest(".ash");
+      if (sec) sec.scrollIntoView();
+      return;
+    }
+    // Upper third of the screen, clear of the top bar and of the phone's toolbar at the bottom
+    scrollTo(0, Math.max(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.3));
     if (flash) {
       [].forEach.call(document.querySelectorAll('[data-l="' + id + '"]'), function (p) {
         p.classList.remove("fl");
@@ -6929,11 +7075,14 @@ a.t {
 
   // ---- Overlays: settings panel (setP) and contents + search (setJ); opening one closes the other ----
   function setP(o) {
+    if (o) ovPush();
     pn.hidden = !o;
     aa.setAttribute("aria-expanded", String(o));
     if (o) setJ(false);
+    else ovDone();
   }
   function setJ(o) {
+    if (o) ovPush();
     var qq = document.getElementById("q");
     if (qq && qq.value) {
       qq.value = "";
@@ -6954,27 +7103,131 @@ a.t {
     if (o) {
       pn.hidden = true;
       aa.setAttribute("aria-expanded", "false");
-    }
+    } else ovDone();
   }
+
+  // ---- Back button ----
+  // Opening a panel or dialog adds a Back step, so the phone's Back closes it instead of leaving the site.
+  // Going to a piece (or home) adds a Back step that returns to where you were. As you read, the address
+  // follows the piece on screen (#a5) without adding steps. Each step remembers its scroll position (y).
+  var NAV = !!(history.pushState && history.replaceState),
+    popSkip = 0;
+  // The script puts the page back in place itself (the browser's own guess can land at the top)
+  if (NAV && "scrollRestoration" in history) history.scrollRestoration = "manual";
+  function hs() {
+    return history.state || {};
+  }
+  function ovOpen() {
+    return (
+      !pn.hidden ||
+      !jp.hidden ||
+      ["qrm", "prm", "inm", "help"].some(function (i) {
+        var e = document.getElementById(i);
+        return e && !e.hidden;
+      })
+    );
+  }
+  function ovPush() {
+    if (!NAV || hs().ov || ovOpen()) return;
+    try {
+      history.replaceState({ y: scrollY }, "", location.href);
+      history.pushState({ ov: 1, y: scrollY }, "", location.href);
+    } catch (e) {}
+  }
+  // Closed with ✕, Escape or a tap outside: take the panel's Back step off again
+  function ovDone() {
+    if (!NAV || !hs().ov || ovOpen()) return;
+    popSkip++;
+    history.back();
+  }
+  // Go somewhere in the page: go() scrolls, url is "#a3" (a piece) or the bare address (home)
+  function jumpTo(go, url) {
+    var ov = NAV && hs().ov;
+    try {
+      if (NAV) history.replaceState({ y: scrollY }, "", location.href);
+    } catch (e) {}
+    setP(false);
+    setJ(false);
+    go();
+    try {
+      if (NAV) history[ov ? "replaceState" : "pushState"]({ y: scrollY }, "", url);
+    } catch (e) {}
+  }
+  function goHomeNav() {
+    jumpTo(goHome, location.pathname);
+  }
+  addEventListener("popstate", function (e) {
+    var was = ovOpen();
+    setP(false);
+    setJ(false);
+    ["qrm", "prm", "inm"].forEach(function (i) {
+      var d = document.getElementById(i);
+      if (d) d.hidden = true;
+    });
+    if (popSkip) {
+      popSkip--;
+      return;
+    }
+    if (was) return;
+    var st = e.state,
+      el = location.hash && document.getElementById(location.hash.slice(1));
+    if (st && typeof st.y === "number") scrollTo(0, st.y);
+    else if (el) el.scrollIntoView();
+    else scrollTo(0, 0);
+  });
+  // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help)
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    var d = ["help", "qrm", "prm", "inm"]
+      .map(function (i) {
+        return document.getElementById(i);
+      })
+      .filter(function (x) {
+        return x && !x.hidden;
+      })[0];
+    if (!d) return;
+    var f = [].filter.call(d.querySelectorAll("button,a[href],input,[tabindex]:not([tabindex='-1'])"), function (x) {
+      return !x.disabled && x.offsetParent !== null;
+    });
+    if (!f.length) return;
+    var i = f.indexOf(document.activeElement);
+    if (e.shiftKey ? i <= 0 : i === f.length - 1 || i < 0) {
+      e.preventDefault();
+      f[e.shiftKey ? f.length - 1 : 0].focus();
+    }
+  });
+  var adT = 0;
+  window.addEventListener(
+    "scroll",
+    function () {
+      clearTimeout(adT);
+      adT = setTimeout(function () {
+        if (!NAV || hs().ov || ovOpen()) return;
+        var c = cur();
+        try {
+          history.replaceState({ y: scrollY }, "", c ? "#" + c.id : location.pathname);
+        } catch (e) {}
+      }, 500);
+    },
+    { passive: true },
+  );
+
   bt.addEventListener("click", function (e) {
     e.preventDefault();
-    goHome();
-    try {
-      history.replaceState(null, "", location.pathname);
-    } catch (x) {}
+    goHomeNav();
   });
   var hmb = document.getElementById("hm");
   hmb.onclick = function () {
     setJ(jp.hidden);
+    // With a mouse and keyboard, the cursor goes straight into the search box (on phones it doesn't,
+    // so the keyboard doesn't pop up over the list)
+    if (!jp.hidden && matchMedia("(hover: hover) and (pointer: fine)").matches) document.getElementById("q").focus();
   };
   // Home and Search at the end of each piece do exactly what the top bar's buttons do
   [].forEach.call(document.querySelectorAll(".pnh"), function (h) {
     h.addEventListener("click", function (e) {
       e.preventDefault();
-      goHome();
-      try {
-        history.replaceState(null, "", location.pathname);
-      } catch (x) {}
+      goHomeNav();
     });
   });
   [].forEach.call(document.querySelectorAll(".pns"), function (b) {
@@ -7008,13 +7261,7 @@ a.t {
     b.id = "jhb";
     b.innerHTML =
       '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span class="mr">मुखपृष्ठ</span><span class="en" lang="en">Home</span>';
-    b.onclick = function () {
-      setJ(false);
-      goHome();
-      try {
-        history.replaceState(null, "", location.pathname);
-      } catch (x) {}
-    };
+    b.onclick = goHomeNav;
     li.appendChild(b);
     ul.appendChild(li);
   })();
@@ -7042,14 +7289,15 @@ a.t {
     if (a) {
       e.preventDefault();
       var el = document.getElementById(a.getAttribute("data-go"));
-      setJ(false);
-      if (el) {
-        if (el.id === "home") scrollTo(0, 0);
-        else el.scrollIntoView();
-        try {
-          history.replaceState(null, "", "#" + el.id);
-        } catch (x) {}
-      }
+      if (el)
+        jumpTo(
+          function () {
+            if (el.id === "home") scrollTo(0, 0);
+            else el.scrollIntoView();
+          },
+          el.id === "home" ? location.pathname : "#" + el.id,
+        );
+      else setJ(false);
       return;
     }
     var p = e.target.closest && e.target.closest(".verse p[data-l]");
@@ -7188,6 +7436,17 @@ a.t {
       .replace(/\s+/g, " ")
       .trim();
   }
+  // Forgiving form of English letters, so spellings people type still match: double letters count once
+  // (vitthal = vithal), ee = i, oo = u, and the short "a" between consonants or at a word's end is ignored
+  // (ganapati = ganpati, sukhakarta = sukhkarta, jagadish = jagdish). Marathi letters are left alone.
+  function lz(s) {
+    return s
+      .replace(/ee/g, "i")
+      .replace(/oo/g, "u")
+      .replace(/([a-z])\1+/g, "$1")
+      .replace(/([bcdfghjklmnpqrstvwxyz])a(?=[bcdfghjklmnpqrstvwxyz])/g, "$1")
+      .replace(/([bcdfghjklmnpqrstvwxyz])a\b/g, "$1");
+  }
   function buildIX() {
     var seen = {};
     IX = [];
@@ -7209,7 +7468,7 @@ a.t {
       if (ENS[id]) e += " \u0000" + ENS[id];
       if (seen[k]) return;
       seen[k] = 1;
-      IX.push({ id: id, sec: sec.id, m: m, e: e.split(" \u0000")[0], t: nz(m) + " " + nz(e) });
+      IX.push({ id: id, sec: sec.id, m: m, e: e.split(" \u0000")[0], t: nz(m) + " " + nz(e), l: lz(nz(e)) });
     });
   }
   buildIX();
@@ -7221,6 +7480,21 @@ a.t {
       s = h.querySelector(P.lang === "en" ? ".en" : ".mr");
     return (s || h).textContent;
   }
+  // Keyboard: ↓ / ↑ move through the results, Enter in the box opens the first one
+  jp.addEventListener("keydown", function (e) {
+    var bs = [].slice.call(res.querySelectorAll("button")),
+      i = bs.indexOf(document.activeElement);
+    if (e.key === "ArrowDown" && bs.length) {
+      e.preventDefault();
+      bs[Math.min(bs.length - 1, i + 1)].focus();
+    } else if (e.key === "ArrowUp" && i >= 0) {
+      e.preventDefault();
+      (i === 0 ? q : bs[i - 1]).focus();
+    } else if (e.key === "Enter" && document.activeElement === q && bs.length) {
+      e.preventDefault();
+      bs[0].click();
+    }
+  });
   q.addEventListener("input", function () {
     var v = nz(q.value);
     res.innerHTML = "";
@@ -7228,20 +7502,34 @@ a.t {
     ul.hidden = v.length >= 2;
     if (v.length < 2) return;
     var tk = v.split(" "),
+      lk = tk.map(lz),
       out = [];
-    for (var i = 0; i < IX.length && out.length < 40; i++) {
-      var ok = true;
-      for (var j = 0; j < tk.length; j++) {
-        if (IX[i].t.indexOf(tk[j]) < 0) {
-          ok = false;
-          break;
-        }
-      }
-      if (ok) out.push(IX[i]);
+    function has(t, ks) {
+      for (var j = 0; j < ks.length; j++) if (t.indexOf(ks[j]) < 0) return false;
+      return true;
     }
+    // Exact matches first, then the forgiving ones
+    for (var i = 0; i < IX.length && out.length < 40; i++) if (has(IX[i].t, tk)) out.push(IX[i]);
+    for (i = 0; i < IX.length && out.length < 40; i++) if (out.indexOf(IX[i]) < 0 && has(IX[i].l, lk)) out.push(IX[i]);
     if (!out.length) {
       none.hidden = false;
       return;
+    }
+    // Show the line with the words that match the search in bold
+    function mk(el, txt) {
+      txt.split(/(\s+)/).forEach(function (w) {
+        var n = nz(w),
+          hit =
+            n &&
+            tk.some(function (k, j) {
+              return k.length > 1 && (n.indexOf(k) >= 0 || lz(n).indexOf(lk[j]) >= 0);
+            });
+        if (hit) {
+          var bb = document.createElement("mark");
+          bb.textContent = w;
+          el.appendChild(bb);
+        } else el.appendChild(document.createTextNode(w));
+      });
     }
     out.forEach(function (r) {
       var li = document.createElement("li"),
@@ -7252,18 +7540,19 @@ a.t {
       s1.textContent = sectionTitle(r.sec);
       var s2 = document.createElement("span");
       s2.className = "rl";
-      s2.textContent = P.lang === "en" ? r.e : r.m;
+      mk(s2, P.lang === "en" ? r.e : r.m);
       b.appendChild(s1);
       b.appendChild(s2);
       if (P.lang === "both") {
         var s3 = document.createElement("span");
         s3.className = "rl2";
-        s3.textContent = r.e;
+        mk(s3, r.e);
         b.appendChild(s3);
       }
       b.onclick = function () {
-        setJ(false);
-        goLine(r.id, true);
+        jumpTo(function () {
+          goLine(r.id, true);
+        }, "#" + r.sec);
       };
       li.appendChild(b);
       res.appendChild(li);
@@ -7375,25 +7664,18 @@ a.t {
   (function () {
     var hp = document.getElementById("help");
     function open() {
-      setP(false);
+      ovPush();
       hp.hidden = false;
+      setP(false);
       hp.scrollTop = 0;
       document.documentElement.style.overflow = "hidden";
-      try {
-        history.pushState({ help: 1 }, "", "#help");
-      } catch (e) {}
       document.getElementById("hlpx").focus();
     }
     function close(fromPop) {
       if (hp.hidden) return;
       hp.hidden = true;
       document.documentElement.style.overflow = "";
-      if (!fromPop) {
-        try {
-          if (history.state && history.state.help) history.back();
-          else history.replaceState(null, "", location.pathname);
-        } catch (e) {}
-      }
+      if (!fromPop) ovDone();
     }
     document.getElementById("hlpb").onclick = open;
     document.getElementById("hlp2").onclick = open;
@@ -7697,6 +7979,7 @@ a.t {
     }
     function go(mode) {
       pm.hidden = true;
+      ovDone();
       busy = true;
       if (mode === "as") mode = "one";
       build(mode);
@@ -7727,21 +8010,21 @@ a.t {
           go("as");
         };
       }
+      ovPush();
       pm.hidden = false;
       b1.focus();
     };
-    document.getElementById("prx").onclick = function () {
+    function pmClose() {
       pm.hidden = true;
+      ovDone();
       document.getElementById("prb").focus();
-    };
+    }
+    document.getElementById("prx").onclick = pmClose;
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && !pm.hidden) {
-        pm.hidden = true;
-        document.getElementById("prb").focus();
-      }
+      if (e.key === "Escape" && !pm.hidden) pmClose();
     });
     pm.addEventListener("click", function (e) {
-      if (e.target === pm) pm.hidden = true;
+      if (e.target === pm) pmClose();
     });
     // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view,
     // single column: contents, then every piece in the chosen text language, never the home page
@@ -7763,7 +8046,9 @@ a.t {
       title = "संकष्टी चतुर्थी";
     var qm = document.getElementById("qrm");
     function qr(o) {
+      if (o) ovPush();
       qm.hidden = !o;
+      if (!o) ovDone();
       if (o) {
         document.getElementById("qrx").focus();
       } else {
@@ -7857,7 +8142,9 @@ a.t {
       ibShow(false);
     }
     function steps(o) {
+      if (o) ovPush();
       im.hidden = !o;
+      if (!o) ovDone();
       if (o) {
         var which = ios
           ? safari
@@ -7989,8 +8276,21 @@ a.t {
         })
         .then(function (h) {
           var v = (h.match(RE) || [])[1];
+          // Newer if the version differs, or if the page's styles or script changed while the version stayed
+          // the same: compare them with the ones running now (the browser keeps their text exactly as sent)
+          // (the tag names are split so this code doesn't contain them itself)
+          function part(t, a, z, last) {
+            var i = last ? t.lastIndexOf(a) : t.indexOf(a),
+              j = t.indexOf(z, i);
+            return i < 0 || j < 0 ? null : t.slice(i + a.length, j);
+          }
+          var sc = part(h, "<" + "script>", "</" + "script>", true),
+            sy = part(h, "<" + "style>", "</" + "style>", false),
+            myS = (document.scripts[document.scripts.length - 1] || {}).text,
+            myY = (document.querySelector("style") || {}).textContent,
+            changed = (v && me && v !== me) || (sc !== null && sc !== myS) || (sy !== null && sy !== myY);
           setTimeout(function () {
-            if (v && me && v !== me) {
+            if (changed) {
               flash("नवीन आवृत्ती, उघडत आहे…", "New version, loading…");
               try {
                 navigator.serviceWorker.getRegistration().then(function (g) {
