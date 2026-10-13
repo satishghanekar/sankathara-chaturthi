@@ -980,7 +980,7 @@ ol.toc li.soon .m {
   font: 600 19px/1.25 var(--lat);
 }
 #home {
-  padding-top: 14px;
+  padding-top: 6px;
 }
 .tocg ol.toc {
   margin-left: 18px;
@@ -2153,39 +2153,32 @@ a.t {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  margin: 6px 0 18px;
-  padding: 18px 16px 16px;
+  gap: 0;
+  margin: 2px 0 10px;
+  padding: 10px 12px 8px;
   border-radius: 16px;
   background: linear-gradient(180deg, var(--hdr), transparent);
   border-top: 3px solid var(--accent);
   text-align: center;
 }
 .hero .om {
-  width: 58px;
-  height: 58px;
+  width: 40px;
+  height: 40px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   border: 1.5px solid var(--gold);
   color: var(--accent);
-  font: 400 34px/1 var(--head);
-  margin-bottom: 6px;
+  font: 400 24px/1 var(--head);
+  margin-bottom: 4px;
   box-shadow:
-    0 0 0 5px var(--hdr),
-    0 0 0 6px var(--hdrl);
+    0 0 0 3px var(--hdr),
+    0 0 0 4px var(--hdrl);
 }
 .hero .hl1 {
-  font: 400 1.05em/1.4 var(--head);
+  font: 400 0.95em/1.4 var(--head);
   color: var(--accent);
   letter-spacing: 0.02em;
-}
-.hero .hl2 {
-  font-size: 0.78em;
-  color: var(--muted);
-}
-.hero[data-lang="both"] .hl2 .en {
-  margin-left: 0.6em;
 }
 
 /* ==== Quieter piece number and language tag in headers ==== */
@@ -2241,8 +2234,8 @@ a.t {
 
 /* ==== Next Sankashti card (home page) ==== */
 .skc {
-  margin: -6px 0 20px;
-  padding: 10px 14px 12px;
+  margin: 0 0 14px;
+  padding: 8px 12px 8px;
   border: 1px solid var(--hdrl);
   border-radius: 14px;
   background: var(--surface);
@@ -2258,7 +2251,7 @@ a.t {
   letter-spacing: 0.02em;
 }
 .skc .skd {
-  font: 400 1.25em/1.3 var(--head);
+  font: 400 1.15em/1.3 var(--head);
   color: var(--ink);
   margin: 0;
 }
@@ -2336,10 +2329,10 @@ a.t {
 }
 /* Today's date, a small line at the top of the card */
 .skc .sktd {
-  margin: 0 0 6px;
-  padding-bottom: 6px;
+  margin: 0 0 4px;
+  padding-bottom: 4px;
   border-bottom: 1px solid var(--hdrl);
-  font: 500 15px/1.4 var(--body);
+  font: 500 14px/1.4 var(--body);
   color: var(--ink);
 }
 .skc[data-lang="en"] .sktd {
@@ -2366,8 +2359,8 @@ a.t {
   display: flex;
   gap: 6px;
   overflow-x: auto;
-  margin: 8px -6px 0;
-  padding: 12px 6px 4px;
+  margin: 6px -6px 0;
+  padding: 10px 6px 2px;
   border-top: 1px solid var(--hdrl);
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
@@ -2375,8 +2368,8 @@ a.t {
 .skc .skch {
   flex: none;
   position: relative;
-  min-width: 52px;
-  min-height: 52px;
+  min-width: 46px;
+  min-height: 46px;
   padding: 4px 6px;
   border: 1px solid var(--hdrl);
   border-radius: 12px;
@@ -2387,7 +2380,7 @@ a.t {
 }
 .skc .skch b {
   display: block;
-  font: 600 18px/1.2 var(--body);
+  font: 600 16px/1.2 var(--body);
 }
 .skc[data-lang="en"] .skch b {
   font-family: var(--lat);
@@ -2696,7 +2689,6 @@ a.t {
     <div class="hero" aria-hidden="true">
       <div class="om">ॐ</div>
       <div class="hl1">॥ श्री गणेशाय नमः ॥</div>
-      <div class="hl2"><span class="mr">पूजा · आरती</span><span class="en" lang="en">Pooja · Aarti</span></div>
     </div>
     <div id="a2hs" class="a2" hidden><button type="button" class="a2x" id="a2x" aria-label="Close">✕</button><div class="a2t"><span class="mr">फोनवर ॲपसारखे ठेवा</span><span class="en" lang="en">Keep it on your phone like an app</span></div><p class="a2s" id="a2ios"><span class="mr">ब्राउझरचे शेअर <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> बटण दाबा, मग <b>Add to Home Screen</b> निवडा. नंतर इंटरनेटशिवायही उघडेल.</span><span class="en" lang="en">Tap your browser's Share button <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-3px"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>, then <b>Add to Home Screen</b>. It will then open even without internet.</span></p><p class="a2s" id="a2app" hidden><span class="mr">हे पान <b>Safari</b> किंवा <b>Chrome</b> मध्ये उघडा (⋯ किंवा शेअर → Open in Safari/Chrome), मग Share → <b>Add to Home Screen</b>.</span><span class="en" lang="en">Open this page in <b>Safari</b> or <b>Chrome</b> (⋯ or Share → Open in Safari/Chrome), then Share → <b>Add to Home Screen</b>.</span></p><p class="a2s" id="a2and" hidden><span class="mr">एका टॅपमध्ये होम स्क्रीनवर जोडा; नंतर इंटरनेटशिवायही उघडेल.</span><span class="en" lang="en">Add it to your home screen in one tap. It will then open even without internet.</span></p><button type="button" class="wide" id="a2go" hidden><span class="mr">होम स्क्रीनवर जोडा</span><span class="en" lang="en">Add to home screen</span></button></div>
     <div id="skc" class="skc" hidden></div>
@@ -6443,7 +6435,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v90").then(function (c) {
+          caches.open("aarti-v91").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
