@@ -614,6 +614,14 @@ ol.toc .m {
 .verse p.hl {
   background: var(--hl);
 }
+/* the transliteration under a tapped line keeps full contrast on the highlight */
+html:not([data-hc="1"])[data-lang="both"] .verse .en p.hl {
+  color: var(--ink);
+}
+/* parts of a long line between preferred break points (see "Preferred line breaks" in the script) */
+.zs {
+  display: inline-block;
+}
 @keyframes fl {
   from {
     background: var(--hl);
@@ -1369,7 +1377,9 @@ a.t {
     font: 400 16pt/1.25 var(--head);
     color: var(--accent);
     text-align: center;
-    margin: 12pt 0 6pt;
+    /* padding rather than margin above, so the tops of the letters stay on the heading's own page */
+    margin: 9pt 0 6pt;
+    padding-top: 3pt;
     break-after: avoid;
   }
   #pv .pvs h2 .en {
@@ -2455,6 +2465,8 @@ a.t {
   </div>
   <div id="offrow" hidden>✓ Ready offline</div>
 </div>
+<!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
+<nav id="rail" aria-label="Contents"></nav>
 <!-- ==== Page: home, then every piece ==== -->
 <div class="wrap">
   <!-- ==== Home page ==== -->
@@ -4082,14 +4094,13 @@ a.t {
     </nav>
   </section>
 </div>
-<!-- ==== Pop-ups (QR code, print options), left menu, print view, status message ==== -->
+<!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
   <div class="qrc"><div class="qrt"><span lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span lang="en">Close</span></button></div>
 </div>
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
   <div class="qrc"><div class="qrt"><span lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span lang="en">Your dhrupad (धृ) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span lang="en">Cancel</span></button></div>
 </div>
-<nav id="rail" aria-label="Contents"></nav>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
 
@@ -4688,6 +4699,31 @@ a.t {
         p.appendChild(e);
       });
     });
+  });
+
+  // ---- Preferred line breaks ----
+  // A zero-width space (U+200B) in a line marks where it should break when it is too long for the screen.
+  // Browsers fill a row greedily and may break at a later space instead, so each part is wrapped in an
+  // inline-block span (.zs): the row then breaks at the marked point. The text itself is not changed.
+  [].forEach.call(document.querySelectorAll(".verse p"), function (p) {
+    if (p.textContent.indexOf("​") < 0) return;
+    [].slice.call(p.childNodes).forEach(function (n) {
+      if (n.nodeType !== 3 || n.data.indexOf("​") < 0) return;
+      var f = document.createDocumentFragment();
+      n.data.split("​").forEach(function (part, i) {
+        if (i) f.appendChild(document.createTextNode("​"));
+        if (!part) return;
+        var s = document.createElement("span");
+        s.className = "zs";
+        s.textContent = part;
+        f.appendChild(s);
+      });
+      p.replaceChild(f, n);
+    });
+    // keep the stanza number with the last part of the line
+    var sn = p.lastElementChild,
+      last = sn && sn.previousSibling;
+    if (sn && sn.className === "sn" && last && last.className === "zs") last.appendChild(sn);
   });
   // Latin digits → Devanagari digits
   function DV(n) {
@@ -5764,7 +5800,7 @@ a.t {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v72").then(function (c) {
+          caches.open("aarti-v73").then(function (c) {
             var css = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
             var done = function () {
               document.getElementById("offrow").hidden = false;
