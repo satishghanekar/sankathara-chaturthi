@@ -4179,6 +4179,30 @@ h2[tabindex="-1"]:focus {
   }
 }
 
+/* English style choices: example on top, a small caption (Simple / Standard (IAST)) under it, same row height */
+#panel #str button {
+  height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1.1;
+}
+#panel #str small {
+  font: 500 10.5px/1.1 var(--lat);
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+#panel #str small .mr {
+  font: 500 11px/1.1 var(--body);
+}
+@media (max-width: 360px) {
+  #panel #str button {
+    padding: 0 7px;
+  }
+}
+
 /* Open all / Fold all pill in a section row, just left of the section's arrow */
 .grp {
   position: relative;
@@ -4299,8 +4323,9 @@ h2[tabindex="-1"]:focus {
   <div class="row">
     <label><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English style</span></label>
     <div class="seg" id="str" role="group" aria-label="English style">
-      <button type="button" data-v="simple" lang="en">Sukhkarta</button>
-      <button type="button" data-v="iast" lang="en">sukhakartā</button>
+      <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
+      <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
+      <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
     </div>
   </div>
   <div class="row" id="colrow">
