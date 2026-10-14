@@ -5830,15 +5830,15 @@ h2[tabindex="-1"]:focus {
           </div>
         </div>
       </div>
-      <div class="item dh">
+      <div class="item">
         <div class="verse">
           <div class="mr">
             <p data-l="s7l2">निढळावरी कर, ​निढळावरी कर ठेवुनी वाट मी पाहे ।</p>
-            <p data-l="s7l3">हो देवा वाट मी पाहे ।</p>
+            <p data-l="s7l3">हो देवा वाट मी पाहे ॥</p>
           </div>
           <div class="en" lang="en">
             <p data-l="s7l2">Nidhalavari Kar, Nidhalavari Kar Thevuni Vaat Mi Pahe |</p>
-            <p data-l="s7l3">Ho Deva Vaat Mi Pahe |</p>
+            <p data-l="s7l3">Ho Deva Vaat Mi Pahe ||</p>
           </div>
         </div>
       </div>
@@ -10564,7 +10564,7 @@ h2[tabindex="-1"]:focus {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v1.0.2").then(function (c) {
+          caches.open("aarti-v1.0.3").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
