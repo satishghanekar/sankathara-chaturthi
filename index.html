@@ -2337,6 +2337,10 @@ h2[tabindex="-1"]:focus {
 [data-cols="2"] {
   --ww: 76rem;
 }
+/* With the side menu (iPad landscape, desktop) the page sits right beside the menu and uses its whole width, up to 60rem */
+[data-rail="1"] {
+  --ww: 60rem;
+}
 @media screen and (min-width: 1100px) {
   [data-rail="1"] {
     --W: min(var(--ww), calc(100vw - 340px));
@@ -4093,6 +4097,16 @@ h2[tabindex="-1"]:focus {
   }
 }
 
+@media screen and (min-width: 1100px) {
+  [data-rail="1"] #home,
+  [data-rail="1"] #tfr,
+  [data-rail="1"] .grp,
+  [data-rail="1"] #home + .grp,
+  [data-rail="1"] .ash header,
+  [data-rail="1"] .rftop {
+    max-width: none;
+  }
+}
 /* Piece headings, the card's Ganesha picture and its folded line fold or open with a tap anywhere on them */
 .ash header,
 #home .hero,
