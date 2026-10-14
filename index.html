@@ -7029,9 +7029,21 @@ a.t {
     m.appendChild(el);
     m.setAttribute("aria-expanded", "true");
     // Keep the bubble on screen: shift it sideways if needed; if there is no room above (under the top bar), put it below
+    // The visible strip is measured from the page width (and, on a phone, the part of the page in view);
+    // innerWidth alone shrinks on an iPhone after a pinch and pushed the bubble off the left edge.
     var r = el.getBoundingClientRect(),
       pad = 8,
-      dx = r.left < pad ? pad - r.left : r.right > innerWidth - pad ? innerWidth - pad - r.right : 0;
+      vv = window.visualViewport,
+      L = Math.max(0, vv ? vv.offsetLeft : 0),
+      W = document.documentElement.clientWidth || innerWidth,
+      R = Math.min(W, vv ? vv.offsetLeft + vv.width : W);
+    if (R - L < r.width + 2 * pad) {
+      L = 0;
+      R = W;
+    }
+    var dx = r.left < L + pad ? L + pad - r.left : r.right > R - pad ? R - pad - r.right : 0;
+    // never past the left edge, even if the bubble is wider than the strip
+    if (r.left + dx < pad) dx = pad - r.left;
     if (dx) el.style.marginLeft = dx + "px";
     var bar = document.querySelector("body > .bar");
     if (r.top < (bar ? bar.getBoundingClientRect().bottom : 56) + 4) el.classList.add("below");
