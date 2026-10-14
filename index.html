@@ -2678,20 +2678,6 @@ h2[tabindex="-1"]:focus {
   border-top: 3px solid var(--accent);
   text-align: center;
 }
-.hero .om {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1.5px solid var(--gold);
-  color: var(--accent);
-  font: 400 24px/1 var(--head);
-  margin-bottom: 4px;
-  box-shadow:
-    0 0 0 3px var(--hdr),
-    0 0 0 4px var(--hdrl);
-}
 .hero .hl1 {
   font: 400 0.95em/1.4 var(--head);
   color: var(--accent);
@@ -3642,15 +3628,6 @@ h2[tabindex="-1"]:focus {
   }
 }
 /* ==== Ganesha in the home card, and folding the card (final rules) ==== */
-.hero .om {
-  width: 72px;
-  height: 72px;
-  padding: 0;
-  border: 2px solid var(--gold);
-  object-fit: cover;
-  background: var(--hdr);
-  margin-bottom: 6px;
-}
 #cvb {
   position: absolute;
   top: 16px;
@@ -4120,6 +4097,88 @@ h2[tabindex="-1"]:focus {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* The app's picture on the home card, and its full-screen viewer (#pzv) */
+#iconb {
+  display: block;
+  width: min(168px, 48vw);
+  height: auto;
+  min-height: 0;
+  margin: 2px auto 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  cursor: zoom-in;
+  -webkit-tap-highlight-color: transparent;
+}
+#iconb img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / 0.35));
+}
+#pzv {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(8 6 4 / 0.94);
+  touch-action: none;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#pzv[hidden] {
+  display: none;
+}
+#pzi {
+  max-width: min(94vw, 760px);
+  max-height: 82vh;
+  width: auto;
+  height: auto;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  cursor: zoom-in;
+  -webkit-user-drag: none;
+}
+#pzv.zoomed #pzi {
+  cursor: grab;
+}
+#pzx {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top));
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.5);
+  color: #fff;
+}
+#pzh {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  text-align: center;
+  color: rgb(255 255 255 / 0.7);
+  font: 500 13px/1.3 var(--lat);
+  pointer-events: none;
+}
+@media print {
+  #iconb,
+  #pzv {
+    display: none !important;
+  }
+}
+
 /* Open all / Fold all pill in a section row, just left of the section's arrow */
 .grp {
   position: relative;
@@ -4285,9 +4344,10 @@ h2[tabindex="-1"]:focus {
     <!-- Fold button: the card folds to one slim line (Ganesha, next date, moonrise); the buttons come back when it opens -->
     <button type="button" id="cvb" aria-expanded="true" aria-controls="skc" aria-label="Fold the card"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
     <div id="slim" hidden><img src="ganesha.webp" alt="" width="44" height="44"><div id="slimt"></div></div>
-    <div class="hero" aria-hidden="true">
-      <img class="om" src="ganesha.webp" alt="" width="72" height="72">
-      <div class="hl1">॥ श्री गणेशाय नमः ॥</div>
+    <div class="hero">
+      <!-- The app's picture; a tap opens it full screen (#pzv), where it can be pinched or double-tapped to zoom -->
+      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="app-icon.webp" alt="" width="800" height="736"></button>
+      <div class="hl1" aria-hidden="true">॥ श्री गणेशाय नमः ॥</div>
     </div>
     <div id="skc" class="skc" hidden></div>
     <h1 class="sr"><span class="mr">संकष्टी चतुर्थी</span><span class="en" lang="en">Sankashti Chaturthi</span></h1>
@@ -5909,6 +5969,12 @@ h2[tabindex="-1"]:focus {
   </section>
 </main>
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
+<!-- Full-screen picture: pinch, double-tap or (with a mouse) scroll to zoom; drag to move; ✕, Back, Escape or a tap outside closes -->
+<div id="pzv" hidden role="dialog" aria-modal="true" aria-label="Sankashti Chaturthi picture">
+  <img id="pzi" src="app-icon.webp" alt="Shri Ganesha, Sankashti Chaturthi" width="800" height="736" draggable="false">
+  <button type="button" id="pzx" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div id="pzh" aria-hidden="true"></div>
+</div>
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
   <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru" lang="en">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
 </div>
@@ -5967,7 +6033,8 @@ h2[tabindex="-1"]:focus {
     <ul>
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
-      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap on the Ganesha picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+      <li><b>The picture:</b> tap the Ganesha picture on the card to see it full screen. Pinch or double-tap to zoom, drag to look around; ✕, Back or a tap outside closes it.</li>
+      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap beside the picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. The <b>Fold all</b> / <b>Open all</b> button on the <b>आरती / Aarti</b> heading folds or opens every aarti at once. Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (the arrow points down while folded) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
       <li data-feat="as" hidden><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
@@ -7071,7 +7138,8 @@ h2[tabindex="-1"]:focus {
   ["#home .hero", "#slim"].forEach(function (s) {
     var e = document.querySelector(s);
     if (e)
-      e.addEventListener("click", function () {
+      e.addEventListener("click", function (ev) {
+        if (ev.target.closest("#iconb")) return; // the picture opens full screen instead
         document.getElementById("cvb").onclick();
       });
   });
@@ -8516,7 +8584,7 @@ h2[tabindex="-1"]:focus {
     return (
       !pn.hidden ||
       !jp.hidden ||
-      ["qrm", "prm", "inm", "help"].some(function (i) {
+      ["qrm", "prm", "inm", "help", "pzv"].some(function (i) {
         var e = document.getElementById(i);
         return e && !e.hidden;
       })
@@ -8570,7 +8638,7 @@ h2[tabindex="-1"]:focus {
     var was = ovOpen();
     setP(false);
     setJ(false);
-    ["qrm", "prm", "inm"].forEach(function (i) {
+    ["qrm", "prm", "inm", "pzv"].forEach(function (i) {
       var d = document.getElementById(i);
       if (d) d.hidden = true;
     });
@@ -8589,7 +8657,7 @@ h2[tabindex="-1"]:focus {
   // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
-    var d = ["help", "qrm", "prm", "inm"]
+    var d = ["help", "qrm", "prm", "inm", "pzv"]
       .map(function (i) {
         return document.getElementById(i);
       })
@@ -8812,7 +8880,7 @@ h2[tabindex="-1"]:focus {
   document.addEventListener(
     "touchstart",
     function (e) {
-      if (e.touches.length === 2) {
+      if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
         if (e.cancelable) e.preventDefault();
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
@@ -9123,6 +9191,163 @@ h2[tabindex="-1"]:focus {
     }
   }
 
+
+  // ---- Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move ----
+  // Works with fingers and a mouse (scroll wheel zooms). The text-size pinch is off while it is open.
+  (function () {
+    var v = document.getElementById("pzv"),
+      im = document.getElementById("pzi"),
+      ib = document.getElementById("iconb"),
+      hint = document.getElementById("pzh");
+    if (!v || !im || !ib) return;
+    var s = 1,
+      tx = 0,
+      ty = 0,
+      pts = {},
+      g = null,
+      lastTap = 0,
+      moved = false;
+    function draw() {
+      // keep the picture from being dragged out of view
+      var w = im.offsetWidth,
+        h = im.offsetHeight,
+        mx = Math.max(0, ((s - 1) * w) / 2 + 40),
+        my = Math.max(0, ((s - 1) * h) / 2 + 40);
+      if (s <= 1.01) {
+        s = 1;
+        tx = ty = 0;
+      }
+      tx = Math.max(-mx, Math.min(mx, tx));
+      ty = Math.max(-my, Math.min(my, ty));
+      im.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + s + ")";
+      v.classList.toggle("zoomed", s > 1);
+    }
+    // zoom to scale ns, keeping the screen point (px, py) still
+    function zoomAt(ns, px, py) {
+      ns = Math.max(1, Math.min(5, ns));
+      var r = v.getBoundingClientRect(),
+        cx = r.left + r.width / 2 + tx,
+        cy = r.top + r.height / 2 + ty;
+      tx += (px - cx) * (1 - ns / s);
+      ty += (py - cy) * (1 - ns / s);
+      s = ns;
+      draw();
+    }
+    function open() {
+      ovPush();
+      s = 1;
+      tx = ty = 0;
+      draw();
+      hint.textContent = P.ui === "mr" ? "मोठे करण्यासाठी दोन बोटांनी पसरा किंवा दोनदा टॅप करा" : "Pinch or double-tap to zoom";
+      v.hidden = false;
+      document.documentElement.style.overflow = "hidden";
+      document.getElementById("pzx").focus();
+    }
+    function close(fromPop) {
+      if (v.hidden) return;
+      v.hidden = true;
+      document.documentElement.style.overflow = "";
+      if (!fromPop) ovDone();
+      try {
+        ib.focus({ preventScroll: true });
+      } catch (e) {}
+    }
+    ib.addEventListener("click", function (e) {
+      e.stopPropagation();
+      open();
+    });
+    document.getElementById("pzx").onclick = function () {
+      close();
+    };
+    addEventListener("popstate", function () {
+      close(true);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (v.hidden) return;
+      if (e.key === "Escape") close();
+      if (e.key === "+" || e.key === "=") zoomAt(s * 1.5, innerWidth / 2, innerHeight / 2);
+      if (e.key === "-") zoomAt(s / 1.5, innerWidth / 2, innerHeight / 2);
+    });
+    v.addEventListener("pointerdown", function (e) {
+      if (e.target.closest("#pzx")) return;
+      try {
+        v.setPointerCapture(e.pointerId);
+      } catch (x) {}
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var k = Object.keys(pts);
+      if (k.length === 1) {
+        moved = false;
+        g = { x: e.clientX, y: e.clientY, tx: tx, ty: ty };
+      } else if (k.length === 2) {
+        var a = pts[k[0]],
+          b = pts[k[1]];
+        g = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: s, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+        moved = true;
+      }
+    });
+    v.addEventListener("pointermove", function (e) {
+      if (!pts[e.pointerId] || !g) return;
+      pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+      var k = Object.keys(pts);
+      if (k.length >= 2 && g.d) {
+        var a = pts[k[0]],
+          b = pts[k[1]];
+        zoomAt((g.s * Math.hypot(a.x - b.x, a.y - b.y)) / g.d, (a.x + b.x) / 2, (a.y + b.y) / 2);
+      } else if (k.length === 1 && g.tx !== undefined) {
+        var dx = e.clientX - g.x,
+          dy = e.clientY - g.y;
+        if (Math.abs(dx) + Math.abs(dy) > 6) moved = true;
+        if (s > 1) {
+          tx = g.tx + dx;
+          ty = g.ty + dy;
+          draw();
+        }
+      }
+    });
+    function up(e) {
+      if (!pts[e.pointerId]) return;
+      delete pts[e.pointerId];
+      var k = Object.keys(pts);
+      if (k.length === 1) {
+        // one finger lifted from a pinch: carry on dragging with the other
+        var p = pts[k[0]];
+        g = { x: p.x, y: p.y, tx: tx, ty: ty };
+        return;
+      }
+      if (k.length) return;
+      g = null;
+      if (moved || e.type === "pointercancel") return;
+      var now = Date.now();
+      if (now - lastTap < 320) {
+        // double tap: zoom in where tapped, or back out
+        lastTap = 0;
+        if (s > 1) {
+          s = 1;
+          draw();
+        } else zoomAt(2.5, e.clientX, e.clientY);
+        return;
+      }
+      lastTap = now;
+      // a single tap outside the picture closes it (after the double-tap wait)
+      if (e.target !== im && s === 1)
+        setTimeout(function () {
+          if (lastTap === now) close();
+        }, 330);
+    }
+    v.addEventListener("pointerup", up);
+    v.addEventListener("pointercancel", up);
+    v.addEventListener(
+      "wheel",
+      function (e) {
+        e.preventDefault();
+        zoomAt(s * Math.exp(-e.deltaY / 300), e.clientX, e.clientY);
+      },
+      { passive: false },
+    );
+    addEventListener("resize", function () {
+      if (!v.hidden) draw();
+    });
+  })();
 
   // ---- Help: opens over the page; the phone's Back button closes it ----
   (function () {
