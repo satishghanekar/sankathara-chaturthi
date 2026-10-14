@@ -2122,6 +2122,21 @@ a.t {
     grid-auto-flow: column;
     column-gap: 28pt;
   }
+  /* page number at the right of each contents line */
+  #pv .pvtoc li[data-sid] {
+    position: relative;
+    padding-right: 26pt;
+  }
+  #pv .pvtoc .pgn {
+    position: absolute;
+    right: 2pt;
+    top: 4pt;
+    font: 400 12pt/1.35 var(--lat);
+    color: #555;
+  }
+  #pv[data-lang="mr"] .pvtoc .pgn {
+    font-family: var(--head);
+  }
   /* two columns: stanzas run down the left column to the foot of the page, then down the right */
   #pv .pvhd {
     break-after: avoid;
@@ -5613,7 +5628,7 @@ a.t {
   <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru" lang="en">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
 </div>
 <div id="prm" hidden role="dialog" aria-modal="true" aria-label="Print">
-  <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते.</span><span class="en" lang="en">Your dhrupad (<span lang="mr">धृ</span>) choice applies to the printout too.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
+  <div class="qrc"><div class="qrt"><span class="mr">प्रिंट / PDF</span><span class="en" lang="en">Print / PDF</span></div><div class="prs"><button type="button" class="wide" id="pr1"></button><button type="button" class="wide" id="pr2"></button></div><div class="prn"><span class="mr">तुमची ध्रुपद (धृ) निवड प्रिंटमध्येही लागू होते. अनुक्रमणिकेतील पान क्रमांक <span id="prp">Letter</span> कागद, उभ्या पानासाठी आहेत.</span><span class="en" lang="en">Your dhrupad (<span lang="mr">धृ</span>) choice applies to the printout too. Page numbers in the contents are for <span id="prq">Letter</span> paper, upright.</span></div><button type="button" class="wide prx" id="prx"><span class="mr">रद्द</span><span class="en" lang="en">Cancel</span></button></div>
 </div>
 <!-- ==== Add to Home Screen steps (shown when the browser can't install from a button: iPhone, or Chrome without its prompt) ==== -->
 <div id="inm" hidden role="dialog" aria-modal="true" aria-labelledby="inmt">
@@ -8310,6 +8325,30 @@ a.t {
     // Build the print view (#pv) from the page: contents, then every piece in the text language.
     // mode: "two" (two columns), "one" (one column) or "side" (Marathi and English side by side)
     function build(mode) {
+      // Folded sections and pieces are printed in full: open them while the text is copied
+      var fa = ["data-pf", "data-xf"].map(function (a) {
+          var v = root.getAttribute(a);
+          root.removeAttribute(a);
+          return [a, v];
+        }),
+        fs = secs.filter(function (x) {
+          return x.classList.contains("af");
+        });
+      fs.forEach(function (x) {
+        x.classList.remove("af");
+      });
+      try {
+        build2(mode);
+      } finally {
+        fa.forEach(function (a) {
+          if (a[1] !== null) root.setAttribute(a[0], a[1]);
+        });
+        fs.forEach(function (x) {
+          x.classList.add("af");
+        });
+      }
+    }
+    function build2(mode) {
       pv.innerHTML = "";
       var h = document.createElement("h1");
       h.className = "pvh";
@@ -8328,6 +8367,7 @@ a.t {
           var li = document.createElement("li"),
             m = a.querySelector(".m");
           li.innerHTML = m ? m.innerHTML : a.innerHTML;
+          li.setAttribute("data-sid", a.getAttribute("data-go") || "");
           ol.appendChild(li);
         });
         ol.style.gridTemplateRows = "repeat(" + Math.ceil(as.length / 2) + ", auto)"; // two columns, top to bottom
@@ -8549,16 +8589,140 @@ a.t {
         pv.appendChild(box);
       });
     }
+    // ---- Page numbers in the printed contents ----
+    // A browser cannot print "page N" for a heading, so the print view is laid out once in a hidden
+    // frame the size of a printed page (Letter in the US and Canada, A4 elsewhere, upright) and
+    // each piece's first page is worked out from the heights, as the browser breaks pages.
+    var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || ""),
+      PAPER = LTR ? [215.9, 279.4] : [210, 297],
+      pcache = { key: "", pg: null };
+    function pkey(mode) {
+      return [mode, P.lang, P.ref, P.tr, P.ui].join("|");
+    }
+    // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
+    function pcss() {
+      if (pcss.t) return pcss.t;
+      var out = [];
+      function walk(rules) {
+        [].forEach.call(rules, function (r) {
+          if (r.type === 4) {
+            var m = r.media.mediaText;
+            if (/print/.test(m)) walk(r.cssRules);
+            else if (!/screen/.test(m)) out.push(r.cssText);
+          } else if (r.type !== 6) out.push(r.cssText);
+        });
+      }
+      [].forEach.call(document.styleSheets, function (sh) {
+        try {
+          walk(sh.cssRules);
+        } catch (e) {}
+      });
+      return (pcss.t = out.join("\n"));
+    }
+    // lay out the current print view (#pv) and call back with { piece id: first page }
+    function pages(mode, cb) {
+      var mm = 96 / 25.4,
+        f = document.createElement("iframe"),
+        at = "",
+        done = false;
+      f.setAttribute("aria-hidden", "true");
+      f.tabIndex = -1;
+      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm - 12) + "px;height:" + (PAPER[1] - 23) * mm + "px";
+      [].forEach.call(root.attributes, function (a) {
+        if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
+      });
+      document.body.appendChild(f);
+      function end(r) {
+        if (done) return;
+        done = true;
+        if (f.parentNode) f.parentNode.removeChild(f);
+        cb(r);
+      }
+      setTimeout(function () {
+        end(null);
+      }, 2500);
+      try {
+        var d = f.contentDocument;
+        d.open();
+        d.write('<!doctype html><html data-print="' + mode + '"' + at + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden}#pv .pvtoc{break-after:column}</style></head><body>" + pv.outerHTML + "</body></html>");
+        d.close();
+        d.fonts.ready.then(function () {
+          try {
+            end(paginate(f.contentWindow, d, PAPER[1] - 23, mm));
+          } catch (e) {
+            end(null);
+          }
+        });
+      } catch (e) {
+        end(null);
+      }
+    }
+    // The browser itself breaks the pages: the print view becomes a row of page-sized columns
+    // (same width and height as a printed page, same rules for keeping blocks together), so the
+    // column a heading lands in is its page.
+    function paginate(w, d, hmm, mm) {
+      var p = d.getElementById("pv"),
+        cs = w.getComputedStyle(p),
+        pl = parseFloat(cs.paddingLeft),
+        cw = p.clientWidth - pl - parseFloat(cs.paddingRight),
+        out = {};
+      // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (printed text
+      // runs a little wider, so a near-full line wraps), and pages with two columns of text hold
+      // 4px more than the plain sum of heights.
+      p.style.cssText =
+        "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" +
+        cw + "px;height:" + (hmm * mm - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + (p.querySelector(".pvc") ? 4 : 0)) + "px";
+      var x0 = p.getBoundingClientRect().left + pl;
+      [].forEach.call(p.querySelectorAll(".pvs"), function (e) {
+        var c = e.firstElementChild;
+        if (c) out[e.getAttribute("data-sid")] = Math.round((c.getBoundingClientRect().left - x0) / cw) + 1;
+      });
+      return out;
+    }
+    // write the page numbers into the printed contents
+    function pnums(pg) {
+      [].forEach.call(pv.querySelectorAll(".pvtoc li[data-sid]"), function (li) {
+        var n = pg && pg[li.getAttribute("data-sid")],
+          s = li.querySelector(".pgn");
+        if (s) s.parentNode.removeChild(s);
+        if (!n) return;
+        s = document.createElement("span");
+        s.className = "pgn";
+        s.textContent = P.lang !== "mr" ? n : String(n).replace(/[0-9]/g, function (c) {
+          return "०१२३४५६७८९"[c];
+        });
+        li.appendChild(s);
+      });
+    }
+    // Printing from the browser's own menu cannot wait, so the single-column numbers are kept ready
+    function warm() {
+      var k = pkey("one");
+      if (pcache.key === k || busy) return;
+      build("one");
+      pages("one", function (pg) {
+        if (pg) pcache = { key: k, pg: pg };
+      });
+    }
+    var wt = 0;
+    document.addEventListener("click", function () {
+      clearTimeout(wt);
+      wt = setTimeout(warm, 2500);
+    });
+    setTimeout(warm, 3000);
     function go(mode) {
       pm.hidden = true;
       ovDone();
       busy = true;
       if (mode === "as") mode = "one";
       build(mode);
-      root.setAttribute("data-print", mode);
-      setTimeout(function () {
-        window.print();
-      }, 60);
+      pages(mode, function (pg) {
+        pnums(pg);
+        if (pg && mode === "one") pcache = { key: pkey("one"), pg: pg };
+        root.setAttribute("data-print", mode);
+        setTimeout(function () {
+          window.print();
+        }, 60);
+      });
     }
     document.getElementById("prb").onclick = function () {
       var M = P.ui === "mr",
@@ -8582,6 +8746,7 @@ a.t {
           go("as");
         };
       }
+      document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
       ovPush();
       pm.hidden = false;
       b1.focus();
@@ -8603,6 +8768,7 @@ a.t {
     window.addEventListener("beforeprint", function () {
       if (!busy) {
         build("one");
+        if (pcache.key === pkey("one")) pnums(pcache.pg);
         root.setAttribute("data-print", "one");
       }
     });
