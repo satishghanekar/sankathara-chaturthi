@@ -5915,13 +5915,13 @@ h2[tabindex="-1"]:focus {
             <p data-l="s7l15">विठोबाचे राज आम्हां नित्य दिपवाळी ।</p>
             <p data-l="s7l16">विठोबाचे राज आम्हां नित्य दिपवाळी ।</p>
             <p data-l="s7l17">विष्णुदास नामा, ​विष्णुदास नामा जीवेभावे ओवाळी ।</p>
-            <p data-l="s7l18">हो नामा जीवेभावे ओवाळी ॥</p>
+            <p data-l="s7l18">हो जीवेभावे ओवाळी ॥</p>
           </div>
           <div class="en" lang="en">
             <p data-l="s7l15">Vithobache Raaj Aamha Nitya Dipavali |</p>
             <p data-l="s7l16">Vithobache Raaj Aamha Nitya Dipavali |</p>
             <p data-l="s7l17">Vishnudas Naama, Vishnudas Naama Jivebhave Owaali |</p>
-            <p data-l="s7l18">Ho Naama Jivebhave Owaali ||</p>
+            <p data-l="s7l18">Ho Jivebhave Owaali ||</p>
           </div>
         </div>
       </div>
@@ -10566,7 +10566,7 @@ h2[tabindex="-1"]:focus {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v1.0").then(function (c) {
+          caches.open("aarti-v1.0.1").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
