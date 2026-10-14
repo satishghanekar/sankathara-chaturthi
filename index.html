@@ -5708,7 +5708,7 @@ a.t {
         </ul>
         It changes straight away and keeps your place.</li>
       <li><b>Text size</b> (A− / A+ / ↺ to reset) and <b>Theme</b> (Auto, Light, Sepia, Dark).</li>
-      <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off.</li>
+      <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
       <li>At the bottom: <b>App</b> (until it is installed), <b>Help</b> and the version number (Version 1.0). Tap ✕ at the top to close Settings.</li>
       <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
@@ -5809,6 +5809,8 @@ a.t {
       co = window.matchMedia && matchMedia("(pointer:coarse)").matches;
     return co && s >= 600 ? 28 : 24;
   }
+  // A computer (no touch screen): the screen is kept on only if the reader turns it on
+  var DESK = !!(window.matchMedia && !matchMedia("(any-pointer:coarse)").matches);
   var P = {
     sv: 0, // settings version (see migrations below)
     fs: dfs(), // text size in px
@@ -5818,7 +5820,7 @@ a.t {
     ui: "en", // menus, home page and buttons: en | mr
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
-    wake: 1, // keep the screen on
+    wake: DESK ? 0 : 1, // keep the screen on (phones and tablets; off by default on computers)
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
@@ -5840,6 +5842,11 @@ a.t {
     if (P.sv < 3) P.ref = 1; // v3: dhrupad shown once by default
     P.wake = 1; // v4: keep screen on by default
     P.sv = 4;
+    save();
+  }
+  if (P.sv < 5) {
+    if (DESK) P.wake = 0; // v5: computers no longer keep the screen on by default
+    P.sv = 5;
     save();
   }
 

@@ -24,7 +24,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Settings:** menu language, English style, text size, theme, high contrast and keep screen on, styled like phone settings (two cards, small sliding controls, switches).
 - **Getting around:** the top bar shows the piece being read; Contents and search (forgiving spelling, matching words in bold, ↑ ↓ Enter on a computer); Previous/Next at the end of each piece; the phone's Back button closes menus and returns to where you were before a jump, and the address (#a5) follows the piece on screen.
 - **Screen readers:** the page is marked as Marathi, and English parts as English, so VoiceOver and TalkBack read each in the right voice whatever the menu language.
-- **Reading:** tap a line to highlight it, pinch or A−/A+ for text size (the home page keeps its normal size), themes (light, sepia, dark), high contrast, keep the screen on, and it reopens where you were reading (within 12 hours).
+- **Reading:** tap a line to highlight it, pinch or A−/A+ for text size (the home page keeps its normal size), themes (light, sepia, dark), high contrast, keep the screen on (on by default on phones and tablets, off on computers), and it reopens where you were reading (within 12 hours).
 - **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="help"`).
 
 ## What is in this repository
