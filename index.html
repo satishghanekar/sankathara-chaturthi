@@ -2317,6 +2317,19 @@ h2[tabindex="-1"]:focus {
   #pv .pvc .verse {
     text-align: center;
   }
+  /* each piece starts at the top of a new page: a forced break is the one page rule Chrome and
+     Safari both follow, so every print breaks the same way and the contents numbers stay right */
+  #pv .pvs + .pvs {
+    break-before: page;
+    page-break-before: always;
+  }
+  #pv .pvs:last-child {
+    margin-bottom: 0;
+  }
+  /* pages always print upright (the contents numbers are worked out for upright pages) */
+  @page {
+    size: portrait;
+  }
 }
 
 /* ==== Share / QR / Print use the Latin font ==== */
@@ -10137,7 +10150,7 @@ h2[tabindex="-1"]:focus {
       try {
         var d = f.contentDocument;
         d.open();
-        d.write('<!doctype html><html data-print="' + mode + '"' + at + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden}#pv .pvtoc{break-after:column}</style></head><body>" + pv.outerHTML + "</body></html>");
+        d.write('<!doctype html><html data-print="' + mode + '"' + at + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden}#pv .pvtoc{break-after:column}#pv .pvs+.pvs{break-before:column}</style></head><body>" + pv.outerHTML + "</body></html>");
         d.close();
         // lay out once so the fonts the copy uses start loading, then wait for them before measuring
         d.documentElement.offsetHeight;
@@ -10167,15 +10180,55 @@ h2[tabindex="-1"]:focus {
       p.style.cssText =
         "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" +
         cw + "px;height:" + (hmm * mm - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + (p.querySelector(".pvc") ? 4 : 0)) + "px";
-      var x0 = p.getBoundingClientRect().left + pl;
-      [].forEach.call(p.querySelectorAll(".pvs"), function (e) {
-        var c = e.firstElementChild;
-        if (c) out[e.getAttribute("data-sid")] = Math.round((c.getBoundingClientRect().left - x0) / cw) + 1;
+      var x0 = p.getBoundingClientRect().left + pl,
+        y0 = p.getBoundingClientRect().top,
+        H = p.clientHeight,
+        secs = [].slice.call(p.querySelectorAll(".pvs")),
+        z = {};
+      // first page, number of pages and how full the last page is, for each piece
+      function measure() {
+        var m = {};
+        secs.forEach(function (e) {
+          var c = e.firstElementChild,
+            l = e.lastElementChild;
+          if (!c) return;
+          var rr = l.getClientRects(),
+            b = rr[rr.length - 1] || l.getBoundingClientRect(),
+            s = Math.round((c.getBoundingClientRect().left - x0) / cw) + 1;
+          m[e.getAttribute("data-sid")] = { s: s, n: Math.round((b.left - x0) / cw) + 2 - s, f: (b.bottom - y0) / H };
+        });
+        return m;
+      }
+      // Each piece starts on a new page. A piece that only just spills onto another page, or only
+      // just fills its last page, is set slightly smaller (down to 85%) so it ends well inside a page:
+      // then small differences between browsers can't move it, or every later piece, by a page.
+      var m = measure();
+      secs.forEach(function (e) {
+        var id = e.getAttribute("data-sid"),
+          r = m[id],
+          k = 0;
+        if (!r) return;
+        if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
+        else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
+        if (k >= 0.85 && k < 1) {
+          z[id] = Math.round(k * 100) / 100;
+          e.style.zoom = z[id];
+        }
       });
+      for (var id in z) {
+        m = measure();
+        break;
+      }
+      for (id in m) out[id] = m[id].s;
+      out.z = z;
       return out;
     }
     // write the page numbers into the printed contents
     function pnums(pg) {
+      // pieces set smaller so they end well inside a page (see paginate)
+      [].forEach.call(pv.querySelectorAll(".pvs"), function (e) {
+        e.style.zoom = (pg && pg.z && pg.z[e.getAttribute("data-sid")]) || "";
+      });
       [].forEach.call(pv.querySelectorAll(".pvtoc li[data-sid]"), function (li) {
         var n = pg && pg[li.getAttribute("data-sid")],
           s = li.querySelector(".pgn");
