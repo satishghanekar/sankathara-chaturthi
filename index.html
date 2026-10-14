@@ -4176,6 +4176,64 @@ h2[tabindex="-1"]:focus {
   }
 }
 
+/* Vibrant home card (option B): gold glow behind the picture, warm date box, next date in the accent colour
+   with an "in N days" badge, a gold ring on the chosen date chip, past dates dimmed */
+.top .hero {
+  background:
+    radial-gradient(closest-side, color-mix(in srgb, var(--gold) 38%, transparent), transparent) no-repeat center 0 / 150px 110px,
+    linear-gradient(180deg, var(--hdr), transparent);
+}
+#iconb img {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--gold) 55%, transparent));
+}
+.skc {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface) 55%);
+  border-color: color-mix(in srgb, var(--gold) 55%, var(--hdrl));
+}
+.skc.today {
+  border-color: var(--accent);
+}
+.skc .skh .en {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.9em;
+}
+.skc[data-lang="both"] .skh .en {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.skc .skd {
+  color: var(--accent);
+  font-weight: 600;
+}
+.skc .skd .skin {
+  display: inline-block;
+  margin: 0 2px 0 8px;
+  padding: 0 9px;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font: 600 12px/1.6 var(--lat);
+  vertical-align: 4px;
+  white-space: nowrap;
+}
+.skc .skd .skin.mr {
+  font-family: var(--body);
+}
+.skc[data-lang="both"] .skd .skin.en {
+  display: none;
+}
+.skc .skch.on {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3.5px var(--gold),
+    0 4px 12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.skc .skch.past:not(.on) {
+  opacity: 0.6;
+}
+
 /* English style choices: example on top, a small caption (Simple / Standard (IAST)) under it, same row height */
 #panel #str button {
   height: 38px;
@@ -7200,9 +7258,13 @@ h2[tabindex="-1"]:focus {
       "</span></div>" +
       '<div class="skd"><span class="mr">' +
       f.dmr +
-      '</span><span class="en" lang="en">' +
+      "</span>" +
+      // a few days ahead: "in 14 days" badge (today and tomorrow are already in the heading)
+      (dd >= 2 ? '<span class="skin mr">' + skDV(dd) + " दिवसांनी</span>" : "") +
+      '<span class="en" lang="en">' +
       f.den +
       "</span>" +
+      (dd >= 2 ? '<span class="skin en" lang="en">in ' + dd + " days</span>" : "") +
       (o.day + 86400000 > Date.now()
         ? '<button type="button" class="skli" id="skcal" aria-label="' +
           (P.ui === "en" ? "Add to calendar" : "कॅलेंडरमध्ये जोडा") +
