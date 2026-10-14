@@ -4438,6 +4438,18 @@ h2[tabindex="-1"]:focus {
 :root[data-font]:not([data-font="std"]) .ash .rftop .en p {
   font-family: var(--tf), var(--lat);
 }
+/* the chosen font also reaches the printed copy (#pv has no .ash wrapper); headings keep theirs */
+:root[data-font]:not([data-font="std"]) #pv .pvs {
+  font-family: var(--tf), var(--body);
+}
+:root[data-font]:not([data-font="std"]) #pv .pvs .en,
+:root[data-font]:not([data-font="std"]) #pv .pvs .en p,
+:root[data-font]:not([data-font="std"]) #pv .pvs td.pve {
+  font-family: var(--tf), var(--lat);
+}
+:root[data-font]:not([data-font="std"]) #pv .pvs h2 .en {
+  font-family: inherit;
+}
 /* the font row: label on top, the four choices across the full width */
 #panel .row.stk {
   flex-wrap: wrap;
@@ -6373,7 +6385,7 @@ h2[tabindex="-1"]:focus {
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
         </ul>
         It changes straight away and keeps your place.</li>
-      <li><b>Text font:</b> how the aartis look. <b>Standard</b> (clean, already on your phone), <b>Classic</b> (book style, like a printed pothi), <b>Bold</b> (strong strokes, good in low light) or <b>Handwritten</b>. A new font downloads once when you pick it and then works offline. The Atharvashirsha keeps its Sanskrit lettering.</li>
+      <li><b>Text font:</b> how the aartis look. <b>Standard</b> (clean, already on your phone), <b>Classic</b> (book style, like a printed pothi), <b>Bold</b> (strong strokes, good in low light) or <b>Handwritten</b>. A new font downloads once when you pick it and then works offline. The Atharvashirsha keeps its Sanskrit lettering. Printing uses the same font.</li>
       <li><b>Text size</b> (A− / A+ / ↺ to reset) and <b>Theme</b> (Auto, Light, Sepia, Dark).</li>
       <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
       <li>At the top, beside the title: the version number (v1.0), <b>App</b> (until it is installed), <b>Help</b>, and ✕ to close Settings.</li>
@@ -10080,7 +10092,7 @@ h2[tabindex="-1"]:focus {
       PAPER = LTR ? [215.9, 279.4] : [210, 297],
       pcache = { key: "", pg: null };
     function pkey(mode) {
-      return [mode, P.lang, P.ref, P.tr, P.ui].join("|");
+      return [mode, P.lang, P.ref, P.tr, P.ui, P.fnt].join("|");
     }
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
@@ -10110,7 +10122,7 @@ h2[tabindex="-1"]:focus {
         done = false;
       f.setAttribute("aria-hidden", "true");
       f.tabIndex = -1;
-      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm - 12) + "px;height:" + (PAPER[1] - 23) * mm + "px";
+      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (PAPER[1] - 23) * mm + "px";
       [].forEach.call(root.attributes, function (a) {
         if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
       });
@@ -10129,6 +10141,8 @@ h2[tabindex="-1"]:focus {
         d.open();
         d.write('<!doctype html><html data-print="' + mode + '"' + at + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden}#pv .pvtoc{break-after:column}</style></head><body>" + pv.outerHTML + "</body></html>");
         d.close();
+        // lay out once so the fonts the copy uses start loading, then wait for them before measuring
+        d.documentElement.offsetHeight;
         d.fonts.ready.then(function () {
           try {
             end(paginate(f.contentWindow, d, PAPER[1] - 23, mm));
@@ -10149,8 +10163,8 @@ h2[tabindex="-1"]:focus {
         pl = parseFloat(cs.paddingLeft),
         cw = p.clientWidth - pl - parseFloat(cs.paddingRight),
         out = {};
-      // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (printed text
-      // runs a little wider, so a near-full line wraps), and pages with two columns of text hold
+      // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (16px with the
+      // optional text fonts; printed text runs a little wider, so a near-full line wraps), and pages with two columns of text hold
       // 4px more than the plain sum of heights.
       p.style.cssText =
         "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" +
