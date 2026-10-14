@@ -2382,8 +2382,10 @@ h2[tabindex="-1"]:focus {
     padding-top: 6px;
     margin-top: 8px;
   }
-  #rail a.rg:hover {
-    background: var(--surface);
+  @media (hover: hover) {
+    #rail a.rg:hover {
+      background: var(--surface);
+    }
   }
   #rail[data-lang="both"] a.rg .en {
     display: none;
@@ -2433,8 +2435,10 @@ h2[tabindex="-1"]:focus {
     font-weight: 400;
     margin-right: 0.3em;
   }
-  #rail a:hover {
-    background: var(--surface);
+  @media (hover: hover) {
+    #rail a:hover {
+      background: var(--surface);
+    }
   }
   #rail a.on {
     border-left-color: var(--accent);
@@ -2523,6 +2527,10 @@ h2[tabindex="-1"]:focus {
 @media screen and (min-width: 1100px) {
   [data-rail="1"] #home {
     margin-top: 16px;
+    padding-bottom: 0;
+  }
+  [data-rail="1"] .top {
+    margin-bottom: 0;
   }
 }
 @media print {
@@ -8390,12 +8398,21 @@ h2[tabindex="-1"]:focus {
 
   // Highlight the current piece in the menus; update the progress line
   function mark() {
-    var c = cur();
+    var c = cur(),
+      ct = c ? c.getBoundingClientRect().top : -1e9;
+    // a section row (पूजा / आरती) at the top, below the last piece passed: that section is current, not the piece above it
+    [].forEach.call(document.querySelectorAll(".grp"), function (g) {
+      var t = g.getBoundingClientRect().top;
+      if (g.offsetParent !== null && t <= 90 && t > ct) {
+        c = g;
+        ct = t;
+      }
+    });
     // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
     var en = P.lang === "en",
       tt = en ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी",
       bt0 = document.getElementById("bt"),
-      hd = c && c.querySelector("header");
+      hd = c && c.classList.contains("ash") && c.querySelector("header");
     if (hd && hd.getBoundingClientRect().bottom < 64) {
       var no = c.querySelector("h2 .no ." + (en ? "ne" : "nm")),
         nm = c.querySelector("h2 > ." + (en ? "en" : "mr"));
