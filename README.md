@@ -12,7 +12,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 
 - **Texts:** the Ganapati Atharvashirsha (with Vedic swara marks) and ten aartis, in Marathi, English, or both side by side (the अ/A button).
 - **English style** (Settings): the everyday spelling (*Sukhkarta*) or the scholarly spelling, IAST (*sukhakartā*, *bha̱draṃ*). The scholarly lines are not typed. The script builds them from the Marathi/Sanskrit lines, along with the piece titles, the first time they are needed; switching style happens in place, without reloading (see *How the scholarly English is made*).
-- **Menu language** (Settings): English (default) or मराठी for the date card, buttons and settings, independent of the text language.
+- **Menu language** (Settings): English (default) or मराठी for the date card, buttons and settings, independent of the text language. The fold rows (अनुक्रमणिका / Contents, पूजा, आरती) follow the text language.
 - **Dhrupad:** shown once at the top or after every stanza (the धृ button); in "once" mode, ↻ ध्रुपद under a stanza shows it for a few seconds.
 - **Ganesha:** the home card shows Ganesha (cut from the app icon, `ganesha.webp`) where ॐ used to be, and the home buttons (top bar, Contents, bottom bar) are a small line drawing of Ganesha.
 - **Contents and piece folds:** a Contents button on the home page folds the list of pieces, and a tap anywhere on a piece's heading (or its round ⌃ button) folds that piece to its heading, for one-hand use; both are remembered on the phone, and going to a folded piece from Contents or search opens it (a reload keeps it folded). Printing always includes everything.
