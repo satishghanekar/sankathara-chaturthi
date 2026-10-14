@@ -3797,6 +3797,11 @@ a.t {
 #asc[hidden] {
   display: none;
 }
+/* out of the way while Settings or Contents is open */
+body:has(#panel:not([hidden])) #asc,
+body:has(#jump:not([hidden])) #asc {
+  display: none;
+}
 [data-asb="1"] body {
   padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
 }
