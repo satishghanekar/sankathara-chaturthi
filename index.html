@@ -6493,6 +6493,7 @@ h2[tabindex="-1"]:focus {
     <h3>While reading</h3>
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place; its whole stanza gets a soft band too, so you find it again at a glance. Tap again to clear.</li>
+      <li><b>Swipe</b> left on a piece to go to the next one, or right to go back, just like <b>Next ›</b> and <b>‹ Prev</b>.</li>
       <li><b>More room to read:</b> on phones and tablets, the top and bottom bars slide away as you scroll down, leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
@@ -8675,6 +8676,48 @@ h2[tabindex="-1"]:focus {
   document.getElementById("asn").onclick = function () {
     asGo(".next");
   };
+  // Swipe on a piece (phones and tablets without the side menu): left = Next, right = Previous, as the
+  // bottom bar. Only a quick, clearly sideways stroke of one finger counts; not near the screen's side
+  // edges (the phone's own back gesture), not while autoscroll runs, a menu or dialog is open, or text is selected.
+  (function () {
+    var sw = null;
+    document.addEventListener(
+      "touchstart",
+      function (e) {
+        sw = null;
+        if (e.touches.length !== 1 || root.hasAttribute("data-rail") || root.hasAttribute("data-menu") || AS.on || AS.held) return;
+        var t = e.touches[0];
+        if (t.clientX < 24 || t.clientX > innerWidth - 24) return;
+        if (!e.target.closest || !e.target.closest(".wrap .ash")) return;
+        if (["pzv", "qrm", "prm", "help"].some(function (id) { var d = document.getElementById(id); return d && !d.hidden; })) return;
+        sw = { x: t.clientX, y: t.clientY, t: Date.now() };
+      },
+      { passive: true },
+    );
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        if (sw && e.touches.length !== 1) sw = null; // a pinch, not a swipe
+      },
+      { passive: true },
+    );
+    document.addEventListener(
+      "touchend",
+      function (e) {
+        var s = sw;
+        sw = null;
+        if (!s || e.touches.length || !e.changedTouches.length) return;
+        var t = e.changedTouches[0],
+          dx = t.clientX - s.x,
+          dy = t.clientY - s.y;
+        if (Date.now() - s.t > 700 || Math.abs(dx) < 80 || Math.abs(dx) < 2.5 * Math.abs(dy)) return;
+        var sel = getSelection && getSelection();
+        if (sel && !sel.isCollapsed) return;
+        asGo(dx < 0 ? ".next" : ".prev");
+      },
+      { passive: true },
+    );
+  })();
   document.getElementById("ash").onclick = function () {
     asStop();
     goHomeNav();
