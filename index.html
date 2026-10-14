@@ -1421,8 +1421,34 @@ a.t {
 [data-lang="both"] #jhb .en {
   display: inline;
   margin-left: 4px;
-  color: var(--muted);
   font-size: 0.85em;
+}
+/* Panels take focus when opened (for keyboards and screen readers); the panel itself shows no ring */
+/* Skip link: off screen until a keyboard Tab lands on it */
+.skip {
+  position: fixed;
+  left: 8px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--bg);
+  font: 600 15px/1.2 var(--lat);
+}
+.skip:focus {
+  top: calc(8px + env(safe-area-inset-top));
+}
+@media print {
+  .skip {
+    display: none;
+  }
+}
+#main:focus,
+#panel:focus,
+#jump:focus,
+h2[tabindex="-1"]:focus {
+  outline: none;
 }
 
 
@@ -2455,6 +2481,11 @@ a.t {
   --sheet: color-mix(in srgb, var(--surface) 60%, var(--bg));
   --sheet-sh: 0 10px 28px -14px rgb(0 0 0 / 0.6);
 }
+/* High contrast is always black, whichever theme is picked, so the sheet uses the dark mix */
+:root:root:root[data-hc="1"] {
+  --sheet: color-mix(in srgb, var(--surface) 60%, var(--bg));
+  --sheet-sh: none;
+}
 .top {
   background: var(--sheet);
   border: 1px solid var(--rule);
@@ -2503,7 +2534,8 @@ a.t {
     --warnbg: #3a2a12;
   }
 }
-:root[data-pref="dark"] {
+:root[data-pref="dark"],
+:root:root:root[data-hc="1"] {
   --ok: #5fd08e;
   --warn: #f0b35a;
   --warnbg: #3a2a12;
@@ -4055,8 +4087,10 @@ a.t {
 </head>
 
 <body>
+<!-- Keyboard users: the first Tab shows this link, which skips the top bar and the contents menu -->
+<a class="skip" id="skip" href="#home" lang="en">Skip to the texts</a>
 <!-- ==== Top bar: home link, then Contents+search, Language, Dhrupad and Settings buttons (icons filled in by the script) ==== -->
-<div class="bar">
+<div class="bar" role="banner">
   <div id="prog" aria-hidden="true"></div>
   <a class="t site" id="bt" href="./" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg><span id="btt">संकष्टी चतुर्थी</span></a>
   <div class="tools">
@@ -4067,14 +4101,14 @@ a.t {
   </div>
 </div>
 <!-- ==== Contents + search overlay (list filled in by the script) ==== -->
-<div id="jump" hidden>
+<div id="jump" hidden role="dialog" aria-label="Contents and search" tabindex="-1">
   <input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line">
   <div id="none" hidden><span class="mr">काही सापडले नाही</span><span class="en" lang="en">Nothing found</span></div>
   <ul id="res"></ul>
   <ul id="jl"></ul>
 </div>
 <!-- ==== Settings panel ==== -->
-<div class="panel" id="panel" hidden>
+<div class="panel" id="panel" hidden role="dialog" aria-label="Settings" tabindex="-1">
   <div class="phd">
     <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span><span id="ver" lang="en"></span></b>
     <!-- App (hidden once installed) and Help sit in the header, so they are always in view -->
@@ -4134,9 +4168,9 @@ a.t {
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
 <nav id="rail" aria-label="Contents"></nav>
 <!-- ==== Page: home, then every piece ==== -->
-<div class="wrap">
+<main class="wrap" id="main" tabindex="-1">
   <!-- ==== Home page ==== -->
-  <main id="home">
+  <section id="home" aria-label="Home">
     <div class="top">
     <!-- Fold button: the card folds to one slim line (Ganesha, next date, moonrise); the buttons come back when it opens -->
     <button type="button" id="cvb" aria-expanded="true" aria-controls="skc" aria-label="Fold the card"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
@@ -4188,7 +4222,7 @@ a.t {
         <li><a href="#a10" data-go="a10"><span class="m"><span class="no"><span class="nm">१०.</span><span class="ne">10.</span></span> <span class="mr">आरती जय जगदीश हरे</span><span class="en" lang="en">Aarti Jai Jagdish Hare</span></span></a></li>
       </ol>
     </div>
-  </main>
+  </section>
   <!-- ==================== पूजा / POOJA ==================== -->
   <div class="grp" id="g-pooja"><button type="button" id="pfb" aria-expanded="true" aria-label="Fold the Pooja section"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
   <!-- ---- Pooja 1. गणपत्यथर्वशीर्षोपनिषत् / Ganapati Atharvashirsha ---- -->
@@ -5763,7 +5797,7 @@ a.t {
       <span></span>
     </nav>
   </section>
-</div>
+</main>
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <div id="qrm" hidden role="dialog" aria-modal="true" aria-label="QR code">
   <div class="qrc"><div class="qrt"><span class="mr">उघडण्यासाठी कॅमेऱ्याने स्कॅन करा</span><span class="en" lang="en">Scan with the camera to open</span></div><div class="qri"><svg viewBox="-4 -4 37 37" width="100%" height="100%" shape-rendering="crispEdges" role="img" aria-label="QR code for https://sankashti-chaturthi.pages.dev/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM9 0h1v1h-1zM12 0h1v1h-1zM15 0h1v1h-1zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM12 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h1v1h-1zM15 3h1v1h-1zM18 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM14 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM19 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM11 7h1v1h-1zM14 7h2v1h-2zM17 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM5 8h2v1h-2zM8 8h2v1h-2zM16 8h1v1h-1zM21 8h1v1h-1zM23 8h1v1h-1zM0 9h3v1h-3zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM16 9h3v1h-3zM20 9h3v1h-3zM25 9h1v1h-1zM28 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM10 10h2v1h-2zM13 10h2v1h-2zM19 10h2v1h-2zM23 10h1v1h-1zM25 10h3v1h-3zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h3v1h-3zM16 11h1v1h-1zM19 11h2v1h-2zM24 11h1v1h-1zM26 11h2v1h-2zM1 12h2v1h-2zM4 12h6v1h-6zM14 12h4v1h-4zM19 12h4v1h-4zM25 12h1v1h-1zM27 12h2v1h-2zM0 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM13 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM1 14h2v1h-2zM4 14h4v1h-4zM9 14h2v1h-2zM12 14h3v1h-3zM17 14h2v1h-2zM20 14h1v1h-1zM22 14h2v1h-2zM25 14h4v1h-4zM1 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h3v1h-3zM17 15h1v1h-1zM22 15h1v1h-1zM24 15h2v1h-2zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h2v1h-2zM9 16h5v1h-5zM16 16h2v1h-2zM19 16h3v1h-3zM27 16h1v1h-1zM1 17h1v1h-1zM3 17h1v1h-1zM5 17h1v1h-1zM7 17h1v1h-1zM10 17h2v1h-2zM13 17h2v1h-2zM16 17h2v1h-2zM21 17h3v1h-3zM25 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h3v1h-3zM10 18h1v1h-1zM12 18h1v1h-1zM14 18h1v1h-1zM18 18h1v1h-1zM23 18h2v1h-2zM27 18h2v1h-2zM3 19h2v1h-2zM11 19h2v1h-2zM14 19h2v1h-2zM17 19h2v1h-2zM20 19h4v1h-4zM27 19h2v1h-2zM0 20h1v1h-1zM3 20h4v1h-4zM8 20h1v1h-1zM10 20h2v1h-2zM16 20h1v1h-1zM18 20h7v1h-7zM26 20h1v1h-1zM8 21h1v1h-1zM10 21h1v1h-1zM12 21h1v1h-1zM14 21h1v1h-1zM16 21h1v1h-1zM19 21h2v1h-2zM24 21h1v1h-1zM26 21h3v1h-3zM0 22h7v1h-7zM9 22h1v1h-1zM11 22h1v1h-1zM16 22h2v1h-2zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM27 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM19 23h2v1h-2zM24 23h5v1h-5zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM9 24h1v1h-1zM11 24h2v1h-2zM16 24h2v1h-2zM20 24h5v1h-5zM27 24h2v1h-2zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h3v1h-3zM17 25h3v1h-3zM22 25h6v1h-6zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM9 26h1v1h-1zM12 26h2v1h-2zM17 26h2v1h-2zM20 26h2v1h-2zM24 26h3v1h-3zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM10 27h3v1h-3zM14 27h2v1h-2zM17 27h1v1h-1zM19 27h2v1h-2zM24 27h1v1h-1zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h1v1h-1zM17 28h1v1h-1zM20 28h1v1h-1zM24 28h1v1h-1zM27 28h1v1h-1z"/></svg></div><div class="qru" lang="en">sankashti-chaturthi.pages.dev</div><button type="button" class="wide" id="qrx"><span class="mr">बंद</span><span class="en" lang="en">Close</span></button></div>
@@ -5887,7 +5921,7 @@ a.t {
 <div id="szt" role="status" aria-live="polite"></div>
 <!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (autoscroll ▶), Next ›.
      ▶ shows only once autoscroll is released (FEAT_AS) and switched on; while it runs: Home, Search, speed, ⏸. ==== -->
-<div id="asc" hidden>
+<div id="asc" hidden role="navigation" aria-label="Previous, home, contents, next">
   <div id="asi">
     <button type="button" id="asv" class="asx"></button>
     <button type="button" id="ash" class="asi" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></button>
@@ -8023,7 +8057,7 @@ a.t {
     if (P.th === "auto") root.removeAttribute("data-pref");
     else root.setAttribute("data-pref", P.th);
     // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
-    [].forEach.call(document.querySelectorAll(".grp,.wrap > section,#pv,#home .tocg,#jl,#rail"), function (e) {
+    [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#home .tocg,#jl,#rail"), function (e) {
       e.setAttribute("data-lang", P.lang);
     });
     [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#inm,#szt,#szr"), function (e) {
@@ -8248,9 +8282,26 @@ a.t {
   });
 
   // ---- Overlays: settings panel (setP) and contents + search (setJ); opening one closes the other ----
+  // Keyboard and screen reader users: opening a panel moves focus into it; closing it puts focus back on
+  // the button that opened it (only if focus was still in the panel, so a jump to a piece isn't undone)
+  function ovFocus(el, o) {
+    var a = document.activeElement;
+    if (o) {
+      if (el.hidden) el._ret = a;
+      return;
+    }
+    if (el._ret && (el.contains(a) || a === document.body || !a)) {
+      try {
+        el._ret.focus({ preventScroll: true });
+      } catch (e) {}
+    }
+    el._ret = null;
+  }
   function setP(o) {
     if (o) ovPush();
+    ovFocus(pn, o);
     pn.hidden = !o;
+    if (o) pn.focus({ preventScroll: true });
     aa.setAttribute("aria-expanded", String(o));
     if (o) setJ(false);
     else ovDone();
@@ -8270,11 +8321,14 @@ a.t {
       var bb = document.querySelector(".bar").getBoundingClientRect();
       jp.style.top = Math.round(bb.bottom) + "px";
     }
+    ovFocus(jp, o);
     jp.hidden = !o;
+    if (o && !jp.contains(document.activeElement)) jp.focus({ preventScroll: true });
     [].forEach.call(document.querySelectorAll("#hm,.pns,#asq"), function (b) {
       b.setAttribute("aria-expanded", String(o));
     });
     if (o) {
+      ovFocus(pn, false);
       pn.hidden = true;
       aa.setAttribute("aria-expanded", "false");
     } else ovDone();
@@ -8308,9 +8362,10 @@ a.t {
       history.pushState({ ov: 1, y: scrollY }, "", location.href);
     } catch (e) {}
   }
-  // Closed with ✕, Escape or a tap outside: take the panel's Back step off again
+  // Closed with ✕, Escape or a tap outside: take the panel's Back step off again. Only once: history.back()
+  // lands later, so a second close in the same moment (Escape closes both panels) must not step back again.
   function ovDone() {
-    if (!NAV || !hs().ov || ovOpen()) return;
+    if (!NAV || !hs().ov || ovOpen() || popSkip) return;
     popSkip++;
     history.back();
   }
@@ -8326,6 +8381,15 @@ a.t {
     try {
       if (NAV) history[ov ? "replaceState" : "pushState"]({ y: scrollY }, "", url);
     } catch (e) {}
+    // Focus follows to the piece's heading, so the next Tab or screen reader line starts there
+    var el = url && url.charAt(0) === "#" && document.getElementById(url.slice(1)),
+      h = el && el.querySelector("h2");
+    if (h) {
+      h.tabIndex = -1;
+      try {
+        h.focus({ preventScroll: true });
+      } catch (e) {}
+    }
   }
   // Home buttons (top-bar title, Ganesha in the bottom bar, the rail's Home): from a piece they go home;
   // on the home page, with the card in view, they open or close the card like its own round button
@@ -8412,6 +8476,27 @@ a.t {
   });
   [].forEach.call(document.querySelectorAll(".pns"), function (b) {
     b.onclick = hmb.onclick;
+  });
+  // Skip link: focus goes to the first text on screen (a piece, or the page), without changing the address
+  document.getElementById("skip").addEventListener("click", function (e) {
+    e.preventDefault();
+    var c = cur(),
+      h = c && c.querySelector("h2"),
+      m = document.getElementById("main");
+    if (h) h.tabIndex = -1;
+    try {
+      (h || m).focus({ preventScroll: !!h });
+    } catch (x) {}
+  });
+  // Tabbing out of an open panel closes it, so it doesn't stay over the page you have moved on to
+  [pn, jp].forEach(function (el) {
+    el.addEventListener("focusout", function (e) {
+      var t = e.relatedTarget;
+      if (el.hidden || !t || el.contains(t) || t.closest(".bar,#help")) return;
+      el._ret = null;
+      if (el === pn) setP(false);
+      else setJ(false);
+    });
   });
   document.getElementById("xc").onclick = function () {
     setP(false);
@@ -8877,6 +8962,8 @@ a.t {
     var hp = document.getElementById("help");
     function open() {
       ovPush();
+      // From Settings, focus goes back to the ⚙ button when Help closes
+      hp._ret = pn.hidden ? document.activeElement : aa;
       hp.hidden = false;
       setP(false);
       hp.scrollTop = 0;
@@ -8888,6 +8975,12 @@ a.t {
       hp.hidden = true;
       document.documentElement.style.overflow = "";
       if (!fromPop) ovDone();
+      if (hp._ret) {
+        try {
+          hp._ret.focus({ preventScroll: true });
+        } catch (e) {}
+        hp._ret = null;
+      }
     }
     document.getElementById("hlpb").onclick = open;
     document.getElementById("hlp2").onclick = open;
