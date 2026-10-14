@@ -2500,25 +2500,8 @@ h2[tabindex="-1"]:focus {
   border-top: 0;
 }
 @media screen and (min-width: 1100px) {
-  [data-rail="1"] .top .hero {
-    border-top: 3px solid var(--accent);
-  }
-}
-@media screen and (min-width: 1100px) {
   [data-rail="1"] #home {
-    background: var(--sheet);
-    border: 1px solid var(--rule);
-    border-radius: 18px;
-    box-shadow: var(--sheet-sh);
-    padding: 30px 40px 22px;
-    margin-top: 22px;
-  }
-  [data-rail="1"] .top {
-    background: none;
-    border: 0;
-    box-shadow: none;
-    padding: 0;
-    margin: 0;
+    margin-top: 16px;
   }
 }
 @media print {
@@ -4000,6 +3983,13 @@ h2[tabindex="-1"]:focus {
   .ash.af {
     margin-top: 0;
     border-top: 0;
+  }
+  /* no rule between pieces: the boxed heading rows and the end ornament already separate them */
+  .ash {
+    border-top: 0;
+  }
+  .ash.af + .ash {
+    margin-top: 10px;
   }
   .ash.af + .ash.af {
     margin-top: 10px;
@@ -6443,9 +6433,14 @@ h2[tabindex="-1"]:focus {
 
   // ---- Layout helpers that run once ----
   // Two-column screens read across: stanza 1 | stanza 2, then 3 | 4. Each stanza keeps its own dhrupad marker/repeat under it.
+  // Two stanzas of very different length (Atharvashirsha: 7 lines beside 1) don't pair: the first goes alone across both columns.
+  function nLines(e) {
+    return e.querySelectorAll(".verse > .mr > p").length || e.querySelectorAll("p").length || 1;
+  }
   [].forEach.call(document.querySelectorAll(".items"), function (b) {
     var row = 1,
       pair = [],
+      lone = false,
       cur = null;
     function flush() {
       if (!pair.length) return;
@@ -6453,13 +6448,14 @@ h2[tabindex="-1"]:focus {
       pair.forEach(function (g, i) {
         g.forEach(function (e, k) {
           e.style.gridRow = String(row + k);
-          e.style.gridColumn = String(i + 1);
+          e.style.gridColumn = lone ? "1 / -1" : String(i + 1);
           if (i) e.classList.add("c2");
         });
         h = Math.max(h, g.length);
       });
       row += h;
       pair = [];
+      lone = false;
     }
     function full(e) {
       flush();
@@ -6475,6 +6471,14 @@ h2[tabindex="-1"]:focus {
       }
       if (main) {
         if (pair.length === 2) flush();
+        if (pair.length === 1) {
+          var a = nLines(pair[0][0]),
+            c = nLines(e);
+          if (Math.abs(a - c) > 1 && Math.min(a, c) * 2 < Math.max(a, c)) {
+            lone = true;
+            flush();
+          }
+        }
         cur = [e];
         pair.push(cur);
         return;
