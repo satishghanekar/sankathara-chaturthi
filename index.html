@@ -3755,6 +3755,106 @@ a.t {
     display: none !important;
   }
 }
+/* ==== Folding the home contents list and each piece ==== */
+#tfr {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 4px;
+}
+#tfb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font: 600 15px/1 var(--lat);
+  cursor: pointer;
+}
+#tfb .mr {
+  font: 400 17px/1 var(--head);
+}
+#tfr[data-lang="both"] #tfb > .mr::after {
+  content: "·";
+  margin: 0 0.4em;
+  color: var(--muted);
+}
+#tfb .pfs {
+  display: none;
+  font: 500 13px/1 var(--lat);
+  color: var(--muted);
+}
+#tfb .pfs .mr {
+  font: 400 14px/1 var(--body);
+}
+#tfb svg {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.ash header {
+  position: relative;
+  padding-inline: 56px;
+}
+.afb {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  min-height: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hdrl);
+  border-radius: 50%;
+  background: var(--hdrt, var(--surface));
+  color: var(--muted);
+  cursor: pointer;
+}
+.afb::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+.afb svg {
+  transition: transform 0.2s;
+}
+@media screen {
+  [data-tf="1"] #home .tocg {
+    display: none !important;
+  }
+  [data-tf="1"] #tfb .pfs {
+    display: inline;
+  }
+  [data-tf="1"] #tfb svg,
+  .ash.af .afb svg {
+    transform: rotate(180deg);
+  }
+  .ash.af > :not(header) {
+    display: none !important;
+  }
+  .ash.af header {
+    margin-bottom: 4px;
+  }
+  .ash.af + .ash.af {
+    margin-top: 10px;
+    border-top: 0;
+  }
+}
+@media print {
+  .afb,
+  #tfr {
+    display: none !important;
+  }
+  .ash header {
+    padding-inline: 14px;
+  }
+}
 </style>
 </head>
 
@@ -3863,6 +3963,8 @@ a.t {
          up to date (green); no internet (amber). Tapping checks for updates. -->
     <button type="button" id="ofb" hidden aria-label="Saved for offline. Tap to check for updates"></button>
     </div>
+    <!-- Contents fold: hides the list of pieces on the home page -->
+    <div id="tfr"><button type="button" id="tfb" aria-expanded="true" aria-label="Fold the contents"><span class="mr">अनुक्रमणिका</span><span class="en" lang="en">Contents</span><span class="pfs"><span class="mr">दाखवा</span><span class="en" lang="en">Show</span></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
     <div class="tocg">
       <h2 class="gh"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></h2>
       <ol class="toc">
@@ -5526,6 +5628,7 @@ a.t {
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+      <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
@@ -5669,6 +5772,8 @@ a.t {
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
     pf: 0, // Pooja section folded (for those who come only for the aartis)
+    tf: 0, // home contents list folded
+    af: [], // ids of folded pieces
   };
   try {
     var s = JSON.parse(localStorage.getItem(K) || "{}");
@@ -7098,6 +7203,23 @@ a.t {
     }
   })();
   function pfSet() {
+    var mr = P.ui === "mr",
+      tb = document.getElementById("tfb");
+    if (P.tf) root.setAttribute("data-tf", "1");
+    else root.removeAttribute("data-tf");
+    if (tb) {
+      tb.setAttribute("aria-expanded", String(!P.tf));
+      tb.setAttribute("aria-label", P.tf ? (mr ? "अनुक्रमणिका उघडा" : "Show the contents") : mr ? "अनुक्रमणिका मिटवा" : "Fold the contents");
+    }
+    secs.forEach(function (x) {
+      var f = P.af.indexOf(x.id) >= 0,
+        ab = x.querySelector(".afb");
+      x.classList.toggle("af", f);
+      if (ab) {
+        ab.setAttribute("aria-expanded", String(!f));
+        ab.setAttribute("aria-label", f ? (mr ? "उघडा" : "Show this piece") : mr ? "मिटवा" : "Fold this piece");
+      }
+    });
     var b = document.getElementById("pfb");
     if (P.pf) root.setAttribute("data-pf", "1");
     else root.removeAttribute("data-pf");
@@ -7105,13 +7227,53 @@ a.t {
     b.setAttribute("aria-expanded", String(!P.pf));
     b.setAttribute("aria-label", P.pf ? (P.ui === "mr" ? "पूजा विभाग उघडा" : "Show the Pooja section") : P.ui === "mr" ? "पूजा विभाग मिटवा" : "Fold the Pooja section");
   }
-  function pjOpen(el) {
-    if (P.pf && el && el.closest && el.closest(".pj")) {
+  // Going to a piece (or a line in it) opens it if it is folded, and the Pooja section if that is folded
+  function pjOpen(el, onlyPooja) {
+    var sec = el && el.closest && el.closest(".ash");
+    if (!sec) return;
+    var ch = false;
+    if (P.pf && sec.classList.contains("pj")) {
       P.pf = 0;
+      ch = true;
+    }
+    if (!onlyPooja && P.af.indexOf(sec.id) >= 0) {
+      P.af = P.af.filter(function (x) {
+        return x !== sec.id;
+      });
+      ch = true;
+    }
+    if (ch) {
       save();
       pfSet();
     }
   }
+  // Each piece has a ⌃ button in its heading that folds it down to the heading
+  if (!Array.isArray(P.af)) P.af = [];
+  secs.forEach(function (x) {
+    var h = x.querySelector("header");
+    if (!h) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "afb";
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
+    b.onclick = function () {
+      var y = h.getBoundingClientRect().top,
+        i = P.af.indexOf(x.id);
+      if (i >= 0) P.af.splice(i, 1);
+      else P.af.push(x.id);
+      save();
+      pfSet();
+      // keep the heading where it was on screen
+      scrollBy(0, h.getBoundingClientRect().top - y);
+      mark();
+    };
+    h.appendChild(b);
+  });
+  document.getElementById("tfb").onclick = function () {
+    P.tf = P.tf ? 0 : 1;
+    save();
+    pfSet();
+  };
   document.getElementById("pfb").onclick = function () {
     var g = document.getElementById("g-pooja"),
       y = g.getBoundingClientRect().top;
@@ -7939,7 +8101,8 @@ a.t {
   var h = (location.hash || "").slice(1);
   if (h) {
     var el = document.getElementById(h);
-    if (el && el.classList.contains("ash")) pjOpen(el);
+    // (a folded piece stays folded here: the address follows the piece you read, so a reload would open it)
+    if (el && el.classList.contains("ash")) pjOpen(el, true);
     if (el && el.classList.contains("ash"))
       setTimeout(function () {
         el.scrollIntoView();
