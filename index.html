@@ -8135,10 +8135,11 @@ h2[tabindex="-1"]:focus {
     if (P.th === "auto") root.removeAttribute("data-pref");
     else root.setAttribute("data-pref", P.th);
     // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
-    [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#home .tocg,#jl,#rail"), function (e) {
+    // (the Contents fold row #tfr follows the text language, like the पूजा and आरती rows below it)
+    [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#home .tocg,#tfr,#jl,#rail"), function (e) {
       e.setAttribute("data-lang", P.lang);
     });
-    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg),#qrm,#prm,#inm,#szt,#szr"), function (e) {
+    [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg):not(#tfr),#qrm,#prm,#inm,#szt,#szr"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
     root.lang = "mr"; // the page is Marathi; English parts carry lang="en" themselves (screen readers pick the voice from this)
