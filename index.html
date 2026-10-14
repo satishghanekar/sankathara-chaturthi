@@ -4055,6 +4055,91 @@ body:has(#jump:not([hidden])) #asc {
     padding-inline: 14px;
   }
 }
+/* ==== Fold headings (Contents, Pooja, Aarti): one look, full-width rows lined up with the folded pieces ==== */
+@media screen {
+  #tfr,
+  .grp,
+  #home + .grp {
+    display: block;
+    max-width: 46rem;
+    margin: 10px auto 0;
+  }
+  .grp::before,
+  .grp::after {
+    display: none;
+  }
+  [data-tf="1"] #home {
+    padding-bottom: 0;
+  }
+  #tfb,
+  #pfb,
+  #xfb {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 52px;
+    margin: 0;
+    padding: 0 10px 0 16px;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid var(--hdrl);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--accent);
+    text-align: left;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  #tfb .mr,
+  #pfb .mr,
+  #xfb .mr {
+    font: 400 19px/1.2 var(--head);
+    color: var(--accent);
+  }
+  #tfb .en,
+  #pfb .en,
+  #xfb .en {
+    font: 600 14px/1.2 var(--lat);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+  }
+  #g-pooja[data-lang="en"] #pfb .en,
+  #g-aarti[data-lang="en"] #xfb .en,
+  #tfr[data-lang="en"] #tfb .en {
+    font: 600 16px/1.2 var(--lat);
+    color: var(--accent);
+  }
+  #tfr[data-lang="both"] #tfb > .mr::after,
+  #g-pooja[data-lang="both"] #pfb > .mr::after,
+  #g-aarti[data-lang="both"] #xfb > .mr::after {
+    content: none;
+  }
+  #tfb .pfs,
+  #pfb .pfs,
+  #xfb .pfs,
+  [data-tf="1"] #tfb .pfs,
+  [data-pf="1"] #pfb .pfs,
+  [data-xf="1"] #xfb .pfs {
+    display: none;
+  }
+  #tfb svg,
+  #pfb svg,
+  #xfb svg {
+    margin-left: auto;
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--hdrl);
+    color: var(--muted);
+  }
+  .grp + .ash header {
+    margin-top: 10px;
+  }
+}
 </style>
 </head>
 
@@ -5830,7 +5915,7 @@ body:has(#jump:not([hidden])) #asc {
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
-      <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
+      <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (the arrow points down while folded) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
       <li><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
