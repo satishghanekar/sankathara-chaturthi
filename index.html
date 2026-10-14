@@ -3859,7 +3859,7 @@ a.t {
     flex-wrap: nowrap;
     text-align: left;
     min-height: 64px;
-    padding: 10px 56px 10px 16px;
+    padding: 10px 66px 10px 16px;
     margin: 10px 0 0;
     border-top-width: 3px;
   }
@@ -3871,7 +3871,9 @@ a.t {
     text-overflow: ellipsis;
     flex: 1 1 auto;
   }
-  .ash.af header h2 .en,
+  /* in Marathi + English the English name is dropped from the folded row; in English only it is the title */
+  [data-lang="both"] .ash.af header h2 .en,
+  .ash.af[data-lang="both"] header h2 .en,
   .ash.af header .tag {
     display: none;
   }
