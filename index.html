@@ -2486,13 +2486,23 @@ h2[tabindex="-1"]:focus {
   --sheet: color-mix(in srgb, var(--surface) 60%, var(--bg));
   --sheet-sh: none;
 }
+/* The card matches the section rows below it (Contents, Pooja, Aarti): accent bar on top, same border and corners */
 .top {
-  background: var(--sheet);
-  border: 1px solid var(--rule);
-  border-radius: 18px;
-  box-shadow: var(--sheet-sh);
+  background: var(--hdr);
+  border: 1px solid var(--hdrl);
+  border-top: 3px solid var(--accent);
+  border-radius: 12px;
   padding: 10px 10px 2px;
   margin-bottom: 8px;
+}
+/* the card's own top bar replaces the Ganesha band's (kept on wide screens, where the card has no frame) */
+.top .hero {
+  border-top: 0;
+}
+@media screen and (min-width: 1100px) {
+  [data-rail="1"] .top .hero {
+    border-top: 3px solid var(--accent);
+  }
 }
 @media screen and (min-width: 1100px) {
   [data-rail="1"] #home {
