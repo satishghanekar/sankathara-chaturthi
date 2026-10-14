@@ -3984,7 +3984,9 @@ h2[tabindex="-1"]:focus {
     min-height: 52px;
     padding: 8px 56px 8px 16px;
     margin: 10px 0 14px;
-    border-top-width: 3px;
+    /* plain like the old section rows; the accent bar marks the sections (Contents, पूजा, आरती) instead */
+    background: var(--surface);
+    border-top: 1px solid var(--hdrl);
   }
   .ash.af header {
     margin-bottom: 0;
@@ -4059,15 +4061,16 @@ h2[tabindex="-1"]:focus {
     align-items: center;
     justify-content: flex-start;
     border: 1px solid var(--hdrl);
+    border-top: 3px solid var(--accent);
     border-radius: 12px;
-    background: var(--surface);
+    background: var(--hdr);
     color: var(--accent);
     text-align: left;
   }
   #tfb .mr,
   #pfb .mr,
   #xfb .mr {
-    font: 400 19px/1.2 var(--head);
+    font: 600 20px/1.2 var(--head);
     color: var(--accent);
   }
   #tfb .en,
@@ -4079,7 +4082,7 @@ h2[tabindex="-1"]:focus {
   #g-pooja[data-lang="en"] #pfb .en,
   #g-aarti[data-lang="en"] #xfb .en,
   #tfr[data-lang="en"] #tfb .en {
-    font: 600 16px/1.2 var(--lat);
+    font: 700 17px/1.2 var(--lat);
     color: var(--accent);
   }
   #tfb svg,
