@@ -4223,6 +4223,37 @@ h2[tabindex="-1"]:focus {
 .skc .skch.past:not(.on) {
   opacity: 0.6;
 }
+/* A little tighter (Satish, 2026-10-14): smaller gaps between the card's lines; room under the chips for the chosen one's glow */
+@media screen {
+  .top .hero {
+    padding-bottom: 2px;
+    margin-bottom: 6px;
+  }
+  .skc {
+    padding-top: 6px;
+    margin-bottom: 10px;
+  }
+  .skc .sktd {
+    margin-bottom: 2px;
+    padding-bottom: 3px;
+  }
+  .skc .skm {
+    row-gap: 0;
+  }
+  .skc .skp.own {
+    margin-top: -2px;
+  }
+  .skc .sks {
+    margin-top: 4px;
+    padding: 8px 6px 7px;
+  }
+  .skc #skall {
+    margin: 0 auto -6px;
+  }
+  #ofb {
+    margin-top: 2px;
+  }
+}
 
 /* English style choices: example on top, a small caption (Simple / Standard (IAST)) under it, same row height */
 #panel #str button {
