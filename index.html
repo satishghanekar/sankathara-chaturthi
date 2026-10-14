@@ -3834,6 +3834,13 @@ a.t {
   font-family: var(--body);
   font-size: 14px;
 }
+#asc.on .asx {
+  display: none;
+}
+#asc.on #asi {
+  justify-content: center;
+  gap: 16px;
+}
 #asc .asx:disabled {
   opacity: 0.35;
   cursor: default;
@@ -5821,7 +5828,7 @@ a.t {
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
-      <li><b>Autoscroll (the bar at the bottom in the aartis):</b> tap the round ▶ and the aartis scroll by themselves. It folds the home card, the contents and the Pooja section, opens every aarti, and starts from the aarti on screen. Each sung line gets the same time; − and + set the speed (1–7) of the aarti you are on, and each aarti remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next aarti. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. Touch or scroll the page to take over; tap ▶ to carry on from where you are. The screen stays on while it runs.</li>
+      <li><b>Autoscroll (the bar at the bottom in the aartis):</b> tap the round ▶ and the aartis scroll by themselves. It folds the home card, the contents and the Pooja section, opens every aarti, and starts from the aarti on screen. Each sung line gets the same time; − and + set the speed (1–7) of the aarti you are on, and each aarti remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next aarti. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next hide so the aartis flow one into the next. Hold a finger on the text to pause (you can also scroll by hand); let go and it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
       <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
@@ -7611,7 +7618,8 @@ a.t {
   // and a hold at each tappable dhrupad marker. Lines are taken in the main text language only.
   function asBuild() {
     var u = [],
-      main = P.lang === "en" ? ".en" : ".mr";
+      main = P.lang === "en" ? ".en" : ".mr",
+      both = P.lang === "both";
     secs.forEach(function (x) {
       if (!x.classList.contains("ar") || x.offsetParent === null) return;
       u.push({ el: x.querySelector("header"), w: 1.2, sec: x.id });
@@ -7629,8 +7637,22 @@ a.t {
       var avg = n ? tot / n : 1,
         src = x.querySelector(".rftop .verse " + main),
         dl = src ? src.querySelectorAll("p").length : 0;
+      // Marathi + English: the page moves through each whole stanza (both languages, whatever the layout)
+      // in the time its Marathi lines take, so the stanza in view is always the one being sung
+      var lw = function (e) {
+          return Math.max(0.75, Math.min(1.4, e.textContent.length / avg));
+        },
+        lastV = null;
       ls.forEach(function (e) {
-        if (e.tagName === "P") u.push({ el: e, w: Math.max(0.75, Math.min(1.4, e.textContent.length / avg)), sec: x.id });
+        if (both && e.tagName === "P") {
+          var v = e.closest(".verse");
+          if (v === lastV) u[u.length - 1].w += lw(e);
+          else u.push({ el: v, w: lw(e), sec: x.id });
+          lastV = v;
+          return;
+        }
+        lastV = null;
+        if (e.tagName === "P") u.push({ el: e, w: lw(e), sec: x.id });
         else if (e.classList.contains("rmkt") && dl) u.push({ el: e, w: dl, hold: 1, sec: x.id });
       });
     });
@@ -7707,6 +7729,10 @@ a.t {
     });
     save();
     apply();
+    asRun();
+  }
+  // Start (or carry on) scrolling from the line in view
+  function asRun() {
     AS.u = asBuild();
     if (AS.u.length < 2) return;
     var c = cur();
@@ -7742,6 +7768,11 @@ a.t {
     AS.raf = requestAnimationFrame(asStep);
   }
   function asStop() {
+    if (AS.held) {
+      AS.held = 0;
+      clearTimeout(AS.ht);
+      AS.on = 1;
+    }
     if (!AS.on) return;
     AS.on = 0;
     cancelAnimationFrame(AS.raf);
@@ -7772,7 +7803,35 @@ a.t {
     asSpeed(1);
   };
   // The reader takes over: touching, wheeling or keys outside the controls pause it
-  ["pointerdown", "wheel", "keydown"].forEach(function (n) {
+  // Holding a finger on the text pauses it; letting go carries on from the line in view.
+  // Wheel, keys, or a tap on the top bar or a menu stop it (▶ starts again).
+  addEventListener(
+    "pointerdown",
+    function (e) {
+      if (!AS.on) return;
+      var t = e.target && e.target.closest ? e.target : document.body;
+      if (t.closest("#asc")) return;
+      if (t.closest(".ash") && e.pointerType !== "mouse") {
+        AS.held = 1;
+        AS.on = 0;
+        cancelAnimationFrame(AS.raf);
+      } else asStop();
+    },
+    { passive: true, capture: true },
+  );
+  ["pointerup", "pointercancel"].forEach(function (n) {
+    addEventListener(n, function () {
+      if (!AS.held) return;
+      clearTimeout(AS.ht);
+      // a moment for a flick of the page to settle
+      AS.ht = setTimeout(function () {
+        if (!AS.held) return;
+        AS.held = 0;
+        asRun();
+      }, 350);
+    }, { passive: true, capture: true });
+  });
+  ["wheel", "keydown"].forEach(function (n) {
     addEventListener(
       n,
       function (e) {
