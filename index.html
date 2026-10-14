@@ -8637,10 +8637,12 @@ body:has(#jump:not([hidden])) #asc {
   function buildIX() {
     var seen = {};
     IX = [];
-    [].forEach.call(document.querySelectorAll(".mr p[data-l]"), function (p) {
+    // only the lines in the pieces themselves: not the copies in the print view or the dhrupad bubble
+    [].forEach.call(document.querySelectorAll(".ash .mr p[data-l]"), function (p) {
+      if (p.closest("#pv, .rmkpop")) return;
       var id = p.getAttribute("data-l"),
-        en = document.querySelector('.en p[data-l="' + id + '"]'),
         sec = p.closest(".ash"),
+        en = sec.querySelector('.en p[data-l="' + id + '"]'),
         m = p.innerHTML
           .replace(/<br\s*\/?>/g, " ")
           .replace(/<[^>]+>/g, "")
