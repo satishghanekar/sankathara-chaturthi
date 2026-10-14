@@ -2234,15 +2234,11 @@ a.t {
   height: 18px;
   margin: 0 !important;
 }
-#shr2 {
-  margin: 16px 0 4px;
-}
-/* Version number under the Settings buttons, so we can tell which copy a phone is showing */
+/* Version number beside the Settings title, so we can tell which copy a phone is showing */
 #ver {
-  font: 500 12px var(--lat);
+  margin-left: 8px;
+  font: 500 13px var(--lat);
   color: var(--muted);
-  text-align: center;
-  margin-top: 6px;
 }
 /* Narrow phones: icons only (each button keeps its spoken name in aria-label) */
 @media (max-width: 379px) {
@@ -3365,29 +3361,68 @@ a.t {
 #panel .sw:focus-visible {
   outline-offset: -2px;
 }
+/* Header: Settings v1.0 … App, Help, ✕ (App and Help as small outlined pills, always in view) */
+#panel .phd {
+  gap: 8px;
+}
+#panel .phd b {
+  flex: 1;
+  min-width: 0;
+}
 #panel #shr2 {
-  gap: 22px;
-  margin: 2px 0 0;
+  flex: none;
+  gap: 6px;
+  margin: 0;
 }
 #panel #shr2 button {
   flex: none;
   max-width: none;
-  height: 36px;
-  padding: 0 4px;
-  gap: 6px;
-  border: 0;
+  height: 32px;
+  padding: 0 10px;
+  gap: 5px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
   background: none;
   color: var(--accent);
   font: 500 14px/1 var(--lat);
 }
 #panel #shr2 button svg {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
-#panel #ver {
-  margin-top: 0;
+/* compact rows (44px, still a comfortable tap) so the panel fits on a phone without scrolling */
+#panel {
+  gap: 10px;
+  padding: 10px 16px 12px;
+  max-height: calc(100vh - 72px);
+  max-height: calc(100dvh - 72px);
+}
+#panel .row {
+  min-height: 44px;
+}
+#panel .sw {
+  height: 44px;
+}
+#panel .sw::after {
+  top: 10px;
+}
+#panel .seg button {
+  height: 28px;
+}
+#panel .sz button {
+  height: 30px;
+}
+#panel .phd .xc {
+  width: 32px;
+  height: 32px;
 }
 @media (max-width: 379px) {
+  #panel #shr2 button > span {
+    display: none;
+  }
+  #panel #shr2 button {
+    padding: 0 8px;
+  }
   #panel .sgrp {
     padding: 0 10px;
   }
@@ -4041,7 +4076,12 @@ a.t {
 <!-- ==== Settings panel ==== -->
 <div class="panel" id="panel" hidden>
   <div class="phd">
-    <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></b>
+    <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span><span id="ver" lang="en"></span></b>
+    <!-- App (hidden once installed) and Help sit in the header, so they are always in view -->
+    <div id="shr2">
+    <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
+    <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
+    </div>
     <button type="button" class="xc" id="xc" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
   <!-- Settings look like phone settings: two rounded cards, label on the left, a small sliding control on the right -->
@@ -4090,12 +4130,6 @@ a.t {
     <div id="wrow"><button id="tw" class="sw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
     <button id="tas" class="sw" type="button" data-feat="as" hidden><span class="mr">आपोआप पुढे सरकवा</span><span class="en" lang="en">Autoscroll</span></button>
   </div>
-  <!-- Same quiet row as the home page: App (hidden once installed) and Help -->
-  <div id="shr2">
-    <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
-    <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
-  </div>
-  <div id="ver" lang="en"></div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
 <nav id="rail" aria-label="Contents"></nav>
@@ -5819,7 +5853,7 @@ a.t {
         It changes straight away and keeps your place.</li>
       <li><b>Text size</b> (A− / A+ / ↺ to reset) and <b>Theme</b> (Auto, Light, Sepia, Dark).</li>
       <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
-      <li>At the bottom: <b>App</b> (until it is installed), <b>Help</b> and the version number (Version 1.0). Tap ✕ at the top to close Settings.</li>
+      <li>At the top, beside the title: the version number (v1.0), <b>App</b> (until it is installed), <b>Help</b>, and ✕ to close Settings.</li>
       <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
 
@@ -9574,7 +9608,7 @@ a.t {
     var RE = /caches\.open\("aarti-v([\d.]+)"/,
       me = ((document.scripts[document.scripts.length - 1] || {}).text || "").match(RE);
     me = me && me[1];
-    document.getElementById("ver").textContent = me ? "Version " + me : "";
+    document.getElementById("ver").textContent = me ? "v" + me : "";
     function ofSet(st) {
       ofb.setAttribute("data-s", st);
       // The version sits after "Saved offline" / "Up to date", e.g. "✓ Saved offline · v1.0 · Check for updates"

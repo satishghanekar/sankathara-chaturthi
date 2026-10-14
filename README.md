@@ -4,7 +4,7 @@ The texts our group recites at Sankashti Chaturthi puja: Pooja, Bhajans (coming 
 
 **Live site:** https://sankashti-chaturthi.pages.dev
 
-**Version:** 1.0 (shown as **v1.0** on the home card and as *Version 1.0* at the bottom of Settings)
+**Version:** 1.0 (shown as **v1.0** on the home card and as *v1.0* beside the Settings title)
 
 ## What the site does
 
@@ -22,7 +22,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Next Sankashti card** (home page): a round button folds it to one line (Ganesha, next date, moonrise), hiding the buttons until it is opened; on the home page the Home buttons (top-bar title, bottom-bar Ganesha, the rail's Home) toggle it too (from a piece they just go home); the phone remembers it, and on Sankashti day it opens by itself. today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
 - **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns reading down each column, or Marathi and English side by side) in the chosen language and English style. The printed contents page lists the page each piece starts on, worked out for Letter paper in the US and Canada and A4 elsewhere, upright.
 - **Saved for offline** (home card, under the buttons): "✓ Saved offline · v1.0 · Check for updates". Tapping it checks for a newer version and loads it, or shows "Up to date"; with no internet it turns amber.
-- **Settings:** menu language, English style, text size, theme, high contrast and keep screen on, styled like phone settings (two cards, small sliding controls, switches).
+- **Settings:** menu language, English style, text size, theme, high contrast and keep screen on, styled like phone settings (two cards, small sliding controls, switches), compact (44px rows) so it fits a phone without scrolling; App, Help and the version sit in its header.
 - **Getting around:** the top bar shows the piece being read; Contents and search (forgiving spelling, matching words in bold, ↑ ↓ Enter on a computer); a bottom bar on every page, home included (‹ Prev, Ganesha home, contents-and-search, Next ›; fixed pixel sizes like the top bar, so text size and pinch leave it alone; hidden while Settings or Contents is open; the old Previous/Next cards stay in the HTML, hidden on screen, and the bar's buttons use their links); the phone's Back button closes menus and returns to where you were before a jump, and the address (#a5) follows the piece on screen.
 - **Screen readers:** the page is marked as Marathi, and English parts as English, so VoiceOver and TalkBack read each in the right voice whatever the menu language.
 - **Reading:** tap a line to highlight it, pinch or A−/A+ for text size (the home page keeps its normal size), themes (light, sepia, dark), high contrast, keep the screen on (on by default on phones and tablets, off on computers), and it reopens where you were reading (within 12 hours).
