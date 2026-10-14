@@ -4120,6 +4120,39 @@ h2[tabindex="-1"]:focus {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Open all / Fold all pill in a section row, just left of the section's arrow */
+.grp {
+  position: relative;
+}
+.allb {
+  position: absolute;
+  top: 50%;
+  right: 60px;
+  transform: translateY(calc(-50% + 1px));
+  height: 30px;
+  min-height: 0;
+  padding: 0 12px;
+  border: 1px solid var(--hdrl);
+  border-radius: 15px;
+  background: var(--surface);
+  color: var(--accent);
+  font: 600 13px/1 var(--lat);
+  cursor: pointer;
+}
+.allb[lang="mr"] {
+  font: 500 14px/1 var(--body);
+}
+.allb::after {
+  content: "";
+  position: absolute;
+  inset: -7px -4px;
+}
+@media print {
+  .allb {
+    display: none !important;
+  }
+}
+
 /* ==== Bigger tap areas, same look (2026-10-14 accessibility review) ====
    Small controls get an invisible touch area of about 44 px (Apple and Google's guide) from a transparent
    ::after, or for the top-bar title (whose box clips) from padding cancelled by a negative margin. */
@@ -5935,7 +5968,7 @@ h2[tabindex="-1"]:focus {
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap on the Ganesha picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
-      <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
+      <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. The <b>Fold all</b> / <b>Open all</b> button on the <b>आरती / Aarti</b> heading folds or opens every aarti at once. Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (the arrow points down while folded) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
       <li data-feat="as" hidden><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
@@ -7594,6 +7627,47 @@ h2[tabindex="-1"]:focus {
       if (e.classList.contains("ash")) e.classList.add("ar");
     }
   })();
+  // Open all / Fold all: a pill in a section row (beside its arrow) folds or opens every piece in that section.
+  // Shown only for sections with two or more pieces (Aarti today; Pooja has one), and not while the section
+  // itself is folded. It reads "Fold all" while any piece is open, "Open all" when all are folded.
+  var allB = [];
+  [["g-pooja", "pj", "pf"], ["g-aarti", "ar", "xf"]].forEach(function (a) {
+    var g = document.getElementById(a[0]),
+      ps = secs.filter(function (x) {
+        return x.classList.contains(a[1]);
+      });
+    if (!g || ps.length < 2) return;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "allb";
+    b.onclick = function () {
+      var y = g.getBoundingClientRect().top,
+        open = b.dataset.open === "1";
+      ps.forEach(function (x) {
+        var i = P.af.indexOf(x.id);
+        if (open && i >= 0) P.af.splice(i, 1);
+        if (!open && i < 0) P.af.push(x.id);
+      });
+      save();
+      pfSet();
+      scrollBy(0, g.getBoundingClientRect().top - y);
+      mark();
+    };
+    g.appendChild(b);
+    allB.push({ b: b, ps: ps, k: a[2] });
+  });
+  function allSet() {
+    var mr = P.ui === "mr";
+    allB.forEach(function (o) {
+      var open = o.ps.every(function (x) {
+        return P.af.indexOf(x.id) >= 0;
+      });
+      o.b.dataset.open = open ? "1" : "0";
+      o.b.hidden = !!P[o.k];
+      o.b.lang = mr ? "mr" : "en";
+      o.b.textContent = open ? (mr ? "सर्व उघडा" : "Open all") : mr ? "सर्व मिटवा" : "Fold all";
+    });
+  }
   function pfSet() {
     var mr = P.ui === "mr",
       tb = document.getElementById("tfb");
@@ -7619,6 +7693,7 @@ h2[tabindex="-1"]:focus {
       xb.setAttribute("aria-expanded", String(!P.xf));
       xb.setAttribute("aria-label", P.xf ? (mr ? "आरती विभाग उघडा" : "Show the Aarti section") : mr ? "आरती विभाग मिटवा" : "Fold the Aarti section");
     }
+    allSet();
     var b = document.getElementById("pfb");
     if (P.pf) root.setAttribute("data-pf", "1");
     else root.removeAttribute("data-pf");
@@ -9196,6 +9271,9 @@ h2[tabindex="-1"]:focus {
           var gl = document.createElement("div");
           gl.className = "pvg";
           gl.innerHTML = gp.innerHTML;
+          [].forEach.call(gl.querySelectorAll(".allb"), function (x) {
+            x.remove(); // Open all / Fold all is for the screen only
+          });
           pre.push(gl);
         }
         pre.push(hd);
