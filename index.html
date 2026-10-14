@@ -4084,6 +4084,14 @@ h2[tabindex="-1"]:focus {
   }
 }
 
+/* Piece headings, the card's Ganesha picture and its folded line fold or open with a tap anywhere on them */
+.ash header,
+#home .hero,
+#slim {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* ==== Bigger tap areas, same look (2026-10-14 accessibility review) ====
    Small controls get an invisible touch area of about 44 px (Apple and Google's guide) from a transparent
    ::after, or for the top-bar title (whose box clips) from padding cancelled by a negative margin. */
@@ -5898,8 +5906,8 @@ h2[tabindex="-1"]:focus {
     <ul>
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
-      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
-      <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
+      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap on the Ganesha picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+      <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (the arrow points down while folded) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
       <li data-feat="as" hidden><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
@@ -6998,6 +7006,14 @@ h2[tabindex="-1"]:focus {
     save();
     foldSet();
   };
+  // One-hand use: tapping the Ganesha picture folds the card, and tapping the folded slim line opens it
+  ["#home .hero", "#slim"].forEach(function (s) {
+    var e = document.querySelector(s);
+    if (e)
+      e.addEventListener("click", function () {
+        document.getElementById("cvb").onclick();
+      });
+  });
   // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
   function skShow(k, focus) {
     var box = document.getElementById("skc"),
@@ -7627,6 +7643,12 @@ h2[tabindex="-1"]:focus {
       mark();
     };
     h.appendChild(b);
+    // One-hand use: a tap anywhere on the heading folds or opens the piece, not only on ⌃
+    // (the ⌃ stays for keyboards and screen readers; links in the heading still work)
+    h.addEventListener("click", function (e) {
+      if (e.target.closest("a,button,input") || String(getSelection()).trim()) return;
+      b.onclick();
+    });
   });
   document.getElementById("tfb").onclick = function () {
     P.tf = P.tf ? 0 : 1;
