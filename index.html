@@ -4083,6 +4083,47 @@ h2[tabindex="-1"]:focus {
     margin-top: 10px;
   }
 }
+
+/* ==== Bigger tap areas, same look (2026-10-14 accessibility review) ====
+   Small controls get an invisible touch area of about 44 px (Apple and Google's guide) from a transparent
+   ::after, or for the top-bar title (whose box clips) from padding cancelled by a negative margin. */
+.bar .t.site {
+  padding-block: 9px;
+  margin-block: -9px;
+}
+.skc .skl,
+#ofb,
+#xc,
+#shr2 button,
+#panel .seg button,
+#panel .sz button {
+  position: relative;
+}
+.skc .skl::after,
+#ofb::after,
+#xc::after,
+#shr2 button::after,
+#panel .seg button::after,
+#panel .sz button::after {
+  content: "";
+  position: absolute;
+  inset: -6px 0;
+}
+#ofb::after {
+  inset: -4px 0;
+}
+#xc::after {
+  inset: -6px;
+}
+#panel .seg button::after,
+#panel .sz button::after {
+  inset: -7px 0;
+}
+@media screen {
+  .rmk.rmkt::after {
+    inset: -10px -8px;
+  }
+}
 </style>
 </head>
 
