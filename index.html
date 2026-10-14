@@ -3834,8 +3834,9 @@ a.t {
   font-family: var(--body);
   font-size: 14px;
 }
-#asc.on .asx {
-  display: none;
+#asc.on .asx,
+[data-asf="1"] .ar .pn {
+  display: none !important;
 }
 #asc.on #asi {
   justify-content: center;
@@ -4125,6 +4126,7 @@ a.t {
   <div class="sgrp">
     <button id="tc" class="sw" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
     <div id="wrow"><button id="tw" class="sw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
+    <button id="tas" class="sw" type="button"><span class="mr">आरत्या आपोआप सरकवा</span><span class="en" lang="en">Autoscroll (aartis)</span></button>
   </div>
   <!-- Same quiet row as the home page: App (hidden once installed) and Help -->
   <div id="shr2">
@@ -5828,7 +5830,7 @@ a.t {
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
-      <li><b>Autoscroll (the bar at the bottom in the aartis):</b> tap the round ▶ and the aartis scroll by themselves. It folds the home card, the contents and the Pooja section, opens every aarti, and starts from the aarti on screen. Each sung line gets the same time; − and + set the speed (1–7) of the aarti you are on, and each aarti remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next aarti. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next hide so the aartis flow one into the next. Hold a finger on the text to pause (you can also scroll by hand); let go and it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
+      <li><b>Autoscroll (the bar at the bottom in the aartis):</b> turn it on in ⚙ Settings (<b>Autoscroll (aartis)</b>); it is off until you do. Then tap the round ▶ and the aartis scroll by themselves. It folds the home card, the contents and the Pooja section, opens every aarti, and starts from the aarti on screen. Each sung line gets the same time; − and + set the speed (1–7) of the aarti you are on, and each aarti remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next aarti. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next (in the bar and between aartis) hide so the aartis flow one into the next. Hold a finger on the text to pause (you can also scroll by hand); let go and it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
       <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
@@ -5986,6 +5988,7 @@ a.t {
     tf: 0, // home contents list folded
     af: [], // ids of folded pieces
     as: 3, // autoscroll speed for an aarti not yet adjusted, 1 (slow) to 7 (fast)
+    ason: 0, // show the autoscroll bar in the aartis (Settings switch)
     asp: {}, // autoscroll speed per aarti (each has its own tempo): { a1: 3, … }
   };
   try {
@@ -7731,8 +7734,20 @@ a.t {
     apply();
     asRun();
   }
+  // While running, the Previous / Next cards between aartis are hidden so one aarti flows into the next;
+  // the line at the reading spot stays where it is when they hide or come back
+  function asFlow(on) {
+    if (!!root.getAttribute("data-asf") === !!on) return;
+    var y = asSpot(),
+      e = document.elementFromPoint(innerWidth / 2, y),
+      t = e && e.getBoundingClientRect().top;
+    if (on) root.setAttribute("data-asf", "1");
+    else root.removeAttribute("data-asf");
+    if (e && e.isConnected && e.getClientRects().length) scrollBy(0, e.getBoundingClientRect().top - t);
+  }
   // Start (or carry on) scrolling from the line in view
   function asRun() {
+    asFlow(1);
     AS.u = asBuild();
     if (AS.u.length < 2) return;
     var c = cur();
@@ -7763,6 +7778,7 @@ a.t {
     }
     AS.on = 1;
     asc.classList.add("on");
+    asFlow(1);
     asLabel();
     if (!wl) wake(true);
     AS.raf = requestAnimationFrame(asStep);
@@ -7777,6 +7793,7 @@ a.t {
     AS.on = 0;
     cancelAnimationFrame(AS.raf);
     asc.classList.remove("on");
+    asFlow(0);
     asLabel();
     if (!P.wake) wake(false);
   }
@@ -7879,11 +7896,17 @@ a.t {
   document.getElementById("asn").onclick = function () {
     asGo(1);
   };
-  // The bar shows while in the aartis (or at the Aarti heading), and while running
+  document.getElementById("tas").onclick = function () {
+    P.ason = P.ason ? 0 : 1;
+    if (!P.ason) asStop();
+    save();
+    apply();
+  };
+  // The bar shows while in the aartis (or at the Aarti heading), and while running, if switched on in Settings
   function asShow() {
     var c = cur(),
       g = document.getElementById("g-aarti").getBoundingClientRect(),
-      on = !!(AS.on || (c && c.classList.contains("ar")) || (g.bottom > 0 && g.top < innerHeight));
+      on = !!(P.ason && (AS.on || AS.held || (c && c.classList.contains("ar")) || (g.bottom > 0 && g.top < innerHeight)));
     if (asc.hidden === on) {
       asc.hidden = !on;
       if (on) root.setAttribute("data-asb", "1");
@@ -8033,7 +8056,11 @@ a.t {
     });
     document.getElementById("tc").setAttribute("aria-pressed", String(!!P.hc));
     document.getElementById("tw").setAttribute("aria-pressed", String(!!P.wake));
-    if (asb) asLabel();
+    document.getElementById("tas").setAttribute("aria-pressed", String(!!P.ason));
+    if (asb) {
+      asLabel();
+      asShow();
+    }
     mark();
   }
 
