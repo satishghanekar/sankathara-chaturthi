@@ -8123,9 +8123,15 @@ body:has(#jump:not([hidden])) #asc {
     if (v && v !== P.tr) {
       P.tr = v;
       save();
-      trSet(v, true);
-      buildIX();
-      refit();
+      // the switch shows the new choice straight away, even if a later step fails on some browser
+      apply();
+      try {
+        trSet(v, true);
+        buildIX();
+        refit();
+      } catch (er) {
+        flash("बदल पूर्ण झाला नाही; पान पुन्हा उघडा", "Could not finish the change; please reload the page");
+      }
       apply();
     }
   };
