@@ -1091,6 +1091,9 @@ ol.toc li.soon .m {
 .grp + .ash {
   border-top: 0;
 }
+.grp {
+  scroll-margin-top: 64px;
+}
 .grp[data-lang="both"] .en {
   margin-left: 0.6em;
   color: var(--muted);
@@ -2360,12 +2363,26 @@ h2[tabindex="-1"]:focus {
     padding: 4px 6px 12px 0;
     scrollbar-width: thin;
   }
-  #rail .rg {
+  #rail .rg,
+  #rail a.rg {
+    display: block;
     font: 600 13px/1.3 var(--head);
     color: var(--accent);
     margin: 14px 0 4px;
     padding: 0 8px 4px;
+    border: 0;
     border-bottom: 1px solid var(--rule);
+    border-radius: 0;
+  }
+  #rail a.rg {
+    padding-top: 6px;
+    margin-top: 8px;
+  }
+  #rail a.rg:hover {
+    background: var(--surface);
+  }
+  #rail[data-lang="both"] a.rg .en {
+    display: none;
   }
   #rail .rg:first-child {
     margin-top: 0;
@@ -6537,7 +6554,12 @@ h2[tabindex="-1"]:focus {
     [].forEach.call(document.querySelectorAll(".tocg"), function (g) {
       var as = g.querySelectorAll("ol.toc li a");
       if (!as.length) return;
-      h += '<div class="rg">' + g.querySelector(".gh").innerHTML + "</div><ul>";
+      // the group name is a link to its section row (पूजा → Pooja, आरती → Aarti)
+      var gh = g.querySelector(".gh"),
+        gid = /पूजा/.test(gh.textContent) ? "g-pooja" : /आरती/.test(gh.textContent) ? "g-aarti" : "";
+      h += gid
+        ? '<a class="rg" href="#' + gid + '" data-go="' + gid + '">' + gh.innerHTML + "</a><ul>"
+        : '<div class="rg">' + gh.innerHTML + "</div><ul>";
       [].forEach.call(as, function (a) {
         var m = a.querySelector(".m");
         h +=
@@ -7890,6 +7912,17 @@ h2[tabindex="-1"]:focus {
   }
   // Going to a piece (or a line in it) opens it if it is folded, and the Pooja section if that is folded
   function pjOpen(el, onlyPooja) {
+    // a section row (side menu पूजा / आरती): open that section if it is folded
+    if (el && el.id === "g-pooja" && P.pf) {
+      P.pf = 0;
+      save();
+      pfSet();
+    }
+    if (el && el.id === "g-aarti" && P.xf) {
+      P.xf = 0;
+      save();
+      pfSet();
+    }
     var sec = el && el.closest && el.closest(".ash");
     if (!sec) return;
     var ch = false;
