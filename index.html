@@ -2964,55 +2964,6 @@ a.t {
 }
 
 
-/* ==== Section dividers (पूजा · POOJA): label between two thin fading lines ==== */
-@media screen {
-  .grp {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    max-width: 46rem;
-    margin: 46px auto 4px;
-    padding: 0;
-    border: 0;
-    font: 400 1.02em/1.3 var(--head);
-    color: var(--accent);
-    letter-spacing: 0;
-    text-align: center;
-  }
-  .grp::before,
-  .grp::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--hdrl) 30%, var(--hdrl) 70%, transparent);
-  }
-  #home + .grp {
-    margin-top: 20px;
-    padding-top: 0;
-    border-top: 0;
-  }
-  .grp .en {
-    font: 500 0.72em/1.3 var(--lat);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .grp[data-lang="en"] .en {
-    font-size: 0.78em;
-  }
-  .grp[data-lang="both"] .en {
-    margin-left: 0;
-    color: var(--muted);
-  }
-  .grp[data-lang="both"] .mr::after {
-    content: "·";
-    margin: 0 0.55em;
-    color: var(--muted);
-  }
-  .grp + .ash header {
-    margin-top: 10px;
-  }
-}
-
 /* ==== Tappable dhrupad marker (Aartis 1–5, 7 and 9): sits right under the stanza; tap shows the dhrupad above ==== */
 @media screen {
   [data-ref="1"] .items > .rmk.rmkt {
@@ -3359,6 +3310,10 @@ a.t {
 }
 #panel #wrow {
   display: block;
+}
+/* a feature held back for a later release (see FEAT_AS in the script) */
+[data-feat][hidden] {
+  display: none !important;
 }
 #panel .sw {
   position: relative;
@@ -3711,52 +3666,19 @@ a.t {
     display: none !important;
   }
 }
-/* ==== Folding the Pooja section (for those who come only for the aartis) ==== */
+/* ==== Folding the Pooja and Aarti sections (the headings' look is in "Fold headings" below) ==== */
 #pfb,
 #xfb {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--surface);
   color: inherit;
   font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
   cursor: pointer;
-}
-#pfb .en,
-#xfb .en {
-  font: 500 0.72em/1.3 var(--lat);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-#g-pooja[data-lang="both"] #pfb > .mr::after,
-#g-aarti[data-lang="both"] #xfb > .mr::after {
-  content: "·";
-  margin: 0 0.55em;
-  color: var(--muted);
-}
-#pfb .pfs,
-#xfb .pfs {
-  display: none;
-  font: 500 13px/1 var(--lat);
-  color: var(--muted);
-  letter-spacing: 0;
-  text-transform: none;
-}
-#pfb .pfs:lang(mr),
-#xfb .pfs:lang(mr),
-#tfb .pfs:lang(mr) {
-  font-family: var(--body);
 }
 #pfb svg,
 #xfb svg {
   flex: none;
-  color: var(--muted);
   transition: transform 0.2s;
 }
 @media screen {
@@ -3764,15 +3686,12 @@ a.t {
   [data-xf="1"] .ar {
     display: none !important;
   }
-  [data-pf="1"] #pfb .pfs,
-  [data-xf="1"] #xfb .pfs {
-    display: inline;
-  }
   [data-pf="1"] #pfb svg,
   [data-xf="1"] #xfb svg {
     transform: rotate(180deg);
   }
 }
+/* the print view copies these headings as plain labels (पूजा POOJA) */
 @media print {
   #pfb,
   #xfb {
@@ -3780,15 +3699,21 @@ a.t {
     background: none;
     padding: 0;
     min-height: 0;
+    letter-spacing: inherit;
+    text-transform: inherit;
+  }
+  #pfb .en,
+  #xfb .en {
+    font: 500 0.72em/1.3 var(--lat);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
   #pfb svg,
-  #pfb .pfs,
-  #xfb svg,
-  #xfb .pfs {
+  #xfb svg {
     display: none !important;
   }
 }
-/* ==== Bottom bar on the reading pages (replaces the Previous / Next cards at the end of each piece) ==== */
+/* ==== Bottom bar (footer menu on every page; replaced the Previous / Next cards at the end of each piece) ==== */
 @media screen {
   .pn {
     display: none !important;
@@ -3809,9 +3734,9 @@ a.t {
 #asc[hidden] {
   display: none;
 }
-/* out of the way while Settings or Contents is open */
-body:has(#panel:not([hidden])) #asc,
-body:has(#jump:not([hidden])) #asc {
+/* out of the way while Settings or Contents is open (data-menu is set by the script; a CSS :has() rule
+   here made every style change on the page several times slower) */
+[data-menu="1"] #asc {
   display: none;
 }
 [data-asb="1"] body {
@@ -3927,44 +3852,12 @@ body:has(#jump:not([hidden])) #asc {
     display: none !important;
   }
 }
-/* ==== Folding the home contents list and each piece ==== */
-#tfr {
-  display: flex;
-  justify-content: center;
-  margin: 18px 0 4px;
-}
+/* ==== Folding the home contents list and each piece (the Contents button's look is in "Fold headings" below) ==== */
 #tfb {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 14px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--accent);
-  font: 600 15px/1 var(--lat);
   cursor: pointer;
-}
-#tfb .mr {
-  font: 400 17px/1 var(--head);
-}
-#tfr[data-lang="both"] #tfb > .mr::after {
-  content: "·";
-  margin: 0 0.4em;
-  color: var(--muted);
-}
-#tfb .pfs {
-  display: none;
-  font: 500 13px/1 var(--lat);
-  color: var(--muted);
-}
-#tfb .pfs .mr {
-  font: 400 14px/1 var(--body);
 }
 #tfb svg {
   flex: none;
-  color: var(--muted);
   transition: transform 0.2s;
 }
 .ash header {
@@ -3999,9 +3892,6 @@ body:has(#jump:not([hidden])) #asc {
 @media screen {
   [data-tf="1"] #home .tocg {
     display: none !important;
-  }
-  [data-tf="1"] #tfb .pfs {
-    display: inline;
   }
   [data-tf="1"] #tfb svg,
   .ash.af .afb svg {
@@ -4064,9 +3954,10 @@ body:has(#jump:not([hidden])) #asc {
     max-width: 46rem;
     margin: 10px auto 0;
   }
-  .grp::before,
-  .grp::after {
-    display: none;
+  .grp,
+  #home + .grp {
+    padding: 0;
+    border: 0;
   }
   [data-tf="1"] #home {
     padding-bottom: 0;
@@ -4088,8 +3979,6 @@ body:has(#jump:not([hidden])) #asc {
     background: var(--surface);
     color: var(--accent);
     text-align: left;
-    letter-spacing: 0;
-    text-transform: none;
   }
   #tfb .mr,
   #pfb .mr,
@@ -4101,8 +3990,6 @@ body:has(#jump:not([hidden])) #asc {
   #pfb .en,
   #xfb .en {
     font: 600 14px/1.2 var(--lat);
-    letter-spacing: 0;
-    text-transform: none;
     color: var(--muted);
   }
   #g-pooja[data-lang="en"] #pfb .en,
@@ -4110,19 +3997,6 @@ body:has(#jump:not([hidden])) #asc {
   #tfr[data-lang="en"] #tfb .en {
     font: 600 16px/1.2 var(--lat);
     color: var(--accent);
-  }
-  #tfr[data-lang="both"] #tfb > .mr::after,
-  #g-pooja[data-lang="both"] #pfb > .mr::after,
-  #g-aarti[data-lang="both"] #xfb > .mr::after {
-    content: none;
-  }
-  #tfb .pfs,
-  #pfb .pfs,
-  #xfb .pfs,
-  [data-tf="1"] #tfb .pfs,
-  [data-pf="1"] #pfb .pfs,
-  [data-xf="1"] #xfb .pfs {
-    display: none;
   }
   #tfb svg,
   #pfb svg,
@@ -4212,7 +4086,7 @@ body:has(#jump:not([hidden])) #asc {
   <div class="sgrp">
     <button id="tc" class="sw" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
     <div id="wrow"><button id="tw" class="sw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
-    <button id="tas" class="sw" type="button"><span class="mr">आपोआप पुढे सरकवा</span><span class="en" lang="en">Autoscroll</span></button>
+    <button id="tas" class="sw" type="button" data-feat="as" hidden><span class="mr">आपोआप पुढे सरकवा</span><span class="en" lang="en">Autoscroll</span></button>
   </div>
   <!-- Same quiet row as the home page: App (hidden once installed) and Help -->
   <div id="shr2">
@@ -4250,7 +4124,7 @@ body:has(#jump:not([hidden])) #asc {
     <button type="button" id="ofb" hidden aria-label="Saved for offline. Tap to check for updates"></button>
     </div>
     <!-- Contents fold: hides the list of pieces on the home page -->
-    <div id="tfr"><button type="button" id="tfb" aria-expanded="true" aria-label="Fold the contents"><span class="mr">अनुक्रमणिका</span><span class="en" lang="en">Contents</span><span class="pfs" lang="en">Show</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
+    <div id="tfr"><button type="button" id="tfb" aria-expanded="true" aria-label="Fold the contents"><span class="mr">अनुक्रमणिका</span><span class="en" lang="en">Contents</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
     <div class="tocg">
       <h2 class="gh"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></h2>
       <ol class="toc">
@@ -4280,7 +4154,7 @@ body:has(#jump:not([hidden])) #asc {
     </div>
   </main>
   <!-- ==================== पूजा / POOJA ==================== -->
-  <div class="grp" id="g-pooja"><button type="button" id="pfb" aria-expanded="true" aria-label="Fold the Pooja section"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span><span class="pfs" lang="en">Show</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
+  <div class="grp" id="g-pooja"><button type="button" id="pfb" aria-expanded="true" aria-label="Fold the Pooja section"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
   <!-- ---- Pooja 1. गणपत्यथर्वशीर्षोपनिषत् / Ganapati Atharvashirsha ---- -->
   <section id="p1" class="ash" lang="sa">
     <header>
@@ -4615,7 +4489,7 @@ body:has(#jump:not([hidden])) #asc {
     </nav>
   </section>
   <!-- ==================== आरती / AARTI ==================== -->
-  <div class="grp" id="g-aarti"><button type="button" id="xfb" aria-expanded="true" aria-label="Fold the Aarti section"><span class="mr">आरती</span><span class="en" lang="en">Aarti</span><span class="pfs" lang="en">Show</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
+  <div class="grp" id="g-aarti"><button type="button" id="xfb" aria-expanded="true" aria-label="Fold the Aarti section"><span class="mr">आरती</span><span class="en" lang="en">Aarti</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
   <!-- ---- Aarti 1. गणपतीची आरती / Ganapati Aarti ---- -->
   <section id="a1" class="ash">
     <header>
@@ -5913,10 +5787,10 @@ body:has(#jump:not([hidden])) #asc {
     <ul>
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
-      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+      <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (the arrow points down while folded) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
-      <li><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
+      <li data-feat="as" hidden><b>Autoscroll:</b> turn it on in ⚙ Settings (<b>Autoscroll</b>); it is off until you do. A round ▶ then appears in the bottom bar; tap it and the page scrolls by itself through the Pooja and the aartis. It folds the home card and the contents, opens every piece, and starts from the piece on screen (or the first one). A section you have folded (Pooja or Aarti) is skipped. Each sung line gets the same time; − and + set the speed (1–10) of the piece you are on, and each piece remembers its own speed, since each has its own tempo. <b>‹ Prev</b> and <b>Next ›</b> go to the previous or next piece. With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. While it runs, Prev and Next make way for the speed, so one piece flows into the next. Scroll by hand any time, or hold a finger still to pause; when you let go it carries on from there. In Marathi + English it moves through each whole stanza, both languages, in the time the Marathi takes. ⏸ stops it. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
       <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
@@ -5952,7 +5826,7 @@ body:has(#jump:not([hidden])) #asc {
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place. Tap again to clear.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
-      <li><b>Bottom bar (on every reading page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces; the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. It steps aside on the home page and while Settings or Contents is open.</li>
+      <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -5975,8 +5849,8 @@ body:has(#jump:not([hidden])) #asc {
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
-<!-- ==== Bottom bar on the reading pages: ‹ Previous, Home, Contents + search, (autoscroll ▶), Next ›.
-     While autoscroll runs: Home, Search, speed, ⏸. ==== -->
+<!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (autoscroll ▶), Next ›.
+     ▶ shows only once autoscroll is released (FEAT_AS) and switched on; while it runs: Home, Search, speed, ⏸. ==== -->
 <div id="asc" hidden>
   <div id="asi">
     <button type="button" id="asv" class="asx"></button>
@@ -5999,6 +5873,7 @@ body:has(#jump:not([hidden])) #asc {
 
    Sections, in order:
      Settings (P)            what the reader chose, and migrations
+     Features held back      FEAT_AS: autoscroll is built but hidden until released
      IAST transliteration    IA(): Devanagari line → scholarly English;
                              run once at start-up when English style = sukhakartā
      Layout helpers          two-column grid rows, contents rail
@@ -6009,7 +5884,9 @@ body:has(#jump:not([hidden])) #asc {
      Stanza numbers          ॥ १ ॥ added at the end of each stanza
      Preferred line breaks   where long lines may wrap on phones
      Auto-fit text size      largest size at which lines fit the screen
-     Current piece, apply()  menus follow the reader; P → page
+     Current piece, apply()  menus follow the reader; folds; P → page
+     Bottom bar, autoscroll  footer menu on every page (Prev, Home,
+                             Contents, Next); autoscroll (held back)
      Settings panel, buttons dhrupad, wake lock, overlays, clicks, pinch
      Search                  every line in both scripts and both spellings
      Start-up                first paint, reading position, help
@@ -6099,6 +5976,17 @@ body:has(#jump:not([hidden])) #asc {
     P.sv = 5;
     save();
   }
+
+  // ---- Features held back for a later release ----
+  // Autoscroll (the ▶ in the bottom bar, its Settings switch and its Help entry) is built and tested but not
+  // released yet. With FEAT_AS false the switch and Help entry (data-feat="as") stay hidden, the ▶ never shows
+  // and asStart() does nothing. A reader's saved choice (P.ason) is left as it is, so nothing is lost.
+  // To release it: set FEAT_AS to true. Nothing else needs changing.
+  var FEAT_AS = false;
+  if (FEAT_AS)
+    [].forEach.call(document.querySelectorAll('[data-feat="as"]'), function (e) {
+      e.hidden = false;
+    });
 
   // ---- IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) ----
   var IA = (function () {
@@ -7554,11 +7442,6 @@ body:has(#jump:not([hidden])) #asc {
   function pfSet() {
     var mr = P.ui === "mr",
       tb = document.getElementById("tfb");
-    // "Show" on a folded heading follows the menu language, not the text language
-    [].forEach.call(document.querySelectorAll(".pfs"), function (e) {
-      e.textContent = mr ? "दाखवा" : "Show";
-      e.lang = mr ? "mr" : "en";
-    });
     if (P.tf) root.setAttribute("data-tf", "1");
     else root.removeAttribute("data-tf");
     if (tb) {
@@ -7650,25 +7533,34 @@ body:has(#jump:not([hidden])) #asc {
       scrollBy(0, g.getBoundingClientRect().top - y);
     };
   });
-  // ---- Autoscroll (every section: Pooja, aartis, and any added later) ----
-  // Turning it on folds the home card and the contents, opens every piece in the open sections, and scrolls
+  // ---- Bottom bar (#asc) and autoscroll ----
+  // The bottom bar is the footer menu on every page: ‹ Prev, Home, Contents + search, ▶, Next ›.
+  // Its parts share the "as" prefix (asc, asv, ash, asq, asb, asn) because it began as the autoscroll bar.
+  // ▶ appears only when autoscroll is released (FEAT_AS) and switched on in Settings (P.ason; root data-ason).
+  //
+  // Autoscroll (held back for a later release, see FEAT_AS): runs through every open section (Pooja, aartis,
+  // and any added later). Turning it on folds the home card and the contents, opens every piece, and scrolls
   // line by line: each sung line gets the same time (a little more for long lines), whatever its height.
   // With the dhrupad shown once, each ↻ ध्रुपद marker holds the page while the dhrupad is sung and shows it
-  // in the bubble. Touching or scrolling the page pauses it; tapping ▶ carries on from the line in view.
+  // in the bubble. While running the bar shows Home, Search, speed − / + and ⏸ (CSS: #asc.on).
+  // AS: on = running; u = steps from asBuild(); i = current step; t = seconds into it; raf = animation frame;
+  // last = previous frame time; y = furthest scroll so far; held / down / ht = paused by the reader's touch;
+  // sec = id of the piece whose speed the bar shows.
   var AS = { on: 0, u: [], i: 0, t: 0, raf: 0, last: 0, y: 0 },
     asc = document.getElementById("asc"),
     asb = document.getElementById("asb"),
     ASPD = [0, 7.5, 6.2, 5.2, 4.5, 3.9, 3.4, 3, 2.6, 2.3, 2]; // seconds per line for speeds 1–10
   if (!P.asp || typeof P.asp !== "object") P.asp = {};
-  // speed of an aarti: its own if the reader set one, else the general one
+  // speed of a piece: its own if the reader set one, else the general one
   function asSpd(id) {
     return P.asp[id] || P.as;
   }
-  // the aarti whose speed the − / + buttons change: the one scrolling, else the one on screen
-  function asSec() {
+  // the piece whose speed the − / + buttons change: the one scrolling, else the one on screen
+  // (c: the piece on screen, when the caller already has it; finding it costs a page layout)
+  function asSec(c) {
     var a = AS.on && AS.u[AS.i];
     if (a) return a.sec;
-    var c = cur();
+    if (c === undefined) c = cur();
     return c ? c.id : "";
   }
   function asSpot() {
@@ -7679,9 +7571,10 @@ body:has(#jump:not([hidden])) #asc {
   }
   function asLabel() {
     var mr = P.ui === "mr",
-      l = document.getElementById("asl");
+      l = document.getElementById("asl"),
+      c = cur();
     l.lang = mr ? "mr" : "en";
-    var v = asSpd(asSec());
+    var v = asSpd(asSec(c));
     l.innerHTML =
       '<span class="asw">' + (mr ? "वेग" : "Speed") + " </span>" +
       (mr
@@ -7694,7 +7587,6 @@ body:has(#jump:not([hidden])) #asc {
     asb.setAttribute("aria-pressed", String(!!AS.on));
     document.getElementById("asm").setAttribute("aria-label", mr ? "हळू" : "Slower");
     document.getElementById("asp").setAttribute("aria-label", mr ? "जलद" : "Faster");
-    var c = cur();
     [
       ["asv", "‹ मागील", "‹ Prev", ".prev"],
       ["asn", "पुढील ›", "Next ›", ".next"],
@@ -7711,7 +7603,7 @@ body:has(#jump:not([hidden])) #asc {
     document.getElementById("asq").setAttribute("aria-label", mr ? "अनुक्रमणिका आणि शोध" : "Contents and search");
   }
 
-  // The steps to scroll through: each aarti's heading, its dhrupad at the top, every sung line in order,
+  // The steps to scroll through: each open piece's heading, its dhrupad at the top, every sung line in order,
   // and a hold at each tappable dhrupad marker. Lines are taken in the main text language only.
   function asBuild() {
     var u = [],
@@ -7758,7 +7650,7 @@ body:has(#jump:not([hidden])) #asc {
   function asY(e) {
     return e.getBoundingClientRect().top + scrollY;
   }
-  // Start from the line at the reading spot (or the first aarti if the reader is above the aartis)
+  // Start from the line at the reading spot
   function asStartAt() {
     var spot = scrollY + asSpot(),
       k = 0;
@@ -7778,7 +7670,7 @@ body:has(#jump:not([hidden])) #asc {
     if (!a || !b) return asStop(true);
     var T = ASPD[asSpd(a.sec)] * a.w;
     AS.t += dt;
-    // a new aarti: show its own speed
+    // a new piece: show its own speed
     if (a.sec !== AS.sec) {
       AS.sec = a.sec;
       asLabel();
@@ -7815,7 +7707,8 @@ body:has(#jump:not([hidden])) #asc {
     AS.raf = requestAnimationFrame(asStep);
   }
   function asStart() {
-    // keep the aarti in view where it is while the rest folds away
+    if (!FEAT_AS) return;
+    // keep the piece in view where it is while the rest folds away
     var c0 = cur(),
       t0 = c0 && c0.getBoundingClientRect().top;
     // fold the home card and contents, open every piece; a folded section (Pooja / Aarti) stays folded and is skipped,
@@ -7829,20 +7722,8 @@ body:has(#jump:not([hidden])) #asc {
     if (c0 && c0.offsetParent !== null) scrollBy(0, c0.getBoundingClientRect().top - t0);
     asRun();
   }
-  // While running, the Previous / Next cards between aartis are hidden so one aarti flows into the next;
-  // the line at the reading spot stays where it is when they hide or come back
-  function asFlow(on) {
-    if (!!root.getAttribute("data-asf") === !!on) return;
-    var y = asSpot(),
-      e = document.elementFromPoint(innerWidth / 2, y),
-      t = e && e.getBoundingClientRect().top;
-    if (on) root.setAttribute("data-asf", "1");
-    else root.removeAttribute("data-asf");
-    if (e && e.isConnected && e.getClientRects().length) scrollBy(0, e.getBoundingClientRect().top - t);
-  }
-  // Start (or carry on) scrolling from the line in view
+  // Start (or carry on) scrolling from the line in view (from the home page: the first open piece)
   function asRun() {
-    asFlow(1);
     AS.u = asBuild();
     if (AS.u.length < 2) return;
     var c = cur();
@@ -7857,7 +7738,7 @@ body:has(#jump:not([hidden])) #asc {
     AS.u.forEach(function (x) {
       x.shown = 0;
     });
-    // Carrying on mid-aarti: skip a dhrupad hold just passed, and start from where the page is now, not a line back
+    // Carrying on mid-piece: skip a dhrupad hold just passed, and start from where the page is now, not a line back
     var a = AS.u[AS.i],
       b = AS.u[AS.i + 1];
     if (a && a.hold && b) {
@@ -7873,7 +7754,6 @@ body:has(#jump:not([hidden])) #asc {
     }
     AS.on = 1;
     asc.classList.add("on");
-    asFlow(1);
     asLabel();
     if (!wl) wake(true);
     AS.raf = requestAnimationFrame(asStep);
@@ -7889,7 +7769,6 @@ body:has(#jump:not([hidden])) #asc {
     AS.on = 0;
     cancelAnimationFrame(AS.raf);
     asc.classList.remove("on");
-    asFlow(0);
     asLabel();
     if (!P.wake) wake(false);
   }
@@ -7897,7 +7776,7 @@ body:has(#jump:not([hidden])) #asc {
     if (AS.on) asStop();
     else asStart();
   };
-  // − / + set the speed of the aarti being sung; it is remembered for that aarti only
+  // − / + set the speed of the piece being sung; it is remembered for that piece only
   function asSpeed(d) {
     var id = asSec(),
       o = asSpd(id),
@@ -7915,7 +7794,7 @@ body:has(#jump:not([hidden])) #asc {
   document.getElementById("asp").onclick = function () {
     asSpeed(1);
   };
-  // The reader takes over: touching, wheeling or keys outside the controls pause it
+  // The reader takes over: touching, wheeling or keys outside the controls pause it.
   // Scrolling by hand doesn't stop it: while a finger is on the text (or the wheel turns) it lets go of the page,
   // and once the page settles it carries on from the line in view. Holding a finger still pauses it the same way.
   // A tap on the top bar or a menu stops it (▶ starts again).
@@ -7977,7 +7856,8 @@ body:has(#jump:not([hidden])) #asc {
       asLetGo(700);
     }
   }, { capture: true });
-  // Previous / Next: the same links as the (hidden) cards at the end of the piece; Home and Search as in the top bar
+  // Previous / Next follow the links in each piece's .pn block (kept in the page but never shown on screen,
+  // the bar replaced it); Home and Search work as in the top bar
   function asGo(sel) {
     var c = cur(),
       a = c && c.querySelector(".pn " + sel);
@@ -8007,19 +7887,29 @@ body:has(#jump:not([hidden])) #asc {
     save();
     apply();
   };
-  // The footer menu is always there, like the top bar
+  // The bar is always there, like the top bar (data-asb leaves room for it under the text).
+  // asShow() keeps ▶ in step with the settings, and Prev / Next with the piece on screen.
+  asc.hidden = false;
+  root.setAttribute("data-asb", "1");
+  // the bar steps aside while Settings (#panel) or Contents (#jump) is open
+  (function () {
+    var ms = [document.getElementById("panel"), document.getElementById("jump")];
+    function menu() {
+      if (ms.some(function (m) { return m && !m.hidden; })) root.setAttribute("data-menu", "1");
+      else root.removeAttribute("data-menu");
+    }
+    var mo = new MutationObserver(menu);
+    ms.forEach(function (m) {
+      if (m) mo.observe(m, { attributes: true, attributeFilter: ["hidden"] });
+    });
+    menu();
+  })();
   function asShow() {
     var c = cur(),
-      on = true;
-    if (P.ason) root.setAttribute("data-ason", "1");
+      id = c ? c.id : "";
+    if (FEAT_AS && P.ason) root.setAttribute("data-ason", "1");
     else root.removeAttribute("data-ason");
-    if (asc.hidden === on) {
-      asc.hidden = !on;
-      if (on) root.setAttribute("data-asb", "1");
-      else root.removeAttribute("data-asb");
-    }
-    var id = c ? c.id : "";
-    if (on && id !== asShow.id) {
+    if (id !== asShow.id) {
       asShow.id = id;
       asLabel();
     }
@@ -8195,14 +8085,14 @@ body:has(#jump:not([hidden])) #asc {
     if (v && v !== P.tr) {
       P.tr = v;
       save();
-      // the switch shows the new choice straight away, even if a later step fails on some browser
-      apply();
-      // each step runs on its own, and a failure names the step and the browser's message so it can be traced
+      // each step runs on its own, so a failure in one (named with the browser's message, so it can be traced)
+      // can't stop the others or leave the switch showing the old choice; apply() below always runs
       var bad = [];
       [
         ["lines", function () { trSet(v, true); }],
         ["search", buildIX],
-        ["size", refit],
+        // the text size is fitted to the main language's lines, so only English-only text needs fitting again
+        ["size", function () { if (P.lang === "en") refit(); }],
       ].forEach(function (st) {
         try {
           st[1]();
@@ -8401,8 +8291,13 @@ body:has(#jump:not([hidden])) #asc {
       if (NAV) history[ov ? "replaceState" : "pushState"]({ y: scrollY }, "", url);
     } catch (e) {}
   }
+  // Home buttons (top-bar title, Ganesha in the bottom bar, the rail's Home): from a piece they go home;
+  // on the home page, with the card in view, they open or close the card like its own round button
   function goHomeNav() {
-    jumpTo(goHome, location.pathname);
+    var top = document.querySelector("#home .top"),
+      r = top && top.getBoundingClientRect();
+    if (!cur() && r && r.bottom > 60 && r.top < innerHeight / 2) document.getElementById("cvb").onclick();
+    else jumpTo(goHome, location.pathname);
   }
   addEventListener("popstate", function (e) {
     var was = ovOpen();
@@ -8538,6 +8433,7 @@ body:has(#jump:not([hidden])) #asc {
     if (a) {
       e.preventDefault();
       var el = document.getElementById(a.getAttribute("data-go"));
+      if (el && el.id === "home" && a.closest("#rail")) return goHomeNav();
       pjOpen(el);
       if (el)
         jumpTo(
