@@ -8709,7 +8709,15 @@ h2[tabindex="-1"]:focus {
         if (t.clientX < 24 || t.clientX > innerWidth - 24) return;
         if (!e.target.closest || !e.target.closest(".wrap .ash")) return;
         if (["pzv", "qrm", "prm", "help"].some(function (id) { var d = document.getElementById(id); return d && !d.hidden; })) return;
-        sw = { x: t.clientX, y: t.clientY, t: Date.now() };
+        sw = { x: t.clientX, y: t.clientY, t: Date.now(), was: root.hasAttribute("data-tuck") };
+      },
+      { passive: true },
+    );
+    document.addEventListener(
+      "touchcancel",
+      function () {
+        sw = null;
+        TK.side = false;
       },
       { passive: true },
     );
@@ -8735,13 +8743,27 @@ h2[tabindex="-1"]:focus {
         var t = e.changedTouches[0],
           dx = t.clientX - s.x,
           dy = t.clientY - s.y;
+        // any mostly sideways stroke leaves the bars as they were, swipe or not (the page may still drift a little)
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
+          TK.keep = Date.now() + 700;
+          TK.acc = 0;
+        }
         if (Date.now() - s.t > 700 || Math.abs(dx) < 80 || Math.abs(dx) < 2.5 * Math.abs(dy)) return;
         var sel = getSelection && getSelection();
         if (sel && !sel.isCollapsed) return;
         // the bars stay as they are (tucked away or not) and the new piece slides in from the side swiped from
-        TK.keep = Date.now() + 900;
+        TK.keep = Date.now() + 1200;
         var from = cur();
         asGo(dx < 0 ? ".next" : ".prev");
+        // put the bars back as they were before the swipe, now and again once the page has settled
+        // (iPhones can send late scroll events after the jump)
+        var was = s.was;
+        tuck(was);
+        [350, 1000].forEach(function (ms) {
+          setTimeout(function () {
+            tuck(was);
+          }, ms);
+        });
         var to = cur();
         if (to && to !== from && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
           to.classList.remove("swl", "swr");
@@ -8817,15 +8839,16 @@ h2[tabindex="-1"]:focus {
       var y = scrollY,
         d = y - TK.y;
       TK.y = y;
-      if (Date.now() < TK.hold) return;
+      if (Date.now() < TK.hold || Date.now() < TK.keep) {
+        TK.acc = 0;
+        return;
+      }
       if (TK.side) {
         TK.acc = 0;
         return;
       }
       // one big leap is a jump (a link, the browser's back button), not reading: bring the bars back
-      // (not after a swipe, which keeps them as they were)
       if (Math.abs(d) > innerHeight * 0.6) {
-        if (Date.now() < TK.keep) return;
         TK.acc = 0;
         return tuck(false);
       }
@@ -8845,7 +8868,7 @@ h2[tabindex="-1"]:focus {
   }
   // a tap on a blank part of the page (not a line, a link, a button or a dhrupad marker) brings the bars back
   document.addEventListener("click", function (e) {
-    if (!root.hasAttribute("data-tuck") || !e.target.closest) return;
+    if (!root.hasAttribute("data-tuck") || !e.target.closest || Date.now() < TK.keep) return;
     if (e.target.closest(".verse p, a, button, input, select, label, .rmk, .rmkpop, #asc, .bar")) return;
     tuck(false);
   });
