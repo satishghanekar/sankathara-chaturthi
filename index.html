@@ -3780,6 +3780,96 @@ a.t {
     display: none !important;
   }
 }
+/* ==== Autoscroll (aartis): floating round button; while running it grows into a pill with speed ==== */
+#asc {
+  position: fixed;
+  right: 16px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 56px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+  font: 600 13px/1 var(--lat);
+}
+#asc[hidden] {
+  display: none;
+}
+#asc button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#asb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+#asb svg {
+  grid-area: 1 / 1;
+}
+#asb .ia,
+#asc.on #asb .ip {
+  display: none;
+}
+#asc.on #asb .ia {
+  display: block;
+}
+#ass {
+  display: none;
+  align-items: center;
+  height: 40px;
+  padding: 0 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 20%, transparent);
+}
+#asc.on #ass {
+  display: flex;
+}
+#ass button {
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  border-radius: 50%;
+}
+#asl {
+  min-width: 58px;
+  text-align: center;
+  white-space: nowrap;
+}
+#asl:lang(mr) {
+  font-family: var(--body);
+  font-size: 14px;
+}
+#asc button:focus-visible {
+  outline: 2px solid var(--bg);
+  outline-offset: 1px;
+}
+.rmkpop .ash-h {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid var(--hdrl);
+  font: 600 12px/1.3 var(--lat);
+  color: var(--muted);
+}
+.rmkpop .ash-h:lang(mr) {
+  font-family: var(--body);
+}
+@media print {
+  #asc {
+    display: none !important;
+  }
+}
 /* ==== Folding the home contents list and each piece ==== */
 #tfr {
   display: flex;
@@ -5683,6 +5773,7 @@ a.t {
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
       <li><b>Fold what you don't need:</b> the <b>Contents</b> button on the home page folds the list of pieces, and the round ⌃ in each piece's heading folds that piece down to its heading (⌄ opens it). Your phone remembers these. Going to a folded piece from Contents or search opens it.</li>
       <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again. The <b>आरती / Aarti</b> heading folds the aartis the same way.</li>
+      <li><b>Autoscroll (▶ in the bottom corner):</b> once you are past the home page, tap the round ▶ and the aartis scroll by themselves. It folds the home card, the contents and the Pooja section, opens every aarti, and starts from the aarti on screen (or Aarti 1). Each sung line gets the same time; use − and + to set the speed (1–7, remembered). With the dhrupad shown once, it waits at each <b>↻ ध्रुपद</b> while the dhrupad is sung and shows it in the bubble. Touch or scroll the page to take over; tap ▶ to carry on from where you are. The screen stays on while it runs.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
       <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
@@ -5741,6 +5832,11 @@ a.t {
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
+<!-- ==== Autoscroll for the aartis: a round play button that grows into pause + speed while running ==== -->
+<div id="asc" hidden>
+  <button type="button" id="asb" aria-label="Autoscroll the aartis" aria-pressed="false"><svg class="ip" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="ia" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></button>
+  <div id="ass"><button type="button" id="asm" aria-label="Slower">−</button><span id="asl" aria-live="polite"></span><button type="button" id="asp" aria-label="Faster">+</button></div>
+</div>
 <button type="button" id="szr" hidden><span class="mr">↺ मूळ आकार</span><span class="en" lang="en">↺ Default size</span></button>
 
 <script>
@@ -5830,6 +5926,7 @@ a.t {
     xf: 0, // Aarti section folded
     tf: 0, // home contents list folded
     af: [], // ids of folded pieces
+    as: 3, // autoscroll speed, 1 (slow) to 7 (fast)
   };
   try {
     var s = JSON.parse(localStorage.getItem(K) || "{}");
@@ -7400,6 +7497,209 @@ a.t {
       scrollBy(0, g.getBoundingClientRect().top - y);
     };
   });
+  // ---- Autoscroll (aartis only) ----
+  // Turning it on folds the home card, the contents and the Pooja section, opens every aarti, and scrolls
+  // line by line: each sung line gets the same time (a little more for long lines), whatever its height.
+  // With the dhrupad shown once, each ↻ ध्रुपद marker holds the page while the dhrupad is sung and shows it
+  // in the bubble. Touching or scrolling the page pauses it; tapping ▶ carries on from the line in view.
+  var AS = { on: 0, u: [], i: 0, t: 0, raf: 0, last: 0, y: 0 },
+    asc = document.getElementById("asc"),
+    asb = document.getElementById("asb"),
+    ASPD = [0, 7, 6, 5, 4.2, 3.5, 2.9, 2.4]; // seconds per line for speeds 1–7
+  function asSpot() {
+    // the reading spot: a third of the way down the screen, below the top bar
+    var bar = document.querySelector("body > .bar"),
+      top = bar ? bar.getBoundingClientRect().bottom : 60;
+    return top + (innerHeight - top) * 0.3;
+  }
+  function asLabel() {
+    var mr = P.ui === "mr",
+      l = document.getElementById("asl");
+    l.lang = mr ? "mr" : "en";
+    l.textContent = mr ? "वेग " + "०१२३४५६७"[P.as] : "Speed " + P.as;
+    asb.setAttribute("aria-label", AS.on ? (mr ? "स्वयं-स्क्रोल थांबवा" : "Pause autoscroll") : mr ? "आरत्या आपोआप पुढे सरकवा" : "Autoscroll the aartis");
+    asb.setAttribute("aria-pressed", String(!!AS.on));
+    document.getElementById("asm").setAttribute("aria-label", mr ? "हळू" : "Slower");
+    document.getElementById("asp").setAttribute("aria-label", mr ? "जलद" : "Faster");
+  }
+  // The steps to scroll through: each aarti's heading, its dhrupad at the top, every sung line in order,
+  // and a hold at each tappable dhrupad marker. Lines are taken in the main text language only.
+  function asBuild() {
+    var u = [],
+      main = P.lang === "en" ? ".en" : ".mr";
+    secs.forEach(function (x) {
+      if (!x.classList.contains("ar") || x.offsetParent === null) return;
+      u.push({ el: x.querySelector("header"), w: 1.2 });
+      var ls = [].slice.call(x.querySelectorAll(".rftop .verse " + main + " p, .items .verse " + main + " p, .items > .rmk")).filter(function (e) {
+        return e.offsetParent !== null || e.getClientRects().length;
+      });
+      var tot = 0,
+        n = 0;
+      ls.forEach(function (e) {
+        if (e.tagName === "P") {
+          tot += e.textContent.length;
+          n++;
+        }
+      });
+      var avg = n ? tot / n : 1,
+        src = x.querySelector(".rftop .verse " + main),
+        dl = src ? src.querySelectorAll("p").length : 0;
+      ls.forEach(function (e) {
+        if (e.tagName === "P") u.push({ el: e, w: Math.max(0.75, Math.min(1.4, e.textContent.length / avg)) });
+        else if (e.classList.contains("rmkt") && dl) u.push({ el: e, w: dl, hold: 1 });
+      });
+    });
+    return u;
+  }
+  function asY(e) {
+    return e.getBoundingClientRect().top + scrollY;
+  }
+  // Start from the line at the reading spot (or the first aarti if the reader is above the aartis)
+  function asStartAt() {
+    var spot = scrollY + asSpot(),
+      k = 0;
+    for (var j = 0; j < AS.u.length; j++) {
+      if (asY(AS.u[j].el) <= spot + 4) k = j;
+      else break;
+    }
+    return k;
+  }
+  function asStep(now) {
+    if (!AS.on) return;
+    var dt = Math.min(0.1, (now - (AS.last || now)) / 1000);
+    AS.last = now;
+    var u = AS.u,
+      a = u[AS.i],
+      b = u[AS.i + 1];
+    if (!a || !b) return asStop(true);
+    var T = ASPD[P.as] * a.w;
+    AS.t += dt;
+    if (a.hold && !a.shown) {
+      a.shown = 1;
+      if (!rmkPop || rmkPop.m !== a.el) rmkOpen(a.el);
+      if (rmkPop) {
+        clearTimeout(rmkClose.t);
+        rmkClose.t = setTimeout(rmkClose, T * 1000 + 600);
+        var h = document.createElement("div");
+        h.className = "ash-h";
+        h.lang = P.ui === "mr" ? "mr" : "en";
+        h.textContent = P.ui === "mr" ? "ध्रुपद म्हणा, मग पुढे" : "Sing the dhrupad, then on";
+        rmkPop.el.appendChild(h);
+      }
+    }
+    // a hold keeps the page still while the dhrupad is sung, then moves on
+    var f = a.hold ? Math.max(0, (AS.t - T * 0.85) / (T * 0.15)) : AS.t / T,
+      ya = asY(a.el),
+      yb = asY(b.el),
+      want = ya + (yb - ya) * Math.min(1, f) - asSpot();
+    // never scroll back up (two-column layouts list stanzas side by side)
+    want = Math.max(want, AS.y);
+    var max = document.documentElement.scrollHeight - innerHeight;
+    if (want > max) want = max;
+    AS.y = want;
+    if (Math.abs(want - scrollY) >= 0.5) scrollTo(0, want);
+    if (AS.t >= T) {
+      AS.t = 0;
+      AS.i++;
+      if (AS.i >= u.length - 1 || (want >= max - 1 && yb - asSpot() > max)) return asStop(true);
+    }
+    AS.raf = requestAnimationFrame(asStep);
+  }
+  function asStart() {
+    // fold everything but the aartis, open every aarti
+    P.fold = 1;
+    P.tf = 1;
+    P.pf = 1;
+    P.xf = 0;
+    P.af = P.af.filter(function (id) {
+      var e = document.getElementById(id);
+      return !(e && e.classList.contains("ar"));
+    });
+    save();
+    apply();
+    AS.u = asBuild();
+    if (AS.u.length < 2) return;
+    var c = cur();
+    if (!c || !c.classList.contains("ar")) {
+      var a1 = AS.u[0].el;
+      scrollTo(0, asY(a1) - asSpot());
+      AS.i = 0;
+    } else AS.i = asStartAt();
+    AS.y = scrollY;
+    AS.t = 0;
+    AS.last = 0;
+    AS.u.forEach(function (x) {
+      x.shown = 0;
+    });
+    // Carrying on mid-aarti: skip a dhrupad hold just passed, and start from where the page is now, not a line back
+    var a = AS.u[AS.i],
+      b = AS.u[AS.i + 1];
+    if (a && a.hold && b) {
+      AS.i++;
+      a = b;
+      b = AS.u[AS.i + 1];
+    }
+    if (a && b && !a.hold) {
+      var ya = asY(a.el),
+        yb = asY(b.el),
+        f = yb > ya ? (scrollY + asSpot() - ya) / (yb - ya) : 0;
+      AS.t = ASPD[P.as] * a.w * Math.max(0, Math.min(0.95, f));
+    }
+    AS.on = 1;
+    asc.classList.add("on");
+    asLabel();
+    if (!wl) wake(true);
+    AS.raf = requestAnimationFrame(asStep);
+  }
+  function asStop() {
+    if (!AS.on) return;
+    AS.on = 0;
+    cancelAnimationFrame(AS.raf);
+    asc.classList.remove("on");
+    asLabel();
+    if (!P.wake) wake(false);
+  }
+  asb.onclick = function () {
+    if (AS.on) asStop();
+    else asStart();
+  };
+  function asSpeed(d) {
+    var v = Math.max(1, Math.min(7, P.as + d));
+    if (v === P.as) return;
+    // keep the same point in the current line
+    var a = AS.u[AS.i];
+    if (a) AS.t *= ASPD[v] / ASPD[P.as];
+    P.as = v;
+    save();
+    asLabel();
+  }
+  document.getElementById("asm").onclick = function () {
+    asSpeed(-1);
+  };
+  document.getElementById("asp").onclick = function () {
+    asSpeed(1);
+  };
+  // The reader takes over: touching, wheeling or keys outside the controls pause it
+  ["pointerdown", "wheel", "keydown"].forEach(function (n) {
+    addEventListener(
+      n,
+      function (e) {
+        if (!AS.on || (e.target && e.target.closest && e.target.closest("#asc"))) return;
+        if (n === "keydown" && e.key !== " " && !/^(Arrow|Page|Home|End)/.test(e.key)) return;
+        asStop();
+      },
+      { passive: true, capture: true },
+    );
+  });
+  // The button shows once the reader is past the home page (in the readings), and while running
+  function asShow() {
+    var c = cur();
+    asc.hidden = !(AS.on || c);
+  }
+  addEventListener("scroll", asShow, { passive: true });
+  asLabel();
+  asShow();
+
   // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
@@ -7534,6 +7834,7 @@ a.t {
     });
     document.getElementById("tc").setAttribute("aria-pressed", String(!!P.hc));
     document.getElementById("tw").setAttribute("aria-pressed", String(!!P.wake));
+    if (asb) asLabel();
     mark();
   }
 
