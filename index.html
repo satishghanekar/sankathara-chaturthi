@@ -4130,6 +4130,25 @@ h2[tabindex="-1"]:focus {
       visibility 0.22s;
   }
 }
+/* a piece reached by swiping slides in from the side it came from (class set by the swipe, then removed) */
+@keyframes swl {
+  from {
+    opacity: 0.3;
+    transform: translateX(28px);
+  }
+}
+@keyframes swr {
+  from {
+    opacity: 0.3;
+    transform: translateX(-28px);
+  }
+}
+.ash.swl {
+  animation: swl 0.25s ease-out;
+}
+.ash.swr {
+  animation: swr 0.25s ease-out;
+}
 @media print {
   #tuck {
     display: none !important;
@@ -8698,6 +8717,11 @@ h2[tabindex="-1"]:focus {
       "touchmove",
       function (e) {
         if (sw && e.touches.length !== 1) sw = null; // a pinch, not a swipe
+        // while the finger moves mostly sideways, the page's own small up/down drift doesn't move the bars
+        if (sw) {
+          var t = e.touches[0];
+          TK.side = Math.abs(t.clientX - sw.x) > Math.abs(t.clientY - sw.y);
+        } else TK.side = false;
       },
       { passive: true },
     );
@@ -8706,6 +8730,7 @@ h2[tabindex="-1"]:focus {
       function (e) {
         var s = sw;
         sw = null;
+        TK.side = false;
         if (!s || e.touches.length || !e.changedTouches.length) return;
         var t = e.changedTouches[0],
           dx = t.clientX - s.x,
@@ -8713,7 +8738,19 @@ h2[tabindex="-1"]:focus {
         if (Date.now() - s.t > 700 || Math.abs(dx) < 80 || Math.abs(dx) < 2.5 * Math.abs(dy)) return;
         var sel = getSelection && getSelection();
         if (sel && !sel.isCollapsed) return;
+        // the bars stay as they are (tucked away or not) and the new piece slides in from the side swiped from
+        TK.keep = Date.now() + 900;
+        var from = cur();
         asGo(dx < 0 ? ".next" : ".prev");
+        var to = cur();
+        if (to && to !== from && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+          to.classList.remove("swl", "swr");
+          void to.offsetWidth;
+          to.classList.add(dx < 0 ? "swl" : "swr");
+          setTimeout(function () {
+            to.classList.remove("swl", "swr");
+          }, 400);
+        }
       },
       { passive: true },
     );
@@ -8766,7 +8803,7 @@ h2[tabindex="-1"]:focus {
   // Phones and tablets without the side menu. Scrolling down past the top of the page tucks the top and
   // bottom bars away (data-tuck); scrolling up, the end of the page, a tap on a blank part of the page,
   // a menu opening, keyboard focus in a bar or a jump (Contents, Prev / Next) brings them back.
-  var TK = { y: scrollY, acc: 0, hold: 0 },
+  var TK = { y: scrollY, acc: 0, hold: 0, keep: 0, side: false },
     tkStrip = document.getElementById("tuck");
   function tuck(on) {
     on = on && !root.hasAttribute("data-rail") && !root.hasAttribute("data-menu");
@@ -8781,8 +8818,14 @@ h2[tabindex="-1"]:focus {
         d = y - TK.y;
       TK.y = y;
       if (Date.now() < TK.hold) return;
+      if (TK.side) {
+        TK.acc = 0;
+        return;
+      }
       // one big leap is a jump (a link, the browser's back button), not reading: bring the bars back
+      // (not after a swipe, which keeps them as they were)
       if (Math.abs(d) > innerHeight * 0.6) {
+        if (Date.now() < TK.keep) return;
         TK.acc = 0;
         return tuck(false);
       }
@@ -8797,6 +8840,7 @@ h2[tabindex="-1"]:focus {
   function tuckHold() {
     TK.hold = Date.now() + 700;
     TK.acc = 0;
+    if (Date.now() < TK.keep) return; // a swipe to the next piece leaves the bars as they were
     tuck(false);
   }
   // a tap on a blank part of the page (not a line, a link, a button or a dhrupad marker) brings the bars back
