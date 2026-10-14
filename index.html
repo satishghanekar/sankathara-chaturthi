@@ -3686,6 +3686,75 @@ a.t {
     display: none !important;
   }
 }
+/* ==== Folding the Pooja section (for those who come only for the aartis) ==== */
+#pfb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+#pfb .en {
+  font: 500 0.72em/1.3 var(--lat);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+#g-pooja[data-lang="both"] #pfb > .mr::after {
+  content: "·";
+  margin: 0 0.55em;
+  color: var(--muted);
+}
+#pfb .pfs {
+  display: none;
+  font: 500 13px/1 var(--lat);
+  color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+#pfb .pfs .mr {
+  font-family: var(--body);
+}
+#pfb .pfs .en {
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#pfb svg {
+  flex: none;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+@media screen {
+  [data-pf="1"] .pj {
+    display: none !important;
+  }
+  [data-pf="1"] #pfb .pfs {
+    display: inline;
+  }
+  [data-pf="1"] #pfb svg {
+    transform: rotate(180deg);
+  }
+}
+@media print {
+  #pfb {
+    border: 0;
+    background: none;
+    padding: 0;
+    min-height: 0;
+  }
+  #pfb svg,
+  #pfb .pfs {
+    display: none !important;
+  }
+}
 </style>
 </head>
 
@@ -3823,7 +3892,7 @@ a.t {
     </div>
   </main>
   <!-- ==================== पूजा / POOJA ==================== -->
-  <div class="grp" id="g-pooja"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span></div>
+  <div class="grp" id="g-pooja"><button type="button" id="pfb" aria-expanded="true" aria-label="Fold the Pooja section"><span class="mr">पूजा</span><span class="en" lang="en">Pooja</span><span class="pfs"><span class="mr">दाखवा</span><span class="en" lang="en">Show</span></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button></div>
   <!-- ---- Pooja 1. गणपत्यथर्वशीर्षोपनिषत् / Ganapati Atharvashirsha ---- -->
   <section id="p1" class="ash" lang="sa">
     <header>
@@ -5457,6 +5526,7 @@ a.t {
       <li>Shows today's date, the next Sankashti Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankashti (on a Tuesday) is marked.</li>
       <li><b>📍 Pin:</b> tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
       <li><b>Fold the card:</b> the round ⌃ button at the top right of the card folds it to one line (Ganesha, the next date and moonrise); ⌄ opens it again with all the buttons. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+      <li><b>Only here for the aartis?</b> Tap the <b>पूजा / Pooja</b> heading above the Atharvashirsha to fold the Pooja section away; tap it again (“Show”) to bring it back. Your phone remembers this. Going to the Atharvashirsha from Contents, search or Previous opens it again.</li>
       <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankashti” returns.</li>
       <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before.</li>
       <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankashti at once.</li>
@@ -5598,6 +5668,7 @@ a.t {
     hl: "", // data-l id of the highlighted (tapped) line
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
+    pf: 0, // Pooja section folded (for those who come only for the aartis)
   };
   try {
     var s = JSON.parse(localStorage.getItem(K) || "{}");
@@ -6940,6 +7011,7 @@ a.t {
     var k = [
       P.lang,
       P.ref,
+      P.pf,
       root.getAttribute("data-cols"),
       root.getAttribute("data-rail"),
       innerWidth > innerHeight ? "l" : "p",
@@ -7013,10 +7085,42 @@ a.t {
     var c = null,
       y = 90;
     secs.forEach(function (x) {
-      if (x.getBoundingClientRect().top <= y) c = x;
+      if (x.offsetParent !== null && x.getBoundingClientRect().top <= y) c = x;
     });
     return c;
   }
+  // Pooja section fold: the pieces between the Pooja and Aarti headings get class "pj"; folding hides them.
+  // Going to a Pooja piece (Contents, search, Previous, a link) opens the section again.
+  (function () {
+    var e = document.getElementById("g-pooja");
+    while (e && (e = e.nextElementSibling) && !e.classList.contains("grp")) {
+      if (e.classList.contains("ash")) e.classList.add("pj");
+    }
+  })();
+  function pfSet() {
+    var b = document.getElementById("pfb");
+    if (P.pf) root.setAttribute("data-pf", "1");
+    else root.removeAttribute("data-pf");
+    if (!b) return;
+    b.setAttribute("aria-expanded", String(!P.pf));
+    b.setAttribute("aria-label", P.pf ? (P.ui === "mr" ? "पूजा विभाग उघडा" : "Show the Pooja section") : P.ui === "mr" ? "पूजा विभाग मिटवा" : "Fold the Pooja section");
+  }
+  function pjOpen(el) {
+    if (P.pf && el && el.closest && el.closest(".pj")) {
+      P.pf = 0;
+      save();
+      pfSet();
+    }
+  }
+  document.getElementById("pfb").onclick = function () {
+    var g = document.getElementById("g-pooja"),
+      y = g.getBoundingClientRect().top;
+    P.pf = P.pf ? 0 : 1;
+    save();
+    apply();
+    // keep the heading where it was on screen
+    scrollBy(0, g.getBoundingClientRect().top - y);
+  };
   // Highlight the current piece in the menus; update the progress line
   function mark() {
     var c = cur();
@@ -7061,6 +7165,7 @@ a.t {
   }
   // Scroll to a line (from search) and flash it
   function goLine(id, flash) {
+    pjOpen(document.querySelector('[data-l="' + id + '"]'));
     var el = lineEl(id);
     if (!el) return;
     // A line that is hidden in the current dhrupad mode: go to the start of its piece instead
@@ -7132,6 +7237,7 @@ a.t {
       hb.setAttribute("data-l", P.lang);
     }
     hb.setAttribute("aria-label", "Language: " + LB[1] + ". Tap to change");
+    pfSet();
     autoFs();
     root.style.setProperty("--fs", P.fs + "px");
     // The date card is rebuilt only when the menu language or the day changes (rebuilding it on
@@ -7380,6 +7486,7 @@ a.t {
     if (was) return;
     var st = e.state,
       el = location.hash && document.getElementById(location.hash.slice(1));
+    pjOpen(el);
     if (st && typeof st.y === "number") scrollTo(0, st.y);
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
@@ -7498,6 +7605,7 @@ a.t {
     if (a) {
       e.preventDefault();
       var el = document.getElementById(a.getAttribute("data-go"));
+      pjOpen(el);
       if (el)
         jumpTo(
           function () {
@@ -7831,6 +7939,7 @@ a.t {
   var h = (location.hash || "").slice(1);
   if (h) {
     var el = document.getElementById(h);
+    if (el && el.classList.contains("ash")) pjOpen(el);
     if (el && el.classList.contains("ash"))
       setTimeout(function () {
         el.scrollIntoView();
@@ -7871,6 +7980,7 @@ a.t {
         goPos = function () {
           if (moved) return;
           var el = sp.id && document.getElementById(sp.id);
+          if (el && el.offsetParent === null) return; // a folded Pooja piece: stay at the top
           scrollTo(0, el ? el.getBoundingClientRect().top + scrollY + sp.y : sp.y);
         };
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
