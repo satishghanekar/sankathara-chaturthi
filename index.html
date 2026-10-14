@@ -16,9 +16,9 @@
 <meta property="og:title" content="संकष्टी चतुर्थी · Sankashti Chaturthi">
 <meta property="og:description" content="Pooja and aarti texts in Marathi and English, with the next date and moonrise.">
 <meta property="og:url" content="https://sankashti-chaturthi.pages.dev/">
-<meta property="og:image" content="https://sankashti-chaturthi.pages.dev/icon-512.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">
+<meta property="og:image" content="https://sankashti-chaturthi.pages.dev/share.jpg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <!-- In the page itself (not added by script) so iPhone share sheets and link previews, which don't run scripts, find the icon -->
@@ -3675,9 +3675,6 @@ h2[tabindex="-1"]:focus {
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow:
-    0 0 0 1.5px var(--gold),
-    0 0 0 4px var(--hdr);
 }
 #slimt {
   min-width: 0;
@@ -4100,13 +4097,13 @@ h2[tabindex="-1"]:focus {
 /* The app's picture on the home card, and its full-screen viewer (#pzv) */
 #iconb {
   display: block;
-  width: min(168px, 48vw);
+  width: min(160px, 46vw);
   height: auto;
   min-height: 0;
   margin: 2px auto 8px;
   padding: 0;
   border: 0;
-  border-radius: 16px;
+  border-radius: 50%;
   background: none;
   cursor: zoom-in;
   -webkit-tap-highlight-color: transparent;
@@ -4368,10 +4365,10 @@ h2[tabindex="-1"]:focus {
     <div class="top">
     <!-- Fold button: the card folds to one slim line (Ganesha, next date, moonrise); the buttons come back when it opens -->
     <button type="button" id="cvb" aria-expanded="true" aria-controls="skc" aria-label="Fold the card"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
-    <div id="slim" hidden><img src="ganesha.webp" alt="" width="44" height="44"><div id="slimt"></div></div>
+    <div id="slim" hidden><img src="picture-360.webp" alt="" width="44" height="44"><div id="slimt"></div></div>
     <div class="hero">
       <!-- The app's picture; a tap opens it full screen (#pzv), where it can be pinched or double-tapped to zoom -->
-      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="app-icon.webp" alt="" width="800" height="736"></button>
+      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="picture-360.webp" alt="" width="360" height="360"></button>
       <div class="hl1" aria-hidden="true">॥ श्री गणेशाय नमः ॥</div>
     </div>
     <div id="skc" class="skc" hidden></div>
@@ -5996,7 +5993,7 @@ h2[tabindex="-1"]:focus {
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <!-- Full-screen picture: pinch, double-tap or (with a mouse) scroll to zoom; drag to move; ✕, Back, Escape or a tap outside closes -->
 <div id="pzv" hidden role="dialog" aria-modal="true" aria-label="Sankashti Chaturthi picture">
-  <img id="pzi" src="app-icon.webp" alt="Shri Ganesha, Sankashti Chaturthi" width="800" height="736" draggable="false">
+  <img id="pzi" src="picture.webp" alt="Shri Ganesha, Sankashti Chaturthi" width="941" height="940" draggable="false">
   <button type="button" id="pzx" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <div id="pzh" aria-hidden="true"></div>
 </div>
