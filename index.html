@@ -3984,80 +3984,6 @@ h2[tabindex="-1"]:focus {
 #asc .asx:lang(mr) {
   font-family: var(--body);
 }
-/* Prev / Next name the piece they go to: a small label over the name (asLabel) */
-#asc .asx {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2px;
-  height: 44px;
-  min-width: 0;
-  max-width: 46%;
-  padding: 0 12px;
-  overflow: hidden;
-}
-#asn {
-  align-items: flex-end !important;
-  text-align: right;
-}
-#asc .asx small {
-  font-size: 15px;
-  line-height: 1;
-}
-#asc .asx.asnm small {
-  font: 600 11px/1 var(--lat);
-  letter-spacing: 0.04em;
-  color: var(--muted);
-}
-#asc .asx.asnm small:lang(mr) {
-  font-family: var(--body);
-  letter-spacing: 0;
-}
-#asc .asx b {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font: 500 15px/1.25 var(--body);
-  color: var(--accent);
-}
-#asc .asx b:lang(en) {
-  font-family: var(--lat);
-}
-/* phones: Prev is just "‹ Prev", Next takes the rest of the bar */
-@media (max-width: 699px) {
-  #asv b {
-    display: none;
-  }
-  #asv.asnm small {
-    font: 600 15px/1 var(--lat);
-    letter-spacing: 0;
-    color: inherit;
-  }
-  #asv.asnm small:lang(mr) {
-    font-family: var(--body);
-  }
-  #asn {
-    flex: 1 1 auto;
-    max-width: none;
-    padding: 0 10px;
-  }
-}
-#asc .asx.w2 small {
-  display: none;
-}
-#asc .asx.w2 b {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  white-space: normal;
-  font-size: 14px;
-  line-height: 1.2;
-}
-#asn.w2 b::after {
-  content: " ›";
-}
 #asc .asx:disabled {
   opacity: 0.4;
   cursor: default;
@@ -6570,7 +6496,7 @@ h2[tabindex="-1"]:focus {
       <li><b>More room to read:</b> on phones and tablets, the top and bottom bars slide away as you scroll down, leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
-      <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces and show their names (on phones only Next shows its name; on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
+      <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -8469,54 +8395,10 @@ h2[tabindex="-1"]:focus {
       var b = document.getElementById(x[0]),
         a = c ? c.querySelector(".pn " + x[3]) : x[3] === ".next" && !document.getElementById("p1").hidden ? secs[0] : null,
         t = a && a.querySelector(mr ? ":scope > .mr" : ":scope > .en");
-      // a small "‹ Prev" / "Next ›" over the name of that piece, with its number, in the text language
-      // (on phones Prev keeps just its label, so Next has room for the name; CSS)
-      var tl = P.lang === "en" ? "en" : "mr",
-        isS = a && a.tagName === "SECTION", // from the home page, Next is the first piece itself
-        g = isS ? a : a && document.getElementById(a.getAttribute("data-go")),
-        no = g && g.querySelector("header .no " + (tl === "en" ? ".ne" : ".nm")),
-        nm = g && g.querySelector("header h2 > ." + tl),
-        lb = mr ? x[1] : x[2];
-      var key = lb + "|" + (nm ? (no ? no.textContent : "") + nm.textContent : "") + "|" + innerWidth + "|" + (asLabel.fl || 0);
-      b.disabled = !a;
-      if (b._k === key) return; // unchanged: skip the rebuild and the measuring below
-      b._k = b.offsetWidth ? key : "";
-      b.textContent = "";
+      b.textContent = mr ? x[1] : x[2];
       b.lang = mr ? "mr" : "en";
-      var sm = document.createElement("small");
-      sm.textContent = lb;
-      b.appendChild(sm);
-      var bn = null;
-      if (nm) {
-        bn = document.createElement("b");
-        bn.lang = tl;
-        bn.textContent = (no ? no.textContent + " " : "") + nm.textContent;
-        b.appendChild(bn);
-      }
-      b.classList.toggle("asnm", !!nm);
-      if (!t && g) t = g.querySelector("header h2 > " + (mr ? ".mr" : ".en"));
-      b.setAttribute("aria-label", lb.replace(/[‹›]/g, "").trim() + (t ? ": " + t.textContent : ""));
-      // a long name on a narrow phone steps down to 13px; if it still doesn't fit, the small label goes
-      // and the name takes two lines ("w2"), cut short with "…" only if even that is too little
-      b.classList.remove("w2");
-      if (bn && b.offsetWidth) {
-        // the name is as wide as the room it has (scrollWidth is rounded, so allow a pixel) when it overflows
-        var bs = getComputedStyle(b),
-          room = b.clientWidth - parseFloat(bs.paddingLeft) - parseFloat(bs.paddingRight) - 1,
-          over = function () {
-            return bn.scrollWidth >= room;
-          };
-        for (var fz = 15; fz > 13 && over(); fz--) bn.style.fontSize = fz - 1 + "px";
-        if (over()) {
-          b.classList.add("w2");
-          bn.style.fontSize = "";
-          // one long word can't wrap: back to one line at 13px
-          if (bn.scrollWidth > bn.clientWidth + 1 || bn.scrollHeight > bn.clientHeight + 8) {
-            b.classList.remove("w2");
-            bn.style.fontSize = "13px";
-          }
-        }
-      }
+      b.setAttribute("aria-label", (mr ? x[1] : x[2]).replace(/[‹›]/g, "").trim() + (t ? ": " + t.textContent : ""));
+      b.disabled = !a;
     });
     document.getElementById("ash").setAttribute("aria-label", mr ? "मुख्य पान: अनुक्रमणिका" : "Home: contents");
     document.getElementById("asq").setAttribute("aria-label", mr ? "अनुक्रमणिका आणि शोध" : "Contents and search");
@@ -8890,16 +8772,6 @@ h2[tabindex="-1"]:focus {
   });
   document.addEventListener("focusin", function (e) {
     if (e.target.closest && e.target.closest(".bar, #asc")) tuck(false);
-  });
-  // the piece names in Prev / Next are fitted to the button: again once the fonts arrive and on resize
-  if (document.fonts && document.fonts.addEventListener)
-    document.fonts.addEventListener("loadingdone", function () {
-      asLabel.fl = (asLabel.fl || 0) + 1;
-      asLabel();
-    });
-  addEventListener("resize", function () {
-    clearTimeout(asLabel.tm);
-    asLabel.tm = setTimeout(asLabel, 150);
   });
 
   // Highlight the current piece in the menus; update the progress line
