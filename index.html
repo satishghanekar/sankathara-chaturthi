@@ -51,79 +51,106 @@
   <ul id="res"></ul>
   <ul id="jl"></ul>
 </div>
-<!-- ==== Settings panel ==== -->
-<div class="panel" id="panel" hidden role="dialog" aria-label="Settings" tabindex="-1">
-  <div class="phd">
-    <b><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span><span id="ver" lang="en"></span></b>
-    <!-- App (hidden once installed) and Help sit in the header, so they are always in view -->
-    <div id="shr2">
-    <button type="button" id="inb2" aria-label="Add to Home Screen" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7"/><path d="M9 11l3 3 3-3"/><path d="M10.5 18.5h3"/></svg><span class="mr">ॲप</span><span class="en" lang="en">App</span></button>
-    <button type="button" id="hlp2" aria-label="Help and how to use"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
+<!-- ==== Settings page: opened by the ⚙ button, it covers the whole page until Back (or the phone's Back) closes it.
+     Groups of rows in rounded cards (Languages, Reading, Screen, About), like phone settings; picking the main or
+     second language opens its own page (#sp-lang) inside it ==== -->
+<div class="sp" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="spt" tabindex="-1">
+  <div class="sp-pg" id="sp-home">
+    <div class="sp-hd">
+      <button type="button" class="sp-bk" id="xc"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">मागे</span><span class="en" lang="en">Back</span></button>
+      <h2 id="spt"><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></h2>
     </div>
-    <button type="button" class="xc" id="xc" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-  </div>
-  <!-- Settings look like phone settings: two rounded cards, label on the left, a small sliding control on the right -->
-  <div class="sgrp">
-  <div class="row">
-    <label><span class="mr">मेनूची भाषा</span><span class="en" lang="en">Menu language</span></label>
-    <div class="seg" id="su" role="group" aria-label="Menu language">
-      <button type="button" data-v="en" lang="en">English</button>
-      <button type="button" data-v="mr" lang="mr">मराठी</button>
+    <div class="sp-body">
+      <h3 class="sp-h"><span class="mr">भाषा</span><span class="en" lang="en">Languages</span></h3>
+      <div class="sp-card">
+        <button type="button" class="sp-row sp-go" id="sl1"><span class="sp-l"><span class="mr">मुख्य भाषा</span><span class="en" lang="en">Main language</span><small><span class="mr">मोठ्या अक्षरांत</span><span class="en" lang="en">Large text</span></small></span><span class="sp-v" id="sl1v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button type="button" class="sp-row sp-go" id="sl2"><span class="sp-l"><span class="mr">दुसरी भाषा</span><span class="en" lang="en">Second language</span><small><span class="mr">लहान, प्रत्येक ओळीखाली</span><span class="en" lang="en">Smaller, under each line</span></small></span><span class="sp-v" id="sl2v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="sp-row" id="surow">
+          <span class="sp-l"><span class="mr">मेनू आणि बटणे</span><span class="en" lang="en">Menus and buttons</span></span>
+          <div class="sp-seg" id="su" role="group" aria-label="Menus and buttons">
+            <button type="button" data-v="en" lang="en">English</button>
+            <button type="button" data-v="mr" lang="mr">मराठी</button>
+          </div>
+        </div>
+      </div>
+      <!-- a few lines of the Ganapati aarti, as the pieces will show them (filled in by the script) -->
+      <div class="sp-prev" id="sprev" aria-hidden="true"></div>
+      <h3 class="sp-h"><span class="mr">वाचन</span><span class="en" lang="en">Reading</span></h3>
+      <div class="sp-card">
+        <div class="sp-row">
+          <span class="sp-l"><span class="mr">अक्षरांचा आकार</span><span class="en" lang="en">Text size</span></span>
+          <div class="sp-seg sp-sz" role="group" aria-label="Text size">
+            <button id="sm" type="button" aria-label="Smaller">A−</button>
+            <button id="lg" type="button" aria-label="Larger">A+</button>
+            <button id="sr" type="button" aria-label="Reset text size"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+          </div>
+        </div>
+        <div class="sp-row sp-stk">
+          <span class="sp-l"><span class="mr">अक्षरशैली</span><span class="en" lang="en">Text font</span></span>
+          <div class="sp-seg" id="sfn" role="group" aria-label="Text font">
+            <button type="button" data-v="std"><span class="mr">नेहमीची</span><span class="en" lang="en">Standard</span></button>
+            <button type="button" data-v="classic"><span class="mr">पारंपरिक</span><span class="en" lang="en">Classic</span></button>
+            <button type="button" data-v="bold"><span class="mr">ठळक</span><span class="en" lang="en">Bold</span></button>
+            <button type="button" data-v="hand"><span class="mr">हस्तलिखित</span><span class="en" lang="en">Handwritten</span></button>
+          </div>
+        </div>
+        <div class="sp-row sp-stk" id="strow">
+          <span class="sp-l"><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English spelling</span></span>
+          <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
+          <div class="sp-seg" id="str" role="group" aria-label="English spelling">
+            <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
+            <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
+          </div>
+        </div>
+        <div class="sp-row">
+          <span class="sp-l"><span class="mr">ध्रुपद</span><span class="en" lang="en">Dhrupad</span></span>
+          <div class="sp-seg" id="srf" role="group" aria-label="Dhrupad">
+            <button type="button" data-v="1"><span class="mr">एकदा</span><span class="en" lang="en">Once</span></button>
+            <button type="button" data-v="0"><span class="mr">प्रत्येक कडव्यानंतर</span><span class="en" lang="en">Every verse</span></button>
+          </div>
+        </div>
+        <div class="sp-row" id="colrow">
+          <span class="sp-l"><span class="mr">मांडणी</span><span class="en" lang="en">Layout</span></span>
+          <div class="sp-seg" id="sc" role="group" aria-label="Layout">
+            <button type="button" data-v="1"><span class="mr">१ स्तंभ</span><span class="en" lang="en">1 column</span></button>
+            <button type="button" data-v="2"><span class="mr">२ स्तंभ</span><span class="en" lang="en">2 columns</span></button>
+          </div>
+        </div>
+      </div>
+      <h3 class="sp-h"><span class="mr">स्क्रीन</span><span class="en" lang="en">Screen</span></h3>
+      <div class="sp-card">
+        <div class="sp-row sp-stk">
+          <span class="sp-l"><span class="mr">रंगसंगती</span><span class="en" lang="en">Theme</span></span>
+          <div class="sp-seg" id="st" role="group" aria-label="Theme">
+            <button type="button" data-v="auto"><span class="mr">आपोआप</span><span class="en" lang="en">Auto</span></button>
+            <button type="button" data-v="light"><span class="mr">फिकट</span><span class="en" lang="en">Light</span></button>
+            <button type="button" data-v="sepia"><span class="mr">सेपिया</span><span class="en" lang="en">Sepia</span></button>
+            <button type="button" data-v="dark"><span class="mr">गडद</span><span class="en" lang="en">Dark</span></button>
+          </div>
+        </div>
+        <button id="tc" class="sp-row sp-sw" type="button"><span class="sp-l"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></span></button>
+        <button id="tw" class="sp-row sp-sw" type="button"><span class="sp-l"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></span></button>
+        <button id="tas" class="sp-row sp-sw" type="button" data-feat="as" hidden><span class="sp-l"><span class="mr">आपोआप पुढे सरकवा</span><span class="en" lang="en">Autoscroll</span></span></button>
+      </div>
+      <h3 class="sp-h"><span class="mr">माहिती</span><span class="en" lang="en">About</span></h3>
+      <div class="sp-card">
+        <button type="button" class="sp-row sp-go" id="hlp2"><span class="sp-l"><span class="mr">मदत आणि वापर</span><span class="en" lang="en">Help and how to use</span></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <button type="button" class="sp-row sp-go" id="inb2" hidden><span class="sp-l"><span class="mr">होम स्क्रीनवर ठेवा</span><span class="en" lang="en">Add to Home Screen</span></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="sp-row"><span class="sp-l"><span class="mr">आवृत्ती</span><span class="en" lang="en">Version</span></span><span class="sp-v" id="ver" lang="en"></span></div>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <label><span class="mr">दोन्ही भाषांत आधी</span><span class="en" lang="en">In Both, show first</span></label>
-    <div class="seg" id="sld" role="group" aria-label="In Both, show first">
-      <button type="button" data-v="mr" lang="mr">मराठी</button>
-      <button type="button" data-v="en" lang="en">English</button>
+  <!-- Main or second language: one row per language, each in its own script (built by the script) -->
+  <div class="sp-pg" id="sp-lang" hidden>
+    <div class="sp-hd">
+      <button type="button" class="sp-bk" id="splb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></button>
+      <h2 id="splt"></h2>
     </div>
-  </div>
-  <div class="row">
-    <label><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English style</span></label>
-    <div class="seg" id="str" role="group" aria-label="English style">
-      <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
-      <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
-      <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
+    <div class="sp-body">
+      <p class="sp-note" id="spln"></p>
+      <div class="sp-card" id="spll" role="radiogroup" aria-labelledby="splt"></div>
+      <p class="sp-note"><span class="mr">मेनूसाठी इंग्रजी नेहमी उपलब्ध आहे; दुसरा पर्याय तुमची मुख्य भाषा.</span><span class="en" lang="en">Menus can always be in English; the other choice is your main language.</span></p>
     </div>
-  </div>
-  <div class="row stk">
-    <label><span class="mr">अक्षरशैली</span><span class="en" lang="en">Text font</span></label>
-    <div class="seg" id="sfn" role="group" aria-label="Text font">
-      <button type="button" data-v="std"><span class="mr">नेहमीची</span><span class="en" lang="en">Standard</span></button>
-      <button type="button" data-v="classic"><span class="mr">पारंपरिक</span><span class="en" lang="en">Classic</span></button>
-      <button type="button" data-v="bold"><span class="mr">ठळक</span><span class="en" lang="en">Bold</span></button>
-      <button type="button" data-v="hand"><span class="mr">हस्तलिखित</span><span class="en" lang="en">Handwritten</span></button>
-    </div>
-  </div>
-  <div class="row" id="colrow">
-    <label><span class="mr">मांडणी</span><span class="en" lang="en">Layout</span></label>
-    <div class="seg" id="sc" role="group" aria-label="Layout">
-      <button type="button" data-v="1"><span class="mr">१ स्तंभ</span><span class="en" lang="en">1 column</span></button>
-      <button type="button" data-v="2"><span class="mr">२ स्तंभ</span><span class="en" lang="en">2 columns</span></button>
-    </div>
-  </div>
-  <div class="row">
-    <label><span class="mr">अक्षरांचा आकार</span><span class="en" lang="en">Text size</span></label>
-    <div class="sz" role="group" aria-label="Text size">
-      <button id="sm" type="button" aria-label="Smaller">A−</button>
-      <button id="lg" type="button" aria-label="Larger">A+</button>
-      <button id="sr" type="button" aria-label="Reset text size"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
-    </div>
-  </div>
-  <div class="row">
-    <label><span class="mr">रंगसंगती</span><span class="en" lang="en">Theme</span></label>
-    <div class="seg" id="st" role="group" aria-label="Theme">
-      <button type="button" data-v="auto"><span class="mr">आपोआप</span><span class="en" lang="en">Auto</span></button>
-      <button type="button" data-v="light"><span class="mr">फिकट</span><span class="en" lang="en">Light</span></button>
-      <button type="button" data-v="sepia"><span class="mr">सेपिया</span><span class="en" lang="en">Sepia</span></button>
-      <button type="button" data-v="dark"><span class="mr">गडद</span><span class="en" lang="en">Dark</span></button>
-    </div>
-  </div>
-  </div>
-  <div class="sgrp">
-    <button id="tc" class="sw" type="button"><span class="mr">अधिक ठळक</span><span class="en" lang="en">High contrast</span></button>
-    <div id="wrow"><button id="tw" class="sw" type="button"><span class="mr">स्क्रीन चालू ठेवा</span><span class="en" lang="en">Keep screen on</span></button></div>
-    <button id="tas" class="sw" type="button" data-feat="as" hidden><span class="mr">आपोआप पुढे सरकवा</span><span class="en" lang="en">Autoscroll</span></button>
   </div>
 </div>
 <!-- ==== Left menu on wide screens (filled in by the script); placed here so keyboard users reach it before the page ==== -->
@@ -231,7 +258,7 @@
     <p class="hlead">This site has the texts we recite at the Sankashti Chaturthi pooja: the Ganapati Atharvashirsha and the aartis, in Marathi with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
     <h3>Put it on your phone</h3>
-    <p>Tap <b>App</b> (phone with an arrow) in the row of buttons on the home page, or at the bottom of Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
+    <p>Tap <b>App</b> (phone with an arrow) in the row of buttons on the home page, or <b>Add to Home Screen</b> under About in Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
     <h4>iPhone (Safari or Chrome)</h4>
     <ol>
       <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp, Mail or Messages, tap the compass or ⋯ icon to open it in Safari first; those built-in viewers don't have the option.</li>
@@ -279,25 +306,30 @@
     <ul>
       <li><b>Home</b> (Ganesha and title): back to the start. While you read, the title shows the piece on screen (for example <i lang="mr">५. दत्ताची आरती</i>).</li>
       <li><b>Contents and search</b> (lines with a magnifier): jump to any aarti, or type a few letters of a line in Marathi or English to find it. Plain letters are enough, and spelling is forgiving: <i>sukhakarta</i>, <i>ganpati</i> and <i>vithal</i> find <i>sukhakartā</i>, <i>Ganapati</i> and <i>Vitthal</i>. The matching words are shown in bold; tap a result to go to that line. On a computer you can type straight away, and use ↑ ↓ and Enter.</li>
-      <li><b>अ/A</b> (language): switches the aarti text between Marathi, English, and both together.</li>
+      <li><b>अ/A</b> (language): switches the aarti text between your main language, your second language, and both together (pick them in Settings). With no second language, it opens the page to pick one.</li>
       <li><b>धृ</b> (dhrupad): show the refrain once at the top, or repeated after every stanza. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain for a few seconds.</li>
-      <li><b>⚙ Settings:</b> menu language, English style, text font, text size, theme, high contrast, keeping the screen on, and one or two columns on wide screens. See below.</li>
+      <li><b>⚙ Settings:</b> opens as its own page, over the reading page; <b>‹ Back</b> (or your phone's Back) returns you to where you were. See below.</li>
     </ul>
 
     <h3>Settings</h3>
+    <p>Settings is in four groups: Languages, Reading, Screen and About.</p>
     <ul>
-      <li><b>Menu language:</b> English or <span lang="mr">मराठी</span> for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
-      <li><b>In Both, show first:</b> when the अ/A button shows both languages, whether each stanza starts with the Marathi lines (English smaller under them) or with the English lines (Marathi smaller under them). The अ/A icon shows which comes first.</li>
-      <li><b>English style:</b> how the English lines and the titles of the pieces are spelled.
+      <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written) or English (in English letters). Tap it to pick.</li>
+      <li><b>Second language:</b> shown smaller, under each line, when the अ/A button shows both. Pick the other language, or <b>None</b> to read in one language only. Choosing English as the main language makes Marathi the second, and the other way round.</li>
+      <li><b>Menus and buttons:</b> English or your main language, for the date card, buttons and settings. With English as the main language, menus are in English.</li>
+      <li><b>Preview:</b> the first lines of the Ganapati aarti, as your choices will show them.</li>
+      <li><b>English spelling:</b> (shown when English is one of your languages) how the English lines and the titles of the pieces are spelled.
         <ul>
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
         </ul>
         It changes straight away and keeps your place.</li>
       <li><b>Text font:</b> how the aartis look. <b>Standard</b> (clean, already on your phone), <b>Classic</b> (book style, like a printed pothi), <b>Bold</b> (strong strokes, good in low light) or <b>Handwritten</b>. A new font downloads once when you pick it and then works offline. The Atharvashirsha keeps its Sanskrit lettering. Printing uses the same font.</li>
-      <li><b>Text size</b> (A− / A+ / ↺ to reset) and <b>Theme</b> (Auto, Light, Sepia, Dark).</li>
+      <li><b>Text size</b> (A− / A+ / ↺ to reset).</li>
+      <li><b>Dhrupad:</b> the refrain once at the top, or after every verse (the same as the धृ button).</li>
+      <li><b>Theme</b> (Auto, Light, Sepia, Dark).</li>
       <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
-      <li>At the top, beside the title: the version number (v1.0), <b>App</b> (until it is installed), <b>Help</b>, and ✕ to close Settings.</li>
+      <li><b>About:</b> this Help, <b>Add to Home Screen</b> (until the site is installed) and the version number (v1.0).</li>
       <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
     </ul>
 
