@@ -1654,20 +1654,17 @@
     aa = document.getElementById("aa"),
     jp = document.getElementById("jump"),
     hb = document.getElementById("home-btn");
-  // The languages a piece can be read in: n is the name in its own script, d what it is (in each menu language)
+  // The languages a piece can be read in: n is the name in its own script
   var LANGS = {
-    mr: { n: "मराठी", g: "अ", d: { mr: "मूळ मजकूर, जसा लिहिला आहे", en: "Marathi · the text as written" } },
-    en: { n: "English", g: "A", d: { mr: "इंग्रजी अक्षरांत · Sukhkarta", en: "In English letters · Sukhkarta" } },
-    kn: { n: "ಕನ್ನಡ", g: "ಕ", d: { mr: "कन्नड अक्षरांत · ಸುಖಕರ್ತಾ", en: "In Kannada letters · ಸುಖಕರ್ತಾ" } },
+    mr: { n: "मराठी" },
+    en: { n: "English" },
+    kn: { n: "ಕನ್ನಡ" },
   };
   // The page has two places for text: the original ("mr", which shows Marathi or, in Kannada letters, Kannada)
   // and English ("en"). P.lead, P.l2 and P.lang name the place; LK gives the language in it.
   function LK(slot) {
     return slot === "mr" ? P.ind : slot;
   }
-  var spH = document.getElementById("sp-home"),
-    spL = document.getElementById("sp-lang"),
-    spW = 0; // which language the sub-page picks: 1 main, 2 second
   // The piece being read: the last one whose top has passed just under the top bar
   function cur() {
     var c = null,
@@ -2552,9 +2549,6 @@
     [].forEach.call(document.querySelectorAll("#su button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
     });
-    [].forEach.call(document.querySelectorAll("#str button"), function (b) {
-      b.setAttribute("aria-pressed", String(b.dataset.v === P.tr));
-    });
     if (["std", "classic", "bold", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
     root.setAttribute("data-font", P.fnt);
     [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
@@ -2653,9 +2647,9 @@
     apply();
     refit();
   };
-  // English style: switched in place (lines, titles, search list), then the text size is fitted again
-  document.getElementById("str").onclick = function (e) {
-    var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
+  // English style (picked with English in the language lists): switched in place (lines, titles, search list),
+  // then the text size is fitted again
+  function trPick(v) {
     if (v && v !== P.tr) {
       P.tr = v;
       save();
@@ -2685,7 +2679,7 @@
       }
       apply();
     }
-  };
+  }
   document.getElementById("su").onclick = function (e) {
     var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
     if (v) {
@@ -2804,9 +2798,6 @@
   function setP(o) {
     if (o) ovPush();
     ovFocus(pn, o);
-    var sub = !spL.hidden;
-    spL.hidden = true;
-    spH.hidden = false;
     pn.hidden = !o;
     if (o) spSet();
     // the Settings page covers the whole page; the page under it doesn't scroll
@@ -2818,11 +2809,7 @@
     }
     aa.setAttribute("aria-expanded", String(o));
     if (o) setJ(false);
-    // closed from the language sub-page: take both its Back steps off
-    else if (sub && NAV && hs().sub && !popSkip && !ovOpen()) {
-      popSkip++;
-      history.go(-2);
-    } else ovDone();
+    else ovDone();
   }
   function setJ(o) {
     if (o) ovPush();
@@ -2919,11 +2906,6 @@
     else jumpTo(goHome, location.pathname);
   }
   addEventListener("popstate", function (e) {
-    // Back from the language sub-page returns to Settings
-    if (!pn.hidden && !spL.hidden && !popSkip && e.state && e.state.ov && !e.state.sub) {
-      spSub(0);
-      return;
-    }
     var was = ovOpen();
     setP(false);
     setJ(false);
@@ -2946,7 +2928,7 @@
   // Switching between Marathi and Kannada letters reloads the page. Settings' Back steps are taken off first (a
   // reload keeps them, and Back would then land on a step whose panel is gone), and Settings opens again after.
   function spReload() {
-    var n = NAV ? (hs().sub ? 2 : hs().ov ? 1 : 0) : 0;
+    var n = NAV && hs().ov ? 1 : 0;
     try {
       sessionStorage.setItem("aarti-sp", "1");
     } catch (e) {}
@@ -3051,11 +3033,11 @@
     setP(pn.hidden);
   };
   // Language button cycles main → second → both (only the two chosen languages ever show). With no second
-  // language chosen it opens the page to pick one.
+  // language chosen it opens Settings at the second language's list.
   hb.onclick = function () {
     if (!P.l2) {
       setP(true);
-      spSub(2);
+      document.getElementById("sl2s").focus();
       return;
     }
     var c = cur(),
@@ -3074,15 +3056,23 @@
     var mr = P.ui === "mr",
       v1 = document.getElementById("sl1v"),
       v2 = document.getElementById("sl2v");
-    v1.textContent = LANGS[LK(P.lead)].n;
+    var k1 = spKey(P.lead),
+      k2 = P.l2 ? spKey(P.l2) : "";
+    v1.textContent = spName(k1);
     v1.lang = LK(P.lead);
-    v2.textContent = P.l2 ? LANGS[LK(P.l2)].n : mr ? "काहीही नाही" : "None";
+    v2.textContent = spName(k2);
     v2.lang = P.l2 ? LK(P.l2) : P.ui;
+    spOpts(document.getElementById("sl1s"), PICK, k1, function () {
+      return false;
+    });
+    // the second language can't be the main one, nor (for now) a second Indian language beside it
+    spOpts(document.getElementById("sl2s"), PICK.concat([""]), k2, function (k) {
+      var l = k.split(":")[0];
+      return l === LK(P.lead) || (l !== "en" && k && P.lead !== "en");
+    });
     // menus are in English or the main language, so with English as the main language there is nothing to pick
     // (nor with Kannada, which has no menus of its own yet)
     document.getElementById("surow").hidden = LK(P.lead) !== "mr";
-    // the English spelling matters only when English is one of the two languages
-    document.getElementById("stcard").hidden = P.lead !== "en" && P.l2 !== "en";
     [].forEach.call(document.querySelectorAll("#srf button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === String(P.ref)));
     });
@@ -3113,78 +3103,38 @@
     if (ld) root.setAttribute("data-lead", ld);
     else root.removeAttribute("data-lead");
     document.getElementById("sprev").innerHTML = h;
-    document.getElementById("sprev2").innerHTML = h;
-    if (!spL.hidden) spList();
   }
-  // The language sub-page: one row per language (and "None" for the second language)
-  function spList() {
-    var mr = P.ui === "mr",
-      cur = spW === 1 ? LK(P.lead) : P.l2 && LK(P.l2),
-      ks = Object.keys(LANGS).concat(spW === 2 ? [""] : []);
-    document.getElementById("splt").textContent = spW === 1 ? (mr ? "मुख्य भाषा" : "Main language") : mr ? "दुसरी भाषा" : "Second language";
-    document.getElementById("spln").textContent =
-      spW === 1
-        ? mr
-          ? "तुम्ही वाचता ती भाषा, मोठ्या अक्षरांत."
-          : "The language you read in, at full size."
-        : mr
-          ? "प्रत्येक ओळीखाली लहान अक्षरांत दाखवली जाणारी भाषा."
-          : "Shown smaller, under each line.";
-    document.getElementById("spll").innerHTML = ks
+  // The language lists: each language once, English twice (one per spelling), and None for the second language.
+  // A pick is "mr", "kn", "en:simple" or "en:iast".
+  var PICK = ["mr", "en:simple", "en:iast", "kn"];
+  function spKey(slot) {
+    return LK(slot) === "en" ? "en:" + P.tr : LK(slot);
+  }
+  function spName(k) {
+    if (!k) return P.ui === "mr" ? "काहीही नाही" : "None";
+    var l = k.split(":");
+    return LANGS[l[0]].n + (l[1] ? " · " + (l[1] === "iast" ? "sukhakartā" : "Sukhkarta") : "");
+  }
+  function spOpts(sel, ks, cur, off) {
+    sel.innerHTML = ks
       .map(function (k) {
-        var L = LANGS[k],
-          // the second language can't be the main one, nor (for now) a second Indian language beside it
-          main = spW === 2 && k === LK(P.lead),
-          pair = spW === 2 && !main && k !== "en" && k && P.lead !== "en",
-          dis = main || pair;
-        return (
-          '<button type="button" class="sp-row sp-lg" role="radio" data-v="' + k + '" aria-checked="' + (k === cur) + '"' + (dis ? " disabled" : "") + ">" +
-          '<span class="sp-gl" aria-hidden="true"' + (L ? ' lang="' + k + '"' : "") + ">" + (L ? L.g : "–") + "</span>" +
-          '<span class="sp-l">' + (L ? '<span lang="' + k + '">' + L.n + "</span><small>" + (main ? (mr ? "मुख्य भाषा आहे" : "Your main language") : pair ? (mr ? "मुख्य भाषा इंग्रजी असताना" : "Only with English as the main language") : L.d[P.ui]) + "</small>" : mr ? "काहीही नाही" : "None") + "</span>" +
-          '<span class="sp-rd" aria-hidden="true"></span></button>'
-        );
+        return '<option value="' + k + '"' + (k === cur ? " selected" : "") + (off(k) ? " disabled" : "") + ">" + spName(k) + "</option>";
       })
       .join("");
+    sel.value = cur;
   }
-  // Open (1: main, 2: second) or close (0) the language sub-page. It adds a Back step, so the phone's Back
-  // returns to Settings.
-  function spSub(w) {
-    spW = w;
-    if (w && spL.hidden && NAV && hs().ov) {
-      try {
-        history.pushState({ ov: 1, sub: 1, y: hs().y }, "", location.href);
-      } catch (e) {}
-    }
-    spL.hidden = !w;
-    spH.hidden = !!w;
-    pn.scrollTop = 0;
-    if (w) {
-      spList();
-      document.getElementById("splb").focus({ preventScroll: true });
-    } else document.getElementById(spW === 2 ? "sl2" : "sl1").focus({ preventScroll: true });
-  }
-  document.getElementById("sl1").onclick = function () {
-    spSub(1);
-  };
-  document.getElementById("sl2").onclick = function () {
-    spSub(2);
-  };
-  document.getElementById("splb").onclick = function () {
-    if (NAV && hs().sub) history.back();
-    else spSub(0);
-  };
-  document.getElementById("spll").onclick = function (e) {
-    var b = e.target.closest("button");
-    if (!b || b.disabled) return;
-    var v = b.dataset.v,
-      c = cur(),
+  // w: 1 main, 2 second
+  function spPick(w, k) {
+    var c = cur(),
       // keep showing the same thing: the main language, the second, or both
-      role = P.lang === "both" ? 3 : P.lang === P.lead ? 1 : 2;
+      role = P.lang === "both" ? 3 : P.lang === P.lead ? 1 : 2,
+      l = k.split(":"),
+      v = l[0];
+    if (l[1] && l[1] !== P.tr) trPick(l[1]);
     // Marathi and Kannada share the original's place: switching between them rewrites the text, so the page reloads
     var ind = v === "en" || !v ? P.ind : v;
     v = v === "en" || !v ? v : "mr";
-    if (spW === 1) {
-      if (v === P.lead && ind === P.ind) return;
+    if (w === 1) {
       if (v === P.l2) P.l2 = P.lead;
       P.lead = v;
     } else P.l2 = v;
@@ -3199,6 +3149,12 @@
     apply();
     save();
     if (c) c.scrollIntoView();
+  }
+  document.getElementById("sl1s").onchange = function () {
+    spPick(1, this.value);
+  };
+  document.getElementById("sl2s").onchange = function () {
+    spPick(2, this.value);
   };
   document.getElementById("srf").onclick = function (e) {
     var b = e.target.closest("button");

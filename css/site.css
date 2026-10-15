@@ -4819,13 +4819,27 @@ html[data-sp] {
   flex: none;
   color: var(--muted);
 }
-.sp .sp-go:active,
-.sp .sp-lg:active {
+.sp .sp-go:active {
   background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
-.sp button:focus-visible {
+.sp button:focus-visible,
+.sp .sp-pick:has(select:focus-visible) {
   outline: 3px solid var(--accent);
   outline-offset: -3px;
+}
+/* language rows: the phone's own dropdown, invisible over the whole row, so a tap anywhere opens it */
+.sp .sp-pick {
+  position: relative;
+  cursor: pointer;
+}
+.sp-pick select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-size: 16px; /* iPhone zooms into a select under 16px */
+  cursor: pointer;
 }
 /* segmented controls: a soft track with the chosen option raised */
 .sp-seg {
@@ -4917,10 +4931,6 @@ html[data-sp] {
 .sp-prev p {
   margin: 0;
 }
-/* on the language page the preview sits between the list and the English spelling */
-#sprev2 {
-  margin-bottom: 12px;
-}
 /* Check for updates: "Checking…", then "Up to date" in green, or "No internet" in amber */
 .sp #upd[data-s="ok"] #updv {
   color: var(--ok);
@@ -4949,56 +4959,6 @@ html[data-sp] {
 }
 .sp-p1[lang="en"] {
   font-size: 17px;
-}
-/* language rows: the letter, the name in its own script and what it is, and a round mark */
-.sp .sp-lg {
-  min-height: 64px;
-  gap: 12px;
-}
-.sp .sp-lg[disabled] {
-  opacity: 0.5;
-}
-.sp-gl {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  border: 1px solid var(--rule);
-  background: var(--bg);
-  color: var(--accent);
-  font: 600 19px/1 var(--body);
-}
-.sp-gl[lang="en"] {
-  font-family: var(--lat);
-}
-.sp-lg .sp-l > span {
-  font-size: 17px;
-}
-.sp-rd {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 2px solid var(--rule);
-}
-.sp-lg[aria-checked="true"] .sp-rd {
-  border: 7px solid var(--accent);
-}
-.sp-lg[aria-checked="true"] .sp-gl {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg);
-}
-.sp-note {
-  margin: 14px 6px 10px;
-  font-size: 13.5px;
-  color: var(--muted);
-}
-.sp-note .mr,
-.sp-note[lang="mr"] {
-  font-family: var(--body);
 }
 /* the maker's name and email, quiet, under About */
 .sp-by {
