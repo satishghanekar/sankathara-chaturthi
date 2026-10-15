@@ -219,7 +219,8 @@ test("reopens where the reader was (within 12 hours)", async ({ page }) => {
 
 // Pinch: on the verses it resizes the text (the page itself doesn't zoom); on the home card, Settings and
 // the pop-ups it is the browser's own zoom, for readers who need to magnify those.
-test.describe("pinch", () => {
+// Chromium only: Firefox has no mobile emulation and desktop WebKit cannot create Touch objects
+test.describe("pinch @chromium-only", () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
   // fires a two-finger touchstart on the element and reports whether the site stopped the browser's zoom
   const pinchStart = (page, selector) =>
@@ -234,13 +235,11 @@ test.describe("pinch", () => {
       return ev.defaultPrevented;
     });
 
-  test("on a verse it resizes the text instead of zooming", async ({ page, browserName }) => {
-    test.skip(browserName === "firefox", "no touch events");
+  test("on a verse it resizes the text instead of zooming", async ({ page }) => {
     await openSite(page, SETUPS.marathi);
     expect(await pinchStart(page, "#a1 .items .verse p")).toBe(true);
   });
-  test("on the home card, Settings and Help the page zooms as usual", async ({ page, browserName }) => {
-    test.skip(browserName === "firefox", "no touch events");
+  test("on the home card, Settings and Help the page zooms as usual", async ({ page }) => {
     await openSite(page, SETUPS.marathi);
     expect(await pinchStart(page, "#home .top .hero")).toBe(false);
     await page.locator("#aa").click();

@@ -128,4 +128,7 @@ export function markerPages(pages) {
 }
 
 /** Text compared without spaces, line breaks or Unicode composition differences. */
-export const squash = (s) => s.normalize("NFC").replace(/[\s​­]+/g, "");
+// Accent marks (Vedic svara marks, macrons below) are dropped before comparing: they come from whichever
+// fallback font the machine has, and PDF text extraction places them differently from one machine to
+// the next. The letters they sit on are still compared.
+export const squash = (s) => s.normalize("NFD").replace(/\p{M}/gu, "").replace(/[\s​­]+/g, "");

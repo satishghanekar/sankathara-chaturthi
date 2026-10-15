@@ -9,7 +9,7 @@
 //   - the page count and contents numbers match the recorded baseline
 // PDFs can only be made by Chromium, so this suite is Chromium-only.
 import { test, expect, devices } from "@playwright/test";
-import { openSite, SETUPS } from "./helpers.mjs";
+import { openSite, SETUPS, SNAP_ENV } from "./helpers.mjs";
 import { stubPrint, printFromButton, readPrintView, addMarkers, pdfPages, markerPages, squash, toInt } from "./print-helpers.mjs";
 
 test.describe.configure({ mode: "parallel" });
@@ -111,7 +111,7 @@ for (const L of LAYOUTS)
       test(`${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
         const r = await runPrint(browser, { prefs: { ...SETUPS[L.setup], fnt }, choice: L.choice, mode: L.mode, ...P });
         const summary = check(r, P.paper);
-        expect(JSON.stringify(summary, null, 1)).toMatchSnapshot(`${L.name}-${fnt}-${P.paper}.json`);
+        expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${L.name}-${fnt}-${P.paper}.json`]);
       });
     }
 
@@ -120,7 +120,7 @@ for (const X of EXTRAS) {
     const paper = X.paper || "Letter";
     const r = await runPrint(browser, { prefs: X.prefs, choice: X.choice, mode: X.mode, paper, locale: X.locale || "en-US" });
     const summary = check(r, paper);
-    expect(JSON.stringify(summary, null, 1)).toMatchSnapshot(`${X.name}.json`);
+    expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
   });
 }
 
@@ -143,7 +143,7 @@ test("browser menu print gives the single-column print view @chromium-only", asy
   const at = markerPages(pdf.pages);
   for (const t of pv.toc) expect(at[t.id + ":0:s"], `${t.id} page`).toBe(toInt(t.page));
   expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-    .toMatchSnapshot("browser-menu.json");
+    .toMatchSnapshot([SNAP_ENV, "browser-menu.json"]);
   // afterprint (fired when page.pdf finished) puts the page back to normal
   expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
   await context.close();
@@ -170,7 +170,7 @@ for (const setup of ["marathi", "english"]) {
     const at = markerPages(pdf.pages);
     expect(Object.keys(at).length).toBe(pv.blocks * 2);
     expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-      .toMatchSnapshot(`safari-table-${setup}.json`);
+      .toMatchSnapshot([SNAP_ENV, `safari-table-${setup}.json`]);
     await context.close();
   });
 }
