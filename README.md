@@ -40,7 +40,9 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 
 | File | What it is |
 |---|---|
-| `index.html` | The whole site: page text, styles (`<style>`) and script (`<script>`) in one file. |
+| `index.html` | The page: home page, styles (`<style>`) and script (`<script>`). |
+| `content/pieces.js` | The text of every piece (Pooja and Aarti): each line in Marathi/Hindi/Sanskrit and in everyday English, titles, author lines. **Edit the texts here.** |
+| `js/render.js` | Builds each piece's HTML from `content/pieces.js` while the page loads. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
 | `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
 | `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png`, `apple-touch-icon.png`, `apple-touch-icon-precomposed.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. The two `apple-touch-icon` files are copies of `icon-180.png` at the site root, where iPhone also looks when it adds the site to the Home Screen. |
@@ -58,7 +60,7 @@ To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankashti
 
 ### Option A: on the GitHub website (no software needed)
 
-1. Open https://github.com/satishghanekar/sankashti-chaturthi and click `index.html`.
+1. Open https://github.com/satishghanekar/sankashti-chaturthi and click `content/pieces.js` to change a piece's text, or `index.html` for anything else.
 2. Click the pencil icon (**Edit this file**).
 3. Use the browser's find (Ctrl+F / ⌘F) to locate the text you want (see *Finding things in index.html* below), and make the change.
 4. If this is a new release, **change the version** (see below). This is a second small edit, in `index.html` and in `sw.js`.
@@ -121,69 +123,63 @@ On GitHub, open **Commits** (the clock icon above the file list) and click the c
 
 1. `<head>`: title, and preloading of the main font files.
 2. `<style>`: all styling, in labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`.
-3. `<body>`: the top bar, the settings panel, then the home page and every piece.
+3. `<body>`: the top bar, the settings panel, then the home page. The pieces themselves are in `content/pieces.js`; a short script at the end of `<main>` has `js/render.js` build them in place while the page loads, so the page is exactly as if they were written there.
 4. `<script>`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of the script lists the sections in order.
 
-Each piece is a `<section>` with an id. Search for the id to jump to it:
+Each piece is an entry in `content/pieces.js` with an id (it becomes a `<section>` with that id on the page). Search that file for the id to jump to it:
 
-| Search for | Piece |
+| Search `content/pieces.js` for | Piece |
 |---|---|
-| `id="p1"` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
-| `id="a1"` | Aarti 1. गणपतीची आरती |
-| `id="a2"` | Aarti 2. गणपति जी की आरती |
-| `id="a3"` | Aarti 3. देवीची आरती |
-| `id="a4"` | Aarti 4. शंकराची आरती |
-| `id="a5"` | Aarti 5. दत्ताची आरती |
-| `id="a6"` | Aarti 6. ज्ञानेश्वरांची आरती |
-| `id="a7"` | Aarti 7. विठ्ठलाची आरती |
-| `id="a8"` | Aarti 8. घालीन लोटांगण |
-| `id="a9"` | Aarti 9. आरती जय गणेश देवा |
-| `id="a10"` | Aarti 10. आरती जय जगदीश हरे |
+| `"id": "p1"` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
+| `"id": "a1"` | Aarti 1. गणपतीची आरती |
+| `"id": "a2"` | Aarti 2. गणपति जी की आरती |
+| `"id": "a3"` | Aarti 3. देवीची आरती |
+| `"id": "a4"` | Aarti 4. शंकराची आरती |
+| `"id": "a5"` | Aarti 5. दत्ताची आरती |
+| `"id": "a6"` | Aarti 6. ज्ञानेश्वरांची आरती |
+| `"id": "a7"` | Aarti 7. विठ्ठलाची आरती |
+| `"id": "a8"` | Aarti 8. घालीन लोटांगण |
+| `"id": "a9"` | Aarti 9. आरती जय गणेश देवा |
+| `"id": "a10"` | Aarti 10. आरती जय जगदीश हरे |
 
 Or search for a few words of the line itself.
 
 ### How a piece is written
 
-```html
-<section id="a1" class="ash">
-  <header>
-    <h2><span class="no"><span class="nm">१.</span><span class="ne">1.</span></span> <span class="mr">गणपतीची आरती</span><span class="en" lang="en">Ganapati Aarti</span></h2>
-    <div class="tag"><span class="mr">मराठी</span><span class="en" lang="en">Marathi</span></div>
-  </header>
-  <div class="rftop">                     <!-- the dhrupad shown once at the top -->
-    <div class="lab">…</div>
-    <div class="verse">
-      <div class="mr"> <p>…Marathi line…</p> … </div>
-      <div class="en" lang="en"> <p>…English line…</p> … </div>
-    </div>
-  </div>
-  <div class="items">
-    <div class="item">                    <!-- one stanza -->
-      <div class="verse">
-        <div class="mr">
-          <p data-l="s1l1">सुखकर्ता दुःखहर्ता, वार्ता विघ्नाची ।</p>
-          …
-        </div>
-        <div class="en" lang="en">
-          <p data-l="s1l1">Sukhkarta Dukhharta, Varta Vighnachi |</p>
-          …
-        </div>
-      </div>
-    </div>
-    <div class="rmk">…↻ ध्रुपद…</div>      <!-- marker where the dhrupad is sung -->
-    <div class="item rf">…</div>          <!-- the dhrupad repeated (shown when "after every stanza" is chosen) -->
+In `content/pieces.js` the pieces sit in two groups (Pooja, Aarti), in reading order. One piece looks like this:
+
+```js
+{
+ "id": "a1",
+ "no": { "mr": "१.", "en": "1." },
+ "title": { "mr": "गणपतीची आरती", "en": "Ganapati Aarti" },
+ "tag": { "mr": "मराठी", "en": "Marathi" },
+ "refrain": {                               // the dhrupad shown once at the top
+  "label": { "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)", "en": "Refrain (after every verse)" },
+  "lines": [ { "mr": "जय देव जय देव, जय मंगल मूर्ती ।", "en": "Jai Dev Jai Dev, Jai Mangal Murti |" }, … ]
+ },
+ "items": [
+  { "lines": [                              // one stanza
+    { "l": "s1l1", "mr": "सुखकर्ता दुःखहर्ता, वार्ता विघ्नाची ।", "en": "Sukhkarta Dukhharta, Varta Vighnachi |" },
     …
-  </div>
+  ] },
+  { "rmk": { "mr": "↻ ध्रुपद", "en": "Refrain" } },   // marker where the dhrupad is sung
+  { "kind": "rf", "lines": [ { "l": "s1l5", "rf": true, … }, … ] },   // the dhrupad repeated ("after every stanza")
   …
-</section>
+ ],
+ "credit": "<span class=\"mr\">रचना : …</span><span class=\"en\" lang=\"en\">By …</span>"
+}
 ```
+
+Other fields: `"lang": "hi"` or `"sa"` for a Hindi or Sanskrit piece, `"cls": "norf"` for a piece with no repeated dhrupad, `"kind": "dh"` for a stanza said once, `"bold": true` for a stanza shown in bold. Previous / Next links are made from the order, so they never need editing.
 
 ### Rules when editing text
 
-- **One `<p>` per line.** The Marathi `<p>` lines and the English `<p>` lines of a stanza are paired by position: the 1st Marathi line goes with the 1st English line, and so on. Keep the same number of lines in both.
-- **`data-l`** is the line's id (used by search and by tapping a line to highlight it). The Marathi and English versions of a line share the same id. A new line needs an id not used anywhere else on the page.
+- **One entry per line**, with the Marathi (`mr`) and English (`en`) together, so they always stay paired.
+- **`l`** is the line's id (used by search and by tapping a line to highlight it). A new line needs an id not used anywhere else on the page.
+- The file is written as JSON: keep the double quotes around every value, write a `"` inside a line as `\"`, and keep the commas between entries. A mistake here stops the pieces from showing, so check the site after every edit (see *Checking a change*).
 - **Stanza numbers (॥ १ ॥) are added automatically** at the end of each Aarti stanza. Do not type them. The Atharvashirsha keeps its own numbers, which are part of its text.
-- **Piece numbers** (`<span class="nm">१.</span><span class="ne">1.</span>`) are typed in two places: the piece's `<h2>` and its line in the home-page contents (search for `class="toc"`). The left-hand menu and the search list build themselves from the home-page contents.
+- **Piece numbers** are typed in two places: the piece's `"no"` in `content/pieces.js` and its line in the home-page contents in `index.html` (search for `class="toc"`). The left-hand menu and the search list build themselves from the home-page contents.
 - **Vedic svara marks** (॑ ॒ ᳚) in the Atharvashirsha must be kept exactly. A mark that belongs with a visarga goes **after** the ः, otherwise it shows as a dotted circle.
 - `<br>` inside a line forces a break at that point. An invisible zero-width space (written `&#8203;` if you need to type one) marks a place where a long line may break on a narrow phone. Put it after the space, e.g. `कर, &#8203;निढळावरी`, so the words keep their space when the line fits on one row. English lines need no marker: on a phone they break after a single `|` or a comma by themselves.
 - Keep `&` written as `&amp;` and `<` as `&lt;` if they ever appear in text.
@@ -203,12 +199,11 @@ To change a rule, edit `IA` and check the Atharvashirsha and Ganapati Aarti agai
 
 ### Adding a new Aarti
 
-1. Copy a whole `<section id="…" class="ash"> … </section>` block of a similar piece and paste it where the new one should appear.
-2. Give it a new `id` (for example `a11`), the next number in its `<h2>`, its title in both languages, and the language tag.
-3. Replace the lines, giving every new line a new `data-l` id (for example `s11l1`, `s11l2`, …).
-4. Fix the *Previous / Next* links (`<nav class="pn">`) of the new piece and of its neighbours.
-5. Add a line for it in the home-page contents (`<ol class="toc">` under आरती).
-6. Commit and push (change the version if this is a new release).
+1. In `content/pieces.js`, copy the whole `{ "id": … }` entry of a similar piece and paste it where the new one should appear (mind the comma between entries).
+2. Give it a new `id` (for example `a11`), the next number in `"no"`, its title in both languages, the language tag and its author line.
+3. Replace the lines, giving every new line a new `l` id (for example `s11l1`, `s11l2`, …).
+4. Add a line for it in the home-page contents in `index.html` (`<ol class="toc">` under आरती).
+5. Commit and push (change the version if this is a new release).
 
 ## Checking a change
 
