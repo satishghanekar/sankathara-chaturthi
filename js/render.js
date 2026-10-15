@@ -72,7 +72,10 @@
   try {
     ind = (JSON.parse(localStorage.getItem("aarti2-prefs") || "{}").ind || "");
   } catch (e) {}
-  var S = SCRIPTS[ind];
+  var S = SCRIPTS[ind],
+    OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed
+    ROOTS = ".grp, .ash, #home .tocg, #tfr, #home .hl1, #home h1, #btt",
+    LATER = "#rail, #jl"; // built by js/app.js from the home contents, already in the chosen script
   window.SCR = {
     k: S ? ind : "", // "" while the text is shown as written
     // Devanagari → the chosen script
@@ -91,25 +94,74 @@
         return n >= lo && n <= hi ? String.fromCharCode(n - S.off) : c;
       });
     },
-    // Rewrite the text (and its tooltips) in the pieces, their group rows, the home contents and the site's name
+    // Rewrite the text (and its tooltips) in the pieces, their group rows, the home contents, the site's name and the
+    // contents lists. What was there is kept (OLD), so switching back to Devanagari puts it back exactly.
     page: function () {
       if (!S) return;
       document.documentElement.setAttribute("data-scr", ind);
-      [].forEach.call(document.querySelectorAll(".grp, .ash, #home .tocg, #tfr, #home .hl1, #home h1, #btt"), function (r) {
+      [].forEach.call(document.querySelectorAll(ROOTS), function (r) {
         var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
-        while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) n.data = SCR.to(n.data);
+        while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) {
+          OLD.push([n, "", n.data]);
+          n.data = SCR.to(n.data);
+        }
         [].forEach.call(r.querySelectorAll("[title], [aria-label]"), function (e) {
           ["title", "aria-label"].forEach(function (a) {
             var v = e.getAttribute(a);
-            if (v && /[ऀ-ॿ]/.test(v)) e.setAttribute(a, SCR.to(v));
+            if (v && /[ऀ-ॿ]/.test(v)) {
+              OLD.push([e, a, v]);
+              e.setAttribute(a, SCR.to(v));
+            }
           });
         });
         // the language of the text, for screen readers (the English parts keep lang="en")
-        if (r.matches(".ash[lang]")) r.lang = ind;
-        [].forEach.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"), function (e) {
+        [].forEach.call((r.matches(".ash[lang]") ? [r] : []).concat([].slice.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"))), function (e) {
+          OLD.push([e, "lang", e.getAttribute("lang")]);
           e.lang = ind;
         });
+        // Poet links: the Kannada Wikipedia page when there is one, else the English page beside it
+        [].forEach.call(r.querySelectorAll(".cr"), function (c) {
+          var en = c.querySelectorAll(".en a[href]"), W = (window.CONTENT && CONTENT.wiki && CONTENT.wiki[ind]) || {};
+          [].forEach.call(c.querySelectorAll(".mr a[href]"), function (a, i) {
+            var h = decodeURI(a.getAttribute("href")), to = W[h] || (en[i] && en[i].getAttribute("href"));
+            if (!to) return;
+            ["href", "hreflang", "aria-label"].forEach(function (x) {
+              OLD.push([a, x, a.getAttribute(x)]);
+            });
+            a.href = to;
+            a.hreflang = W[h] ? ind : "en";
+            var l = a.getAttribute("aria-label") || "";
+            a.setAttribute("aria-label", l.replace(/ — .*$/, "") + (W[h] ? " — ವಿಕಿಪೀಡಿಯ" : " — Wikipedia (English)") + " ↗");
+          });
+        });
       });
+    },
+    // Switch scripts in place (Settings → Main language): put the Devanagari back, then rewrite it in the new script.
+    // Parts built later from the converted text (the contents lists) are turned back letter by letter.
+    set: function (k) {
+      if (k === (S ? ind : "")) return;
+      for (var i = OLD.length - 1; i >= 0; i--) {
+        var o = OLD[i];
+        if (!o[1]) o[0].data = o[2];
+        else if (o[2] === null) o[0].removeAttribute(o[1]);
+        else o[0].setAttribute(o[1], o[2]);
+      }
+      OLD = [];
+      if (S) [].forEach.call(document.querySelectorAll(LATER), function (r) {
+        var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
+        while ((n = w.nextNode())) n.data = SCR.from(n.data);
+      });
+      document.documentElement.removeAttribute("data-scr");
+      ind = k;
+      S = SCRIPTS[k];
+      SCR.k = S ? k : "";
+      if (S) {
+        SCR.page();
+        [].forEach.call(document.querySelectorAll(LATER), function (r) {
+          var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
+          while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) n.data = SCR.to(n.data);
+        });
+      }
     },
   };
 
