@@ -4586,8 +4586,8 @@ html[data-lead="en"] #pv[data-lang="both"] .pvcr .mr {
 }
 
 /* ==== Settings page (option A, 2026-10-15): covers the whole page while open; rounded cards of rows in groups
-   (Languages, Reading, Screen, About), like phone settings. The main and second language each open a page of
-   their own (#sp-lang). Centred, at most 640px wide, on wide screens. ==== */
+   (Languages, Reading, Screen, About), like phone settings. The main and second language are dropdowns.
+   Centred, at most 640px wide, on wide screens. ==== */
 html[data-sp] {
   overflow: hidden;
 }
@@ -4879,20 +4879,38 @@ html[data-sp] {
   text-transform: uppercase;
   color: var(--muted);
 }
+/* the preview's lines follow the pieces: the same text size (--fs) and share of it, line spacing and font */
 .sp-p1 {
-  font: 500 19px/1.6 var(--body);
+  font: 400 var(--fs) / 1.7 var(--body);
+}
+.sp-p1[lang="en"] {
+  font-size: calc(var(--fs) * 0.86);
+  line-height: 1.6;
 }
 .sp-p2 {
   margin-top: 4px;
-  font: 400 13.5px/1.5 var(--body);
+  font: 400 calc(var(--fs) * 0.72) / 1.6 var(--body);
   color: var(--muted);
+}
+.sp-p2[lang="en"] {
+  line-height: 1.5;
 }
 .sp-p1[lang="en"],
 .sp-p2[lang="en"] {
   font-family: var(--lat);
 }
-.sp-p1[lang="en"] {
-  font-size: 17px;
+/* two columns on wide screens make the pieces' text a little larger */
+:root[data-cols="2"] .sp-p1:not([lang="en"]) {
+  font-size: calc(var(--fs) * 1.05);
+}
+:root[data-cols="2"] .sp-p2 {
+  font-size: calc(var(--fs) * 0.8);
+}
+:root[data-font]:not([data-font="std"]) .sp-pw > div {
+  font-family: var(--tf), var(--body);
+}
+:root[data-font]:not([data-font="std"]) .sp-pw > [lang="en"] {
+  font-family: var(--tf), var(--lat);
 }
 /* the maker's name and email, quiet, under About */
 .sp-by {
