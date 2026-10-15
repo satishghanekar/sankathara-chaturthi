@@ -94,14 +94,6 @@
             <button type="button" data-v="hand"><span class="mr">हस्तलिखित</span><span class="en" lang="en">Handwritten</span></button>
           </div>
         </div>
-        <div class="sp-row sp-stk" id="strow">
-          <span class="sp-l"><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English spelling</span></span>
-          <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
-          <div class="sp-seg" id="str" role="group" aria-label="English spelling">
-            <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
-            <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
-          </div>
-        </div>
         <div class="sp-row">
           <span class="sp-l"><span class="mr">ध्रुपद</span><span class="en" lang="en">Dhrupad</span></span>
           <div class="sp-seg" id="srf" role="group" aria-label="Dhrupad">
@@ -149,6 +141,19 @@
     <div class="sp-body">
       <p class="sp-note" id="spln"></p>
       <div class="sp-card" id="spll" role="radiogroup" aria-labelledby="splt"></div>
+      <!-- the same preview as on the Settings page, so a choice shows at once -->
+      <div class="sp-prev" id="sprev2" aria-hidden="true"></div>
+      <!-- English spelling matters only when English is one of the two languages, so it is chosen here -->
+      <div class="sp-card" id="stcard">
+        <div class="sp-row sp-stk" id="strow">
+          <span class="sp-l"><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English spelling</span></span>
+          <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
+          <div class="sp-seg" id="str" role="group" aria-label="English spelling">
+            <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
+            <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
+          </div>
+        </div>
+      </div>
       <p class="sp-note"><span class="mr">मेनूसाठी इंग्रजी नेहमी उपलब्ध आहे; दुसरा पर्याय तुमची मुख्य भाषा. कन्नड मेनू अजून नाहीत, म्हणून कन्नडसोबत मेनू इंग्रजीत असतात.</span><span class="en" lang="en">Menus can always be in English; the other choice is your main language. Kannada has no menus of its own yet, so with Kannada they are in English.</span></p>
     </div>
   </div>
