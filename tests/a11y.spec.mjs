@@ -4,16 +4,6 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { openSite, SETUPS } from "./helpers.mjs";
 
-// Problems found in the audit and present in the site this suite was recorded from. Each is marked as
-// an expected failure until the commit that fixes it removes it from this list.
-const KNOWN = {
-  contrast: "past dates in the date strip are dimmed below 4.5:1 (audit A10)",
-  trap: "Tab from the Settings language dropdown jumps back to Back (audit A1)",
-  labelInName: "accessible names that don't contain the visible label (audit A2)",
-  motion: "some transitions still run when the reader asks for reduced motion",
-};
-const known = (key) => KNOWN[key] && test.fail(true, KNOWN[key]);
-
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
 async function axe(page) {
@@ -45,8 +35,6 @@ const STATES = [
 
 for (const [name, prefs, prep] of STATES) {
   test(`axe: ${name} @mobile`, async ({ page }) => {
-    // the date strip is on the home card in every state except the folded card (high contrast passes)
-    if (!/folded|high contrast/.test(name)) known("contrast");
     await openSite(page, prefs);
     if (prep) {
       await prep(page);
@@ -67,7 +55,6 @@ for (const [name, opener, dialog] of DIALOGS) {
   test(`keyboard: every control in ${name} is reachable with Tab, and focus stays inside`, async ({ page, browserName }) => {
     // WebKit only tabs to links and form fields unless the "Press Tab to highlight each item" option is on
     test.skip(browserName === "webkit", "Safari's default Tab skips buttons");
-    if (name === "Settings") known("trap");
     await openSite(page, SETUPS.marathi);
     await page.locator(opener).focus();
     await page.keyboard.press("Enter");
@@ -113,7 +100,6 @@ test("keyboard: the first Tab shows the skip link, which moves to the texts", as
 // WCAG 2.5.3 Label in Name: a control's accessible name must contain the words shown on it, so
 // voice control users can say what they see.
 test("label in name: every labelled control's name contains its visible text", async ({ page }) => {
-  known("labelInName");
   await openSite(page, SETUPS.marathi);
   const bad = await page.evaluate(() =>
     [...document.querySelectorAll("button[aria-label], a[aria-label]")]
@@ -127,14 +113,17 @@ test("label in name: every labelled control's name contains its visible text", a
         const name = b.getAttribute("aria-label");
         return { id: b.id, t, name };
       })
-      .filter((x) => x.t && !x.name.toLowerCase().includes(x.t.toLowerCase()))
+      // compared as words only: case, spaces and arrows (‹ › ↗) don't count
+      .filter((x) => {
+        const w = (s) => s.toLowerCase().replace(/[\s‹›↗,.:;()—-]+/g, "");
+        return w(x.t) && !w(x.name).includes(w(x.t));
+      })
       .map((x) => `${x.id}: shows "${x.t}", named "${x.name}"`),
   );
   expect(bad).toEqual([]);
 });
 
 test("reduced motion: no transitions longer than 0.01s when the reader asks for less motion", async ({ browser }) => {
-  known("motion");
   const context = await browser.newContext({ reducedMotion: "reduce", serviceWorkers: "block" });
   const page = await context.newPage();
   await openSite(page, SETUPS.marathi);

@@ -216,3 +216,37 @@ test("reopens where the reader was (within 12 hours)", async ({ page }) => {
   const top = await page.locator("#a6").evaluate((e) => e.getBoundingClientRect().top);
   expect(Math.abs(top)).toBeLessThan(400);
 });
+
+// Pinch: on the verses it resizes the text (the page itself doesn't zoom); on the home card, Settings and
+// the pop-ups it is the browser's own zoom, for readers who need to magnify those.
+test.describe("pinch", () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  // fires a two-finger touchstart on the element and reports whether the site stopped the browser's zoom
+  const pinchStart = (page, selector) =>
+    page.locator(selector).first().evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const t = (id, dx) => new Touch({ identifier: id, target: el, clientX: r.left + 20 + dx, clientY: r.top + 10 });
+      const touches = [t(1, 0), t(2, 60)];
+      const ev = new TouchEvent("touchstart", { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true });
+      el.dispatchEvent(ev);
+      const end = new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: touches, bubbles: true, cancelable: true });
+      el.dispatchEvent(end);
+      return ev.defaultPrevented;
+    });
+
+  test("on a verse it resizes the text instead of zooming", async ({ page, browserName }) => {
+    test.skip(browserName === "firefox", "no touch events");
+    await openSite(page, SETUPS.marathi);
+    expect(await pinchStart(page, "#a1 .items .verse p")).toBe(true);
+  });
+  test("on the home card, Settings and Help the page zooms as usual", async ({ page, browserName }) => {
+    test.skip(browserName === "firefox", "no touch events");
+    await openSite(page, SETUPS.marathi);
+    expect(await pinchStart(page, "#home .top .hero")).toBe(false);
+    await page.locator("#aa").click();
+    expect(await pinchStart(page, "#panel .sp-card")).toBe(false);
+    await page.locator("#xc").click();
+    await page.locator("#hlpb").click();
+    expect(await pinchStart(page, "#help .hlpin")).toBe(false);
+  });
+});

@@ -6,12 +6,18 @@
     "serve": "node serve.mjs",
     "test": "playwright test",
     "test:update": "playwright test --update-snapshots",
-    "lhci": "lhci autorun"
+    "lhci": "lhci autorun",
+    "lint": "stylelint --config stylelint.config.mjs \"../css/**/*.css\" && cd .. && eslint -c tests/eslint.config.mjs js content sw.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@lhci/cli": "^0.14.0",
     "@playwright/test": "^1.56.1",
-    "pdfjs-dist": "^4.10.38"
+    "eslint": "^9.39.1",
+    "eslint-plugin-compat": "^6.0.1",
+    "globals": "^15.12.0",
+    "pdfjs-dist": "^4.10.38",
+    "stylelint": "^16.10.0",
+    "stylelint-no-unsupported-browser-features": "^8.0.2"
   }
 }

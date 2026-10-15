@@ -85,7 +85,9 @@ Dec
 Add all upcoming dates to calendar
 Sankathara Chaturthi
 App
+(add to Home Screen)
 Share
 QR
+code
 Print
 Help

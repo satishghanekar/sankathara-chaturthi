@@ -110,8 +110,8 @@
   };
   try {
     var s = JSON.parse(localStorage.getItem(K) || "{}");
-    for (var k in P) {
-      if (s[k] !== undefined) P[k] = s[k];
+    for (var pk in P) {
+      if (s[pk] !== undefined) P[pk] = s[pk];
     }
   } catch (e) {}
   // Migrations for settings saved by older versions of the site
@@ -974,9 +974,10 @@
         '" data-k="' +
         k +
         '" aria-label="' +
+        // spoken name: the date as shown on the chip first (WCAG 2.5.3), then the year and weekday
         (en
-          ? d.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + (f.ang ? ", Angaraki" : "")
-          : SKWM[d.getDay()] + ", " + skDV(d.getDate()) + " " + SKMM[d.getMonth()] + " " + skDV(Y) + (f.ang ? ", अंगारकी" : "")) +
+          ? d.getDate() + " " + d.toLocaleDateString("en-US", { month: "short" }) + " " + Y + ", " + d.toLocaleDateString("en-US", { weekday: "long" }) + (f.ang ? ", Angaraki" : "")
+          : skDV(d.getDate()) + " " + SKMS[d.getMonth()] + " " + skDV(Y) + ", " + SKWM[d.getDay()] + (f.ang ? ", अंगारकी" : "")) +
         '"><span class="mr"><b>' +
         skDV(d.getDate()) +
         "</b>" +
@@ -1744,10 +1745,9 @@
       tb = document.getElementById("tfb");
     if (P.tf) root.setAttribute("data-tf", "1");
     else root.removeAttribute("data-tf");
-    if (tb) {
-      tb.setAttribute("aria-expanded", String(!P.tf));
-      tb.setAttribute("aria-label", P.tf ? (mr ? "अनुक्रमणिका उघडा" : "Show the contents") : mr ? "अनुक्रमणिका मिटवा" : "Fold the contents");
-    }
+    // The Contents, पूजा and आरती rows are named by their visible words, with aria-expanded giving the state,
+    // so voice control users can say what they see (WCAG 2.5.3)
+    if (tb) tb.setAttribute("aria-expanded", String(!P.tf));
     secs.forEach(function (x) {
       var f = P.af.indexOf(x.id) >= 0,
         ab = x.querySelector(".afb");
@@ -1760,17 +1760,13 @@
     var xb = document.getElementById("xfb");
     if (P.xf) root.setAttribute("data-xf", "1");
     else root.removeAttribute("data-xf");
-    if (xb) {
-      xb.setAttribute("aria-expanded", String(!P.xf));
-      xb.setAttribute("aria-label", P.xf ? (mr ? "आरती विभाग उघडा" : "Show the Aarti section") : mr ? "आरती विभाग मिटवा" : "Fold the Aarti section");
-    }
+    if (xb) xb.setAttribute("aria-expanded", String(!P.xf));
     allSet();
     var b = document.getElementById("pfb");
     if (P.pf) root.setAttribute("data-pf", "1");
     else root.removeAttribute("data-pf");
     if (!b) return;
     b.setAttribute("aria-expanded", String(!P.pf));
-    b.setAttribute("aria-label", P.pf ? (P.ui === "mr" ? "पूजा विभाग उघडा" : "Show the Pooja section") : P.ui === "mr" ? "पूजा विभाग मिटवा" : "Fold the Pooja section");
   }
   // Going to a piece (or a line in it) opens it if it is folded, and the Pooja section if that is folded
   function pjOpen(el, onlyPooja) {
@@ -2272,6 +2268,7 @@
     var r = Math.PI / 180,
       b = e.beta * r,
       g = (e.gamma || 0) * r,
+      // eslint-disable-next-line compat/compat -- checked first; old iOS has window.orientation instead
       o = typeof window.orientation === "number" ? window.orientation : (screen.orientation && screen.orientation.angle) || 0,
       a = (((o % 360) + 360) % 360) * r,
       // which way is up, seen from the phone (x right, y top, z out of the screen)
@@ -2342,6 +2339,7 @@
   }
   tlb.onclick = function () {
     if (!FEAT_TL) return;
+    // eslint-disable-next-line compat/compat -- checked for before use (tilt only shows where it exists)
     var D = window.DeviceOrientationEvent;
     if (D && typeof D.requestPermission === "function")
       D.requestPermission()
@@ -2471,6 +2469,9 @@
       bt0.classList.add("pc");
     } else bt0.classList.remove("pc");
     if (document.getElementById("btt").textContent !== tt) document.getElementById("btt").textContent = tt;
+    // its spoken name starts with what it does and contains the words shown (WCAG 2.5.3)
+    var bl = (P.ui === "mr" ? "मुख्य पान: " : "Home: ") + tt;
+    if (bt0.getAttribute("aria-label") !== bl) bt0.setAttribute("aria-label", bl);
     // the slim strip shown while the bars are tucked away carries the same name and progress line
     var tkt = document.getElementById("tkt");
     if (tkt.textContent !== tt) tkt.textContent = tt;
@@ -2967,8 +2968,11 @@
         return x && !x.hidden;
       })[0];
     if (!d) return;
-    var f = [].filter.call(d.querySelectorAll("button,a[href],input,[tabindex]:not([tabindex='-1'])"), function (x) {
-      return !x.disabled && x.offsetParent !== null;
+    // Everything Tab can land on, dropdowns included: leaving <select> out made Tab from the language dropdowns
+    // jump back to the top of Settings, so the rest of the page could not be reached by keyboard (WCAG 2.1.1).
+    // Visibility is tested with getClientRects, which (unlike offsetParent) also works inside fixed layers.
+    var f = [].filter.call(d.querySelectorAll("button,a[href],input,select,textarea,summary,[tabindex]:not([tabindex='-1'])"), function (x) {
+      return !x.disabled && x.getClientRects().length > 0 && getComputedStyle(x).visibility !== "hidden";
     });
     if (!f.length) return;
     var i = f.indexOf(document.activeElement);
@@ -3274,6 +3278,15 @@
   // applied once per frame, so the page keeps up with the fingers; and if the page still ends up
   // zoomed (a pinch that began mid-scroll can't be cancelled), it is put back to normal straight away.
   var pzF = 0;
+  // Where a pinch zooms the page as usual instead: the home card, Settings and the pop-ups have no verses to
+  // resize, and people who rely on zoom to read small print need it there (WCAG 1.4.4 / 1.4.10). The verses
+  // keep pinch-to-resize, which reflows the text instead of pushing it off the sides of the screen.
+  var ZOOM_OK = "#home .top, #panel, #help, #qrm, #prm, #inm, #jump";
+  function zoomOK(t) {
+    return !!(t && t.closest && t.closest(ZOOM_OK));
+  }
+  // true while a two-finger gesture that began on the reading page is in progress (only those are undone)
+  var pzOwn = false;
   function unzoom() {
     var vv = window.visualViewport,
       vm = document.querySelector('meta[name="viewport"]');
@@ -3288,6 +3301,8 @@
     "touchstart",
     function (e) {
       if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
+        pzOwn = !zoomOK(e.target);
+        if (!pzOwn) return; // the browser's own zoom
         if (e.cancelable) e.preventDefault();
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
@@ -3323,7 +3338,10 @@
   document.addEventListener(
     "touchend",
     function (e) {
-      if (e.touches.length < 2) unzoom();
+      if (e.touches.length < 2 && pzOwn) {
+        pzOwn = false;
+        unzoom();
+      }
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
@@ -3344,12 +3362,16 @@
     },
     { passive: true },
   );
-  addEventListener("gestureend", unzoom);
+  // Safari's own gesture events: stopped on the reading page (pinch resizes the text), left alone where the
+  // page may zoom
+  addEventListener("gestureend", function (e) {
+    if (!zoomOK(e.target)) unzoom();
+  });
   ["gesturestart", "gesturechange"].forEach(function (n) {
     document.addEventListener(
       n,
       function (e) {
-        e.preventDefault();
+        if (!zoomOK(e.target)) e.preventDefault();
       },
       { passive: false },
     );
@@ -4072,8 +4094,8 @@
         } else {
           // Two columns, newspaper style: the heading (and dhrupad) across the page, then the stanzas
           // run down the left column to the foot of the page and on down the right column.
-          var head = pre.slice();
-          if (units[0] && units[0].classList.contains("pvref")) head.push(units.shift());
+          var head2 = pre.slice();
+          if (units[0] && units[0].classList.contains("pvref")) head2.push(units.shift());
           var cols = document.createElement("div"),
             gs2 = [],
             wait2 = [];
@@ -4151,14 +4173,14 @@
               tr2.appendChild(td([].concat.apply([], bk.slice(0, k))));
               tr2.appendChild(td([].concat.apply([], bk.slice(k))));
               t2.appendChild(tr2);
-              box.appendChild(keep(bi ? [t2] : head.concat([t2])));
+              box.appendChild(keep(bi ? [t2] : head2.concat([t2])));
             });
-            if (!blocks.length) box.appendChild(keep(head));
+            if (!blocks.length) box.appendChild(keep(head2));
           } else {
             gs2.forEach(function (g) {
               cols.appendChild(keep(g));
             });
-            var hk = keep(head);
+            var hk = keep(head2);
             hk.classList.add("pvhd");
             box.appendChild(hk);
             box.appendChild(cols);
