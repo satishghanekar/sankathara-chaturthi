@@ -1,13 +1,13 @@
 // Service worker: keeps a copy of the site on the phone so it opens without internet.
-// V is the site's version (shown as "v1.0" on the home card). It must match the cache name in index.html; change both on every deploy.
+// V is the site's version (shown as "v1.0" on the home card). It must match <meta name="version"> in index.html; change both on a new release.
 const V='aarti-v1.0';
-// The text of the pieces and the code that builds them (the same list is in index.html)
-const PARTS=['content/pieces.js','js/render.js'];
-// Font files (the same list is in index.html)
+// The page's styles, script, the text of the pieces and the code that builds them (the same list is in js/app.js)
+const PARTS=['css/site.css','js/app.js','content/pieces.js','js/render.js'];
+// Font files (the same list is in js/app.js)
 const FONTS=['inter-latin','inter-latin-ext','noto-sans-deva-devanagari','noto-sans-deva-latin','noto-sans-deva-latin-ext','tiro-marathi-devanagari','tiro-marathi-latin','tiro-marathi-latin-ext','tiro-sanskrit-devanagari','tiro-sanskrit-latin','tiro-sanskrit-latin-ext'].map(f=>'fonts/'+f+'.woff2');
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(V).then(c=>c.addAll(['./','manifest.json','icon-180.png','icon-192.png','icon-32.png','icon-maskable-192.png','picture-360.webp','picture.webp',...PARTS,...FONTS].map(x=>new Request(x,{cache:'reload'}))).catch(()=>{})))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
-// Same-site files: the page itself and its script files are fetched fresh when possible (3 s limit, then the
+// Same-site files: the page itself and its style and script files are fetched fresh when possible (3 s limit, then the
 // saved copy), so the page never runs with an older copy of its parts; everything else is answered from the
 // saved copy and refreshed in the background.
 // Nothing here may leave the page waiting: if the saved copy can't be read within 2 s, or anything
@@ -23,7 +23,7 @@ self.addEventListener('fetch',e=>{
   let done;const bg=new Promise(res=>done=res);e.waitUntil(bg);
   const nav=r.mode==='navigate'||/\/(index\.html)?$/.test(u.pathname);
   const key=nav?new URL('./',location.href).href:u.origin+u.pathname;
-  const fresh=nav||/\.js$/.test(u.pathname);
+  const fresh=nav||/\.(js|css)$/.test(u.pathname);
   const go=async()=>{
     const c=await wait(caches.open(V),2000);
     let m=c?await wait(c.match(key),2000):null;

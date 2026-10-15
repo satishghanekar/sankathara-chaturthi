@@ -40,7 +40,9 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 
 | File | What it is |
 |---|---|
-| `index.html` | The page: home page, styles (`<style>`) and script (`<script>`). |
+| `index.html` | The page: top bar, Settings, home page and Help. |
+| `css/site.css` | All the styles. |
+| `js/app.js` | All the behaviour (settings, dates, search, print, offline…). |
 | `content/pieces.js` | The text of every piece (Pooja and Aarti): each line in Marathi/Hindi/Sanskrit and in everyday English, titles, author lines. **Edit the texts here.** |
 | `js/render.js` | Builds each piece's HTML from `content/pieces.js` while the page loads. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
@@ -60,9 +62,9 @@ To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankashti
 
 ### Option A: on the GitHub website (no software needed)
 
-1. Open https://github.com/satishghanekar/sankashti-chaturthi and click `content/pieces.js` to change a piece's text, or `index.html` for anything else.
+1. Open https://github.com/satishghanekar/sankashti-chaturthi and click `content/pieces.js` to change a piece's text, `css/site.css` for styles, `js/app.js` for behaviour, or `index.html` for the page itself.
 2. Click the pencil icon (**Edit this file**).
-3. Use the browser's find (Ctrl+F / ⌘F) to locate the text you want (see *Finding things in index.html* below), and make the change.
+3. Use the browser's find (Ctrl+F / ⌘F) to locate the text you want (see *Finding things in the files* below), and make the change.
 4. If this is a new release, **change the version** (see below). This is a second small edit, in `index.html` and in `sw.js`.
 5. Click **Commit changes…**, write a short message (for example *Fix typo in Devi Aarti verse 2*), keep **Commit directly to the `main` branch** selected, and click **Commit changes**.
 6. Wait a minute or two, then check the live site (see *After publishing*).
@@ -93,7 +95,7 @@ Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in pla
 
 ### The version
 
-Phones keep a saved copy of the site, but the page itself is always fetched fresh when there is internet, so a published change reaches phones the next time the site is opened online. **Check for updates** on the home card compares the page on the phone with the live one, so it finds changes even when the version stays the same.
+Phones keep a saved copy of the site, but the page and its style, script and text files are always fetched fresh when there is internet, so a published change reaches phones the next time the site is opened online. **Check for updates** on the home card compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
 
 The version is what the home card shows (v1.0). It appears in **two** places, and both must always be the **same**:
 
@@ -101,9 +103,9 @@ The version is what the home card shows (v1.0). It appears in **two** places, an
    ```js
    const V='aarti-v1.0';
    ```
-2. `index.html`, near the end (search for `aarti-v`):
-   ```js
-   caches.open("aarti-v1.0")
+2. `index.html`, near the top:
+   ```html
+   <meta name="version" content="aarti-v1.0">
    ```
 
 Change it only for a new release, and change both together, using digits and dots only: `1.0` → `1.0.1` for fixes, `1.1` for new features, `2.0` for a redesign. Changing it also makes phones refresh the saved icons and fonts.
@@ -117,14 +119,14 @@ Change it only for a new release, and change both together, using digits and dot
 
 On GitHub, open **Commits** (the clock icon above the file list) and click the commit you want to undo: it shows exactly what changed, red for removed and green for added. Edit the file back the same way and commit again; it publishes like any other change. With git on a computer, `git revert <commit id>` followed by `git push` does the same in one step.
 
-## Finding things in index.html
+## Finding things in the files
 
 `index.html` is laid out top to bottom as:
 
 1. `<head>`: title, and preloading of the main font files.
-2. `<style>`: all styling, in labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`.
+2. A link to `css/site.css`: all styling, in labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`.
 3. `<body>`: the top bar, the settings panel, then the home page. The pieces themselves are in `content/pieces.js`; a short script at the end of `<main>` has `js/render.js` build them in place while the page loads, so the page is exactly as if they were written there.
-4. `<script>`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of the script lists the sections in order.
+4. A link to `js/app.js`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of that file lists the sections in order.
 
 Each piece is an entry in `content/pieces.js` with an id (it becomes a `<section>` with that id on the page). Search that file for the id to jump to it:
 
