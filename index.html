@@ -2345,6 +2345,18 @@ h2[tabindex="-1"]:focus {
   #pv .pvs:last-child {
     margin-bottom: 0;
   }
+  /* a page break the print plan forces (see paginate) */
+  #pv .pvbr {
+    display: block;
+    height: 0;
+    margin: 0;
+    break-before: page;
+    page-break-before: always;
+  }
+  /* nothing after the last piece, so Safari adds no empty page at the end */
+  .wk[data-print] body {
+    margin: 0;
+  }
   /* pages always print upright (the contents numbers are worked out for upright pages) */
   @page {
     size: portrait;
@@ -10777,7 +10789,10 @@ h2[tabindex="-1"]:focus {
         done = false;
       f.setAttribute("aria-hidden", "true");
       f.tabIndex = -1;
-      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (PAPER[1] - 23) * mm + "px";
+      // Safari (macOS 26, from Satish's PDFs) prints everything about 16/15 larger than Chrome, so a
+      // page holds less: lay it out on a page that much smaller
+      var sf = root.classList.contains("wk") ? 15 / 16 : 1;
+      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm * sf - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (PAPER[1] - 23) * mm * sf + "px";
       [].forEach.call(root.attributes, function (a) {
         if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
       });
@@ -10800,7 +10815,7 @@ h2[tabindex="-1"]:focus {
         d.documentElement.offsetHeight;
         d.fonts.ready.then(function () {
           try {
-            end(paginate(f.contentWindow, d, PAPER[1] - 23, mm));
+            end(paginate(f.contentWindow, d, (PAPER[1] - 23) * sf, mm));
           } catch (e) {
             end(null);
           }
@@ -10809,69 +10824,131 @@ h2[tabindex="-1"]:focus {
         end(null);
       }
     }
-    // The browser itself breaks the pages: the print view becomes a row of page-sized columns
-    // (same width and height as a printed page, same rules for keeping blocks together), so the
-    // column a heading lands in is its page.
+    // The site decides every page break, because a forced break ("start a new page here") is the one
+    // page rule Chrome and Safari both follow. Each piece starts on a new page; its blocks (stanzas,
+    // verse groups) are packed onto pages with 4% to spare, and a break is forced before each block
+    // that starts a page. The contents numbers come from the same plan, so they match the printout.
+    // Chrome's two-column flow (.pvc) can't take forced breaks, so its pages are found by laying the
+    // print view out as a row of page-sized columns, as the browser breaks pages.
     function paginate(w, d, hmm, mm) {
       var p = d.getElementById("pv"),
         cs = w.getComputedStyle(p),
         pl = parseFloat(cs.paddingLeft),
         cw = p.clientWidth - pl - parseFloat(cs.paddingRight),
-        out = {};
-      // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (16px with the
-      // optional text fonts; printed text runs a little wider, so a near-full line wraps), and pages with two columns of text hold
-      // 4px more than the plain sum of heights.
-      p.style.cssText =
-        "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" +
-        cw + "px;height:" + (hmm * mm - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + (p.querySelector(".pvc") ? 4 : 0)) + "px";
-      var x0 = p.getBoundingClientRect().left + pl,
-        y0 = p.getBoundingClientRect().top,
-        H = p.clientHeight,
         secs = [].slice.call(p.querySelectorAll(".pvs")),
-        z = {};
-      // first page, number of pages and how full the last page is, for each piece
-      function measure() {
-        var m = {};
-        secs.forEach(function (e) {
-          var c = e.firstElementChild,
-            l = e.lastElementChild;
-          if (!c) return;
-          var rr = l.getClientRects(),
-            b = rr[rr.length - 1] || l.getBoundingClientRect(),
-            s = Math.round((c.getBoundingClientRect().left - x0) / cw) + 1;
-          m[e.getAttribute("data-sid")] = { s: s, n: Math.round((b.left - x0) / cw) + 2 - s, f: (b.bottom - y0) / H };
+        // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (16px with the
+        // optional text fonts; printed text runs a little wider, so a near-full line wraps), and pages
+        // with two columns of text hold 4px more than the plain sum of heights.
+        H = hmm * mm - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) + (p.querySelector(".pvc") ? 4 : 0),
+        C = H * 0.96,
+        plan = {},
+        z = {},
+        out = { z: z, b: {} };
+      if (!secs.length) return out;
+      function pack(hs, k) {
+        var n = 1,
+          used = 0,
+          br = [];
+        hs.forEach(function (h, i) {
+          h *= k;
+          if (used > 0 && used + h > C) {
+            n++;
+            used = 0;
+            br.push(i);
+          }
+          used += h;
         });
-        return m;
+        return { n: n, b: br, f: used / C };
       }
-      // Each piece starts on a new page. A piece that only just spills onto another page, or only
-      // just fills its last page, is set slightly smaller (down to 85%) so it ends well inside a page:
-      // then small differences between browsers can't move it, or every later piece, by a page.
-      var m = measure();
+      // 1. pieces made of blocks: measure each block and pack them onto pages. Measured 20px narrower
+      // than the frame (a near-full line then wraps here first), so heights err on the tall side.
+      var pw = p.style.cssText;
+      p.style.cssText = "box-sizing:border-box;width:" + (p.offsetWidth - 20) + "px";
       secs.forEach(function (e) {
         var id = e.getAttribute("data-sid"),
-          r = m[id],
-          k = 0;
-        if (!r) return;
-        if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
-        else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
-        if (k >= 0.85 && k < 1) {
-          z[id] = Math.round(k * 100) / 100;
-          e.style.zoom = z[id];
-        }
+          kids = [].slice.call(e.children);
+        if (!kids.length || e.querySelector(".pvc")) return;
+        var top = e.getBoundingClientRect().top,
+          tops = kids.map(function (c) {
+            return c.getBoundingClientRect().top;
+          }),
+          hs = kids.map(function (c, i) {
+            return (i + 1 < kids.length ? tops[i + 1] : c.getBoundingClientRect().bottom) - (i ? tops[i] : top);
+          }),
+          r = pack(hs, 1);
+        // a piece that spills a little onto another page is set slightly smaller (down to 80%) to fit
+        if (r.n > 1 && r.f < 0.25)
+          for (var t = 98; t >= 80; t -= 2) {
+            var q = pack(hs, t / 100);
+            if (q.n < r.n) {
+              r = q;
+              z[id] = t / 100;
+              break;
+            }
+          }
+        plan[id] = r;
+        if (r.b.length) out.b[id] = r.b;
       });
-      for (var id in z) {
-        m = measure();
-        break;
+      p.style.cssText = pw;
+      // pages the contents take
+      var first = secs[0].getBoundingClientRect().top - p.getBoundingClientRect().top - parseFloat(cs.paddingTop),
+        page = Math.max(1, Math.ceil((first - 1) / H));
+      // 2. Chrome's two-column pieces: lay out as page-sized columns and count the columns each takes
+      if (secs.some(function (e) {
+          return !plan[e.getAttribute("data-sid")];
+        })) {
+        p.style.cssText =
+          "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" + cw + "px;height:" + H + "px";
+        var x0 = p.getBoundingClientRect().left + pl,
+          y0 = p.getBoundingClientRect().top;
+        var measure = function (e) {
+          var c = e.firstElementChild,
+            l = e.lastElementChild,
+            rr = l.getClientRects(),
+            b = rr[rr.length - 1] || l.getBoundingClientRect(),
+            s = Math.round((c.getBoundingClientRect().left - x0) / cw);
+          return { n: Math.round((b.left - x0) / cw) + 1 - s, f: (b.bottom - y0) / H };
+        };
+        secs.forEach(function (e) {
+          var id = e.getAttribute("data-sid");
+          if (plan[id] || !e.firstElementChild) return;
+          var r = measure(e),
+            k = 0;
+          // only just spilling onto a page, or only just filling one: set slightly smaller so it
+          // ends well inside a page
+          if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
+          else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
+          if (k >= 0.8 && k < 1) {
+            z[id] = Math.round(k * 100) / 100;
+            e.style.zoom = z[id];
+            r = measure(e);
+          }
+          plan[id] = r;
+        });
       }
-      for (id in m) out[id] = m[id].s;
-      out.z = z;
+      secs.forEach(function (e) {
+        var id = e.getAttribute("data-sid");
+        out[id] = page + 1;
+        page += (plan[id] && plan[id].n) || 1;
+      });
       return out;
     }
     // write the page numbers into the printed contents
     function pnums(pg) {
-      // pieces set smaller so they end well inside a page (see paginate)
+      // the page plan (see paginate): pieces set slightly smaller, and a forced page break before
+      // each block that starts a page
+      [].forEach.call(pv.querySelectorAll(".pvbr"), function (e) {
+        e.parentNode.removeChild(e);
+      });
       [].forEach.call(pv.querySelectorAll(".pvs"), function (e) {
-        e.style.zoom = (pg && pg.z && pg.z[e.getAttribute("data-sid")]) || "";
+        var id = e.getAttribute("data-sid"),
+          kids = [].slice.call(e.children);
+        e.style.zoom = (pg && pg.z && pg.z[id]) || "";
+        ((pg && pg.b && pg.b[id]) || []).forEach(function (i) {
+          var br = document.createElement("div");
+          br.className = "pvbr";
+          if (kids[i]) e.insertBefore(br, kids[i]);
+        });
       });
       [].forEach.call(pv.querySelectorAll(".pvtoc li[data-sid]"), function (li) {
         var n = pg && pg[li.getAttribute("data-sid")],
