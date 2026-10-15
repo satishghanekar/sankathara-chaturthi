@@ -4843,6 +4843,27 @@ html[data-sp] {
 }
 .sp-prev p {
   margin: 0;
+  white-space: nowrap;
+}
+/* the preview is a fixed window: lines never wrap, so A+ visibly makes the text bigger, running past the edges
+   (faded) and below the window, as it would on the page */
+.sp-pw {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 150px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
+    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
+    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-composite: intersect;
+}
+.sp-pw > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 /* Check for updates: "Checking…", then "Up to date" in green, or "No internet" in amber */
 .sp #upd[data-s="ok"] #updv {
