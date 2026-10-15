@@ -4638,6 +4638,14 @@ h2[tabindex="-1"]:focus {
 :root[data-font]:not([data-font="std"]) #pv .pvs h2 .en {
   font-family: inherit;
 }
+/* and the home page's Table of Contents: piece names, numbers and languages */
+:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .m,
+:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .lt {
+  font-family: var(--tf), var(--head);
+}
+:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .en {
+  font-family: var(--tf), var(--lat);
+}
 /* the font row: label on top, the four choices across the full width */
 #panel .row.stk {
   flex-wrap: wrap;
