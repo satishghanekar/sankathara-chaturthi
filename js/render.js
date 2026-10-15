@@ -57,6 +57,62 @@
     return '  <div class="grp" id="' + g.id + '"><button type="button" id="' + g.btn + '" aria-expanded="true" aria-label="' + g.aria + '">' + two(g.name) + ICON_FOLD + "</button></div>\n";
   }
 
+  // ---- The same words in another Indian script (Settings → Main language → ಕನ್ನಡ) ----
+  // The text is written once, in Devanagari. Kannada letters sit at the same place in their Unicode block, 0x380
+  // further on, so each letter moves across one for one. A few signs have no Kannada twin: the dandas and the Vedic
+  // accent marks stay as they are (Kannada books use them too), ॐ is written ಓಂ, and the Marathi eyelash ऱ and the
+  // ॅ of English words (टॅब, tab) take their usual Kannada spelling. The choice is read from the saved settings
+  // here, before the page script runs, so every later step (search, English spelling, printing) sees the new text.
+  // To add another script, give it an entry in SCRIPTS.
+  var SCRIPTS = {
+    kn: { off: 0x380, sp: { "ॐ": "ಓಂ", "ऱ": "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", "ऑ": "ಆ", "ॲ": "ಅ" }, back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]] },
+  };
+  var KEEP = /[॒॑।॥]/;
+  var ind = "";
+  try {
+    ind = (JSON.parse(localStorage.getItem("aarti2-prefs") || "{}").ind || "");
+  } catch (e) {}
+  var S = SCRIPTS[ind];
+  window.SCR = {
+    k: S ? ind : "", // "" while the text is shown as written
+    // Devanagari → the chosen script
+    to: function (t) {
+      return !S ? t : t.replace(/[ऀ-ॿ]/g, function (c) {
+        return S.sp[c] || (KEEP.test(c) ? c : String.fromCharCode(c.charCodeAt(0) + S.off));
+      });
+    },
+    // and back, for the English spelling (IAST) and search
+    from: function (t) {
+      if (!S) return t;
+      S.back.forEach(function (b) { t = t.replace(b[0], b[1]); });
+      var lo = 0x900 + S.off, hi = lo + 0x7f;
+      return t.replace(/[ঀ-෿]/g, function (c) {
+        var n = c.charCodeAt(0);
+        return n >= lo && n <= hi ? String.fromCharCode(n - S.off) : c;
+      });
+    },
+    // Rewrite the text (and its tooltips) in the pieces, their group rows, the home contents and the site's name
+    page: function () {
+      if (!S) return;
+      document.documentElement.setAttribute("data-scr", ind);
+      [].forEach.call(document.querySelectorAll(".grp, .ash, #home .tocg, #tfr, #home .hl1, #home h1, #btt"), function (r) {
+        var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
+        while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) n.data = SCR.to(n.data);
+        [].forEach.call(r.querySelectorAll("[title], [aria-label]"), function (e) {
+          ["title", "aria-label"].forEach(function (a) {
+            var v = e.getAttribute(a);
+            if (v && /[ऀ-ॿ]/.test(v)) e.setAttribute(a, SCR.to(v));
+          });
+        });
+        // the language of the text, for screen readers (the English parts keep lang="en")
+        if (r.matches(".ash[lang]")) r.lang = ind;
+        [].forEach.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"), function (e) {
+          e.lang = ind;
+        });
+      });
+    },
+  };
+
   // The whole run of groups and pieces, in reading order
   window.renderPieces = function (C) {
     var all = [];

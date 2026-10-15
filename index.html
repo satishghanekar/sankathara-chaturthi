@@ -149,7 +149,7 @@
     <div class="sp-body">
       <p class="sp-note" id="spln"></p>
       <div class="sp-card" id="spll" role="radiogroup" aria-labelledby="splt"></div>
-      <p class="sp-note"><span class="mr">मेनूसाठी इंग्रजी नेहमी उपलब्ध आहे; दुसरा पर्याय तुमची मुख्य भाषा.</span><span class="en" lang="en">Menus can always be in English; the other choice is your main language.</span></p>
+      <p class="sp-note"><span class="mr">मेनूसाठी इंग्रजी नेहमी उपलब्ध आहे; दुसरा पर्याय तुमची मुख्य भाषा. कन्नड मेनू अजून नाहीत, म्हणून कन्नडसोबत मेनू इंग्रजीत असतात.</span><span class="en" lang="en">Menus can always be in English; the other choice is your main language. Kannada has no menus of its own yet, so with Kannada they are in English.</span></p>
     </div>
   </div>
 </div>
@@ -219,6 +219,7 @@
     (function (me) {
       var p = me.parentNode, a = me.previousElementSibling, b = a.previousElementSibling;
       me.insertAdjacentHTML("beforebegin", renderPieces(CONTENT));
+      SCR.page(); // in Kannada letters when that is the chosen language
       // Leave only the pieces behind, as if they had been written here
       p.removeChild(b);
       p.removeChild(a);
@@ -314,7 +315,7 @@
     <h3>Settings</h3>
     <p>Settings is in four groups: Languages, Reading, Screen and About.</p>
     <ul>
-      <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written) or English (in English letters). Tap it to pick.</li>
+      <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or <span lang="kn">ಕನ್ನಡ</span> (the same words in Kannada letters). Tap it to pick. With Kannada the menus are in English, and the second language can be English or None.</li>
       <li><b>Second language:</b> shown smaller, under each line, when the अ/A button shows both. Pick the other language, or <b>None</b> to read in one language only. Choosing English as the main language makes Marathi the second, and the other way round.</li>
       <li><b>Menus and buttons:</b> English or your main language, for the date card, buttons and settings. With English as the main language, menus are in English.</li>
       <li><b>Preview:</b> the first lines of the Ganapati aarti, as your choices will show them.</li>

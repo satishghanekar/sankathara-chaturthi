@@ -46,6 +46,9 @@
     // Both, English first (Settings → In Both, show first): the same two cards, A on the left
     bothEn: '<svg viewBox="0 0 44 34" width="42" height="34" aria-hidden="true"><rect x="2" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="11.5" y="21.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text><rect x="23" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="32.5" y="22" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text></svg>',
   };
+  // In Kannada letters the cards show ಕ in place of अ
+  if (SCR.k)
+    for (var k in LI) LI[k] = LI[k].replace('font-family:var(--head)">अ<', "font-family:'Noto Sans Kannada'\">ಕ<");
   // Icons for the dhrupad button: repeated after every stanza / shown once
   var RB_LOOP =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M31 19a12 12 0 1 1-4-8.9"/><path d="M27.5 5.5v5h-5"/><text x="19" y="24.5" text-anchor="middle" font-size="14" stroke="none" fill="currentColor" style="font-family:var(--head)">धृ</text></svg>',
@@ -82,6 +85,8 @@
     lead: "mr", // main language (large text, first in Both): mr | en (Settings → Main language)
     l2: "en", // second language (smaller, under each line): en | mr, or "" for none (Settings → Second language)
     ui: "en", // menus, home page and buttons: en | mr (English, or the main language)
+    ind: "mr", // which language the "mr" slot above shows: mr (Marathi, as written) | kn (the same words in Kannada
+    // letters, made by SCR in js/render.js while the page loads). There are no Kannada menus yet, so menus stay English.
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
     wake: DESK ? 0 : 1, // keep the screen on (phones and tablets; off by default on computers)
@@ -127,7 +132,8 @@
   // and only the chosen languages shown
   if (P.lead !== "en") P.lead = "mr";
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
-  if (P.lead === "en") P.ui = "en";
+  if (P.ind !== "kn") P.ind = "mr";
+  if (P.lead === "en" || P.ind !== "mr") P.ui = "en";
   if (!P.l2 || [P.lead, P.l2, "both"].indexOf(P.lang) < 0) P.lang = P.lead;
 
   // ---- Features held back for a later release ----
@@ -163,6 +169,7 @@
     var S = { "॑": "̍", "॒": "̱", "᳚": "̎" }; // svarita, anudatta, dirgha svarita
     var O = { "ॐ": "om̐", "ऽ": "'", "।": "|", "॥": "||" };
     return function (t) {
+      t = SCR.from(t); // from Kannada letters back to the Devanagari the rules below read
       var o = "",
         i = 0,
         n = t.length,
@@ -371,7 +378,7 @@
       h += "</ul>";
     });
     r.innerHTML =
-      '<a class="rhome" href="#home" data-go="home"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7\"/><path d=\"M8.4 5.6h7.2\"/><path d=\"M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6\"/><path d=\"M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2\"/><path d=\"M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3\"/><path d=\"M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3\"/><path d=\"M12 7v1.8\"/><path d=\"M9.3 13.6l-.9 1.6\"/></svg><span class="mr">मुखपृष्ठ</span><span class="en" lang="en">Home</span></a>' +
+      '<a class="rhome" href="#home" data-go="home"><svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7\"/><path d=\"M8.4 5.6h7.2\"/><path d=\"M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6\"/><path d=\"M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2\"/><path d=\"M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3\"/><path d=\"M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3\"/><path d=\"M12 7v1.8\"/><path d=\"M9.3 13.6l-.9 1.6\"/></svg><span class="mr">' + SCR.to("मुखपृष्ठ") + '</span><span class="en" lang="en">Home</span></a>' +
       h;
   })();
   // Gentle fade-in for verses that scroll into view (never for content already on screen; skipped if the device asks for less motion)
@@ -1500,9 +1507,11 @@
   });
   // Latin digits → Devanagari digits
   function DV(n) {
-    return String(n).replace(/[0-9]/g, function (d) {
-      return "०१२३४५६७८९"[d];
-    });
+    return SCR.to(
+      String(n).replace(/[0-9]/g, function (d) {
+        return "०१२३४५६७८९"[d];
+      }),
+    ); // (Kannada digits in Kannada letters)
   }
   if (!P.fsu) P.fs = dfs();
   function save() {
@@ -1648,7 +1657,13 @@
   var LANGS = {
     mr: { n: "मराठी", g: "अ", d: { mr: "मूळ मजकूर, जसा लिहिला आहे", en: "Marathi · the text as written" } },
     en: { n: "English", g: "A", d: { mr: "इंग्रजी अक्षरांत · Sukhkarta", en: "In English letters · Sukhkarta" } },
+    kn: { n: "ಕನ್ನಡ", g: "ಕ", d: { mr: "कन्नड अक्षरांत · ಸುಖಕರ್ತಾ", en: "In Kannada letters · ಸುಖಕರ್ತಾ" } },
   };
+  // The page has two places for text: the original ("mr", which shows Marathi or, in Kannada letters, Kannada)
+  // and English ("en"). P.lead, P.l2 and P.lang name the place; LK gives the language in it.
+  function LK(slot) {
+    return slot === "mr" ? P.ind : slot;
+  }
   var spH = document.getElementById("sp-home"),
     spL = document.getElementById("sp-lang"),
     spW = 0; // which language the sub-page picks: 1 main, 2 second
@@ -2437,7 +2452,7 @@
     });
     // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
     var en = P.lang === "en",
-      tt = en ? "Sankashti Chaturthi" : "संकष्टी चतुर्थी",
+      tt = en ? "Sankashti Chaturthi" : SCR.to("संकष्टी चतुर्थी"),
       bt0 = document.getElementById("bt"),
       hd = c && c.classList.contains("ash") && c.querySelector("header");
     if (hd && hd.getBoundingClientRect().bottom < 64) {
@@ -2450,7 +2465,7 @@
     // the slim strip shown while the bars are tucked away carries the same name and progress line
     var tkt = document.getElementById("tkt");
     if (tkt.textContent !== tt) tkt.textContent = tt;
-    tkt.lang = en ? "en" : "mr";
+    tkt.lang = en ? "en" : SCR.k || "mr";
     bt0.setAttribute("data-tl", en ? "en" : "mr");
     [].forEach.call(document.querySelectorAll("#jump a,#rail a"), function (a) {
       var g = a.getAttribute("data-go"),
@@ -2532,7 +2547,7 @@
     [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg):not(#tfr),#qrm,#prm,#inm,#szt,#szr"), function (e) {
       e.setAttribute("data-lang", P.ui);
     });
-    root.lang = "mr"; // the page is Marathi; English parts carry lang="en" themselves (screen readers pick the voice from this)
+    root.lang = SCR.k || "mr"; // the page is Marathi (or Kannada); English parts carry lang="en" themselves (screen readers pick the voice from this)
     [].forEach.call(document.querySelectorAll("#su button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
     });
@@ -2574,7 +2589,8 @@
     );
     leadSet();
     spSet();
-    var LB = { mr: [LI.mr, "Marathi"], en: [LI.en, "English"], both: LEAD === "en" ? [LI.bothEn, "English and Marathi"] : [LI.both, "Marathi and English"] }[P.lang],
+    var IN = P.ind === "kn" ? "Kannada" : "Marathi",
+      LB = { mr: [LI.mr, IN], en: [LI.en, "English"], both: LEAD === "en" ? [LI.bothEn, "English and " + IN] : [LI.both, IN + " and English"] }[P.lang],
       lk = P.lang + LEAD;
     if (hb.getAttribute("data-l") !== lk) {
       hb.innerHTML = LB[0];
@@ -2925,6 +2941,28 @@
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
   });
+  // Switching between Marathi and Kannada letters reloads the page. Settings' Back steps are taken off first (a
+  // reload keeps them, and Back would then land on a step whose panel is gone), and Settings opens again after.
+  function spReload() {
+    var n = NAV ? (hs().sub ? 2 : hs().ov ? 1 : 0) : 0;
+    try {
+      sessionStorage.setItem("aarti-sp", "1");
+    } catch (e) {}
+    if (!n) return location.reload();
+    addEventListener("popstate", function () {
+      location.reload();
+    });
+    popSkip++;
+    history.go(-n);
+  }
+  try {
+    if (sessionStorage.getItem("aarti-sp")) {
+      sessionStorage.removeItem("aarti-sp");
+      setTimeout(function () {
+        setP(true);
+      });
+    }
+  } catch (e) {}
   // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help, Settings)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
@@ -3024,7 +3062,7 @@
     apply();
     save();
     if (c) c.scrollIntoView();
-    var L = P.lang === "both" ? LANGS[P.lead].n + " + " + LANGS[P.l2].n : LANGS[P.lang].n;
+    var L = P.lang === "both" ? LANGS[LK(P.lead)].n + " + " + LANGS[LK(P.l2)].n : LANGS[LK(P.lang)].n;
     flash(L, L);
   };
 
@@ -3034,12 +3072,13 @@
     var mr = P.ui === "mr",
       v1 = document.getElementById("sl1v"),
       v2 = document.getElementById("sl2v");
-    v1.textContent = LANGS[P.lead].n;
-    v1.lang = P.lead;
-    v2.textContent = P.l2 ? LANGS[P.l2].n : mr ? "काहीही नाही" : "None";
-    v2.lang = P.l2 || P.ui;
+    v1.textContent = LANGS[LK(P.lead)].n;
+    v1.lang = LK(P.lead);
+    v2.textContent = P.l2 ? LANGS[LK(P.l2)].n : mr ? "काहीही नाही" : "None";
+    v2.lang = P.l2 ? LK(P.l2) : P.ui;
     // menus are in English or the main language, so with English as the main language there is nothing to pick
-    document.getElementById("surow").hidden = P.lead === "en";
+    // (nor with Kannada, which has no menus of its own yet)
+    document.getElementById("surow").hidden = LK(P.lead) !== "mr";
     // the English spelling matters only when English is one of the two languages
     document.getElementById("strow").hidden = P.lead !== "en" && P.l2 !== "en";
     [].forEach.call(document.querySelectorAll("#srf button"), function (b) {
@@ -3049,19 +3088,19 @@
     var pv = document.getElementById("sprev"),
       q = function (l) {
         return [].slice.call(document.querySelectorAll("#a1 .items .verse > ." + l + " p"), 0, 2).map(function (p) {
-          return "<p>" + p.innerHTML + "</p>";
+          return "<p>" + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p>"; // a danda never starts a line
         });
       };
     pv.innerHTML =
       '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + "</div>" +
-      '<div class="sp-p1" lang="' + P.lead + '">' + q(P.lead).join("") + "</div>" +
-      (P.l2 ? '<div class="sp-p2" lang="' + P.l2 + '">' + q(P.l2).join("") + "</div>" : "");
+      '<div class="sp-p1" lang="' + LK(P.lead) + '">' + q(P.lead).join("") + "</div>" +
+      (P.l2 ? '<div class="sp-p2" lang="' + LK(P.l2) + '">' + q(P.l2).join("") + "</div>" : "");
     if (!spL.hidden) spList();
   }
   // The language sub-page: one row per language (and "None" for the second language)
   function spList() {
     var mr = P.ui === "mr",
-      cur = spW === 1 ? P.lead : P.l2,
+      cur = spW === 1 ? LK(P.lead) : P.l2 && LK(P.l2),
       ks = Object.keys(LANGS).concat(spW === 2 ? [""] : []);
     document.getElementById("splt").textContent = spW === 1 ? (mr ? "मुख्य भाषा" : "Main language") : mr ? "दुसरी भाषा" : "Second language";
     document.getElementById("spln").textContent =
@@ -3075,11 +3114,14 @@
     document.getElementById("spll").innerHTML = ks
       .map(function (k) {
         var L = LANGS[k],
-          dis = spW === 2 && k === P.lead;
+          // the second language can't be the main one, nor (for now) a second Indian language beside it
+          main = spW === 2 && k === LK(P.lead),
+          pair = spW === 2 && !main && k !== "en" && k && P.lead !== "en",
+          dis = main || pair;
         return (
           '<button type="button" class="sp-row sp-lg" role="radio" data-v="' + k + '" aria-checked="' + (k === cur) + '"' + (dis ? " disabled" : "") + ">" +
           '<span class="sp-gl" aria-hidden="true"' + (L ? ' lang="' + k + '"' : "") + ">" + (L ? L.g : "–") + "</span>" +
-          '<span class="sp-l">' + (L ? '<span lang="' + k + '">' + L.n + "</span><small>" + (dis ? (mr ? "मुख्य भाषा आहे" : "Your main language") : L.d[P.ui]) + "</small>" : mr ? "काहीही नाही" : "None") + "</span>" +
+          '<span class="sp-l">' + (L ? '<span lang="' + k + '">' + L.n + "</span><small>" + (main ? (mr ? "मुख्य भाषा आहे" : "Your main language") : pair ? (mr ? "मुख्य भाषा इंग्रजी असताना" : "Only with English as the main language") : L.d[P.ui]) + "</small>" : mr ? "काहीही नाही" : "None") + "</span>" +
           '<span class="sp-rd" aria-hidden="true"></span></button>'
         );
       })
@@ -3119,13 +3161,22 @@
       c = cur(),
       // keep showing the same thing: the main language, the second, or both
       role = P.lang === "both" ? 3 : P.lang === P.lead ? 1 : 2;
+    // Marathi and Kannada share the original's place: switching between them rewrites the text, so the page reloads
+    var ind = v === "en" || !v ? P.ind : v;
+    v = v === "en" || !v ? v : "mr";
     if (spW === 1) {
-      if (v === P.lead) return;
+      if (v === P.lead && ind === P.ind) return;
       if (v === P.l2) P.l2 = P.lead;
       P.lead = v;
     } else P.l2 = v;
-    if (P.lead === "en") P.ui = "en";
+    if (P.lead === "en" || ind !== "mr") P.ui = "en";
     P.lang = !P.l2 || role === 1 ? P.lead : role === 2 ? P.l2 : "both";
+    if (ind !== P.ind) {
+      P.ind = ind;
+      save();
+      spReload();
+      return;
+    }
     apply();
     save();
     if (c) c.scrollIntoView();
@@ -3144,7 +3195,7 @@
     b.type = "button";
     b.id = "jhb";
     b.innerHTML =
-      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg><span class="mr">मुखपृष्ठ</span><span class="en" lang="en">Home</span>';
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg><span class="mr">' + SCR.to("मुखपृष्ठ") + '</span><span class="en" lang="en">Home</span>';
     b.onclick = goHomeNav;
     li.appendChild(b);
     ul.appendChild(li);
@@ -3333,7 +3384,7 @@
   // ---- Search: every Marathi line with its English line; matches ignore svara marks and punctuation ----
   var IX = [];
   function nz(s) {
-    return s
+    return SCR.from(s) // Kannada letters, in the text or typed, match as the Devanagari they come from
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "") // IAST letters match plain ones: ā → a, ṣ → s
       .replace(/[\u200b\u200c\u200d\u0951\u0952\u1CDA]/g, "")
@@ -3848,7 +3899,7 @@
       pv.innerHTML = "";
       var h = document.createElement("h1");
       h.className = "pvh";
-      h.innerHTML = lbl("संकष्टी चतुर्थी", "Sankashti Chaturthi");
+      h.innerHTML = lbl(SCR.to("संकष्टी चतुर्थी"), "Sankashti Chaturthi");
       pv.appendChild(h);
       var tc = document.createElement("div");
       tc.className = "pvtoc";
@@ -4310,9 +4361,7 @@
         if (!n) return;
         s = document.createElement("span");
         s.className = "pgn";
-        s.textContent = P.lang !== "mr" ? n : String(n).replace(/[0-9]/g, function (c) {
-          return "०१२३४५६७८९"[c];
-        });
+        s.textContent = P.lang !== "mr" ? n : DV(n);
         li.appendChild(s);
       });
     }
@@ -4567,6 +4616,7 @@
     "fonts/tiro-sanskrit-devanagari.woff2",
     "fonts/tiro-sanskrit-latin.woff2",
     "fonts/tiro-sanskrit-latin-ext.woff2",
+    "fonts/noto-sans-kannada-kannada.woff2",
   ];
   if (/^https?:$/.test(location.protocol)) {
     try {

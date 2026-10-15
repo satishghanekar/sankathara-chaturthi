@@ -111,6 +111,19 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Kannada letters (Settings → Main language → ಕನ್ನಡ). One file, Noto Sans Kannada, with the dandas and Vedic accent
+   marks too, which must come from the same font as the letter they sit on. Where it is used: the rule at the end of
+   this file. (Not added under the other families: a Kannada face inside "Noto Sans Devanagari" changes how Chrome
+   draws the Marathi.) A browser downloads it only when Kannada letters are on screen. */
+@font-face {
+  font-family: "Noto Sans Kannada";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/noto-sans-kannada-kannada.woff2) format("woff2");
+  unicode-range: U+0951-0952, U+0964-0965, U+0C80-0CF3, U+1CD0-1CFA, U+200C-200D, U+25CC;
+}
+
 /* Text font choices (Settings → Text font). Each family joins its Marathi and English letters; a browser downloads
    a file only when someone picks that font (the service worker then keeps it for offline use). */
 @font-face {
@@ -4995,4 +5008,15 @@ html[data-sp] {
   .sp {
     display: none !important;
   }
+}
+
+/* ==== Kannada letters: the original text when it is shown in Kannada letters (html[data-scr="kn"], set by js/render.js),
+   and the word ಕನ್ನಡ wherever it appears (the language pages in Settings, Help) ==== */
+html[data-scr="kn"] .mr,
+html[data-scr="kn"] .mr *,
+html[data-scr="kn"] #home .nm,
+html[data-scr="kn"] #home .hl1,
+html[data-scr="kn"] #bt[data-tl="mr"] #btt,
+[lang="kn"]:not(html):not(.ash) {
+  font-family: "Noto Sans Kannada", var(--body) !important;
 }
