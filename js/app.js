@@ -13,7 +13,7 @@
                              run once at start-up when English style = sukhakartā
      Layout helpers          two-column grid rows, contents rail
      Astronomy               sunrise/moonrise and lunar dates (no internet)
-     Next Sankashti card     date, moonrise, location, date strip,
+     Next Sankathara Chaturthi card     date, moonrise, location, date strip,
                              calendar (.ics), on-the-day countdown
      Dhrupad markers         tappable ↻ ध्रुपद pop-ups
      Stanza numbers          ॥ १ ॥ added at the end of each stanza
@@ -46,9 +46,13 @@
     // Both, English first (Settings → In Both, show first): the same two cards, A on the left
     bothEn: '<svg viewBox="0 0 44 34" width="42" height="34" aria-hidden="true"><rect x="2" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="11.5" y="21.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text><rect x="23" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="32.5" y="22" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text></svg>',
   };
-  // In Kannada letters the cards show ಕ in place of अ
-  if (SCR.k)
-    for (var k in LI) LI[k] = LI[k].replace('font-family:var(--head)">अ<', "font-family:'Noto Sans Kannada'\">ಕ<");
+  // In Kannada letters the cards show ಕ in place of अ (set again when the main language changes)
+  var LI0 = {};
+  for (var k in LI) LI0[k] = LI[k];
+  function liSet() {
+    for (var k in LI0) LI[k] = SCR.k ? LI0[k].replace('font-family:var(--head)">अ<', "font-family:'Noto Sans Kannada'\">ಕ<") : LI0[k];
+  }
+  liSet();
   // Icons for the dhrupad button: repeated after every stanza / shown once
   var RB_LOOP =
       '<svg viewBox="0 0 38 38" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M31 19a12 12 0 1 1-4-8.9"/><path d="M27.5 5.5v5h-5"/><text x="19" y="24.5" text-anchor="middle" font-size="14" stroke="none" fill="currentColor" style="font-family:var(--head)">धृ</text></svg>',
@@ -412,7 +416,7 @@
     }, 400);
   })();
 
-  // ---- Astronomy for the Next Sankashti card ----
+  // ---- Astronomy for the Next Sankathara Chaturthi card ----
   // Low-precision sun & moon positions (Meeus, Astronomical Algorithms ch. 25 & 47, main terms),
   // lunar day (tithi), moonrise, and the Sankashti rule: Krishna-paksha Chaturthi prevailing at moonrise.
   var SK = (function () {
@@ -648,7 +652,7 @@
     return { elong: elong, rise: rise, upcoming: upcoming };
   })();
 
-  // ---- Next Sankashti card (computed on this device; works offline) ----
+  // ---- Next Sankathara Chaturthi card (computed on this device; works offline) ----
   // Default place for each time zone: [latitude, longitude, Marathi name, English name]
   var SKTZ = {
     "America/New_York": [39.96, -83.0, "कोलंबस", "Columbus, OH"],
@@ -919,11 +923,11 @@
     if (!L) {
       box.hidden = false;
       box.innerHTML =
-        '<div class="skh"><span class="mr">पुढील संकष्टी चतुर्थी</span><span class="en" lang="en">Next Sankashti Chaturthi</span></div><button type="button" class="skl" id="skl">📍 <span class="mr">तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा</span><span class="en" lang="en">Use my location to show the date and moonrise</span></button>';
+        '<div class="skh"><span class="mr">पुढील संकटहर चतुर्थी</span><span class="en" lang="en">Next Sankathara Chaturthi</span></div><button type="button" class="skl" id="skl">📍 <span class="mr">तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा</span><span class="en" lang="en">Use my location to show the date and moonrise</span></button>';
       skSlim();
       return;
     }
-    // The next Sankashti first (fast); then, a moment later, every Sankashti from 1 January last year
+    // The next Sankathara Chaturthi first (fast); then, a moment later, every Sankashti from 1 January last year
     // to the end of next year for the date strip under the card (a few hundred ms on a slow phone)
     var key = L.lat + "," + L.lon + "," + new Date().toDateString();
     if (!skCache || skCache.key !== key) {
@@ -1003,11 +1007,11 @@
       (skCache.part
         ? ""
         : '<div class="sks" role="listbox" aria-orientation="horizontal" aria-label="' +
-          (en ? "Sankashti dates" : "संकष्टी चतुर्थीच्या तारखा") +
+          (en ? "Sankathara Chaturthi dates" : "संकटहर चतुर्थीच्या तारखा") +
           '">' +
           chips +
           "</div>") +
-      '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकष्टीवर परत</span><span class="en" lang="en">↩ Back to next Sankashti</span></button>' +
+      '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकटहर चतुर्थीवर परत</span><span class="en" lang="en">↩ Back to next Sankathara Chaturthi</span></button>' +
       (skCache.part
         ? ""
         : '<button type="button" class="skl" id="skall"><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>');
@@ -1029,7 +1033,7 @@
   }
   addEventListener("resize", skDot);
   if (document.fonts) document.fonts.ready.then(skDot);
-  // Folded card: one slim line with Ganesha, the next Sankashti and moonrise (always the next one,
+  // Folded card: one slim line with Ganesha, the next Sankathara Chaturthi and moonrise (always the next one,
   // whichever date is picked in the strip). On Sankashti day the card stays open unless folded again that visit.
   var skToday = false,
     foldTouched = false;
@@ -1046,11 +1050,11 @@
     }
     var f = skFmt(o),
       dd = Math.round((o.day - skMid()) / 86400000),
-      hm = dd === 0 ? "आज संकष्टी चतुर्थी" : dd === 1 ? "उद्या संकष्टी चतुर्थी" : "पुढील संकष्टी चतुर्थी",
-      he = dd === 0 ? "Sankashti Chaturthi today" : dd === 1 ? "Sankashti Chaturthi tomorrow" : "Next Sankashti Chaturthi";
+      hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : "पुढील संकटहर चतुर्थी",
+      he = dd === 0 ? "Sankathara Chaturthi today" : dd === 1 ? "Sankathara Chaturthi tomorrow" : "Next Sankathara Chaturthi";
     if (f.ang) {
-      hm = hm.replace("संकष्टी", "अंगारकी संकष्टी");
-      he = he.replace("Sankashti", "Angaraki Sankashti");
+      hm = hm.replace("संकटहर", "अंगारकी संकटहर");
+      he = he.replace("Sankathara", "Angaraki Sankathara");
     }
     skToday = dd === 0;
     t.innerHTML =
@@ -1095,20 +1099,20 @@
     var o = C.list[k],
       f = skFmt(o),
       dd = Math.round((o.day - skMid()) / 86400000);
-    var hm = dd === 0 ? "आज संकष्टी चतुर्थी" : dd === 1 ? "उद्या संकष्टी चतुर्थी" : k === C.ni ? "पुढील संकष्टी चतुर्थी" : k < C.ni ? "मागील संकष्टी चतुर्थी" : "आगामी संकष्टी चतुर्थी",
+    var hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : k === C.ni ? "पुढील संकटहर चतुर्थी" : k < C.ni ? "मागील संकटहर चतुर्थी" : "आगामी संकटहर चतुर्थी",
       he =
         dd === 0
-          ? "Sankashti Chaturthi today"
+          ? "Sankathara Chaturthi today"
           : dd === 1
-            ? "Sankashti Chaturthi tomorrow"
+            ? "Sankathara Chaturthi tomorrow"
             : k === C.ni
-              ? "Next Sankashti Chaturthi"
+              ? "Next Sankathara Chaturthi"
               : k < C.ni
-                ? "Previous Sankashti Chaturthi"
-                : "Upcoming Sankashti Chaturthi";
+                ? "Previous Sankathara Chaturthi"
+                : "Upcoming Sankathara Chaturthi";
     if (f.ang) {
-      hm = hm.replace("संकष्टी", "अंगारकी संकष्टी");
-      he = he.replace("Sankashti", "Angaraki Sankashti");
+      hm = hm.replace("संकटहर", "अंगारकी संकटहर");
+      he = he.replace("Sankathara", "Angaraki Sankathara");
     }
     box.className = "skc" + (dd === 0 ? " today" : "");
     box.querySelector(".skt").innerHTML =
@@ -1228,7 +1232,7 @@
           })
         : [C.list[C.sel]],
       stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z",
-      L2 = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//sankashti-chaturthi//EN"];
+      L2 = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//sankathara-chaturthi//EN"];
     if (!items.length) return;
     // The group's program runs 7:00–8:30 pm on the day, whatever the moonrise time
     function ev(o) {
@@ -1237,7 +1241,7 @@
       return {
         d: d,
         f: f,
-        nm: (f.ang ? "Angaraki " : "") + "Sankashti Chaturthi",
+        nm: (f.ang ? "Angaraki " : "") + "Sankathara Chaturthi",
         t0: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0),
         t1: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20, 30),
       };
@@ -1262,7 +1266,7 @@
     function save() {
       var a = document.createElement("a");
       a.href = u;
-      a.download = all ? "sankashti-all.ics" : "sankashti-" + dt(v1.d) + ".ics";
+      a.download = all ? "sankathara-all.ics" : "sankathara-" + dt(v1.d) + ".ics";
       document.body.appendChild(a);
       a.click();
       flash("कॅलेंडर फाइल डाउनलोड झाली; ती उघडा", "Calendar file downloaded; open it to add " + (all ? "the events" : "the event"));
@@ -1298,7 +1302,7 @@
     if (e.target.closest("#skcal")) skIcs();
     else if (e.target.closest("#skall")) skIcs(true);
   });
-  // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankashti" returns
+  // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankathara Chaturthi" returns
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skc .skch, #skb");
     if (!b || !skCache) return;
@@ -1549,6 +1553,9 @@
     var k = [
       P.lang,
       LEAD,
+      P.ind,
+      P.fnt,
+      P.tr,
       P.ref,
       P.pf,
       P.xf,
@@ -1560,8 +1567,12 @@
     var m = document.createElement("span");
     m.style.cssText = "position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap";
     document.body.appendChild(m);
-    var base = parseFloat(getComputedStyle(root).getPropertyValue("--fs")) || P.fs,
-      w = document.querySelector(".wrap"),
+    // measured at the device default size, as on first load: some layouts (two columns) size their columns in em,
+    // so measuring at the current size would give a different answer each time and the size would creep down
+    var was = root.style.getPropertyValue("--fs"),
+      base = dfs();
+    root.style.setProperty("--fs", base + "px");
+    var w = document.querySelector(".wrap"),
       W = w ? w.clientWidth : innerWidth - 32,
       r = 0;
     [].forEach.call(document.querySelectorAll(P.lang === "en" || LEAD === "en" ? ".verse .en p" : ".verse .mr p"), function (p) {
@@ -1580,6 +1591,7 @@
       });
     });
     m.remove();
+    root.style.setProperty("--fs", was);
     return (FR[k] = r);
   }
   // FSA: the automatic size for this screen, worked out even when the reader has chosen a size,
@@ -2449,7 +2461,7 @@
     });
     // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
     var en = P.lang === "en",
-      tt = en ? "Sankashti Chaturthi" : SCR.to("संकष्टी चतुर्थी"),
+      tt = en ? "Sankathara Chaturthi" : SCR.to("संकटहर चतुर्थी"),
       bt0 = document.getElementById("bt"),
       hd = c && c.classList.contains("ash") && c.querySelector("header");
     if (hd && hd.getBoundingClientRect().bottom < 64) {
@@ -2585,7 +2597,7 @@
     spSet();
     var IN = P.ind === "kn" ? "Kannada" : "Marathi",
       LB = { mr: [LI.mr, IN], en: [LI.en, "English"], both: LEAD === "en" ? [LI.bothEn, "English and " + IN] : [LI.both, IN + " and English"] }[P.lang],
-      lk = P.lang + LEAD;
+      lk = P.lang + LEAD + SCR.k;
     if (hb.getAttribute("data-l") !== lk) {
       hb.innerHTML = LB[0];
       hb.setAttribute("data-l", lk);
@@ -2616,26 +2628,41 @@
       asShow();
     }
     mark();
+    szSet();
   }
 
   // ---- Settings panel ----
-  document.getElementById("lg").onclick = function () {
-    P.fs = Math.min(52, P.fs + 2);
-    P.fsu = 1;
-    apply();
+  // Text size: the Settings page and its preview change at once; the long page under it is laid out
+  // again once the taps stop (or when Settings closes). Laying it out on every tap made A−/A+ feel stuck on phones.
+  var fsT = 0;
+  function fsTap(fs, fsu) {
+    P.fs = fs;
+    P.fsu = fsu;
     save();
+    pn.style.setProperty("--fs", P.fs + "px");
+    szSet();
+    clearTimeout(fsT);
+    fsT = setTimeout(fsFlush, 700);
+  }
+  // The size shown between A− and A+: a share of the size Reset gives (the fitted size), as the pinch shows it
+  function szSet() {
+    document.getElementById("szv").textContent = Math.round((P.fs / (FSA || dfs())) * 100) + "%";
+  }
+  function fsFlush() {
+    if (!fsT) return;
+    clearTimeout(fsT);
+    fsT = 0;
+    apply();
+    pn.style.removeProperty("--fs");
+  }
+  document.getElementById("lg").onclick = function () {
+    fsTap(Math.min(52, P.fs + 2), 1);
   };
   document.getElementById("sr").onclick = function () {
-    P.fsu = 0;
-    P.fs = dfs();
-    apply();
-    save();
+    fsTap(dfs(), 0);
   };
   document.getElementById("sm").onclick = function () {
-    P.fs = Math.max(14, P.fs - 2);
-    P.fsu = 1;
-    apply();
-    save();
+    fsTap(Math.max(14, P.fs - 2), 1);
   };
   // Text font: switched at once; the text size is fitted again when the new font has arrived
   document.getElementById("sfn").onclick = function (e) {
@@ -2795,6 +2822,7 @@
     el._ret = null;
   }
   function setP(o) {
+    if (!o) fsFlush();
     if (o) ovPush();
     ovFocus(pn, o);
     pn.hidden = !o;
@@ -2832,6 +2860,7 @@
       b.setAttribute("aria-expanded", String(o));
     });
     if (o) {
+      fsFlush();
       ovFocus(pn, false);
       pn.hidden = true;
       aa.setAttribute("aria-expanded", "false");
@@ -2924,28 +2953,6 @@
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
   });
-  // Switching between Marathi and Kannada letters reloads the page. Settings' Back steps are taken off first (a
-  // reload keeps them, and Back would then land on a step whose panel is gone), and Settings opens again after.
-  function spReload() {
-    var n = NAV && hs().ov ? 1 : 0;
-    try {
-      sessionStorage.setItem("aarti-sp", "1");
-    } catch (e) {}
-    if (!n) return location.reload();
-    addEventListener("popstate", function () {
-      location.reload();
-    });
-    popSkip++;
-    history.go(-n);
-  }
-  try {
-    if (sessionStorage.getItem("aarti-sp")) {
-      sessionStorage.removeItem("aarti-sp");
-      setTimeout(function () {
-        setP(true);
-      });
-    }
-  } catch (e) {}
   // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help, Settings)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
@@ -3118,7 +3125,7 @@
       l = k.split(":"),
       v = l[0];
     if (l[1] && l[1] !== P.tr) trPick(l[1]);
-    // Marathi and Kannada share the original's place: switching between them rewrites the text, so the page reloads
+    // Marathi and Kannada share the original's place: switching between them rewrites the text in place
     var ind = v === "en" || !v ? P.ind : v;
     v = v === "en" || !v ? v : "mr";
     if (w === 1) {
@@ -3127,14 +3134,16 @@
     } else P.l2 = v;
     if (P.lead === "en" || ind !== "mr") P.ui = "en";
     P.lang = !P.l2 || role === 1 ? P.lead : role === 2 ? P.l2 : "both";
-    if (ind !== P.ind) {
+    var sw = ind !== P.ind;
+    if (sw) {
       P.ind = ind;
-      save();
-      spReload();
-      return;
+      SCR.set(ind);
+      liSet();
+      buildIX();
     }
     apply();
     save();
+    if (sw) refit(); // Kannada lines are wider or narrower than Marathi ones
     if (c) c.scrollIntoView();
   }
   document.getElementById("sl1s").onchange = function () {
@@ -3289,6 +3298,11 @@
       if (pz && e.touches.length === 2) {
         if (e.cancelable) e.preventDefault();
         var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
+        // on the Settings page only the page and its preview follow the fingers; the reading view catches up after
+        if (!pn.hidden) {
+          if (v !== P.fs) fsTap(v, 1);
+          return;
+        }
         if (v !== P.fs) {
           P.fs = v;
           P.fsu = 1;
@@ -3310,8 +3324,8 @@
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
-        // Offer a one-tap way back to the default size for a few seconds
-        if (P.fs !== (FSA || dfs())) {
+        // Offer a one-tap way back to the default size for a few seconds (Settings has its own reset)
+        if (P.fs !== (FSA || dfs()) && pn.hidden) {
           clearTimeout(szTm);
           szTm = setTimeout(function () {
             szt.classList.remove("on");
@@ -3861,7 +3875,7 @@
       pv.innerHTML = "";
       var h = document.createElement("h1");
       h.className = "pvh";
-      h.innerHTML = lbl(SCR.to("संकष्टी चतुर्थी"), "Sankashti Chaturthi");
+      h.innerHTML = lbl(SCR.to("संकटहर चतुर्थी"), "Sankathara Chaturthi");
       pv.appendChild(h);
       var tc = document.createElement("div");
       tc.className = "pvtoc";
@@ -4414,7 +4428,7 @@
   // ---- Share, QR code and the Add to Home Screen buttons ----
   (function () {
     var url = location.origin + location.pathname,
-      title = "संकष्टी चतुर्थी";
+      title = "संकटहर चतुर्थी";
     var qm = document.getElementById("qrm");
     function qr(o) {
       if (o) ovPush();
@@ -4438,7 +4452,7 @@
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !qm.hidden) qr(false);
     });
-    // Share: a ready reminder for the group chat (next Sankashti, pooja time near the temple, moonrise) plus the link
+    // Share: a ready reminder for the group chat (next Sankathara Chaturthi, pooja time near the temple, moonrise) plus the link
     // sep = true: leave the link out, because the share sheet is given it separately (it lands at the end)
     function shareText(sep) {
       var C = skCache,
@@ -4447,7 +4461,7 @@
       var tip = mr
         ? "\nफोनवर ॲपसारखे ठेवण्यासाठी: लिंक उघडा आणि होम स्क्रीनवर जोडा (Add to Home Screen) दाबा."
         : "\nTip: open the link and tap Add to Home Screen to keep it on your phone like an app.";
-      if (!C || !L) return (mr ? "संकष्टी चतुर्थी — पूजा आणि आरती" : title) + (sep ? "" : "\n" + url) + tip;
+      if (!C || !L) return (mr ? "संकटहर चतुर्थी — पूजा आणि आरती" : title) + (sep ? "" : "\n" + url) + tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
         f = skFmt(o),
         t = skTemple(L),
@@ -4455,7 +4469,7 @@
       if (mr)
         return (
           ang +
-          "संकष्टी चतुर्थी: " +
+          "संकटहर चतुर्थी: " +
           f.dmr +
           (t ? " · पूजा सायं. ७:०० ते ८:३०, भारतीय हिंदू मंदिर, पॉवेल" : "") +
           (o.rise ? " · चंद्रोदय " + f.tmr : "") +
@@ -4464,7 +4478,7 @@
         );
       return (
         ang +
-        "Sankashti Chaturthi: " +
+        "Sankathara Chaturthi: " +
         f.den +
         (t ? " · Pooja 7:00–8:30 pm at Bharatiya Hindu Temple, Powell" : "") +
         (o.rise ? " · Moonrise " + f.ten : "") +
@@ -4593,7 +4607,7 @@
       hd.appendChild(m1);
       var m2 = document.createElement("meta");
       m2.name = "apple-mobile-web-app-title";
-      m2.content = "संकष्टी चतुर्थी";
+      m2.content = "संकटहर चतुर्थी";
       hd.appendChild(m2);
     } catch (e) {}
     // Offline: a small cloud in the top bar while there is no internet (#ofb), and in Settings → About whether the

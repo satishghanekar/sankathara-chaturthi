@@ -13,6 +13,15 @@ window.CONTENT = {
    "en": "Next"
   }
  },
+ // Wikipedia pages in the other scripts' languages, keyed by the Marathi page the credit links to.
+ // A credit with no page here links to its English page instead.
+ "wiki": {
+  "kn": {
+   "https://mr.wikipedia.org/wiki/एकनाथ": "https://kn.wikipedia.org/wiki/ಸಂತ_ಏಕನಾಥ್",
+   "https://mr.wikipedia.org/wiki/नामदेव": "https://kn.wikipedia.org/wiki/ನಾಮ್‍ದೇವ್",
+   "https://mr.wikipedia.org/wiki/समर्थ_रामदास_स्वामी": "https://kn.wikipedia.org/wiki/ಸಮರ್ಥ_ರಾಮದಾಸರು"
+  }
+ },
  "groups": [
   {
    "id": "g-pooja",
