@@ -1698,8 +1698,12 @@
     } catch (e) {}
     return n;
   }
-  var fontN = -1;
+  var fontN = -1,
+    MQP = matchMedia("print");
   function fontsIn() {
+    // Fonts used only by the printout arrive while printing; measuring then would fit the screen's text
+    // to the printed page's layout. Wait until printing is over (afterprint below).
+    if (MQP.matches) return;
     var n = fontsN();
     if (n === fontN) return;
     fontN = n;
@@ -1710,6 +1714,9 @@
       skDot();
     } catch (e) {}
   }
+  addEventListener("afterprint", function () {
+    setTimeout(fontsIn, 0);
+  });
   if (document.fonts) {
     try {
       document.fonts.ready.then(fontsIn);
@@ -3161,7 +3168,7 @@
     });
     if (pn.hidden) return; // the rest is the preview, made when Settings is open
     // Preview: the first two lines of the Ganapati aarti, main language large and second small. Its size, font and
-    // line spacing come from the CSS (.sp-p1 / .sp-p2 at the end of css/site.css, which follow the same text size
+    // line spacing come from the CSS (.sp-p1 / .sp-p2 in css/09-settings-page.css, which follow the same text size
     // and font as the pieces), so A−, A+, reset and the font buttons change it at once.
     var q = function (l, cls) {
       var ps = [].slice.call(document.querySelectorAll("#a1 .items .verse > ." + l + " p"), 0, 2);
@@ -4728,21 +4735,8 @@
   })();
   // ---- Offline use: home-screen app details and the service worker (sw.js) ----
   // The cache name below must match the one in sw.js; change both on every deploy.
-  // Font files kept for offline use (the same list is in sw.js)
-  var FONTS = [
-    "fonts/inter-latin.woff2",
-    "fonts/inter-latin-ext.woff2",
-    "fonts/noto-sans-deva-devanagari.woff2",
-    "fonts/noto-sans-deva-latin.woff2",
-    "fonts/noto-sans-deva-latin-ext.woff2",
-    "fonts/tiro-marathi-devanagari.woff2",
-    "fonts/tiro-marathi-latin.woff2",
-    "fonts/tiro-marathi-latin-ext.woff2",
-    "fonts/tiro-sanskrit-devanagari.woff2",
-    "fonts/tiro-sanskrit-latin.woff2",
-    "fonts/tiro-sanskrit-latin-ext.woff2",
-    "fonts/noto-sans-kannada-kannada.woff2",
-  ];
+  // Font files kept for offline use (the list is in js/parts.js, shared with sw.js)
+  var FONTS = SITE_PARTS.fonts;
   if (/^https?:$/.test(location.protocol)) {
     try {
       var hd = document.head,
@@ -4819,8 +4813,8 @@
     addEventListener("offline", function () {
       ofSet("off");
     });
-    // Files the page is built from besides itself (the same list is in sw.js)
-    var PARTS = ["css/site.css", "js/app.js", "content/pieces.js", "js/render.js"];
+    // Files the page is built from besides itself (js/parts.js, shared with sw.js)
+    var PARTS = SITE_PARTS.all;
     // Resolves to true if the page or any of its parts differs from the saved copy, false if not; fails with no internet.
     // The saved copy is read first, because fetching goes through the service worker, which saves what it fetches.
     function partsChanged() {

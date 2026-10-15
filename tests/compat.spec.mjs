@@ -2,9 +2,12 @@
 // The lint (npm run lint) catches most unsupported features; these tests cover what a linter can't.
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
-import { openSite, SETUPS } from "./helpers.mjs";
+import { openSite, SETUPS, siteParts } from "./helpers.mjs";
 
-const CSS = readFileSync(new URL("../css/site.css", import.meta.url), "utf8");
+// all the style files, joined in the order the page loads them
+const CSS = siteParts()
+  .css.map((f) => readFileSync(new URL("../" + f, import.meta.url), "utf8"))
+  .join("\n");
 const FALLBACK = /@supports not \(color: color-mix\(in srgb, red 50%, blue\)\) \{/;
 
 // color-mix() needs iOS 16.2. Every rule that uses it must have a plain-colour twin in the fallback
@@ -33,8 +36,11 @@ test("every color-mix() has an iOS 15 fallback", () => {
 // declaration is dropped, as Safari 15 does) and the fallback block is switched on. The Settings
 // switches must still show a track, and the home card its sheet colour.
 test("without color-mix() the Settings switches and home card keep their colours @chromium-only", async ({ page }) => {
-  await page.route("**/css/site.css", async (route) => {
-    const body = CSS.replace(FALLBACK, "@supports (color: red) {").replace(/color-mix\(/g, "no-such-function(");
+  await page.route("**/css/*.css", async (route) => {
+    const file = new URL(route.request().url()).pathname.slice(1);
+    const body = readFileSync(new URL("../" + file, import.meta.url), "utf8")
+      .replace(FALLBACK, "@supports (color: red) {")
+      .replace(/color-mix\(/g, "no-such-function(");
     await route.fulfill({ body, contentType: "text/css" });
   });
   await openSite(page, SETUPS.marathi);
