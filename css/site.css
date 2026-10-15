@@ -4805,10 +4805,14 @@ html[data-sp] {
 .sp-stk .sp-seg button {
   flex: 1 1 0;
 }
-/* the four text fonts: one row when they fit, else two rows of two (a long name never spills out of its button) */
+/* the four text fonts on one line: each button as wide as its name; on the narrowest phones they wrap rather than
+   let a long name spill out of its button */
 .sp #sfn {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
+  flex-wrap: wrap;
+}
+.sp #sfn button {
+  flex: 1 1 auto;
+  padding-inline: 6px;
 }
 /* switches */
 .sp .sp-sw::after {
