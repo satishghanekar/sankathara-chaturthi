@@ -52,8 +52,7 @@
   <ul id="jl"></ul>
 </div>
 <!-- ==== Settings page: opened by the ⚙ button, it covers the whole page until Back (or the phone's Back) closes it.
-     Groups of rows in rounded cards (Languages, Reading, Screen, About), like phone settings; picking the main or
-     second language opens its own page (#sp-lang) inside it ==== -->
+     Groups of rows in rounded cards (Languages, Reading, Screen, About), like phone settings ==== -->
 <div class="sp" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="spt" tabindex="-1">
   <div class="sp-pg" id="sp-home">
     <div class="sp-hd">
@@ -61,10 +60,12 @@
       <h2 id="spt"><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></h2>
     </div>
     <div class="sp-body">
+      <!-- Main and second language: the phone's own dropdown (an invisible <select> over each row); English is listed
+           twice, once per spelling -->
       <h3 class="sp-h"><span class="mr">भाषा</span><span class="en" lang="en">Languages</span></h3>
       <div class="sp-card">
-        <button type="button" class="sp-row sp-go" id="sl1"><span class="sp-l"><span class="mr">मुख्य भाषा</span><span class="en" lang="en">Main language</span><small><span class="mr">मोठ्या अक्षरांत</span><span class="en" lang="en">Large text</span></small></span><span class="sp-v" id="sl1v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-        <button type="button" class="sp-row sp-go" id="sl2"><span class="sp-l"><span class="mr">दुसरी भाषा</span><span class="en" lang="en">Second language</span><small><span class="mr">लहान, प्रत्येक ओळीखाली</span><span class="en" lang="en">Smaller, under each line</span></small></span><span class="sp-v" id="sl2v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        <div class="sp-row sp-go sp-pick" id="sl1"><span class="sp-l"><span class="mr">मुख्य भाषा</span><span class="en" lang="en">Main language</span><small><span class="mr">मोठ्या अक्षरांत</span><span class="en" lang="en">Large text</span></small></span><span class="sp-v" id="sl1v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select id="sl1s" aria-label="Main language"></select></div>
+        <div class="sp-row sp-go sp-pick" id="sl2"><span class="sp-l"><span class="mr">दुसरी भाषा</span><span class="en" lang="en">Second language</span><small><span class="mr">लहान, प्रत्येक ओळीखाली</span><span class="en" lang="en">Smaller, under each line</span></small></span><span class="sp-v" id="sl2v"></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select id="sl2s" aria-label="Second language"></select></div>
         <div class="sp-row" id="surow">
           <span class="sp-l"><span class="mr">मेनू आणि बटणे</span><span class="en" lang="en">Menus and buttons</span></span>
           <div class="sp-seg" id="su" role="group" aria-label="Menus and buttons">
@@ -134,31 +135,6 @@
       </div>
       <!-- who made the site, always in English -->
       <p class="sp-by" lang="en">A volunteer offering by Satish Ghanekar<br><a href="mailto:satishghanekar1@gmail.com">satishghanekar1@gmail.com</a></p>
-    </div>
-  </div>
-  <!-- Main or second language: one row per language, each in its own script (built by the script) -->
-  <div class="sp-pg" id="sp-lang" hidden>
-    <div class="sp-hd">
-      <button type="button" class="sp-bk" id="splb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="mr">सेटिंग्ज</span><span class="en" lang="en">Settings</span></button>
-      <h2 id="splt"></h2>
-    </div>
-    <div class="sp-body">
-      <p class="sp-note" id="spln"></p>
-      <div class="sp-card" id="spll" role="radiogroup" aria-labelledby="splt"></div>
-      <!-- the same preview as on the Settings page, so a choice shows at once -->
-      <div class="sp-prev" id="sprev2" aria-hidden="true"></div>
-      <!-- English spelling matters only when English is one of the two languages, so it is chosen here -->
-      <div class="sp-card" id="stcard">
-        <div class="sp-row sp-stk" id="strow">
-          <span class="sp-l"><span class="mr">इंग्रजी लिपी</span><span class="en" lang="en">English spelling</span></span>
-          <!-- each choice shows an example and, under it, what the style is (in the menu language) -->
-          <div class="sp-seg" id="str" role="group" aria-label="English spelling">
-            <button type="button" data-v="simple" lang="en">Sukhkarta<small><span class="mr" lang="mr">सोपे</span><span class="en">Simple</span></small></button>
-            <button type="button" data-v="iast" lang="en">sukhakartā<small><span class="mr" lang="mr">प्रमाणित (IAST)</span><span class="en">Standard (IAST)</span></small></button>
-          </div>
-        </div>
-      </div>
-      <p class="sp-note"><span class="mr">मेनूसाठी इंग्रजी नेहमी उपलब्ध आहे; दुसरा पर्याय तुमची मुख्य भाषा. कन्नड मेनू अजून नाहीत, म्हणून कन्नडसोबत मेनू इंग्रजीत असतात.</span><span class="en" lang="en">Menus can always be in English; the other choice is your main language. Kannada has no menus of its own yet, so with Kannada they are in English.</span></p>
     </div>
   </div>
 </div>
@@ -324,11 +300,11 @@
     <h3>Settings</h3>
     <p>Settings is in four groups: Languages, Reading, Screen and About.</p>
     <ul>
-      <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or <span lang="kn">ಕನ್ನಡ</span> (the same words in Kannada letters). Tap it to pick. With Kannada the menus are in English, and the second language can be English or None.</li>
+      <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or <span lang="kn">ಕನ್ನಡ</span> (the same words in Kannada letters). Tap it to pick from a list; English is there twice, once for each spelling (see English spelling below). With Kannada the menus are in English, and the second language can be English or None.</li>
       <li><b>Second language:</b> shown smaller, under each line, when the अ/A button shows both. Pick the other language, or <b>None</b> to read in one language only. Choosing English as the main language makes Marathi the second, and the other way round.</li>
       <li><b>Menus and buttons:</b> English or your main language, for the date card, buttons and settings. With English as the main language, menus are in English.</li>
       <li><b>Preview:</b> the first lines of the Ganapati aarti, as your choices will show them.</li>
-      <li><b>English spelling:</b> (shown when English is one of your languages) how the English lines and the titles of the pieces are spelled.
+      <li><b>English spelling:</b> picked with English in the language list, as <i>English · Sukhkarta</i> or <i>English · sukhakartā</i>: how the English lines and the titles of the pieces are spelled.
         <ul>
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
           <li><b>sukhakartā</b>: the scholarly spelling (IAST), with exact sounds: ā ī ū for long vowels, ṭ ḍ ṇ for the hard sounds, ś ṣ for the two kinds of “sh”. In the Atharvashirsha it also shows the swara marks: a line under a syllable is the low note (anudātta) and a tick above is the svarita (<i>bha̱draṃ karṇe̍bhiḥ</i>).</li>
