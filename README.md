@@ -28,7 +28,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF (one column, two columns reading down each column, or Marathi and English side by side) in the chosen language and English style. The printed contents page lists the page each piece starts on, worked out for Letter paper in the US and Canada and A4 elsewhere, upright.
 - **Wide screens (iPad landscape, desktop):** in the side menu the पूजा and आरती headings are links to their sections (opening a folded one). stanzas sit in pairs across two columns; a stanza much longer or shorter than its neighbour (Atharvashirsha verse 1 beside verse 2) spans both columns on its own instead. The page sits right beside the side menu and uses its whole width (up to 60rem): the home card, section rows and piece headings all span it. The home card frames itself the same as on phones, and pieces are separated by their boxed heading rows and end ornament (no extra rule line).
 - **Offline:** a small cloud with a line through it shows in the top bar (`#ofb`) only while there is no internet; it is not coloured, because everything still works from the saved copy. A short "Ready to use offline" note shows once, when the first visit has saved the site. Settings → About shows **Offline use** (Ready / Saving… / No internet), the version, and **Check for updates**, which loads a newer version or says "Up to date".
-- **Settings:** a page of its own over the reading page (`#panel.sp`; ‹ Back or the phone's Back closes it), in groups like phone settings: Languages (main, second, menus, a preview of the Ganapati aarti in your text size, font and spelling), Reading (text size, font, dhrupad, layout on wide screens), Screen (theme, high contrast, keep screen on) and About (Help, Add to Home Screen, version, Check for updates, and who made the site). Centred at most 640px wide on large screens. Its styles are the "Settings page" block at the end of `css/site.css`.
+- **Settings:** a page of its own over the reading page (`#panel.sp`; ‹ Back or the phone's Back closes it), in groups like phone settings: Languages (main, second, menus, a preview of the Ganapati aarti in your text size, font and spelling), Reading (text size, font, dhrupad, layout on wide screens), Screen (theme, high contrast, keep screen on) and About (Help, Add to Home Screen, version, Check for updates, and who made the site). Centred at most 640px wide on large screens. Its styles are the "Settings page" block in `css/09-settings-page.css`.
 - **Getting around:** the top bar shows the piece being read; Contents and search (forgiving spelling, matching words in bold, ↑ ↓ Enter on a computer); a bottom bar on every page, home included (‹ Prev, Ganesha home, contents-and-search, Next ›; fixed pixel sizes like the top bar, so text size and pinch leave it alone; hidden while Settings or Contents is open; the old Previous/Next cards stay in the HTML, hidden on screen, and the bar's buttons use their links); the phone's Back button closes menus and returns to where you were before a jump, and the address (#a5) follows the piece on screen.
 - **Screen readers:** the page is marked as Marathi, and English parts as English, so VoiceOver and TalkBack read each in the right voice whatever the menu language.
 - **Keyboard:** the first Tab shows "Skip to the texts". Settings and Contents take focus when opened; Escape or tabbing out closes them and returns focus to their button. Picking a piece moves focus to its heading. The page has banner, navigation and main landmarks. High contrast is black whichever theme is picked (2026-10-14 accessibility review).
@@ -41,7 +41,8 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | File | What it is |
 |---|---|
 | `index.html` | The page: top bar, Settings, home page and Help. |
-| `css/site.css` | All the styles. |
+| `css/` | All the styles, in numbered parts loaded in order (see `css/README.md`). |
+| `js/parts.js` | The list of the site's style, script and font files, shared by the page and the service worker. |
 | `js/app.js` | All the behaviour (settings, dates, search, print, offline…). |
 | `content/pieces.js` | The text of every piece (Pooja and Aarti): each line in Marathi/Hindi/Sanskrit and in everyday English, titles, author lines. **Edit the texts here.** |
 | `js/render.js` | Builds each piece's HTML from `content/pieces.js` while the page loads. |
@@ -62,7 +63,7 @@ To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankathar
 
 ### Option A: on the GitHub website (no software needed)
 
-1. Open https://github.com/satishghanekar/sankathara-chaturthi and click `content/pieces.js` to change a piece's text, `css/site.css` for styles, `js/app.js` for behaviour, or `index.html` for the page itself.
+1. Open https://github.com/satishghanekar/sankathara-chaturthi and click `content/pieces.js` to change a piece's text, `css/` for styles (see `css/README.md` for which file), `js/app.js` for behaviour, or `index.html` for the page itself.
 2. Click the pencil icon (**Edit this file**).
 3. Use the browser's find (Ctrl+F / ⌘F) to locate the text you want (see *Finding things in the files* below), and make the change.
 4. If this is a new release, **change the version** (see below). This is a second small edit, in `index.html` and in `sw.js`.
@@ -124,7 +125,7 @@ On GitHub, open **Commits** (the clock icon above the file list) and click the c
 `index.html` is laid out top to bottom as:
 
 1. `<head>`: title, and preloading of the main font files.
-2. A link to `css/site.css`: all styling, in labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`.
+2. Links to the style files in `css/`, in order (see `css/README.md`): labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`. Then `js/parts.js`, the list of the site's files.
 3. `<body>`: the top bar, the settings panel, then the home page. The pieces themselves are in `content/pieces.js`; a short script at the end of `<main>` has `js/render.js` build them in place while the page loads, so the page is exactly as if they were written there.
 4. A link to `js/app.js`: all behaviour, in labelled sections (`// ---- … ----`). The comment at the top of that file lists the sections in order.
 

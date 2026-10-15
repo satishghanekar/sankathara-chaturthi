@@ -4,6 +4,9 @@
 // localStorage under "aarti2-prefs") and a fixed date, so the date card, the "in N days" badge and
 // every screenshot are the same on every run.
 
+import { readFileSync } from "node:fs";
+import vm from "node:vm";
+
 export const PREFS_KEY = "aarti2-prefs";
 // 2026-10-15 10:00 in Columbus: a normal day, a few days before the next Sankashti
 export const FIXED_NOW = new Date("2026-10-15T10:00:00-04:00");
@@ -75,4 +78,11 @@ export async function pieceText(page) {
 /** True when the page is wider than the window (a sideways scroll appears). */
 export async function hasSidewaysScroll(page) {
   return page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+}
+
+/** The site's file lists (js/parts.js, the one list the page and the service worker share). */
+export function siteParts() {
+  const ctx = {};
+  vm.runInNewContext(readFileSync(new URL("../js/parts.js", import.meta.url), "utf8"), ctx);
+  return ctx.SITE_PARTS;
 }
