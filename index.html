@@ -4016,6 +4016,93 @@ h2[tabindex="-1"]:focus {
 #asc.on #ass {
   display: flex !important;
 }
+/* Tilt to scroll: the button shows on phones and tablets (data-tilt); while it runs (#asc.tl) the bar
+   shows the meter (a dot that moves with the lean), the label and ⏸ */
+:root:not([data-tilt="1"]) #tlb,
+#asc.tl #asi > :not(#tls) {
+  display: none !important;
+}
+#tls {
+  display: none;
+}
+#asc.tl #tls {
+  display: flex;
+}
+#asc.tl #asi {
+  justify-content: center;
+}
+#tlb svg {
+  color: var(--accent);
+}
+#tls {
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 4px 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+}
+#tlm {
+  position: relative;
+  flex: none;
+  width: 14px;
+  height: 34px;
+  border-radius: 7px;
+  background: var(--rule);
+}
+#tlm b {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 16px;
+  height: 2px;
+  background: var(--ink);
+  opacity: 0.4;
+}
+#tlm i {
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+#tlt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+#tll {
+  font: 600 14px/1 var(--lat);
+  white-space: nowrap;
+}
+#tlh {
+  font: 500 12px/1.1 var(--lat);
+  white-space: nowrap;
+}
+#tls:lang(mr) #tll,
+#tls:lang(mr) #tlh {
+  font-family: var(--body);
+}
+#tlx {
+  border: 0;
+  background: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+@media (max-width: 359px) {
+  #tlh {
+    display: none;
+  }
+}
 #asc.on #asi {
   justify-content: center;
 }
@@ -4118,7 +4205,7 @@ h2[tabindex="-1"]:focus {
 [data-tuck="1"] body > .bar {
   transform: translateY(calc(-100% - env(safe-area-inset-top, 0px)));
 }
-[data-tuck="1"] #asc:not(.on) {
+[data-tuck="1"] #asc:not(.on):not(.tl) {
   transform: translateY(110%);
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -6517,6 +6604,7 @@ h2[tabindex="-1"]:focus {
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
       <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
+      <li><b>Tilt to scroll</b> (phones and tablets): tap the tilted-phone button in the bottom bar, holding the phone however is comfortable. Lean the top of the phone away from you and the page moves down; lean it back towards you and it moves up. The further you lean, the faster it goes; hold it still and the page stays put. The dot in the bar shows the lean. Touch the page to hold it; when you let go, the way you are holding the phone then becomes the new "still". ⏸ stops it. On an iPhone, tap <b>Allow</b> when it asks for motion access (only the first time). The tilt is read on the phone; nothing is sent anywhere.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -6539,7 +6627,8 @@ h2[tabindex="-1"]:focus {
 </div>
 <div id="pv" aria-hidden="true"></div>
 <div id="szt" role="status" aria-live="polite"></div>
-<!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (autoscroll ▶), Next ›.
+<!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (tilt, phones and tablets), (autoscroll ▶), Next ›.
+     While tilt to scroll runs (#asc.tl) the bar shows only the tilt meter, its label and ⏸.
      ▶ shows only once autoscroll is released (FEAT_AS) and switched on; while it runs: Home, Search, speed, ⏸. ==== -->
 <!-- slim strip with the piece name, shown while the bars are tucked away on phones and tablets (data-tuck) -->
 <div id="tuck" aria-hidden="true"><span id="tkt"></span><i id="tkp"></i></div>
@@ -6548,6 +6637,8 @@ h2[tabindex="-1"]:focus {
     <button type="button" id="asv" class="asx"></button>
     <button type="button" id="ash" class="asi" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></button>
     <button type="button" id="asq" class="asi" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button>
+    <button type="button" id="tlb" class="asi" aria-label="Tilt to scroll" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="15" rx="1.6" transform="rotate(-18 12 10.5)"/><path d="M4 15c0 3 2 5 5 5.5"/><path d="M7.5 18.6 9 20.5l-2 1"/></svg></button>
+    <div id="tls"><span id="tlm" aria-hidden="true"><b></b><i></i></span><span id="tlt"><span id="tll"></span><span id="tlh"></span></span><button type="button" id="tlx"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></button></div>
     <div id="ass"><button type="button" id="asm" aria-label="Slower">−</button><span id="asl" aria-live="polite"></span><button type="button" id="asp" aria-label="Faster">+</button></div>
     <button type="button" id="asb" aria-label="Autoscroll" aria-pressed="false"><svg class="ip" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="ia" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></button>
     <button type="button" id="asn" class="asx"></button>
@@ -6578,7 +6669,8 @@ h2[tabindex="-1"]:focus {
      Auto-fit text size      largest size at which lines fit the screen
      Current piece, apply()  menus follow the reader; folds; P → page
      Bottom bar, autoscroll  footer menu on every page (Prev, Home,
-                             Contents, Next); autoscroll (held back)
+                             Contents, Next); autoscroll (held back);
+                             tilt to scroll (phones and tablets)
      Settings panel, buttons dhrupad, wake lock, overlays, clicks, pinch
      Search                  every line in both scripts and both spellings
      Start-up                first paint, reading position, help
@@ -8421,6 +8513,7 @@ h2[tabindex="-1"]:focus {
       b.disabled = !a;
     });
     document.getElementById("ash").setAttribute("aria-label", mr ? "मुख्य पान: अनुक्रमणिका" : "Home: contents");
+    tlLabel();
     document.getElementById("asq").setAttribute("aria-label", mr ? "अनुक्रमणिका आणि शोध" : "Contents and search");
   }
 
@@ -8529,6 +8622,7 @@ h2[tabindex="-1"]:focus {
   }
   function asStart() {
     if (!FEAT_AS) return;
+    if (TL.on) tlStop();
     // keep the piece in view where it is while the rest folds away
     var c0 = cur(),
       t0 = c0 && c0.getBoundingClientRect().top;
@@ -8820,6 +8914,155 @@ h2[tabindex="-1"]:focus {
   addEventListener("scroll", asShow, { passive: true });
   asLabel();
   asShow();
+
+  // ---- Tilt to scroll (bottom bar, phones and tablets) ----
+  // Tap the tilt button holding the phone however is comfortable: that angle is "still". Leaning the top of the
+  // screen away scrolls down, leaning it back towards you scrolls up, faster the further it leans (4° either way
+  // does nothing). A finger on the page holds it; letting go makes the new angle "still". ⏸ stops it.
+  // The angle is the screen's own (portrait or sideways), from the phone's motion sensor; nothing leaves the phone.
+  // iPhones ask "Allow motion access?" the first time (requestPermission must run inside the tap).
+  // TL: on = running; p = smoothed angle; base = the "still" angle; got = the sensor has answered;
+  // held = finger on the page; ht = timer to carry on; raf / last = animation frame; acc = part-pixel left over.
+  var TL = { on: 0, p: null, base: null, got: 0, held: 0, ht: 0, raf: 0, last: 0, acc: 0, d: 0 },
+    tlb = document.getElementById("tlb"),
+    tlDot = document.querySelector("#tlm i");
+  if ("DeviceOrientationEvent" in window && window.matchMedia && matchMedia("(pointer: coarse)").matches) root.setAttribute("data-tilt", "1");
+  function tlLabel() {
+    var mr = P.ui === "mr",
+      s = document.getElementById("tls");
+    s.lang = mr ? "mr" : "en";
+    document.getElementById("tll").textContent = mr ? "झुकवून सरकवा" : "Tilt to scroll";
+    document.getElementById("tlh").textContent = mr ? "दूर झुकवा = खाली · जवळ = वर" : "lean away = down · toward = up";
+    document.getElementById("tlx").setAttribute("aria-label", mr ? "झुकवून सरकवणे थांबवा" : "Stop tilt to scroll");
+    // (also called from asLabel, before TL is set up)
+    var b = document.getElementById("tlb");
+    b.setAttribute("aria-label", mr ? "झुकवून सरकवा" : "Tilt to scroll");
+    b.setAttribute("aria-pressed", String(!!(TL && TL.on)));
+  }
+  // the screen's angle from flat (0) to upright (90), whichever way round the phone is held
+  function tlPitch(e) {
+    if (e.beta == null) return null;
+    var r = Math.PI / 180,
+      b = e.beta * r,
+      g = (e.gamma || 0) * r,
+      o = typeof window.orientation === "number" ? window.orientation : (screen.orientation && screen.orientation.angle) || 0,
+      a = (((o % 360) + 360) % 360) * r,
+      // which way is up, seen from the phone (x right, y top, z out of the screen)
+      ux = -Math.sin(g) * Math.cos(b),
+      uy = Math.sin(b),
+      uz = Math.cos(g) * Math.cos(b);
+    return Math.atan2(ux * Math.sin(a) + uy * Math.cos(a), uz) / r;
+  }
+  function tlRead(e) {
+    var p = tlPitch(e);
+    if (p == null || isNaN(p)) return;
+    TL.got = 1;
+    TL.p = TL.p == null ? p : TL.p + 0.25 * (p - TL.p);
+    if (TL.base == null) TL.base = TL.p;
+  }
+  function tlStep(now) {
+    if (!TL.on) return;
+    var dt = Math.min(0.1, (now - (TL.last || now)) / 1000);
+    TL.last = now;
+    var d = TL.base == null || TL.p == null || TL.held ? 0 : TL.base - TL.p;
+    // the dot: lower when leaning away (the page goes down), higher when leaning back
+    var k = Math.round(Math.max(-10, Math.min(10, d / 2)));
+    if (k !== TL.d) {
+      TL.d = k;
+      tlDot.style.transform = "translateY(" + k + "px)";
+    }
+    var m = Math.abs(d) - 4;
+    if (m > 0) {
+      TL.acc += (d > 0 ? 1 : -1) * Math.min(900, 2.5 * Math.pow(m, 1.7)) * dt;
+      var n = TL.acc > 0 ? Math.floor(TL.acc) : Math.ceil(TL.acc);
+      if (n) {
+        TL.acc -= n;
+        scrollBy(0, n);
+      }
+    } else TL.acc = 0;
+    TL.raf = requestAnimationFrame(tlStep);
+  }
+  function tlStart() {
+    if (TL.on) return;
+    asStop();
+    TL.on = 1;
+    TL.p = TL.base = null;
+    TL.got = TL.held = 0;
+    TL.acc = TL.last = 0;
+    addEventListener("deviceorientation", tlRead);
+    asc.classList.add("tl");
+    tlLabel();
+    if (!wl) wake(true);
+    TL.raf = requestAnimationFrame(tlStep);
+    // some phones and tablets have no motion sensor, or the browser keeps it from the page
+    setTimeout(function () {
+      if (TL.on && !TL.got) {
+        tlStop();
+        flash("हा फोन झुकणे ओळखत नाही", "Tilt isn't available on this device");
+      }
+    }, 1500);
+  }
+  function tlStop() {
+    if (!TL.on) return;
+    TL.on = 0;
+    clearTimeout(TL.ht);
+    cancelAnimationFrame(TL.raf);
+    removeEventListener("deviceorientation", tlRead);
+    asc.classList.remove("tl");
+    tlLabel();
+    if (!P.wake) wake(false);
+    tlb.focus({ preventScroll: true });
+  }
+  tlb.onclick = function () {
+    var D = window.DeviceOrientationEvent;
+    if (D && typeof D.requestPermission === "function")
+      D.requestPermission()
+        .then(function (s) {
+          if (s === "granted") tlStart();
+          else flash("सेटिंग्जमध्ये Motion access ला परवानगी द्या", "Motion access was not allowed");
+        })
+        .catch(function () {
+          flash("हा फोन झुकणे ओळखत नाही", "Tilt isn't available on this device");
+        });
+    else tlStart();
+  };
+  document.getElementById("tlx").onclick = tlStop;
+  // a finger on the page holds it; once lifted (and the page has settled) the angle then is the new "still"
+  addEventListener(
+    "pointerdown",
+    function (e) {
+      if (!TL.on) return;
+      var t = e.target && e.target.closest ? e.target : document.body;
+      if (t.closest("#asc")) return;
+      if (t.closest(".bar, #panel, #jump, #help, #qrm, #prm, #inm, #rail, #pzv")) return tlStop();
+      TL.held = 1;
+      clearTimeout(TL.ht);
+    },
+    { passive: true, capture: true },
+  );
+  ["pointerup", "touchend", "touchcancel"].forEach(function (n) {
+    addEventListener(
+      n,
+      function (e) {
+        if (!TL.held || (e.touches && e.touches.length)) return;
+        clearTimeout(TL.ht);
+        TL.ht = setTimeout(function () {
+          TL.base = TL.p;
+          TL.acc = 0;
+          TL.held = 0;
+        }, 400);
+      },
+      { passive: true, capture: true },
+    );
+  });
+  // turning the phone round, or switching away, starts afresh
+  addEventListener("orientationchange", function () {
+    TL.p = TL.base = null;
+  });
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible") tlStop();
+  });
+  tlLabel();
 
   // ---- Bars tuck away while reading (CSS: "Bars tuck away while reading") ----
   // Phones and tablets without the side menu. Scrolling down past the top of the page tucks the top and
