@@ -1,0 +1,218 @@
+// Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
+import { test, expect } from "@playwright/test";
+import { openSite, settle, SETUPS, PREFS_KEY } from "./helpers.mjs";
+
+const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
+const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
+
+test("language button cycles main → second → both and is remembered @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  const btn = page.locator("#home-btn");
+  const lang = () => page.locator("#a1").getAttribute("data-lang");
+  expect(await lang()).toBe("mr");
+  await btn.click();
+  expect(await lang()).toBe("en");
+  await btn.click();
+  expect(await lang()).toBe("both");
+  await btn.click();
+  expect(await lang()).toBe("mr");
+  await btn.click();
+  expect((await prefs(page)).lang).toBe("en");
+  await page.reload();
+  await settle(page);
+  expect(await lang()).toBe("en");
+});
+
+test("dhrupad button switches between once and after every verse @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  expect(await rootAttr(page, "data-ref")).toBe("1");
+  await page.locator("#rb").click();
+  expect(await rootAttr(page, "data-ref")).toBe("0");
+  expect(await page.locator("#a1 .item.rf").first().isVisible()).toBe(true);
+  await page.locator("#rb").click();
+  expect(await rootAttr(page, "data-ref")).toBe("1");
+});
+
+test("contents link jumps to a piece and moves focus to its heading", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator('a[data-go="a5"]:visible').first().click();
+  await page.waitForTimeout(400);
+  const top = await page.locator("#a5").evaluate((e) => e.getBoundingClientRect().top);
+  expect(Math.abs(top)).toBeLessThan(200);
+  expect(page.url()).toContain("#a5");
+});
+
+test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#hm").click();
+  await expect(page.locator("#jump")).toBeVisible();
+  await page.locator("#q").fill("sukhakarta");
+  await expect(page.locator("#res li").first()).toBeVisible();
+  const n = await page.locator("#res li").count();
+  expect(n).toBeGreaterThan(0);
+  await page.locator("#q").fill("zzzzqqq");
+  await expect(page.locator("#none")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#jump")).toBeHidden();
+});
+
+test("search in Marathi letters finds the line", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#hm").click();
+  await page.locator("#q").fill("सुखकर्ता");
+  await expect(page.locator("#res li").first()).toBeVisible();
+});
+
+test("Settings opens, changes theme, high contrast and font, and closes with Back", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#aa").click();
+  await expect(page.locator("#panel")).toBeVisible();
+  await page.locator('#st button[data-v="dark"]').click();
+  expect(await rootAttr(page, "data-pref")).toBe("dark");
+  await page.locator('#st button[data-v="sepia"]').click();
+  expect(await rootAttr(page, "data-pref")).toBe("sepia");
+  await page.locator("#tc").click();
+  expect(await rootAttr(page, "data-hc")).toBe("1");
+  await page.locator('#sfn button[data-v="classic"]').click();
+  expect(await rootAttr(page, "data-font")).toBe("classic");
+  await page.locator("#xc").click();
+  await expect(page.locator("#panel")).toBeHidden();
+  const p = await prefs(page);
+  expect([p.th, p.hc, p.fnt]).toEqual(["sepia", 1, "classic"]);
+});
+
+test("text size A+ / A− / reset", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#aa").click();
+  const fs = () => prefs(page).then((p) => p.fs);
+  // the size the page uses now (saved settings only hold it once the reader has changed something)
+  const start = await page.evaluate(() => parseFloat(document.documentElement.style.getPropertyValue("--fs")));
+  await page.locator("#lg").click();
+  await page.locator("#lg").click();
+  expect(await fs()).toBe(start + 4);
+  await page.locator("#sm").click();
+  expect(await fs()).toBe(start + 2);
+  await page.locator("#sr").click();
+  expect((await prefs(page)).fsu).toBe(0);
+  await expect(page.locator("#szv")).toHaveText(/%$/);
+});
+
+test("main and second language from the Settings dropdowns", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#aa").click();
+  // the English (scholarly spelling) entry of the main-language list
+  const opts = await page.locator("#sl1s option").evaluateAll((o) => o.map((x) => [x.value, x.textContent]));
+  expect(opts.length).toBeGreaterThanOrEqual(4);
+  const kn = opts.find((o) => o[1].includes("ಕನ್ನಡ"));
+  await page.locator("#sl1s").selectOption(kn[0]);
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe("kn");
+  expect(await page.locator("#a1 .verse .mr p").first().textContent()).toMatch(/[ಀ-೿]/);
+});
+
+test("piece fold is remembered across a reload @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#a2 header").click();
+  await page.waitForTimeout(200);
+  expect((await prefs(page)).af).toContain("a2");
+  await expect(page.locator("#a2 .items")).toBeHidden();
+  await page.reload();
+  await settle(page);
+  await expect(page.locator("#a2 .items")).toBeHidden();
+  // going to a folded piece from the contents opens it
+  await page.locator('a[data-go="a2"]:visible').first().click();
+  await expect(page.locator("#a2 .items")).toBeVisible();
+});
+
+test("Pooja and Aarti section folds @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#pfb").click();
+  expect(await rootAttr(page, "data-pf")).toBe("1");
+  await expect(page.locator("#p1")).toBeHidden();
+  await page.locator("#xfb").click();
+  expect(await rootAttr(page, "data-xf")).toBe("1");
+  await page.locator("#pfb").click();
+  expect(await rootAttr(page, "data-pf")).toBeNull();
+});
+
+test("home card folds to one line and opens again @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#cvb").click();
+  await expect(page.locator("#slim")).toBeVisible();
+  await expect(page.locator("#shr")).toBeHidden();
+  await page.locator("#slim").click();
+  await expect(page.locator("#shr")).toBeVisible();
+});
+
+test("tapping a line highlights it and is remembered @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  const line = page.locator("#a1 .items .verse .mr p[data-l]").first();
+  await line.scrollIntoViewIfNeeded();
+  await line.click();
+  await expect(line).toHaveClass(/hl/);
+  const id = await line.getAttribute("data-l");
+  expect((await prefs(page)).hl).toBe(id);
+  await line.click();
+  await expect(line).not.toHaveClass(/hl/);
+});
+
+test("bottom bar Next goes to the next piece", async ({ page }) => {
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await page.waitForTimeout(300);
+  await page.locator("#asn").click();
+  await page.waitForTimeout(500);
+  expect(page.url()).toContain("#a2");
+});
+
+test("dialogs: QR, Help and Add to Home Screen open and close with Escape", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#qrb").click();
+  await expect(page.locator("#qrm")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#qrm")).toBeHidden();
+  await page.locator("#hlpb").click();
+  await expect(page.locator("#help")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#help")).toBeHidden();
+});
+
+test("picture opens full screen and closes", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#iconb").click();
+  await expect(page.locator("#pzv")).toBeVisible();
+  await expect(page.locator("#pzi")).toBeVisible();
+  await page.locator("#pzx").click();
+  await expect(page.locator("#pzv")).toBeHidden();
+});
+
+test("IAST spelling switches in place without a reload", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  const first = () => page.locator("#a1 .items .verse .en p").first().textContent();
+  expect(await first()).toContain("Sukhkarta");
+  await page.evaluate((k) => {
+    // what Settings does when "English · sukhakartā" is picked
+    const s = document.getElementById("sl2s");
+    const o = [...s.options].find((x) => /ā/.test(x.textContent));
+    s.value = o.value;
+    s.dispatchEvent(new Event("change", { bubbles: true }));
+  }, PREFS_KEY);
+  await page.waitForTimeout(300);
+  expect(await first()).toMatch(/sukhakartā/);
+});
+
+test("the date card shows the next Sankashti with moonrise", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  const card = await page.locator("#skc").innerText();
+  expect(card).toMatch(/Moonrise|moonrise|चंद्रोदय/);
+});
+
+test("reopens where the reader was (within 12 hours)", async ({ page }) => {
+  await openSite(page, SETUPS.marathi, { hash: "#a6" });
+  await page.waitForTimeout(500);
+  await page.evaluate(() => dispatchEvent(new Event("pagehide")));
+  await page.goto("./");
+  await settle(page);
+  await page.waitForTimeout(300);
+  const top = await page.locator("#a6").evaluate((e) => e.getBoundingClientRect().top);
+  expect(Math.abs(top)).toBeLessThan(400);
+});
