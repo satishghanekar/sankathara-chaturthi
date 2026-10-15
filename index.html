@@ -4752,6 +4752,50 @@ h2[tabindex="-1"]:focus {
     inset: -10px -8px;
   }
 }
+
+/* ==== Home contents inside the अनुक्रमणिका box (1.0.1, option A): the list hangs under the Contents row as one card,
+   with small muted पूजा / आरती labels, so the पूजा section card below reads as the start of the text, not a repeat ==== */
+@media screen {
+  html:not([data-tf="1"]) #tfb {
+    border-bottom-color: transparent;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  #home .tocg {
+    max-width: 46rem;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 4px 12px 6px;
+    border-inline: 1px solid var(--hdrl);
+    background: var(--hdr);
+  }
+  #home .tocg:last-child {
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--hdrl);
+    border-radius: 0 0 12px 12px;
+  }
+  #home .tocg .gh,
+  #home .sr + .tocg .gh,
+  #home .tocg:first-child .gh {
+    margin: 8px 2px;
+    padding: 0;
+    border: 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  #home .tocg[data-lang="en"] .gh {
+    font-size: 14px;
+  }
+  #home .tocg[data-lang="both"] .gh .en {
+    display: inline;
+    margin-left: 0.5em;
+    font: 500 13px/1.3 var(--lat);
+    color: var(--muted);
+  }
+  #home + .grp {
+    margin-top: 28px;
+  }
+}
 </style>
 </head>
 
@@ -11061,7 +11105,7 @@ h2[tabindex="-1"]:focus {
         })
         .then(function () {
           if (!("caches" in window)) return;
-          caches.open("aarti-v1.0").then(function (c) {
+          caches.open("aarti-v1.0.1").then(function (c) {
             // Keep the page and every font file, then show the offline badge (sw.js caches the same files)
             var done = ofSaved;
             c.add(new Request("./", { cache: "reload" })).catch(function () {});
