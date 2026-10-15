@@ -4217,25 +4217,6 @@ h2[tabindex="-1"]:focus {
       visibility 0.22s;
   }
 }
-/* a piece reached by swiping slides in from the side it came from (class set by the swipe, then removed) */
-@keyframes swl {
-  from {
-    opacity: 0.3;
-    transform: translateX(28px);
-  }
-}
-@keyframes swr {
-  from {
-    opacity: 0.3;
-    transform: translateX(-28px);
-  }
-}
-.ash.swl {
-  animation: swl 0.25s ease-out;
-}
-.ash.swr {
-  animation: swr 0.25s ease-out;
-}
 @media print {
   #tuck {
     display: none !important;
@@ -6599,7 +6580,6 @@ h2[tabindex="-1"]:focus {
     <h3>While reading</h3>
     <ul>
       <li><b>Tap a line</b> to highlight it, so everyone can keep their place; its whole stanza gets a soft band too, so you find it again at a glance. Tap again to clear.</li>
-      <li><b>Swipe</b> left on a piece to go to the next one, or right to go back, just like <b>Next ›</b> and <b>‹ Prev</b>.</li>
       <li><b>More room to read:</b> on phones and tablets, the top and bottom bars slide away as you scroll down, leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
@@ -8798,88 +8778,6 @@ h2[tabindex="-1"]:focus {
   document.getElementById("asn").onclick = function () {
     asGo(".next");
   };
-  // Swipe on a piece (phones and tablets without the side menu): left = Next, right = Previous, as the
-  // bottom bar. Only a quick, clearly sideways stroke of one finger counts; not near the screen's side
-  // edges (the phone's own back gesture), not while autoscroll runs, a menu or dialog is open, or text is selected.
-  (function () {
-    var sw = null;
-    document.addEventListener(
-      "touchstart",
-      function (e) {
-        sw = null;
-        if (e.touches.length !== 1 || root.hasAttribute("data-rail") || root.hasAttribute("data-menu") || AS.on || AS.held) return;
-        var t = e.touches[0];
-        if (t.clientX < 24 || t.clientX > innerWidth - 24) return;
-        if (!e.target.closest || !e.target.closest(".wrap .ash")) return;
-        if (["pzv", "qrm", "prm", "help"].some(function (id) { var d = document.getElementById(id); return d && !d.hidden; })) return;
-        sw = { x: t.clientX, y: t.clientY, t: Date.now(), was: root.hasAttribute("data-tuck") };
-      },
-      { passive: true },
-    );
-    document.addEventListener(
-      "touchcancel",
-      function () {
-        sw = null;
-        TK.side = false;
-      },
-      { passive: true },
-    );
-    document.addEventListener(
-      "touchmove",
-      function (e) {
-        if (sw && e.touches.length !== 1) sw = null; // a pinch, not a swipe
-        // while the finger moves mostly sideways, the page's own small up/down drift doesn't move the bars
-        if (sw) {
-          var t = e.touches[0];
-          TK.side = Math.abs(t.clientX - sw.x) > Math.abs(t.clientY - sw.y);
-        } else TK.side = false;
-      },
-      { passive: true },
-    );
-    document.addEventListener(
-      "touchend",
-      function (e) {
-        var s = sw;
-        sw = null;
-        TK.side = false;
-        if (!s || e.touches.length || !e.changedTouches.length) return;
-        var t = e.changedTouches[0],
-          dx = t.clientX - s.x,
-          dy = t.clientY - s.y;
-        // any mostly sideways stroke leaves the bars as they were, swipe or not (the page may still drift a little)
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 12) {
-          TK.keep = Date.now() + 700;
-          TK.acc = 0;
-        }
-        if (Date.now() - s.t > 700 || Math.abs(dx) < 80 || Math.abs(dx) < 2.5 * Math.abs(dy)) return;
-        var sel = getSelection && getSelection();
-        if (sel && !sel.isCollapsed) return;
-        // the bars stay as they are (tucked away or not) and the new piece slides in from the side swiped from
-        TK.keep = Date.now() + 1200;
-        var from = cur();
-        asGo(dx < 0 ? ".next" : ".prev");
-        // put the bars back as they were before the swipe, now and again once the page has settled
-        // (iPhones can send late scroll events after the jump)
-        var was = s.was;
-        tuck(was);
-        [350, 1000].forEach(function (ms) {
-          setTimeout(function () {
-            tuck(was);
-          }, ms);
-        });
-        var to = cur();
-        if (to && to !== from && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-          to.classList.remove("swl", "swr");
-          void to.offsetWidth;
-          to.classList.add(dx < 0 ? "swl" : "swr");
-          setTimeout(function () {
-            to.classList.remove("swl", "swr");
-          }, 400);
-        }
-      },
-      { passive: true },
-    );
-  })();
   document.getElementById("ash").onclick = function () {
     asStop();
     goHomeNav();
@@ -9078,7 +8976,7 @@ h2[tabindex="-1"]:focus {
   // Phones and tablets without the side menu. Scrolling down past the top of the page tucks the top and
   // bottom bars away (data-tuck); scrolling up, the end of the page, a tap on a blank part of the page,
   // a menu opening, keyboard focus in a bar or a jump (Contents, Prev / Next) brings them back.
-  var TK = { y: scrollY, acc: 0, hold: 0, keep: 0, side: false },
+  var TK = { y: scrollY, acc: 0, hold: 0 },
     tkStrip = document.getElementById("tuck");
   function tuck(on) {
     on = on && !root.hasAttribute("data-rail") && !root.hasAttribute("data-menu");
@@ -9092,19 +8990,7 @@ h2[tabindex="-1"]:focus {
       var y = scrollY,
         d = y - TK.y;
       TK.y = y;
-      if (Date.now() < TK.hold || Date.now() < TK.keep) {
-        TK.acc = 0;
-        return;
-      }
-      if (TK.side) {
-        TK.acc = 0;
-        return;
-      }
-      // one big leap is a jump (a link, the browser's back button), not reading: bring the bars back
-      if (Math.abs(d) > innerHeight * 0.6) {
-        TK.acc = 0;
-        return tuck(false);
-      }
+      if (Date.now() < TK.hold) return;
       if (y < 80 || y + innerHeight >= document.documentElement.scrollHeight - 4) return tuck(false);
       // small movements add up, so a slow drag still counts; a change of direction starts again
       TK.acc = (d > 0) === (TK.acc > 0) ? TK.acc + d : d;
@@ -9116,12 +9002,16 @@ h2[tabindex="-1"]:focus {
   function tuckHold() {
     TK.hold = Date.now() + 700;
     TK.acc = 0;
-    if (Date.now() < TK.keep) return; // a swipe to the next piece leaves the bars as they were
     tuck(false);
   }
+  // a jump by the browser (Back, Forward, a link to #piece) brings the bars back; jumps made by the site
+  // (Contents, Prev / Next, search) do so in jumpTo(). A big leap between scroll events is not used as a
+  // sign of a jump: a fast flick on an iPhone also scrolls in big leaps, and the bars popped up mid-page.
+  addEventListener("popstate", tuckHold);
+  addEventListener("hashchange", tuckHold);
   // a tap on a blank part of the page (not a line, a link, a button or a dhrupad marker) brings the bars back
   document.addEventListener("click", function (e) {
-    if (!root.hasAttribute("data-tuck") || !e.target.closest || Date.now() < TK.keep) return;
+    if (!root.hasAttribute("data-tuck") || !e.target.closest) return;
     if (e.target.closest(".verse p, a, button, input, select, label, .rmk, .rmkpop, #asc, .bar")) return;
     tuck(false);
   });
