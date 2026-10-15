@@ -14,6 +14,8 @@
 // Locally only Chromium may be installed: set PW_PROJECTS=chromium (the default when CI is unset).
 // PW_CHROMIUM_PATH points Chromium at a pre-installed browser instead of Playwright's own download.
 import { defineConfig, devices } from "@playwright/test";
+// Same rule as SNAP_ENV in helpers.mjs (kept here so the config does not load the test helpers)
+const SNAP_ENV = process.env.SNAPSHOT_ENV || (process.env.CI ? "ci" : "local");
 
 const exe = process.env.PW_CHROMIUM_PATH;
 const chromiumLaunch = exe ? { launchOptions: { executablePath: exe } } : {};
@@ -34,7 +36,13 @@ export default defineConfig({
   expect: {
     timeout: 10_000,
     // Screenshots: the fonts are served from the site, so pixels are stable; allow for anti-aliasing only
-    toHaveScreenshot: { maxDiffPixelRatio: 0.002, animations: "disabled", caret: "hide" },
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.002,
+      animations: "disabled",
+      caret: "hide",
+      // Pixels differ slightly between machines (font smoothing), so each machine type keeps its own set
+      pathTemplate: `__snapshots__/{testFilePath}/{projectName}/${SNAP_ENV}/{arg}{ext}`,
+    },
   },
   // Snapshots are shared by every OS (text) or kept per browser (screenshots, which differ by engine)
   snapshotPathTemplate: "__snapshots__/{testFilePath}/{projectName}/{arg}{ext}",

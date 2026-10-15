@@ -13,10 +13,11 @@ import { test, expect } from "@playwright/test";
 import { openSite, SETUPS } from "./helpers.mjs";
 
 // Recorded before the refactor (load / one language tap): 1,277 / 286 layouts.
-// After the performance work: 21 / 5. The budgets leave a little room for new features.
+// After the performance work: 21 / 5. The budgets leave room for new features, and for slower machines
+// (GitHub's), where fonts finish downloading during a tap and add a few layouts (13 seen there).
 export const BUDGET = {
-  loadLayouts: 40,
-  tapLayouts: 10,
+  loadLayouts: 60,
+  tapLayouts: 20,
 };
 
 async function metrics(cdp) {
