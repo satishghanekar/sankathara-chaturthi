@@ -4653,22 +4653,13 @@
       m2.content = "संकष्टी चतुर्थी";
       hd.appendChild(m2);
     } catch (e) {}
-    // Offline line on the home card. Tapping fetches the page and its files fresh: if any differs from the copy
-    // running now, the page reloads with them; otherwise it shows "up to date".
+    // Offline line on the home card: saved for offline, saving, or no internet. Checking for updates is in
+    // Settings → About (#upd), next to the version.
     var ofb = document.getElementById("ofb"),
       OFI = {
-        idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved offline</span><span class="sep s2" aria-hidden="true">·</span><span class="lk"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg><span class="mr">अपडेट तपासा</span><span class="en" lang="en">Check for updates</span></span>',
-        busy: '<span class="oi spin"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span><span class="mr">तपासत आहे…</span><span class="en" lang="en">Checking…</span>',
+        idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved offline</span>',
         save: '<span class="oi spin"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span><span class="mr">ऑफलाइनसाठी जतन करत आहे…</span><span class="en" lang="en">Saving for offline…</span>',
-        ok: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">सर्व अद्ययावत आहे</span><span class="en" lang="en">Up to date</span>',
         off: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10.5a4 4 0 0 0 1.6-.33M20.8 14.5A4 4 0 0 0 18.1 10.05 6 6 0 0 0 9.2 5.6M6.4 9.1A4.5 4.5 0 0 0 7 18"/><path d="M3 3l18 18"/></svg></span><span class="mr">इंटरनेट नाही · जतन केलेली प्रत</span><span class="en" lang="en">No internet · using the saved copy</span>',
-      },
-      OFL = {
-        idle: "Saved for offline. Tap to check for updates",
-        off: "No internet. Using the saved copy",
-        busy: "Checking for updates",
-        save: "Saving for offline",
-        ok: "Up to date",
       };
     // The offline copy's name ("aarti-v1.0") from <meta name="version"> in index.html, and the version shown ("1.0")
     var CACHE = (document.querySelector('meta[name="version"]') || {}).content || "aarti-v1.0",
@@ -4676,10 +4667,19 @@
     document.getElementById("ver").textContent = me ? "v" + me : "";
     function ofSet(st) {
       ofb.setAttribute("data-s", st);
-      // The version sits after "Saved offline" / "Up to date", e.g. "✓ Saved offline · v1.0 · Check for updates"
-      var vn = me && (st === "idle" || st === "ok") ? '<span class="sep" aria-hidden="true">·</span><span class="vn">v' + me + "</span>" : "";
-      ofb.innerHTML = OFI[st].replace(/(<span class="en" lang="en">[^<]*<\/span>)/, "$1" + vn);
-      ofb.setAttribute("aria-label", OFL[st] + (vn ? ". Version " + me : ""));
+      ofb.innerHTML = OFI[st];
+    }
+    // Check for updates (Settings → About): what it says beside the label, in the menu language
+    var upd = document.getElementById("upd"),
+      updv = document.getElementById("updv"),
+      UPD = {
+        busy: ["तपासत आहे…", "Checking…"],
+        ok: ["सर्व अद्ययावत आहे", "Up to date"],
+        off: ["इंटरनेट नाही", "No internet"],
+      };
+    function updSet(st) {
+      upd.setAttribute("data-s", st);
+      updv.textContent = st ? UPD[st][P.ui === "en" ? 1 : 0] : "";
     }
     // Author lines: the Wikipedia link on a poet's name works only online; offline the name is plain text
     function crNet() {
@@ -4702,6 +4702,7 @@
     ofSet(navigator.onLine === false ? "off" : "idle");
     addEventListener("online", function () {
       if (ofb.getAttribute("data-s") === "off") ofSet("idle");
+      if (upd.getAttribute("data-s") === "off") updSet("");
     });
     addEventListener("offline", function () {
       ofSet("off");
@@ -4742,15 +4743,15 @@
         });
       });
     }
-    ofb.onclick = function () {
-      var st = ofb.getAttribute("data-s");
-      if (st === "busy" || st === "save") return;
+    upd.onclick = function () {
+      if (upd.getAttribute("data-s") === "busy") return;
       if (navigator.onLine === false) {
         ofSet("off");
+        updSet("off");
         flash("इंटरनेट नाही. जतन केलेली प्रत वापरत आहे.", "No internet. Using the saved copy.");
         return;
       }
-      ofSet("busy");
+      updSet("busy");
       var t0 = Date.now();
       // Newer if the page, its styles, its script or the pieces' text differ from the copy running now
       partsChanged()
@@ -4768,14 +4769,12 @@
               }, 700);
               return;
             }
-            ofSet("ok");
-            setTimeout(function () {
-              if (ofb.getAttribute("data-s") === "ok") ofSet("idle");
-            }, 2000);
+            updSet("ok");
           }, Math.max(0, 900 - (Date.now() - t0)));
         })
         .catch(function () {
           ofSet("off");
+          updSet("off");
           flash("इंटरनेट नाही. जतन केलेली प्रत वापरत आहे.", "No internet. Using the saved copy.");
         });
     };
