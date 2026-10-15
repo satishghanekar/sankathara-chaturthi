@@ -26,7 +26,6 @@ window.CONTENT = {
   {
    "id": "g-pooja",
    "btn": "pfb",
-   "aria": "Fold the Pooja section",
    "name": {
     "mr": "पूजा",
     "en": "Pooja"
@@ -597,7 +596,6 @@ window.CONTENT = {
   {
    "id": "g-aarti",
    "btn": "xfb",
-   "aria": "Fold the Aarti section",
    "name": {
     "mr": "आरती",
     "en": "Aarti"

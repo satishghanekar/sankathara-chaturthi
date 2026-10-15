@@ -54,7 +54,7 @@
     return h + "  </section>\n";
   }
   function group(g) {
-    return '  <div class="grp" id="' + g.id + '"><button type="button" id="' + g.btn + '" aria-expanded="true" aria-label="' + g.aria + '">' + two(g.name) + ICON_FOLD + "</button></div>\n";
+    return '  <div class="grp" id="' + g.id + '"><button type="button" id="' + g.btn + '" aria-expanded="true">' + two(g.name) + ICON_FOLD + "</button></div>\n";
   }
 
   // ---- The same words in another Indian script (Settings → Main language → ಕನ್ನಡ) ----

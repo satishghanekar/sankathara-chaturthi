@@ -682,9 +682,19 @@ ol.toc .m {
 
 
 /* ==== Reduced motion; print (first set of print rules, more further down) ==== */
+/* Readers who ask their phone for less motion get none: no transitions or animations anywhere.
+   "none" rather than the common 0.01ms trick: a short duration on every element (transition-property
+   defaults to "all") turns each font-size change into a transition, so auto-fit, which sets the size and
+   reads it straight back, measured the old size. Nothing in the script waits for transitionend. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
   }
 }
 @media print {
@@ -891,7 +901,9 @@ p.fl {
   width: 100%;
   box-sizing: border-box;
   height: 46px;
-  border: 1px solid var(--rule);
+  /* the edge is what shows this is a box to type in, so it needs 3:1 against the page (WCAG 1.4.11);
+     --rule is a decorative hairline at about 1.4:1 */
+  border: 1px solid var(--muted);
   border-radius: 10px;
   padding: 0 14px;
   font: 16px var(--body);
@@ -1188,6 +1200,9 @@ ol.toc a {
   min-width: 48px;
 }
 #jump {
+  /* vh first for browsers without dvh (Chrome < 108); dvh follows the phone's moving address bar */
+  max-height: calc(100vh - 90px);
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- vh fallback on the line above */
   max-height: calc(100dvh - 90px);
   overflow: auto;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
@@ -2250,10 +2265,16 @@ h2[tabindex="-1"]:focus {
   margin: 0 !important;
 }
 /* Version number beside the Settings title, so we can tell which copy a phone is showing */
-/* Narrow phones: icons only (each button keeps its spoken name in aria-label) */
+/* Narrow phones: icons only. The words are clipped out of sight rather than removed (display:none), because
+   they are each button's name for screen readers and voice control (WCAG 2.5.3 Label in Name) */
 @media (max-width: 379px) {
-  #shr button span {
-    display: none !important;
+  #shr button > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 
@@ -4043,8 +4064,12 @@ h2[tabindex="-1"]:focus {
     0 0 0 3.5px var(--gold),
     0 4px 12px color-mix(in srgb, var(--accent) 45%, transparent);
 }
+/* Past dates step back without fading: muted text and a lighter edge instead of opacity, which took the
+   text below the 4.5:1 contrast every reader needs (WCAG 1.4.3) */
 .skc .skch.past:not(.on) {
-  opacity: 0.6;
+  background: transparent;
+  border-color: var(--rule);
+  color: var(--muted);
 }
 /* A little tighter (Satish, 2026-10-14): smaller gaps between the card's lines; room under the chips for the chosen one's glow */
 @media screen {
@@ -5026,4 +5051,63 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr *,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .pvs[data-sid="p1"] .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .pvs[data-sid="p1"] .mr * {
   font-family: var(--kv, "Noto Sans Kannada"), "Noto Sans Kannada", var(--body) !important;
+}
+
+/* ==== Fallbacks for browsers without color-mix() ====
+   color-mix() needs Safari 16.2 (iOS 16.2). iPhone 6s/7 and iPad Air 2/mini 4 stop at iOS 15.8, and there a
+   declaration that uses it is dropped whole: the Settings switches lost their track and knob, and the home
+   sheet, date box and search highlights lost their colour. These rules give those browsers the nearest plain
+   theme colour instead. They sit inside @supports not (...), so browsers that have color-mix() never see them
+   and nothing changes there. Selectors repeat the originals exactly so they win by coming later. ==== */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  :root {
+    --sheet: var(--bg);
+  }
+  :root[data-pref="dark"],
+  :root:root:root[data-hc="1"] {
+    --sheet: var(--surface);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]):not([data-pref]) {
+      --sheet: var(--surface);
+    }
+  }
+  #res mark,
+  #hlpx,
+  [data-cols="2"] [data-lang="both"] .rftop .verse,
+  .sp .sp-go:active,
+  .sp-seg,
+  .sp-prev {
+    background: var(--surface);
+  }
+  .top .hero {
+    background: linear-gradient(180deg, var(--hdr), transparent);
+  }
+  #iconb img {
+    filter: drop-shadow(0 0 8px var(--gold));
+  }
+  .skc {
+    background: var(--surface);
+    border-color: var(--gold);
+  }
+  .skc .skd .skin {
+    border: 1px solid var(--gold);
+    background: var(--surface);
+  }
+  .skc .skch.on {
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 3.5px var(--gold);
+  }
+  .sp .sp-seg button[aria-pressed="true"] {
+    box-shadow:
+      0 1px 3px #0003,
+      0 0 0 1px var(--accent);
+  }
+  .sp .sp-sw::after {
+    background:
+      radial-gradient(circle at 14px 50%, #fff 11px, transparent 12px),
+      var(--rule);
+    box-shadow: inset 0 0 0 1px var(--muted);
+  }
 }
