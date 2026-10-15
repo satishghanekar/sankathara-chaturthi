@@ -4428,7 +4428,7 @@
   // ---- Share, QR code and the Add to Home Screen buttons ----
   (function () {
     var url = location.origin + location.pathname,
-      title = "संकटहर चतुर्थी";
+      title = "Sankathara Chaturthi"; // the app's name is always in English (share, install, page title)
     var qm = document.getElementById("qrm");
     function qr(o) {
       if (o) ovPush();
@@ -4461,15 +4461,15 @@
       var tip = mr
         ? "\nफोनवर ॲपसारखे ठेवण्यासाठी: लिंक उघडा आणि होम स्क्रीनवर जोडा (Add to Home Screen) दाबा."
         : "\nTip: open the link and tap Add to Home Screen to keep it on your phone like an app.";
-      if (!C || !L) return (mr ? "संकटहर चतुर्थी — पूजा आणि आरती" : title) + (sep ? "" : "\n" + url) + tip;
+      if (!C || !L) return (mr ? title + " — पूजा आणि आरती" : title) + (sep ? "" : "\n" + url) + tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
         f = skFmt(o),
         t = skTemple(L),
-        ang = f.ang ? (mr ? "अंगारकी " : "Angaraki ") : "";
+        ang = f.ang ? "Angaraki " : ""; // with the name, which is always English
       if (mr)
         return (
           ang +
-          "संकटहर चतुर्थी: " +
+          "Sankathara Chaturthi: " +
           f.dmr +
           (t ? " · पूजा सायं. ७:०० ते ८:३०, भारतीय हिंदू मंदिर, पॉवेल" : "") +
           (o.rise ? " · चंद्रोदय " + f.tmr : "") +
@@ -4607,7 +4607,7 @@
       hd.appendChild(m1);
       var m2 = document.createElement("meta");
       m2.name = "apple-mobile-web-app-title";
-      m2.content = "संकटहर चतुर्थी";
+      m2.content = "Sankathara Chaturthi";
       hd.appendChild(m2);
     } catch (e) {}
     // Offline: a small cloud in the top bar while there is no internet (#ofb), and in Settings → About whether the
