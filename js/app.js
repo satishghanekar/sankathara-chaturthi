@@ -3089,9 +3089,11 @@
     var q = function (l, cls) {
       var ps = [].slice.call(a1.querySelectorAll(".items .verse > ." + l + " p"), 0, 2);
       if (!ps.length) return "";
-      var c = getComputedStyle(ps[0]);
+      var c = getComputedStyle(ps[0]),
+        // the size as a share of the text size, so the preview follows A− / A+ through the CSS even before this runs again
+        r = Math.round((parseFloat(c.fontSize) / (parseFloat(root.style.getPropertyValue("--fs")) || parseFloat(c.fontSize))) * 1e4) / 1e4;
       return (
-        '<div class="' + cls + '" lang="' + LK(l) + '" style="font-family:' + c.fontFamily.replace(/"/g, "'") + ";font-size:" + c.fontSize +
+        '<div class="' + cls + '" lang="' + LK(l) + '" style="font-family:' + c.fontFamily.replace(/"/g, "'") + ";font-size:calc(var(--fs) * " + r + ")" +
         ";font-weight:" + c.fontWeight + ";line-height:" + c.lineHeight + '">' +
         ps.map(function (p) {
           return "<p>" + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p>"; // a danda never starts a line
