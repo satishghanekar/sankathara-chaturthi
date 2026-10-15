@@ -2,7 +2,7 @@
 
 The texts our group recites at Sankathara (Sankashti) Chaturthi puja: Pooja, Bhajans (coming soon) and Aarti, in Marathi with English transliteration.
 
-**Live site:** to be set up from this repository (the earlier site, https://sankashti-chaturthi.pages.dev, stays as it was)
+**Live site:** https://sankathara-chaturthi.pages.dev (the earlier site, https://sankashti-chaturthi.pages.dev, stays as it was)
 
 **Version:** 1.0 (shown as **v1.0** on the home card and as *v1.0* beside the Settings title)
 
@@ -56,7 +56,7 @@ There is no build step. The files in this repository are exactly what the site s
 
 The site is hosted on **Cloudflare Pages**, connected to this repository. Every push (commit) to the `main` branch is published automatically, usually within a minute or two. Nothing else needs to be done.
 
-To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankathara-chaturthi** (or whatever the Pages project is named) → **Deployments**. The newest deployment should show *Success*.
+To watch a publish: Cloudflare dashboard → **Workers & Pages** → **sankathara-chaturthi** → **Deployments**. The newest deployment should show *Success*.
 
 ## Making a change by hand
 

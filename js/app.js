@@ -1248,7 +1248,7 @@
     }
     items.forEach(function (o) {
       var v = ev(o);
-      L2.push("BEGIN:VEVENT", "UID:sk-" + dt(v.d) + "@sankashti-chaturthi.pages.dev", "DTSTAMP:" + stamp);
+      L2.push("BEGIN:VEVENT", "UID:sk-" + dt(v.d) + "@sankathara-chaturthi.pages.dev", "DTSTAMP:" + stamp);
       L2.push("DTSTART:" + dt(v.t0, 1), "DTEND:" + dt(v.t1, 1), "SUMMARY:" + v.nm + " pooja");
       if (o.rise) L2.push("DESCRIPTION:Moonrise " + v.f.ten);
       L2.push("BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + v.nm, "TRIGGER:-PT2H", "END:VALARM");
