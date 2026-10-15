@@ -6604,7 +6604,7 @@ h2[tabindex="-1"]:focus {
       <li><b>Pinch</b> or use A− / A+ in Settings to change the text size of the aartis (the home page stays readable at its normal size). The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
       <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
       <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
-      <li><b>Tilt to scroll</b> (phones and tablets): tap the tilted-phone button in the bottom bar, holding the phone however is comfortable. Lean the top of the phone away from you and the page moves down; lean it back towards you and it moves up. The further you lean, the faster it goes; hold it still and the page stays put. The dot in the bar shows the lean. Touch the page to hold it; when you let go, the way you are holding the phone then becomes the new "still". ⏸ stops it. On an iPhone, tap <b>Allow</b> when it asks for motion access (only the first time). The tilt is read on the phone; nothing is sent anywhere.</li>
+      <li data-feat="tl" hidden><b>Tilt to scroll</b> (phones and tablets): tap the tilted-phone button in the bottom bar, holding the phone however is comfortable. Lean the top of the phone away from you and the page moves down; lean it back towards you and it moves up. The further you lean, the faster it goes; hold it still and the page stays put. The dot in the bar shows the lean. Touch the page to hold it; when you let go, the way you are holding the phone then becomes the new "still". ⏸ stops it. On an iPhone, tap <b>Allow</b> when it asks for motion access (only the first time). The tilt is read on the phone; nothing is sent anywhere.</li>
       <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
     </ul>
 
@@ -6656,7 +6656,8 @@ h2[tabindex="-1"]:focus {
 
    Sections, in order:
      Settings (P)            what the reader chose, and migrations
-     Features held back      FEAT_AS: autoscroll is built but hidden until released
+     Features held back      FEAT_AS: autoscroll, FEAT_TL: tilt to scroll;
+                             both built but hidden until released
      IAST transliteration    IA(): Devanagari line → scholarly English;
                              run once at start-up when English style = sukhakartā
      Layout helpers          two-column grid rows, contents rail
@@ -6770,6 +6771,14 @@ h2[tabindex="-1"]:focus {
   var FEAT_AS = false;
   if (FEAT_AS)
     [].forEach.call(document.querySelectorAll('[data-feat="as"]'), function (e) {
+      e.hidden = false;
+    });
+  // Tilt to scroll (the tilted-phone button in the bottom bar and its Help entry, data-feat="tl") is built and
+  // tested the same way. With FEAT_TL false the button never shows (data-tilt is not set), so it can't start.
+  // To release it: set FEAT_TL to true. Nothing else needs changing.
+  var FEAT_TL = false;
+  if (FEAT_TL)
+    [].forEach.call(document.querySelectorAll('[data-feat="tl"]'), function (e) {
       e.hidden = false;
     });
 
@@ -8926,7 +8935,7 @@ h2[tabindex="-1"]:focus {
   var TL = { on: 0, p: null, base: null, got: 0, held: 0, ht: 0, raf: 0, last: 0, acc: 0, d: 0 },
     tlb = document.getElementById("tlb"),
     tlDot = document.querySelector("#tlm i");
-  if ("DeviceOrientationEvent" in window && window.matchMedia && matchMedia("(pointer: coarse)").matches) root.setAttribute("data-tilt", "1");
+  if (FEAT_TL && "DeviceOrientationEvent" in window && window.matchMedia && matchMedia("(pointer: coarse)").matches) root.setAttribute("data-tilt", "1");
   function tlLabel() {
     var mr = P.ui === "mr",
       s = document.getElementById("tls");
@@ -9014,6 +9023,7 @@ h2[tabindex="-1"]:focus {
     tlb.focus({ preventScroll: true });
   }
   tlb.onclick = function () {
+    if (!FEAT_TL) return;
     var D = window.DeviceOrientationEvent;
     if (D && typeof D.requestPermission === "function")
       D.requestPermission()
