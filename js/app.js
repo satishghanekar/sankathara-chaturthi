@@ -2826,7 +2826,10 @@
     if (o) ovPush();
     ovFocus(pn, o);
     pn.hidden = !o;
-    if (o) spSet();
+    if (o) {
+      spSet();
+      szSet(); // a pinch on the page changes the size without passing through here
+    }
     // the Settings page covers the whole page; the page under it doesn't scroll
     if (o) root.setAttribute("data-sp", "1");
     else root.removeAttribute("data-sp");
@@ -3324,6 +3327,7 @@
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
+        szSet();
         // Offer a one-tap way back to the default size for a few seconds (Settings has its own reset)
         if (P.fs !== (FSA || dfs()) && pn.hidden) {
           clearTimeout(szTm);
