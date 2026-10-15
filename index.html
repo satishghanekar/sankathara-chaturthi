@@ -154,7 +154,7 @@
     <div id="slim" hidden><img src="picture-360.webp" alt="" width="44" height="44"><div id="slimt"></div></div>
     <div class="hero">
       <!-- The app's picture; a tap opens it full screen (#pzv), where it can be pinched or double-tapped to zoom -->
-      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="picture-360.webp" alt="" width="360" height="360"></button>
+      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="picture-360.webp" fetchpriority="high" alt="" width="360" height="360"></button>
       <div class="hl1" aria-hidden="true">॥ श्री गणेशाय नमः ॥</div>
     </div>
     <div id="skc" class="skc" hidden></div>
@@ -218,7 +218,7 @@
 <!-- ==== Pop-ups (QR code, print options), print view, status message ==== -->
 <!-- Full-screen picture: pinch, double-tap or (with a mouse) scroll to zoom; drag to move; ✕, Back, Escape or a tap outside closes -->
 <div id="pzv" hidden role="dialog" aria-modal="true" aria-label="Sankathara Chaturthi picture">
-  <img id="pzi" src="picture.webp" alt="Shri Ganesha, Sankathara Chaturthi" width="941" height="940" draggable="false">
+  <img id="pzi" data-src="picture.webp" alt="Shri Ganesha, Sankathara Chaturthi" width="941" height="940" draggable="false">
   <button type="button" id="pzx" aria-label="Close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <div id="pzh" aria-hidden="true"></div>
 </div>

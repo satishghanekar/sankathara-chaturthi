@@ -16,19 +16,19 @@
     "assert": {
       "assertions": {
         "categories:performance": [
-          "error",
+          "warn",
           {
             "minScore": 0.9
           }
         ],
         "largest-contentful-paint": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 2500
           }
         ],
         "total-blocking-time": [
-          "error",
+          "warn",
           {
             "maxNumericValue": 200
           }

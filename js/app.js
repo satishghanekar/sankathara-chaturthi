@@ -1526,6 +1526,20 @@
   }
 
   // ---- Auto-fit text size ----
+  // Performance: the window size, read once and kept until the window is resized. On phones the browser has to
+  // lay the whole page out before it can answer innerWidth/innerHeight if anything on the page changed, so
+  // reading them in apply() and the auto-fit (after a language switch, say) cost an extra full-page layout.
+  // (Where only a comparison is needed, apply() and ratio() ask media queries instead, which never wait for layout.)
+  var VW = 0;
+  function vw() {
+    return VW || (VW = innerWidth);
+  }
+  var MQL = matchMedia("(orientation: landscape)");
+  function vwReset() {
+    VW = 0;
+  }
+  addEventListener("resize", vwReset);
+  addEventListener("orientationchange", vwReset);
   // Auto-fit: largest text size (up to the device default) at which every verse line fits the screen width on one row.
   var FR = {};
   function segs(p) {
@@ -1562,37 +1576,55 @@
       P.xf,
       root.getAttribute("data-cols"),
       root.getAttribute("data-rail"),
-      innerWidth > innerHeight ? "l" : "p",
+      MQL.matches ? "l" : "p",
+      fontsN(),
     ].join("|");
     if (FR[k]) return FR[k];
-    var m = document.createElement("span");
-    m.style.cssText = "position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap";
-    document.body.appendChild(m);
     // measured at the device default size, as on first load: some layouts (two columns) size their columns in em,
     // so measuring at the current size would give a different answer each time and the size would creep down
     var was = root.style.getPropertyValue("--fs"),
-      base = dfs();
-    root.style.setProperty("--fs", base + "px");
+      base = dfs(),
+      // (setting the same size again would still make the browser redo the page's styles, so it is skipped)
+      same = was === base + "px";
+    if (!same) root.style.setProperty("--fs", base + "px");
+    // Performance: the page is read in three passes so the browser lays it out only twice, instead of once
+    // for every verse line (the old one-span-per-line loop cost over a second on a mid-range phone).
+    // 1. read: each visible line's free width and font (every read here shares one layout)
     var w = document.querySelector(".wrap"),
-      W = w ? w.clientWidth : innerWidth - 32,
-      r = 0;
+      W = w ? w.clientWidth : vw() - 32,
+      r = 0,
+      rows = [];
     [].forEach.call(document.querySelectorAll(P.lang === "en" || LEAD === "en" ? ".verse .en p" : ".verse .mr p"), function (p) {
       if (!p.offsetParent) return;
       var cs = getComputedStyle(p),
         avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       if (!avail) return;
-      var inset = (W - avail) / base;
-      m.style.fontFamily = cs.fontFamily;
-      m.style.fontSize = cs.fontSize;
-      m.style.fontWeight = cs.fontWeight;
-      segs(p).forEach(function (t) {
-        m.textContent = t;
-        var q = m.getBoundingClientRect().width / base + inset;
-        if (q > r) r = q;
+      rows.push({ p: p, inset: (W - avail) / base, ff: cs.fontFamily, fz: cs.fontSize, fw: cs.fontWeight });
+    });
+    // 2. write: one off-screen span per line segment, in the paragraph's font, each on its own row
+    var m = document.createElement("div"),
+      spans = [];
+    m.style.cssText = "position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;contain:layout style size;width:0;height:0";
+    rows.forEach(function (row) {
+      segs(row.p).forEach(function (t) {
+        var s = document.createElement("span");
+        s.style.fontFamily = row.ff;
+        s.style.fontSize = row.fz;
+        s.style.fontWeight = row.fw;
+        s.textContent = t;
+        m.appendChild(s);
+        m.appendChild(document.createElement("br"));
+        spans.push({ s: s, inset: row.inset });
       });
     });
+    document.body.appendChild(m);
+    // 3. read: the widths (one layout for all of them); the widest line, in ems plus its column's inset, wins
+    spans.forEach(function (x) {
+      var q = x.s.getBoundingClientRect().width / base + x.inset;
+      if (q > r) r = q;
+    });
     m.remove();
-    root.style.setProperty("--fs", was);
+    if (!same) root.style.setProperty("--fs", was);
     return (FR[k] = r);
   }
   // FSA: the automatic size for this screen, worked out even when the reader has chosen a size,
@@ -1602,10 +1634,11 @@
   // so it is remembered: reading it would make the browser lay out the whole page an extra time
   var CW = {};
   function autoFs() {
-    var wk = [innerWidth, root.getAttribute("data-cols"), root.getAttribute("data-rail")].join("|"),
+    // ratio() first: it lays the page out anyway, so the reads below come free (when the size is unchanged)
+    var r = ratio(),
+      wk = [vw(), root.getAttribute("data-cols"), root.getAttribute("data-rail")].join("|"),
       w = document.querySelector(".wrap"),
-      cw = CW[wk] || (CW[wk] = w ? w.clientWidth : innerWidth - 32),
-      r = ratio();
+      cw = CW[wk] || (CW[wk] = w ? w.clientWidth : vw() - 32);
     if (!r || !cw) return;
     var f = Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r)));
     FSA = f;
@@ -1653,10 +1686,34 @@
     pull.tm = setTimeout(pull, 80);
   }
   addEventListener("resize", pullSoon);
+  // How many web fonts have arrived. Part of the auto-fit cache key, and the font events below fit the
+  // text again only when it has changed: "loadingdone" and fonts.ready both fire when the fonts arrive,
+  // and fitting on each (plus once more at start-up) used to measure the whole page four times on load.
+  function fontsN() {
+    var n = 0;
+    try {
+      document.fonts.forEach(function (f) {
+        if (f.status === "loaded") n++;
+      });
+    } catch (e) {}
+    return n;
+  }
+  var fontN = -1;
+  function fontsIn() {
+    var n = fontsN();
+    if (n === fontN) return;
+    fontN = n;
+    autoFs();
+    pullSoon();
+    // the date card's chips may wrap differently in the arrived font
+    try {
+      skDot();
+    } catch (e) {}
+  }
   if (document.fonts) {
     try {
-      document.fonts.ready.then(refit);
-      document.fonts.addEventListener("loadingdone", refit);
+      document.fonts.ready.then(fontsIn);
+      document.fonts.addEventListener("loadingdone", fontsIn);
     } catch (e) {}
   }
 
@@ -2235,8 +2292,7 @@
     }
   }
   addEventListener("scroll", asShow, { passive: true });
-  asLabel();
-  asShow();
+  // (the first asLabel() and asShow() run from apply() at start-up, in the frame after it)
 
   // ---- Tilt to scroll (bottom bar, phones and tablets) ----
   // Tap the tilt button holding the phone however is comfortable: that angle is "still". Leaning the top of the
@@ -2394,7 +2450,9 @@
   // Phones and tablets without the side menu. Scrolling down past the top of the page tucks the top and
   // bottom bars away (data-tuck); scrolling up, the end of the page, a tap on a blank part of the page,
   // a menu opening, keyboard focus in a bar or a jump (Contents, Prev / Next) brings them back.
-  var TK = { y: scrollY, acc: 0, hold: 0 },
+  // (y starts at 0, the top: the browser restores a reload's scroll position only after start-up, and reading
+  // scrollY here, mid start-up, would make it lay the page out early)
+  var TK = { y: 0, acc: 0, hold: 0 },
     tkStrip = document.getElementById("tuck");
   function tuck(on) {
     on = on && !root.hasAttribute("data-rail") && !root.hasAttribute("data-menu");
@@ -2545,6 +2603,21 @@
     });
   }
   // Apply every setting in P to the page
+  var MQ900 = matchMedia("(min-width: 900px)"),
+    MQ1000 = matchMedia("(min-width: 1000px)"),
+    MQ1100 = matchMedia("(min-width: 1100px)");
+  // The parts of apply() that read where things are on screen (the current piece for the top bar title,
+  // the menus and the autoscroll speed) wait for the next frame, when the browser lays the page out
+  // anyway; reading them straight away cost one extra full-page layout per change.
+  var tailF = 0;
+  function applyTail() {
+    tailF = 0;
+    if (asb) {
+      asLabel();
+      asShow();
+    }
+    mark();
+  }
   function apply() {
     root.style.setProperty("--fs", P.fs + "px");
     if (P.th === "auto") root.removeAttribute("data-pref");
@@ -2571,10 +2644,11 @@
     qi.setAttribute("aria-label", P.ui === "mr" ? "ओळ शोधा" : "Find a line");
     root.setAttribute("data-ref", String(P.ref));
     root.setAttribute("data-hc", String(P.hc));
-    var wide = innerWidth >= 900,
-      two = wide && (P.cols === 2 || (P.cols !== 1 && innerWidth >= 1000));
+    // (media queries answer without laying the page out; innerWidth would, right after the changes above)
+    var wide = MQ900.matches,
+      two = wide && (P.cols === 2 || (P.cols !== 1 && MQ1000.matches));
     root.setAttribute("data-cols", two ? "2" : "1");
-    if (innerWidth >= 1100) root.setAttribute("data-rail", "1");
+    if (MQ1100.matches) root.setAttribute("data-rail", "1");
     else root.removeAttribute("data-rail");
     document.getElementById("colrow").hidden = !wide;
     [].forEach.call(document.querySelectorAll("#sc button"), function (b) {
@@ -2624,11 +2698,7 @@
     document.getElementById("tc").setAttribute("aria-pressed", String(!!P.hc));
     document.getElementById("tw").setAttribute("aria-pressed", String(!!P.wake));
     document.getElementById("tas").setAttribute("aria-pressed", String(!!P.ason));
-    if (asb) {
-      asLabel();
-      asShow();
-    }
-    mark();
+    if (!tailF) tailF = requestAnimationFrame(applyTail);
     szSet();
   }
 
@@ -3594,13 +3664,8 @@
   }
   if (P.hl) hlMark(P.hl);
   apply();
-  if (document.fonts && document.fonts.ready)
-    document.fonts.ready.then(function () {
-      FR = {};
-      if (!P.fsu) {
-        apply();
-      }
-    });
+  // fonts already in place (a repeat visit) need no second fit; fontsIn() above handles any that arrive later
+  fontN = fontsN();
   var rzT = 0;
   window.addEventListener("resize", function () {
     clearTimeout(rzT);
@@ -3720,6 +3785,9 @@
       draw();
     }
     function open() {
+      // the full-size picture (140 KB) is fetched on the first open, not with the page (the service worker
+      // still keeps a copy for offline use); the small card picture shows until it arrives
+      if (!im.getAttribute("src")) im.src = im.getAttribute("data-src");
       ovPush();
       s = 1;
       tx = ty = 0;
@@ -4423,12 +4491,20 @@
         if (pg) pcache = { key: k, pg: pg };
       });
     }
+    // Performance: the warm-up lays out a hidden copy of every piece, so it waits until the reader has
+    // stopped tapping and then for an idle moment (Safari has no requestIdleCallback: it just runs then)
     var wt = 0;
-    document.addEventListener("click", function () {
+    function warmSoon(ms) {
       clearTimeout(wt);
-      wt = setTimeout(warm, 2500);
+      wt = setTimeout(function () {
+        if (window.requestIdleCallback) requestIdleCallback(warm, { timeout: 2000 });
+        else warm();
+      }, ms);
+    }
+    document.addEventListener("click", function () {
+      warmSoon(2500);
     });
-    setTimeout(warm, 3000);
+    warmSoon(3000);
     function go(mode) {
       pm.hidden = true;
       ovDone();
