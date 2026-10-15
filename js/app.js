@@ -3354,6 +3354,53 @@
       { passive: false },
     );
   });
+  // On a computer: Ctrl/⌘ + and −, Ctrl/⌘ 0 and a trackpad pinch (which the browser sends as Ctrl + wheel) change
+  // the text size the same way a pinch does on a phone, instead of zooming the whole page
+  function deskSz(v, fsu) {
+    v = Math.max(14, Math.min(52, v));
+    if (!pn.hidden) return fsTap(v, fsu);
+    P.fsu = fsu;
+    if (fsu) {
+      P.fs = v;
+      if (!pzF)
+        pzF = requestAnimationFrame(function () {
+          pzF = 0;
+          root.style.setProperty("--fs", P.fs + "px");
+        });
+    } else {
+      P.fs = dfs();
+      apply();
+    }
+    save();
+    szSet();
+    showSz();
+  }
+  var wz = 0,
+    wzT = 0;
+  addEventListener(
+    "wheel",
+    function (e) {
+      if (!e.ctrlKey || !document.getElementById("pzv").hidden) return;
+      e.preventDefault();
+      wz = (wz || P.fs) * Math.exp(-e.deltaY * 0.01);
+      clearTimeout(wzT);
+      wzT = setTimeout(function () {
+        wz = 0;
+      }, 400);
+      var v = Math.round(wz);
+      if (v !== P.fs) deskSz(v, 1);
+    },
+    { passive: false },
+  );
+  document.addEventListener("keydown", function (e) {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey || !document.getElementById("pzv").hidden) return;
+    var k = e.key;
+    if (k === "+" || k === "=") deskSz(P.fs + 2, 1);
+    else if (k === "-" || k === "_") deskSz(P.fs - 2, 1);
+    else if (k === "0") deskSz(0, 0);
+    else return;
+    e.preventDefault();
+  });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") {
       setP(false);
