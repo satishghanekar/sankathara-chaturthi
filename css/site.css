@@ -4995,6 +4995,19 @@ html[data-sp] {
 .sp-note[lang="mr"] {
   font-family: var(--body);
 }
+/* the maker's name and email, quiet, under About */
+.sp-by {
+  margin: 18px 6px 8px;
+  font: 400 13px/1.6 var(--lat);
+  text-align: center;
+  color: var(--muted);
+}
+.sp-by a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+}
 @media (max-width: 359px) {
   .sp-body {
     padding-inline: 12px;
