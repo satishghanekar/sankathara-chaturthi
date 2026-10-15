@@ -5038,6 +5038,148 @@ h2[tabindex="-1"]:focus {
     font-size: 8.5pt;
   }
 }
+/* ==== Both languages, English first (Settings → "In Both, show first": English) ====
+   The script sets data-lead="en" on the page (only in Both) and moves each stanza's English block above its
+   Marathi. English gets the reading size and colour; the Marathi becomes the smaller, muted line. */
+[data-lead="en"] [data-lang="both"] .verse .en {
+  color: var(--ink);
+  font-size: 1em;
+  margin-top: 0;
+  line-height: inherit;
+}
+[data-lead="en"] [data-lang="both"] .verse .en p {
+  font-size: 0.86em;
+  line-height: 1.6;
+}
+[data-lead="en"] [data-lang="both"] .verse .mr {
+  color: var(--muted);
+  font-size: 0.72em;
+  margin-top: 0.15em;
+  line-height: 1.5;
+}
+html:not([data-hc="1"])[data-lead="en"] [data-lang="both"] .verse .mr p.hl {
+  color: var(--ink);
+}
+[data-lead="en"] [data-lang="both"] .rmkpop .verse .en p {
+  font-weight: 700;
+  font-size: 0.86em;
+  color: inherit;
+}
+[data-lead="en"] [data-lang="both"] .rmkpop .verse .mr p {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+/* piece titles: the English title leads, the Marathi one sits under it */
+html[data-lead="en"] .ash[data-lang="both"] header h2 .en {
+  display: inline;
+  margin: 0;
+  font-family: var(--lat);
+  font-size: 0.92em;
+  font-weight: 600;
+  line-height: inherit;
+  color: inherit;
+}
+html[data-lead="en"] .ash[data-lang="both"] header h2 .mr {
+  display: block;
+  margin: 1px 0 0;
+  font-size: 0.72em;
+  font-weight: 400;
+  color: var(--muted);
+}
+/* the author line follows the leading language */
+html[data-lead="en"] .ash[data-lang="both"] .cr .en,
+html[data-lead="en"] #pv[data-lang="both"] .pvcr .en {
+  display: inline;
+}
+html[data-lead="en"] .ash[data-lang="both"] .cr small .en,
+html[data-lead="en"] #pv[data-lang="both"] .pvcr small .en {
+  display: block;
+}
+html[data-lead="en"] .ash[data-lang="both"] .cr .mr,
+html[data-lead="en"] #pv[data-lang="both"] .pvcr .mr {
+  display: none;
+}
+/* contents lists (home, desktop menu, search panel): the English title leads, the Marathi one under it */
+@media screen {
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .m > .en {
+    margin: 0;
+    font: 600 0.86em/1.3 var(--lat);
+    color: inherit;
+  }
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .m > .mr {
+    display: block;
+    margin-top: 2px;
+    font: 400 13.5px/1.3 var(--body);
+    color: var(--muted);
+  }
+  html[data-lead="en"] #rail[data-lang="both"] ul a > .en {
+    display: block;
+    font: 500 14px/1.35 var(--lat);
+    color: inherit;
+  }
+  html[data-lead="en"] #rail[data-lang="both"] ul a > .mr {
+    display: block;
+    font: 400 12.5px/1.3 var(--head);
+    color: var(--muted);
+  }
+  html[data-lead="en"] #jl[data-lang="both"] li > a > .en {
+    display: block;
+    font-size: 1em;
+    opacity: 1;
+  }
+  html[data-lead="en"] #jl[data-lang="both"] li > a > .mr {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.8;
+  }
+}
+/* wide screens, side by side: English on the left (right-aligned toward the centre), Marathi on the right */
+@media screen {
+  html[data-lead="en"][data-cols="2"] [data-lang="both"] .verse > .en {
+    font-size: 1em;
+    line-height: inherit;
+  }
+  html[data-lead="en"][data-cols="2"] [data-lang="both"] .verse > .en > p {
+    grid-column: 1;
+    text-align: right;
+    font-size: 0.86em;
+  }
+  html[data-lead="en"][data-cols="2"] [data-lang="both"] .verse > .mr {
+    font-size: 0.8em;
+    line-height: 1.5;
+  }
+  html[data-lead="en"][data-cols="2"] [data-lang="both"] .verse > .mr > p {
+    grid-column: 2;
+    text-align: left;
+    font-size: 1em;
+    margin: 0;
+  }
+}
+@media print {
+  [data-lead="en"] [data-lang="both"] .verse .en {
+    font-size: 1em;
+  }
+  [data-lead="en"] [data-lang="both"] .verse .mr {
+    font-size: 0.78em;
+  }
+  /* side by side: English is the left column, so the dividing rule and the dhrupad mark move with it */
+  html[data-lead="en"] #pv .pvside .pvm {
+    border-right: 0;
+  }
+  html[data-lead="en"] #pv .pvside .pve {
+    border-right: 0.5pt solid #bbb;
+  }
+  html[data-lead="en"] #pv .pvside tr.pvrefrow td.pvm {
+    box-shadow: none;
+    border-left: 0;
+    padding-left: 10pt;
+  }
+  html[data-lead="en"] #pv .pvside tr.pvrefrow td.pve {
+    box-shadow: inset 2.5pt 0 0 var(--accent);
+    padding-left: 12pt;
+  }
+}
 </style>
 </head>
 
@@ -5080,6 +5222,13 @@ h2[tabindex="-1"]:focus {
     <div class="seg" id="su" role="group" aria-label="Menu language">
       <button type="button" data-v="en" lang="en">English</button>
       <button type="button" data-v="mr" lang="mr">मराठी</button>
+    </div>
+  </div>
+  <div class="row">
+    <label><span class="mr">दोन्ही भाषांत आधी</span><span class="en" lang="en">In Both, show first</span></label>
+    <div class="seg" id="sld" role="group" aria-label="In Both, show first">
+      <button type="button" data-v="mr" lang="mr">मराठी</button>
+      <button type="button" data-v="en" lang="en">English</button>
     </div>
   </div>
   <div class="row">
@@ -6861,6 +7010,7 @@ h2[tabindex="-1"]:focus {
     <h3>Settings</h3>
     <ul>
       <li><b>Menu language:</b> English or <span lang="mr">मराठी</span> for the date card, buttons and settings. The aartis follow the अ/A button instead.</li>
+      <li><b>In Both, show first:</b> when the अ/A button shows both languages, whether each stanza starts with the Marathi lines (English smaller under them) or with the English lines (Marathi smaller under them). The अ/A icon shows which comes first.</li>
       <li><b>English style:</b> how the English lines and the titles of the pieces are spelled.
         <ul>
           <li><b>Sukhkarta</b>: the everyday spelling most of us read easily.</li>
@@ -6969,6 +7119,8 @@ h2[tabindex="-1"]:focus {
     mr: '<svg viewBox="0 0 40 34" width="40" height="34" aria-hidden="true"><rect x="14" y="3" width="20" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/><text x="24" y="16.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:currentColor;font-family:var(--lat)" opacity=".55">A</text><rect x="4" y="11" width="20" height="18" rx="4" style="fill:var(--accent)"/><text x="14" y="25" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text></svg>',
     en: '<svg viewBox="0 0 40 34" width="40" height="34" aria-hidden="true"><rect x="4" y="3" width="20" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/><text x="14" y="16.5" text-anchor="middle" font-size="13" style="fill:currentColor;font-family:var(--head)" opacity=".55">अ</text><rect x="14" y="11" width="20" height="18" rx="4" style="fill:var(--accent)"/><text x="24" y="24.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text></svg>',
     both: '<svg viewBox="0 0 44 34" width="42" height="34" aria-hidden="true"><rect x="2" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="11.5" y="22" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text><rect x="23" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="32.5" y="21.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text></svg>',
+    // Both, English first (Settings → In Both, show first): the same two cards, A on the left
+    bothEn: '<svg viewBox="0 0 44 34" width="42" height="34" aria-hidden="true"><rect x="2" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="11.5" y="21.5" text-anchor="middle" font-size="12" font-weight="600" style="fill:var(--bg);font-family:var(--lat)">A</text><rect x="23" y="8" width="19" height="18" rx="4" style="fill:var(--accent)"/><text x="32.5" y="22" text-anchor="middle" font-size="14" style="fill:var(--bg);font-family:var(--head)">अ</text></svg>',
   };
   // Icons for the dhrupad button: repeated after every stanza / shown once
   var RB_LOOP =
@@ -7003,6 +7155,7 @@ h2[tabindex="-1"]:focus {
     fsu: 0, // 1 = the reader chose the size (A−/A+/pinch), so auto-fit leaves it alone
     th: "auto", // theme: auto | light | sepia | dark
     lang: "mr", // mr | en | both
+    lead: "mr", // in Both, which language comes first: mr | en (Settings → In Both, show first)
     ui: "en", // menus, home page and buttons: en | mr
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
@@ -8449,6 +8602,7 @@ h2[tabindex="-1"]:focus {
     // cached per language / dhrupad / layout / orientation
     var k = [
       P.lang,
+      LEAD,
       P.ref,
       P.pf,
       P.xf,
@@ -8464,7 +8618,7 @@ h2[tabindex="-1"]:focus {
       w = document.querySelector(".wrap"),
       W = w ? w.clientWidth : innerWidth - 32,
       r = 0;
-    [].forEach.call(document.querySelectorAll(P.lang === "en" ? ".verse .en p" : ".verse .mr p"), function (p) {
+    [].forEach.call(document.querySelectorAll(P.lang === "en" || LEAD === "en" ? ".verse .en p" : ".verse .mr p"), function (p) {
       if (!p.offsetParent) return;
       var cs = getComputedStyle(p),
         avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
@@ -9401,6 +9555,25 @@ h2[tabindex="-1"]:focus {
       });
     }
   }
+  // Both languages, English first (Settings → In Both, show first). Each stanza's English block and each piece
+  // title's English part are moved in front of the Marathi, so the page, screen readers, the dhrupad bubble and
+  // the printout all read English first; data-lead="en" on the page gives English the reading size (CSS below).
+  // Outside Both, or with Marathi first, everything is in its original order.
+  var LEAD = "mr";
+  function leadSet() {
+    var L = P.lang === "both" && P.lead === "en" ? "en" : "mr";
+    if (L === "en") root.setAttribute("data-lead", "en");
+    else root.removeAttribute("data-lead");
+    LEAD = L;
+    // (checked every time: the contents lists are built after the first call)
+    [].forEach.call(document.querySelectorAll(".wrap .verse, .wrap .ash header h2, #home ol.toc .m, #rail ul a, #jl li > a"), function (v) {
+      var m = v.querySelector(":scope > .mr"),
+        e = v.querySelector(":scope > .en");
+      if (!m || !e) return;
+      var enFirst = !!(e.compareDocumentPosition(m) & Node.DOCUMENT_POSITION_FOLLOWING);
+      if (enFirst !== (L === "en")) v.insertBefore(L === "en" ? e : m, L === "en" ? m : e);
+    });
+  }
   // Apply every setting in P to the page
   function apply() {
     root.style.setProperty("--fs", P.fs + "px");
@@ -9454,10 +9627,15 @@ h2[tabindex="-1"]:focus {
         ? "Refrain (dhrupad) after every verse. Tap to show it once"
         : "Refrain (dhrupad) shown once. Tap to repeat after every verse",
     );
-    var LB = { mr: [LI.mr, "Marathi"], en: [LI.en, "English"], both: [LI.both, "Marathi and English"] }[P.lang];
-    if (hb.getAttribute("data-l") !== P.lang) {
+    leadSet();
+    [].forEach.call(document.querySelectorAll("#sld button"), function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.v === (P.lead === "en" ? "en" : "mr")));
+    });
+    var LB = { mr: [LI.mr, "Marathi"], en: [LI.en, "English"], both: LEAD === "en" ? [LI.bothEn, "English and Marathi"] : [LI.both, "Marathi and English"] }[P.lang],
+      lk = P.lang + LEAD;
+    if (hb.getAttribute("data-l") !== lk) {
       hb.innerHTML = LB[0];
-      hb.setAttribute("data-l", P.lang);
+      hb.setAttribute("data-l", lk);
     }
     hb.setAttribute("aria-label", "Language: " + LB[1] + ". Tap to change");
     pfSet();
@@ -9546,6 +9724,16 @@ h2[tabindex="-1"]:focus {
         }, 9000);
       }
       apply();
+    }
+  };
+  document.getElementById("sld").onclick = function (e) {
+    var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
+    if (v) {
+      var c = P.lang === "both" ? cur() : null;
+      P.lead = v;
+      apply();
+      save();
+      if (c) c.scrollIntoView();
     }
   };
   document.getElementById("su").onclick = function (e) {
@@ -9879,7 +10067,7 @@ h2[tabindex="-1"]:focus {
     apply();
     save();
     if (c) c.scrollIntoView();
-    var L = { mr: "मराठी", en: "English", both: "मराठी + English" }[P.lang];
+    var L = { mr: "मराठी", en: "English", both: LEAD === "en" ? "English + मराठी" : "मराठी + English" }[P.lang];
     flash(L, L);
   };
 
@@ -10704,8 +10892,9 @@ h2[tabindex="-1"]:focus {
               if (mp.classList.contains("rf")) {
                 tr.classList.add("rfl");
               }
-              tr.appendChild(a);
-              tr.appendChild(b);
+              // English first (Settings → In Both, show first): English on the left
+              tr.appendChild(LEAD === "en" ? b : a);
+              tr.appendChild(LEAD === "en" ? a : b);
               t.appendChild(tr);
             });
           });
@@ -10859,7 +11048,7 @@ h2[tabindex="-1"]:focus {
       PAPER = LTR ? [215.9, 279.4] : [210, 297],
       pcache = { key: "", pg: null };
     function pkey(mode) {
-      return [mode, P.lang, P.ref, P.tr, P.ui, P.fnt].join("|");
+      return [mode, P.lang, LEAD, P.ref, P.tr, P.ui, P.fnt].join("|");
     }
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
