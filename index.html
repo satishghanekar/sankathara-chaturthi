@@ -5107,6 +5107,26 @@ html[data-lead="en"] #pv[data-lang="both"] .pvcr .mr {
     font: 600 0.86em/1.3 var(--lat);
     color: inherit;
   }
+  /* one line for the English title (Safari otherwise sizes the title to the shorter Marathi line under it) */
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .m > .en {
+    white-space: nowrap;
+  }
+  /* the language tag on the right follows too: Marathi, Hindi, Sanskrit */
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .lt {
+    font: 400 13px/1 var(--lat);
+  }
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .lt .en {
+    display: inline;
+  }
+  html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .lt .mr {
+    display: none;
+  }
+  html[data-lead="en"] [data-lang="both"] .tag .en {
+    display: inline;
+  }
+  html[data-lead="en"] [data-lang="both"] .tag .mr {
+    display: none;
+  }
   html[data-lead="en"] #home .tocg[data-lang="both"] ol.toc .m > .mr {
     display: block;
     margin-top: 2px;
