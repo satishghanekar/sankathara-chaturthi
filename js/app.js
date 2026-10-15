@@ -3100,7 +3100,7 @@
         }).join("") + "</div>"
       );
     };
-    var h = '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + "</div>" + q(P.lead, "sp-p1") + (P.l2 ? q(P.l2, "sp-p2") : "");
+    var h = '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw">' + q(P.lead, "sp-p1") + (P.l2 ? q(P.l2, "sp-p2") : "") + "</div>";
     a1.setAttribute("data-lang", was);
     if (ld) root.setAttribute("data-lead", ld);
     else root.removeAttribute("data-lead");
