@@ -4609,21 +4609,27 @@
       m2.content = "संकष्टी चतुर्थी";
       hd.appendChild(m2);
     } catch (e) {}
-    // Offline line on the home card: saved for offline, saving, or no internet. Checking for updates is in
-    // Settings → About (#upd), next to the version.
+    // Offline: a small cloud in the top bar while there is no internet (#ofb), and in Settings → About whether the
+    // site is saved for offline use (#offv). A short note says so once, when the first visit has saved it.
     var ofb = document.getElementById("ofb"),
-      OFI = {
-        idle: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="mr">ऑफलाइन वापरता येते</span><span class="en" lang="en">Saved offline</span>',
-        save: '<span class="oi spin"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></span><span class="mr">ऑफलाइनसाठी जतन करत आहे…</span><span class="en" lang="en">Saving for offline…</span>',
-        off: '<span class="oi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10.5a4 4 0 0 0 1.6-.33M20.8 14.5A4 4 0 0 0 18.1 10.05 6 6 0 0 0 9.2 5.6M6.4 9.1A4.5 4.5 0 0 0 7 18"/><path d="M3 3l18 18"/></svg></span><span class="mr">इंटरनेट नाही · जतन केलेली प्रत</span><span class="en" lang="en">No internet · using the saved copy</span>',
+      offv = document.getElementById("offv"),
+      OFV = {
+        idle: ["तयार", "Ready"],
+        save: ["जतन करत आहे…", "Saving…"],
+        off: ["इंटरनेट नाही · जतन केलेली प्रत", "No internet · saved copy in use"],
       };
     // The offline copy's name ("aarti-v1.0") from <meta name="version"> in index.html, and the version shown ("1.0")
     var CACHE = (document.querySelector('meta[name="version"]') || {}).content || "aarti-v1.0",
       me = (CACHE.match(/^aarti-v([\d.]+)$/) || [])[1];
     document.getElementById("ver").textContent = me ? "v" + me : "";
+    // both menu languages, so the text follows a change of menu language
+    function two(t) {
+      return '<span class="mr">' + t[0] + '</span><span class="en" lang="en">' + t[1] + "</span>";
+    }
     function ofSet(st) {
-      ofb.setAttribute("data-s", st);
-      ofb.innerHTML = OFI[st];
+      offv.setAttribute("data-s", st);
+      offv.innerHTML = two(OFV[st]);
+      ofb.hidden = st !== "off";
     }
     // Check for updates (Settings → About): what it says beside the label, in the menu language
     var upd = document.getElementById("upd"),
@@ -4635,7 +4641,7 @@
       };
     function updSet(st) {
       upd.setAttribute("data-s", st);
-      updv.textContent = st ? UPD[st][P.ui === "en" ? 1 : 0] : "";
+      updv.innerHTML = st ? two(UPD[st]) : "";
     }
     // Author lines: the Wikipedia link on a poet's name works only online; offline the name is plain text
     function crNet() {
@@ -4657,7 +4663,7 @@
     addEventListener("offline", crNet);
     ofSet(navigator.onLine === false ? "off" : "idle");
     addEventListener("online", function () {
-      if (ofb.getAttribute("data-s") === "off") ofSet("idle");
+      if (offv.getAttribute("data-s") === "off") ofSet("idle");
       if (upd.getAttribute("data-s") === "off") updSet("");
     });
     addEventListener("offline", function () {
@@ -4737,9 +4743,10 @@
     if ("serviceWorker" in navigator) {
       // The badge shows straight away. On a first visit (no service worker in charge yet) it says "Saving for offline…"
       // while the files are saved; it never waits more than 8 s, because some phones are slow to report back.
-      ofb.hidden = false;
       var ofSaved = function () {
-        if (ofb.getAttribute("data-s") === "save") ofSet("idle");
+        if (offv.getAttribute("data-s") !== "save") return;
+        ofSet("idle");
+        flash("ऑफलाइन वापरासाठी तयार", "Ready to use offline");
       };
       if (!navigator.serviceWorker.controller && navigator.onLine !== false) {
         ofSet("save");
