@@ -12,7 +12,7 @@ npm test                             # Chromium only, the default on a computer
 PW_PROJECTS=chromium,firefox,webkit,iphone,ipad,pixel npm test   # every engine, as CI runs it
 npx playwright test print.spec.mjs   # one suite
 npx playwright test -g "kannada"     # tests whose name matches
-npm run lhci                         # Lighthouse CI (Core Web Vitals budgets)
+npm run lhci                         # Lighthouse CI: CLS fails the run; score, LCP and TBT targets warn until they are met
 ```
 
 `npm test` starts a small static server (`serve.mjs`, port 4173) by itself. On a failure, `npx playwright show-report` opens the details, with a trace of every step.
@@ -31,7 +31,7 @@ On GitHub every pull request runs everything (`.github/workflows/tests.yml`): Ch
 | `interactions.spec.mjs` | Language button, dhrupad, contents, search (Marathi and English letters, forgiving spelling), Settings (theme, contrast, font, size, languages, IAST), folds remembered, line highlight, Prev / Next, dialogs, picture viewer, date card, reopening where you were. |
 | `a11y.spec.mjs` | axe-core (WCAG 2.2 A/AA + best practice) on 16 screen states; every dialog fully usable with Tab and Escape; skip link; accessible names contain the visible label (WCAG 2.5.3); reduced motion; languages marked for screen readers. |
 | `offline.spec.mjs` | The site works with no internet after one visit; the version in `index.html` and `sw.js` match. |
-| `perf.spec.mjs` | Main-thread work for loading and for the two most common taps, on a 4× slowed CPU, against the budgets in the plan. |
+| `perf.spec.mjs` | How many times the page is laid out during load, for each language-button tap and when Settings closes (4× slowed CPU). Layout counts are the same on every machine, so this never fails because a computer was busy; the milliseconds and the tap response time are attached to the result for comparison. |
 
 ### Print tests
 
