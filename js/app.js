@@ -1600,6 +1600,7 @@
     if (f !== P.fs) {
       P.fs = f;
       root.style.setProperty("--fs", f + "px");
+      if (pn && !pn.hidden) spSet(); // the Settings preview shows the new size
     }
   }
   // Web fonts can arrive after the first fit; measure again once they have loaded
@@ -2588,7 +2589,6 @@
         : "Refrain (dhrupad) shown once. Tap to repeat after every verse",
     );
     leadSet();
-    spSet();
     var IN = P.ind === "kn" ? "Kannada" : "Marathi",
       LB = { mr: [LI.mr, IN], en: [LI.en, "English"], both: LEAD === "en" ? [LI.bothEn, "English and " + IN] : [LI.both, IN + " and English"] }[P.lang],
       lk = P.lang + LEAD;
@@ -2600,6 +2600,7 @@
     pfSet();
     autoFs();
     root.style.setProperty("--fs", P.fs + "px");
+    spSet();
     pullSoon();
     // The date card is rebuilt only when the menu language or the day changes (rebuilding it on
     // every language switch cost a second page layout on slow phones); otherwise just re-check its wrap
@@ -2807,6 +2808,7 @@
     spL.hidden = true;
     spH.hidden = false;
     pn.hidden = !o;
+    if (o) spSet();
     // the Settings page covers the whole page; the page under it doesn't scroll
     if (o) root.setAttribute("data-sp", "1");
     else root.removeAttribute("data-sp");
@@ -3080,21 +3082,38 @@
     // (nor with Kannada, which has no menus of its own yet)
     document.getElementById("surow").hidden = LK(P.lead) !== "mr";
     // the English spelling matters only when English is one of the two languages
-    document.getElementById("strow").hidden = P.lead !== "en" && P.l2 !== "en";
+    document.getElementById("stcard").hidden = P.lead !== "en" && P.l2 !== "en";
     [].forEach.call(document.querySelectorAll("#srf button"), function (b) {
       b.setAttribute("aria-pressed", String(b.dataset.v === String(P.ref)));
     });
-    // Preview: the first two lines of the Ganapati aarti, main language large and second small, as the pieces show them
-    var pv = document.getElementById("sprev"),
-      q = function (l) {
-        return [].slice.call(document.querySelectorAll("#a1 .items .verse > ." + l + " p"), 0, 2).map(function (p) {
+    if (pn.hidden) return; // the rest is the preview, made when Settings is open
+    // Preview: the first two lines of the Ganapati aarti, main language large and second small, as the pieces show
+    // them: the same text size, font and English spelling. Their style is read from the aarti itself, set for a
+    // moment to show both languages (nothing is drawn in between).
+    var a1 = document.getElementById("a1"),
+      was = a1.getAttribute("data-lang"),
+      ld = root.getAttribute("data-lead");
+    a1.setAttribute("data-lang", P.l2 ? "both" : P.lead);
+    if (P.l2 && P.lead === "en") root.setAttribute("data-lead", "en");
+    else root.removeAttribute("data-lead");
+    var q = function (l, cls) {
+      var ps = [].slice.call(a1.querySelectorAll(".items .verse > ." + l + " p"), 0, 2);
+      if (!ps.length) return "";
+      var c = getComputedStyle(ps[0]);
+      return (
+        '<div class="' + cls + '" lang="' + LK(l) + '" style="font-family:' + c.fontFamily.replace(/"/g, "'") + ";font-size:" + c.fontSize +
+        ";font-weight:" + c.fontWeight + ";line-height:" + c.lineHeight + '">' +
+        ps.map(function (p) {
           return "<p>" + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p>"; // a danda never starts a line
-        });
-      };
-    pv.innerHTML =
-      '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + "</div>" +
-      '<div class="sp-p1" lang="' + LK(P.lead) + '">' + q(P.lead).join("") + "</div>" +
-      (P.l2 ? '<div class="sp-p2" lang="' + LK(P.l2) + '">' + q(P.l2).join("") + "</div>" : "");
+        }).join("") + "</div>"
+      );
+    };
+    var h = '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + "</div>" + q(P.lead, "sp-p1") + (P.l2 ? q(P.l2, "sp-p2") : "");
+    a1.setAttribute("data-lang", was);
+    if (ld) root.setAttribute("data-lead", ld);
+    else root.removeAttribute("data-lead");
+    document.getElementById("sprev").innerHTML = h;
+    document.getElementById("sprev2").innerHTML = h;
     if (!spL.hidden) spList();
   }
   // The language sub-page: one row per language (and "None" for the second language)

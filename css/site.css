@@ -4884,6 +4884,11 @@ html[data-sp] {
 .sp-stk .sp-seg button {
   flex: 1 1 0;
 }
+/* the four text fonts: one row when they fit, else two rows of two (a long name never spills out of its button) */
+.sp #sfn {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
+}
 /* switches */
 .sp .sp-sw::after {
   content: "";
@@ -4913,6 +4918,10 @@ html[data-sp] {
 }
 .sp-prev p {
   margin: 0;
+}
+/* on the language page the preview sits between the list and the English spelling */
+#sprev2 {
+  margin-bottom: 12px;
 }
 .sp-pt {
   margin-bottom: 6px;
