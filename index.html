@@ -4175,7 +4175,6 @@ h2[tabindex="-1"]:focus {
   border-bottom: 1px solid var(--rule);
   font: 600 14px/1 var(--body);
   color: var(--accent);
-  transform: translateY(-100%);
   visibility: hidden;
 }
 #tuck span:lang(en) {
@@ -4198,24 +4197,14 @@ h2[tabindex="-1"]:focus {
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
+/* Shown and hidden at once with visibility, never slid with a transform or transition: on iPhones a
+   fixed bar that is being transformed while the page scrolls can be drawn mid-page (seen 2026-10-15). */
 [data-tuck="1"] #tuck {
-  transform: none;
   visibility: visible;
 }
-[data-tuck="1"] body > .bar {
-  transform: translateY(calc(-100% - env(safe-area-inset-top, 0px)));
-}
+[data-tuck="1"] body > .bar,
 [data-tuck="1"] #asc:not(.on):not(.tl) {
-  transform: translateY(110%);
-}
-@media (prefers-reduced-motion: no-preference) {
-  body > .bar,
-  #asc,
-  #tuck {
-    transition:
-      transform 0.22s ease,
-      visibility 0.22s;
-  }
+  visibility: hidden;
 }
 @media print {
   #tuck {
