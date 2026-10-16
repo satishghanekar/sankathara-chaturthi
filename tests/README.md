@@ -58,7 +58,8 @@ npx playwright test --update-snapshots
 
 Screenshots and print summaries depend a little on the machine (font smoothing, and the odd line that lands one page later in a PDF), so there are two sets, `local/` and `ci/`, in `__snapshots__/visual.spec.mjs/chromium/` and `__snapshots__/print.spec.mjs/chromium/`. The text snapshots are the same everywhere and are shared.
 
-- **`local/`** is used on a computer. `--update-snapshots` above refreshes it.
+- **`local/`** is used on a computer. `--update-snapshots` above refreshes it. It is recorded on the maintainer's Mac, so record it only there.
+- **Claude sessions in the cloud** (started from the Claude mobile app or claude.ai/code) run on Linux, where `local/` screenshots won't match. There, run the tests with `SNAPSHOT_ENV=ci` (or skip the screenshots with `--grep-invert screenshot`), and never run `--update-snapshots`: it would replace the Mac's pictures with Linux ones.
 - **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image. To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging.
 - The print tests check page numbers against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
 - `SNAPSHOT_ENV=ci` or `SNAPSHOT_ENV=local` picks a set by hand.
