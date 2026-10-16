@@ -3,7 +3,7 @@
 There is no build step: the browser loads these files as they are.
 
 - `parts.js`, `../content/pieces.js` and `render.js` are plain scripts. They run first and put the pieces into the page while it loads, so nothing moves when the rest starts.
-- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/`.
+- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/`. `print/` holds the print layout, used by `features/print.js`.
 
 ## How the parts fit together
 
@@ -46,6 +46,8 @@ There is no build step: the browser loads these files as they are.
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |
 | `features/print.js` | Print |
+| `print/profiles.js` | Print typography: per script, how far print may adjust a line's size; the side-by-side column range (no `init()`: read by `print/fit.js`) |
+| `print/fit.js` | Print layout: sets each stanza's size (and side by side, the column widths) so lines stay whole and in step (no `init()`: called by `features/print.js`) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
 | `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js) |
 

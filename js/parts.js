@@ -54,6 +54,8 @@ var SITE_PARTS = (function () {
     "core/startup",
     "features/picture-viewer",
     "features/help",
+    "print/profiles",
+    "print/fit",
     "features/print",
     "features/share",
     "features/offline",
