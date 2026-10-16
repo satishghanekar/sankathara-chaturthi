@@ -8,7 +8,7 @@ import { apply } from "./bars.js";
 import { fsTap, szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 
-var pz, szTm, szrTm, szt, szr, pzF, wz, wzT;
+var pz, szTm, szrTm, szaT, szt, szr, pzF, wz, wzT;
 // Where a pinch does nothing (neither resizes the text nor zooms): the home card
 var NO_PINCH = "#home .top";
 
@@ -16,6 +16,7 @@ export function init() {
   pz = null;
   szTm = 0;
   szrTm = 0;
+  szaT = 0;
   szt = document.getElementById("szt");
   szr = document.getElementById("szr");
   szr.onclick = function () {
@@ -88,8 +89,8 @@ export function init() {
           clearTimeout(szTm);
           szTm = setTimeout(function () {
             szt.classList.remove("on");
-            inView(szr);
             szr.hidden = false;
+            inView(szr);
             clearTimeout(szrTm);
             szrTm = setTimeout(function () {
               szr.hidden = true;
@@ -160,7 +161,14 @@ function dist(e) {
 }
 
 function showSz() {
-  szt.textContent = (P.ui === "mr" ? "अक्षरांचा आकार " : "Text size ") + Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  var m = (P.ui === "mr" ? "अक्षरांचा आकार " : "Text size ") + Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  szt.textContent = m;
+  // The bubble changes with every move of the fingers, so screen readers don't read it;
+  // the size is announced once, when the fingers (or the wheel) stop
+  clearTimeout(szaT);
+  szaT = setTimeout(function () {
+    document.getElementById("sza").textContent = m;
+  }, 700);
   inView(szt);
   szt.classList.add("on");
   clearTimeout(szTm);
@@ -173,10 +181,13 @@ function showSz() {
 // viewport, which can differ from what is on screen (at the bottom of the page as the toolbar collapses, or
 // while a pinch the browser could not stop has the page zoomed), so they could end up out of view or out of
 // reach. They are placed in the visible part of the page instead (the same place when the two agree).
+// The distance from the top comes from the CSS (below the top bar, and below the notch on iPhones).
 function inView(el) {
   var vv = window.visualViewport;
-  if (!vv) return;
-  el.style.top = Math.round(vv.offsetTop + 84 / vv.scale) + "px";
+  el.style.top = el.style.left = "";
+  if (!vv || (vv.scale === 1 && !vv.offsetTop && !vv.offsetLeft)) return;
+  var t = parseFloat(getComputedStyle(el).top) || 84;
+  el.style.top = Math.round(vv.offsetTop + t / vv.scale) + "px";
   el.style.left = Math.round(vv.offsetLeft + vv.width / 2) + "px";
 }
 

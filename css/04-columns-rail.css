@@ -19,7 +19,7 @@
   max-width: 76rem;
 }
 [data-cols="2"] .bar {
-  padding-inline: max(16px, calc((100vw - 76rem) / 2));
+  padding-inline: max(16px, calc((var(--vw, 100vw) - 76rem) / 2));
 }
 [data-cols="2"] .ash header,
 [data-cols="2"] .rftop {
@@ -342,8 +342,8 @@
 }
 @media screen and (min-width: 1100px) {
   [data-rail="1"] {
-    --W: min(var(--ww), calc(100vw - 340px));
-    --L: max(24px, calc((100vw - 260px - var(--W)) / 2));
+    --W: min(var(--ww), calc(var(--vw, 100vw) - 340px));
+    --L: max(24px, calc((var(--vw, 100vw) - 260px - var(--W)) / 2));
   }
   [data-rail="1"] .wrap {
     max-width: var(--W);
@@ -352,7 +352,7 @@
   }
   [data-rail="1"] .bar {
     padding-left: calc(var(--L) - 8px);
-    padding-right: max(16px, calc(100vw - var(--L) - 260px - var(--W) - 8px));
+    padding-right: max(16px, calc(var(--vw, 100vw) - var(--L) - 260px - var(--W) - 8px));
   }
   [data-rail="1"] #rail {
     display: block;

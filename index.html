@@ -99,6 +99,7 @@
   <input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line">
   <div id="none" hidden><span class="mr">काही सापडले नाही</span><span class="en" lang="en">Nothing found</span></div>
   <ul id="res"></ul>
+  <div id="srs" class="sr" role="status"></div>
   <ul id="jl"></ul>
 </div>
 <!-- ==== Settings page: opened by the ⚙ button, it covers the whole page until Back (or the phone's Back) closes it.
@@ -402,7 +403,9 @@
   </template>
 </div>
 <div id="pv" aria-hidden="true"></div>
-<div id="szt" role="status" aria-live="polite"></div>
+<div id="szt" aria-hidden="true"></div>
+<div id="sza" class="sr" role="status"></div>
+<div id="fl" role="status" aria-live="polite"></div>
 <!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (tilt, phones and tablets), (autoscroll ▶), Next ›.
      While tilt to scroll runs (#asc.tl) the bar shows only the tilt meter, its label and ⏸.
      ▶ shows only once autoscroll is released (FEAT_AS) and switched on; while it runs: Home, Search, speed, ⏸. ==== -->

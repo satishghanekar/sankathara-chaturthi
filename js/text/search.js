@@ -8,7 +8,7 @@ import { goLine } from "../features/bars.js";
 import { jumpTo } from "../features/history.js";
 import { ul } from "../features/contents-list.js";
 
-var IX, q, res, none;
+var IX, q, res, none, srs, qT, srsT;
 
 export function init() {
   IX = [];
@@ -16,8 +16,15 @@ export function init() {
   q = document.getElementById("q");
   res = document.getElementById("res");
   none = document.getElementById("none");
+  srs = document.getElementById("srs");
+  qT = srsT = 0;
   // Keyboard: ↓ / ↑ move through the results, Enter in the box opens the first one
   jp.addEventListener("keydown", function (e) {
+    // results still waiting for the pause in typing are built now, so the key acts on them
+    if (qT && (e.key === "ArrowDown" || e.key === "Enter")) {
+      clearTimeout(qT);
+      find();
+    }
     var bs = [].slice.call(res.querySelectorAll("button")),
       i = bs.indexOf(document.activeElement);
     if (e.key === "ArrowDown" && bs.length) {
@@ -31,72 +38,97 @@ export function init() {
       bs[0].click();
     }
   });
+  // The results are built once typing pauses (not on every key), and their number is announced to
+  // screen readers a moment later
   q.addEventListener("input", function () {
-    var v = nz(q.value);
-    res.innerHTML = "";
-    none.hidden = true;
-    ul.hidden = v.length >= 2;
-    if (v.length < 2) return;
-    var tk = v.split(" "),
-      lk = tk.map(lz),
-      out = [];
-    function has(t, ks) {
-      for (var j = 0; j < ks.length; j++) if (t.indexOf(ks[j]) < 0) return false;
-      return true;
-    }
-    // Exact matches first, then the forgiving ones
-    for (var i = 0; i < IX.length && out.length < 40; i++) if (has(IX[i].t, tk)) out.push(IX[i]);
-    for (i = 0; i < IX.length && out.length < 40; i++) if (out.indexOf(IX[i]) < 0 && has(IX[i].l, lk)) out.push(IX[i]);
-    if (!out.length) {
-      none.hidden = false;
-      return;
-    }
-    // Show the line with the words that match the search in bold
-    function mk(el, txt) {
-      txt.split(/(\s+)/).forEach(function (w) {
-        var n = nz(w),
-          hit =
-            n &&
-            tk.some(function (k, j) {
-              return k.length > 1 && (n.indexOf(k) >= 0 || lz(n).indexOf(lk[j]) >= 0);
-            });
-        if (hit) {
-          var bb = document.createElement("mark");
-          bb.textContent = w;
-          el.appendChild(bb);
-        } else el.appendChild(document.createTextNode(w));
-      });
-    }
-    out.forEach(function (r) {
-      var li = document.createElement("li"),
-        b = document.createElement("button");
-      b.type = "button";
-      var s1 = document.createElement("span");
-      s1.className = "rs";
-      s1.lang = P.lang === "en" ? "en" : "mr";
-      s1.textContent = sectionTitle(r.sec);
-      var s2 = document.createElement("span");
-      s2.className = "rl";
-      s2.lang = P.lang === "en" ? "en" : "mr";
-      mk(s2, P.lang === "en" ? r.e : r.m);
-      b.appendChild(s1);
-      b.appendChild(s2);
-      if (P.lang === "both") {
-        var s3 = document.createElement("span");
-        s3.className = "rl2";
-        s3.lang = "en";
-        mk(s3, r.e);
-        b.appendChild(s3);
-      }
-      b.onclick = function () {
-        jumpTo(function () {
-          goLine(r.id, true);
-        }, "#" + r.sec);
-      };
-      li.appendChild(b);
-      res.appendChild(li);
-    });
+    clearTimeout(qT);
+    qT = setTimeout(find, 120);
   });
+}
+
+function say(n) {
+  var m = "",
+    en = P.ui === "en";
+  if (n === 0) m = en ? "Nothing found" : "काही सापडले नाही";
+  else if (n > 0) {
+    m = n >= 40 ? (en ? "40 or more" : "४० किंवा अधिक") : en ? String(n) : n.toLocaleString("mr-IN");
+    m += en ? (n === 1 ? " result" : " results") : " ओळी सापडल्या";
+  }
+  clearTimeout(srsT);
+  srsT = setTimeout(function () {
+    srs.textContent = m;
+  }, 400);
+}
+
+function find() {
+  qT = 0;
+  var v = nz(q.value);
+  res.innerHTML = "";
+  none.hidden = true;
+  ul.hidden = v.length >= 2;
+  if (v.length < 2) return say(-1);
+  var tk = v.split(" "),
+    lk = tk.map(lz),
+    out = [];
+  function has(t, ks) {
+    for (var j = 0; j < ks.length; j++) if (t.indexOf(ks[j]) < 0) return false;
+    return true;
+  }
+  // Exact matches first, then the forgiving ones
+  for (var i = 0; i < IX.length && out.length < 40; i++) if (has(IX[i].t, tk)) out.push(IX[i]);
+  for (i = 0; i < IX.length && out.length < 40; i++) if (out.indexOf(IX[i]) < 0 && has(IX[i].l, lk)) out.push(IX[i]);
+  say(out.length);
+  if (!out.length) {
+    none.hidden = false;
+    return;
+  }
+  // Show the line with the words that match the search in bold
+  function mk(el, txt) {
+    txt.split(/(\s+)/).forEach(function (w) {
+      var n = nz(w),
+        hit =
+          n &&
+          tk.some(function (k, j) {
+            return k.length > 1 && (n.indexOf(k) >= 0 || lz(n).indexOf(lk[j]) >= 0);
+          });
+      if (hit) {
+        var bb = document.createElement("mark");
+        bb.textContent = w;
+        el.appendChild(bb);
+      } else el.appendChild(document.createTextNode(w));
+    });
+  }
+  var frag = document.createDocumentFragment();
+  out.forEach(function (r) {
+    var li = document.createElement("li"),
+      b = document.createElement("button");
+    b.type = "button";
+    var s1 = document.createElement("span");
+    s1.className = "rs";
+    s1.lang = P.lang === "en" ? "en" : "mr";
+    s1.textContent = sectionTitle(r.sec);
+    var s2 = document.createElement("span");
+    s2.className = "rl";
+    s2.lang = P.lang === "en" ? "en" : "mr";
+    mk(s2, P.lang === "en" ? r.e : r.m);
+    b.appendChild(s1);
+    b.appendChild(s2);
+    if (P.lang === "both") {
+      var s3 = document.createElement("span");
+      s3.className = "rl2";
+      s3.lang = "en";
+      mk(s3, r.e);
+      b.appendChild(s3);
+    }
+    b.onclick = function () {
+      jumpTo(function () {
+        goLine(r.id, true);
+      }, "#" + r.sec);
+    };
+    li.appendChild(b);
+    frag.appendChild(li);
+  });
+  res.appendChild(frag);
 }
 
 function nz(s) {
