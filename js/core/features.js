@@ -9,16 +9,24 @@ export function init() {
   // and asStart() does nothing. A reader's saved choice (P.ason) is left as it is, so nothing is lost.
   // To release it: set FEAT_AS to true. Nothing else needs changing.
   FEAT_AS = false;
-  if (FEAT_AS)
-    [].forEach.call(document.querySelectorAll('[data-feat="as"]'), function (e) {
-      e.hidden = false;
-    });
+  if (FEAT_AS) show("as");
   // Tilt to scroll (the tilted-phone button in the bottom bar and its Help entry, data-feat="tl") is built and
   // tested the same way. With FEAT_TL false the button never shows (data-tilt is not set), so it can't start.
   // To release it: set FEAT_TL to true. Nothing else needs changing.
   FEAT_TL = false;
-  if (FEAT_TL)
-    [].forEach.call(document.querySelectorAll('[data-feat="tl"]'), function (e) {
+  if (FEAT_TL) show("tl");
+}
+
+// Unhide a released feature's parts, Help's included: Help's text waits in a <template> (#hlpc) until Help
+// is first opened, and querySelectorAll on the page doesn't reach inside a template
+function show(f) {
+  var t = document.getElementById("hlpc"),
+    q = '[data-feat="' + f + '"]';
+  [].forEach.call(document.querySelectorAll(q), function (e) {
+    e.hidden = false;
+  });
+  if (t)
+    [].forEach.call(t.content.querySelectorAll(q), function (e) {
       e.hidden = false;
     });
 }
