@@ -200,3 +200,18 @@ test("print pop-up in Marathi-only and English-only offers two and one column @c
   await expect(page.locator("#pr1")).toHaveText("Two columns (English)");
   await expect(page.locator("#pr2")).toHaveText("Single column (English)");
 });
+
+// The choices name the languages actually printed, in the order printed (the main language first)
+for (const [setup, one, two] of [
+  ["kannada", "Two columns (Kannada)", "Single column (Kannada)"],
+  ["kannada-both", "Side by side: Kannada | English", "Stacked: Kannada above English"],
+  ["english-main-both", "Side by side: English | Marathi", "Stacked: English above Marathi"],
+]) {
+  test(`print pop-up names the languages printed: ${setup} @chromium-only`, async ({ page }) => {
+    await stubPrint(page);
+    await openSite(page, SETUPS[setup]);
+    await page.locator("#prb").click();
+    await expect(page.locator("#pr1")).toHaveText(one);
+    await expect(page.locator("#pr2")).toHaveText(two);
+  });
+}

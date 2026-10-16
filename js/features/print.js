@@ -582,14 +582,20 @@ export function init() {
       });
     }
     document.getElementById("prb").onclick = function () {
+      // the language names follow what is printed: the original's place holds Marathi or Kannada, and with
+      // both languages shown the main one comes first (left, or on top)
       var M = P.ui === "mr",
-        tl = P.lang === "en" ? (M ? " (इंग्रजी)" : " (English)") : M ? " (मराठी)" : " (Marathi)";
+        en = M ? "इंग्रजी" : "English",
+        or = P.ind === "kn" ? (M ? "कन्नड" : "Kannada") : M ? "मराठी" : "Marathi",
+        l1 = shared.LEAD === "en" ? en : or,
+        l2 = shared.LEAD === "en" ? or : en,
+        tl = " (" + (P.lang === "en" ? en : or) + ")";
       if (P.lang === "both") {
-        b1.textContent = M ? "शेजारी शेजारी: मराठी | इंग्रजी" : "Side by side: Marathi | English";
+        b1.textContent = (M ? "शेजारी शेजारी: " : "Side by side: ") + l1 + " | " + l2;
         b1.onclick = function () {
           go("side");
         };
-        b2.textContent = M ? "वर मराठी, खाली इंग्रजी" : "Stacked: Marathi above English";
+        b2.textContent = M ? "वर " + l1 + ", खाली " + l2 : "Stacked: " + l1 + " above " + l2;
         b2.onclick = function () {
           go("as");
         };
