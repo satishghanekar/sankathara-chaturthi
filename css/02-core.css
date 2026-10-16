@@ -23,6 +23,19 @@
 html {
   -webkit-text-size-adjust: 100%;
 }
+/* The page is shown once the site script has set it up (js/main.js then sets data-ready on <html>): before that
+   the reader's theme, language and folds, and the date card, are not on it yet, and showing it early made the
+   home page jump down when they arrived. If the script cannot run, the page shows after 1.5 s anyway.
+   (!important and the extra specificity keep the reveal working under "reduce motion", which turns animations off.) */
+html:not([data-ready]) body {
+  visibility: hidden;
+  animation: boot-reveal 0s 1.5s both !important;
+}
+@keyframes boot-reveal {
+  to {
+    visibility: visible;
+  }
+}
 body {
   background: var(--bg);
   color: var(--ink);

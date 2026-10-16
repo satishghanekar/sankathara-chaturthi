@@ -40,6 +40,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-print`: the print layout being printed.
   - `data-font`: the text font.
   - `data-tuck`: the bars are tucked away.
+  - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
 ## Checks
 
