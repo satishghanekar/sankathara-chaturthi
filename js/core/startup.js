@@ -9,7 +9,19 @@ import { wake } from "../features/wake-lock.js";
 
 var tk, rzT, h, el, PK, posT, sp, moved, goPos;
 
+// The page width without the scrollbar, for the styles that centre the text column and the side rail
+// (--vw; css/04-columns-rail.css). 100vw includes a classic scrollbar (Windows, or a Mac set to always
+// show scrollbars), which put the column and the rail about 8px off centre. Phones and most Macs have
+// scrollbars that float over the page, so nothing is set there and the styles keep using 100vw.
+function setVw() {
+  var r = document.documentElement,
+    w = r.clientWidth;
+  if (w && w < innerWidth) r.style.setProperty("--vw", w + "px");
+  else r.style.removeProperty("--vw");
+}
+
 export function init() {
+  setVw();
   // While scrolling: highlight the current piece in the menus and move the progress line (once per frame)
   tk = 0;
   window.addEventListener(
@@ -29,6 +41,7 @@ export function init() {
   shared.fontN = fontsN();
   rzT = 0;
   window.addEventListener("resize", function () {
+    setVw();
     clearTimeout(rzT);
     rzT = setTimeout(function () {
       apply();

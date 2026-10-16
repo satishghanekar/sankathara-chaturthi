@@ -42,6 +42,22 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-tuck`: the bars are tucked away.
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
+## Breakpoints
+
+These are the only screen sizes the styles switch at. A test (`tests/edge.spec.mjs`) fails on any other, so a new one is added here first.
+
+| Query | What changes |
+|---|---|
+| `(max-width: 359px)` | The smallest phones: the bottom bar drops the tilt label and narrows the autoscroll speed; Settings tightens |
+| `(max-width: 379px)` | Narrow phones: Share, QR and Print show icons only |
+| `(max-width: 420px)` | Phones: Prev / Next at the end of a piece take a narrower middle column |
+| `(min-width: 600px)` | Large phones and tablets: a larger home-page text limit |
+| `(min-width: 820px)` | Tablets and up: two-column contents, wider spacing |
+| `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`) |
+| `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers |
+
+The same test keeps the number of `!important` (70) and `:root:root` (10) from growing: they only win over earlier rules, and each new one makes the next change harder.
+
 ## Checks
 
 - `npm run lint` in `tests/` runs stylelint. It flags any CSS feature that the oldest supported browsers (`tests/.browserslistrc`, iOS 15.4 and up) lack.

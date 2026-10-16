@@ -23,7 +23,8 @@
   z-index: 7;
   /* on iPhones without a home button the buttons sit partly in the home-bar zone (as Safari's own toolbar
      does), so the bar isn't padded by the whole zone; never less than 8px */
-  padding: 8px 16px max(8px, calc(env(safe-area-inset-bottom, 0px) - 16px));
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) max(8px, calc(env(safe-area-inset-bottom, 0px) - 16px))
+    max(16px, env(safe-area-inset-left, 0px));
   background: var(--bar);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -51,7 +52,7 @@
 @media screen and (min-width: 1100px) {
   [data-rail="1"] #asc {
     padding-left: calc(var(--L) + 260px);
-    padding-right: max(16px, calc(100vw - var(--L) - 260px - var(--W)));
+    padding-right: max(16px, calc(var(--vw, 100vw) - var(--L) - 260px - var(--W)));
   }
 }
 /* Buttons as in the top bar (fixed pixel sizes, so text size and pinch leave the bar alone) */
@@ -550,7 +551,7 @@
 #pzx {
   position: absolute;
   top: calc(12px + env(safe-area-inset-top));
-  right: 12px;
+  right: max(12px, env(safe-area-inset-right, 0px));
   width: 44px;
   height: 44px;
   min-height: 0;
@@ -782,4 +783,10 @@
   .rmk.rmkt::after {
     inset: -10px -8px;
   }
+}
+
+/* Keyboard focus never lands behind the bottom bar (WCAG 2.4.11): the browser keeps this much room
+   below a focused item when it scrolls it into view */
+html[data-asb="1"] {
+  scroll-padding-bottom: calc(61px + max(8px, calc(env(safe-area-inset-bottom, 0px) - 16px)));
 }

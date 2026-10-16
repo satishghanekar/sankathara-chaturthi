@@ -111,11 +111,11 @@ export function trPick(v) {
     });
     if (bad.length) {
       flash("बदल पूर्ण झाला नाही (" + bad.join("; ") + ")", "Could not finish the change (" + bad.join("; ") + ")");
-      var zt = document.getElementById("szt");
+      var zt = document.getElementById("fl");
       zt.classList.add("err");
       clearTimeout(flash.t);
       flash.t = setTimeout(function () {
-        zt.classList.remove("on", "msg", "err");
+        zt.classList.remove("on", "err");
       }, 9000);
     }
     apply();

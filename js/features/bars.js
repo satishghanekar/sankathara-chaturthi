@@ -20,7 +20,13 @@ export function init() {
   // a menu opening, keyboard focus in a bar or a jump (Contents, Prev / Next) brings them back.
   // (y starts at 0, the top: the browser restores a reload's scroll position only after start-up, and reading
   // scrollY here, mid start-up, would make it lay the page out early)
-  TK = { y: 0, acc: 0, hold: 0 };
+  // h: the page height, kept up to date as the page grows or shrinks (folds, fonts, a resize), so the
+  // scroll handler below never asks the browser for it, which could make it lay the page out mid-scroll
+  TK = { y: 0, acc: 0, hold: 0, h: 0 };
+  if (window.ResizeObserver)
+    new ResizeObserver(function () {
+      TK.h = document.documentElement.scrollHeight;
+    }).observe(document.body);
   tkStrip = document.getElementById("tuck");
   addEventListener(
     "scroll",
@@ -29,7 +35,7 @@ export function init() {
         d = y - TK.y;
       TK.y = y;
       if (Date.now() < TK.hold) return;
-      if (y < 80 || y + innerHeight >= document.documentElement.scrollHeight - 4) return tuck(false);
+      if (y < 80 || y + innerHeight >= (TK.h || document.documentElement.scrollHeight) - 4) return tuck(false);
       // small movements add up, so a slow drag still counts; a change of direction starts again
       TK.acc = (d > 0) === (TK.acc > 0) ? TK.acc + d : d;
       if (TK.acc > 24) tuck(true);
@@ -204,7 +210,7 @@ export function apply() {
   [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#home .tocg,#tfr,#jl,#rail"), function (e) {
     e.setAttribute("data-lang", P.lang);
   });
-  [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg):not(#tfr),#qrm,#prm,#inm,#szt,#szr"), function (e) {
+  [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg):not(#tfr),#qrm,#prm,#inm,#szt,#szr,#fl"), function (e) {
     e.setAttribute("data-lang", P.ui);
   });
   root.lang = SCR.k || "mr"; // the page is Marathi (or Kannada); English parts carry lang="en" themselves (screen readers pick the voice from this)
