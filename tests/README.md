@@ -12,6 +12,8 @@ npm test                             # Chromium only, the default on a computer
 PW_PROJECTS=chromium,firefox,webkit,iphone,ipad,pixel npm test   # every engine, as CI runs it
 npx playwright test print.spec.mjs   # one suite
 npx playwright test -g "kannada"     # tests whose name matches
+SAVE_PDFS=1 npx playwright test print.spec.mjs   # also keep every printed PDF in tests/pdfs/ to look at
+npm run print:audit                  # every printout a reader can make, as PDFs in tests/pdfs/, with a report
 npm run lhci                         # Lighthouse CI: CLS fails the run; score, LCP and TBT targets warn until they are met
 ```
 
@@ -38,7 +40,7 @@ On GitHub every pull request runs everything (`.github/workflows/tests.yml`): Ch
 
 Printing is checked the way a reader does it: the site's own Print button, then a choice in the pop-up. The test stops the real print dialog, prints the page to PDF in Chromium at the reader's paper size (Letter for the US and Canada, A4 elsewhere), and reads the PDF back. Before printing it adds invisible markers at the start and end of every unbroken block, so it can see exactly where each piece and block landed.
 
-The grid is every **layout** (Marathi two columns, Marathi single column, English two columns, English single column, Both side by side, Both stacked) × every **text font** (Standard, Classic, Bold, Handwritten) × **Letter and A4**: 48 PDFs. On top of that: the scholarly spelling (IAST), English as the main language, Kannada (three layouts, and on A4), dhrupad after every verse, Marathi menus, everything folded on screen, printing from the browser's own menu (Ctrl/⌘ P), and Safari's table-based two-column layout. In each PDF:
+The grid is every **layout** (Marathi two columns, Marathi single column, English two columns, English single column, Both side by side, Both stacked, Kannada and English side by side) × every **text font** (Standard, Classic, Bold, Handwritten) × **Letter and A4**: 56 PDFs. On top of that: the scholarly spelling (IAST), English as the main language, Kannada (two more layouts, and on A4), dhrupad after every verse, Marathi menus, everything folded on screen, printing from the browser's own menu (Ctrl/⌘ P), and Safari's table-based two-column layout. In each PDF:
 
 - the contents page gives the page each piece really starts on;
 - no block (a heading with its dhrupad and first stanza, or a stanza) is split across pages;
@@ -47,6 +49,14 @@ The grid is every **layout** (Marathi two columns, Marathi single column, Englis
 - screen-only controls (Open all, Settings, …) never print;
 - every English line is in the PDF (Devanagari and Kannada text can't be read back reliably from a PDF, so for those the block markers show nothing was lost);
 - the page count and contents numbers match the recorded baseline.
+
+### Print audit
+
+`npm run print:audit` prints every combination a reader can choose, exactly as they would: what is printed (Marathi, Kannada, English, English in IAST, and each original with English, either one first) × the two layouts the Print pop-up offers for it × the four text fonts × the dhrupad once or after every verse × Letter and A4. That is 288 PDFs, kept as `tests/pdfs/<what>/<layout>/<font>-<dhrupad>-<paper>.pdf` (for example `tests/pdfs/marathi-english/side-by-side/handwritten-dhrupad-once-letter.pdf`), each with a `.json` of what was found. It takes about two minutes.
+
+Every printout must pass the print checks above. On top of that, every printed line is marked, invisibly, at the start and end of each of its parts (`print-audit-helpers.mjs`), and the PDF shows where each landed. `tests/pdfs/REPORT.md` then lists, worst first: text missing; side-by-side rows where one side takes more lines than the other; lines broken in the middle of a phrase rather than at a preferred break; pages left mostly empty before a page break; and how many lines were set smaller to fit. `tests/pdfs/FONT-SIZES.md` gives how large each script looks in each text font, the numbers behind `js/print/profiles.js`.
+
+The PDFs and reports are not committed (`tests/pdfs/` is in `.gitignore`). To look at the PDFs inside VS Code, install a PDF viewer extension such as vscode-pdf.
 
 ## Baselines
 

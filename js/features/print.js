@@ -4,6 +4,8 @@
 import { root, secs } from "../core/page.js";
 import { shared, P } from "../core/state.js";
 import { DV } from "../text/line-breaks.js";
+import { fit } from "../print/fit.js";
+import { LAYOUT } from "../print/profiles.js";
 import { ovDone, ovPush } from "./history.js";
 
 export function init() {
@@ -146,6 +148,14 @@ export function init() {
               flushT();
               t = document.createElement("table");
               t.className = "pvt pvside";
+              // column widths (the English line is longer than its Devanagari, so its column is wider)
+              var cg = document.createElement("colgroup");
+              (shared.LEAD === "en" ? ["pvce", "pvcm"] : ["pvcm", "pvce"]).forEach(function (c) {
+                var col = document.createElement("col");
+                col.className = c;
+                cg.appendChild(col);
+              });
+              t.appendChild(cg);
             }
             if (u.classList.contains("rmk")) {
               var tr = document.createElement("tr");
@@ -395,6 +405,8 @@ export function init() {
         d.documentElement.offsetHeight;
         d.fonts.ready.then(function () {
           try {
+            // sizes first (they change the heights), then the pages
+            fit(f.contentWindow, d, mode, pv);
             end(paginate(f.contentWindow, d, (PAPER[1] - 23) * sf, mm));
           } catch (e) {
             end(null);
@@ -456,16 +468,24 @@ export function init() {
             return (i + 1 < kids.length ? tops[i + 1] : c.getBoundingClientRect().bottom) - (i ? tops[i] : top);
           }),
           r = pack(hs, 1);
-        // a piece that spills a little onto another page is set slightly smaller (down to 80%) to fit
-        if (r.n > 1 && r.f < 0.25)
-          for (var t = 98; t >= 80; t -= 2) {
+        // a piece that would take fewer pages a little smaller is set at the largest size that does (no
+        // smaller than LAYOUT.page.minZoom): one that spills a little onto another page, or one whose
+        // blocks are too big to share a page and leave half of each page empty
+        if (r.n > 1) {
+          var fewest = r,
+            at = 1;
+          for (var t = 98; t >= LAYOUT.page.minZoom * 100; t -= 2) {
             var q = pack(hs, t / 100);
-            if (q.n < r.n) {
-              r = q;
-              z[id] = t / 100;
-              break;
+            if (q.n < fewest.n) {
+              fewest = q;
+              at = t / 100;
             }
           }
+          if (at < 1) {
+            r = fewest;
+            z[id] = at;
+          }
+        }
         plan[id] = r;
         if (r.b.length) out.b[id] = r.b;
       });
@@ -498,7 +518,7 @@ export function init() {
           // ends well inside a page
           if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
           else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
-          if (k >= 0.8 && k < 1) {
+          if (k >= LAYOUT.page.minZoom && k < 1) {
             z[id] = Math.round(k * 100) / 100;
             e.style.zoom = z[id];
             r = measure(e);

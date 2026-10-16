@@ -602,9 +602,12 @@ h2[tabindex="-1"]:focus {
     text-align: left;
   }
   #pv .pvside .en {
-    font-size: 0.92em !important;
     color: #000 !important;
     line-height: 1.45;
+  }
+  /* the English lines themselves (td.pve) are sized below */
+  #pv .pvside .en:not(td) {
+    font-size: 0.92em !important;
   }
   #pv .pvside tr.pvrefrow td {
     border-left: 0;
@@ -645,10 +648,16 @@ h2[tabindex="-1"]:focus {
     padding: 1pt 10pt;
     vertical-align: baseline;
   }
+  /* English 10.5pt beside 13pt Marathi, in a wider column: the English line is longer than its original.
+     These are the starting sizes: js/print/fit.js then chooses the column widths for the printout, and sets a
+     stanza a little smaller where that keeps its lines whole and the two columns in step. */
   #pv .pvside td.pve {
     font-family: var(--lat);
-    font-size: 0.9em;
+    font-size: 0.81em;
     color: #000;
+  }
+  #pv .pvside col.pvcm {
+    width: 46%;
   }
   #pv .pvside tr.pvend td {
     padding-bottom: 9pt;
