@@ -12,7 +12,7 @@ const browsers = readFileSync(new URL(".browserslistrc", import.meta.url), "utf8
 
 export default [
   {
-    // the site's own scripts: plain scripts in the browser, written to run on iOS 15 Safari
+    // the site's own scripts, written to run on iOS 15 Safari (plain scripts, except the modules below)
     files: ["js/**/*.js", "content/**/*.js", "sw.js"],
     plugins: { compat },
     languageOptions: {
@@ -29,6 +29,11 @@ export default [
       "no-dupe-keys": "error",
       "no-unreachable": "error",
     },
+  },
+  {
+    // the site script (js/main.js and the parts it imports) is ES modules
+    files: ["js/main.js", "js/core/**/*.js", "js/text/**/*.js", "js/features/**/*.js"],
+    languageOptions: { sourceType: "module" },
   },
   {
     files: ["tests/**/*.mjs"],

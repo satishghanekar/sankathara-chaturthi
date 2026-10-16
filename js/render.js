@@ -75,7 +75,7 @@
   var S = SCRIPTS[ind],
     OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed
     ROOTS = ".grp, .ash, #home .tocg, #tfr, #home .hl1, #home h1, #btt",
-    LATER = "#rail, #jl"; // built by js/app.js from the home contents, already in the chosen script
+    LATER = "#rail, #jl"; // built by the site script (js/text/layout.js, js/features/contents-list.js) from the home contents, already in the chosen script
   window.SCR = {
     k: S ? ind : "", // "" while the text is shown as written
     // Devanagari → the chosen script

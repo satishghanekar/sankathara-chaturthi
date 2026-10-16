@@ -1,0 +1,201 @@
+// Pinch with two fingers to change the text size (the page itself never zooms)
+// One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
+
+import { root } from "../core/page.js";
+import { shared, P, dfs, save } from "../core/state.js";
+import { pn } from "../core/apply.js";
+import { apply } from "./bars.js";
+import { fsTap, szSet } from "./settings-panel.js";
+import { setJ, setP } from "./overlays.js";
+
+var pz, szTm, szrTm, szt, szr, pzF, ZOOM_OK, pzOwn, wz, wzT;
+
+export function init() {
+  pz = null;
+  szTm = 0;
+  szrTm = 0;
+  szt = document.getElementById("szt");
+  szr = document.getElementById("szr");
+  szr.onclick = function () {
+    szr.hidden = true;
+    P.fsu = 0;
+    P.fs = dfs();
+    apply();
+    save();
+    showSz();
+  };
+  // Pinch changes the text size, never the page zoom. The two-finger touch is cancelled as soon as it
+  // starts (not only when the fingers move), so Safari can't begin its own zoom first; the size is
+  // applied once per frame, so the page keeps up with the fingers; and if the page still ends up
+  // zoomed (a pinch that began mid-scroll can't be cancelled), it is put back to normal straight away.
+  pzF = 0;
+  // Where a pinch zooms the page as usual instead: the home card, Settings and the pop-ups have no verses to
+  // resize, and people who rely on zoom to read small print need it there (WCAG 1.4.4 / 1.4.10). The verses
+  // keep pinch-to-resize, which reflows the text instead of pushing it off the sides of the screen.
+  ZOOM_OK = "#home .top, #panel, #help, #qrm, #prm, #inm, #jump";
+  // true while a two-finger gesture that began on the reading page is in progress (only those are undone)
+  pzOwn = false;
+  document.addEventListener(
+    "touchstart",
+    function (e) {
+      if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
+        pzOwn = !zoomOK(e.target);
+        if (!pzOwn) return; // the browser's own zoom
+        if (e.cancelable) e.preventDefault();
+        szr.hidden = true;
+        pz = { d: dist(e) || 1, fs: P.fs };
+      }
+    },
+    { passive: false },
+  );
+  document.addEventListener(
+    "touchmove",
+    function (e) {
+      if (pz && e.touches.length === 2) {
+        if (e.cancelable) e.preventDefault();
+        var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
+        // on the Settings page only the page and its preview follow the fingers; the reading view catches up after
+        if (!pn.hidden) {
+          if (v !== P.fs) fsTap(v, 1);
+          return;
+        }
+        if (v !== P.fs) {
+          P.fs = v;
+          P.fsu = 1;
+          if (!pzF)
+            pzF = requestAnimationFrame(function () {
+              pzF = 0;
+              root.style.setProperty("--fs", P.fs + "px");
+            });
+        }
+        showSz();
+      }
+    },
+    { passive: false },
+  );
+  document.addEventListener(
+    "touchend",
+    function (e) {
+      if (e.touches.length < 2 && pzOwn) {
+        pzOwn = false;
+        unzoom();
+      }
+      if (pz && e.touches.length < 2) {
+        pz = null;
+        save();
+        szSet();
+        // Offer a one-tap way back to the default size for a few seconds (Settings has its own reset)
+        if (P.fs !== (shared.FSA || dfs()) && pn.hidden) {
+          clearTimeout(szTm);
+          szTm = setTimeout(function () {
+            szt.classList.remove("on");
+            szr.hidden = false;
+            clearTimeout(szrTm);
+            szrTm = setTimeout(function () {
+              szr.hidden = true;
+            }, 4000);
+          }, 700);
+        }
+      }
+    },
+    { passive: true },
+  );
+  // Safari's own gesture events: stopped on the reading page (pinch resizes the text), left alone where the
+  // page may zoom
+  addEventListener("gestureend", function (e) {
+    if (!zoomOK(e.target)) unzoom();
+  });
+  ["gesturestart", "gesturechange"].forEach(function (n) {
+    document.addEventListener(
+      n,
+      function (e) {
+        if (!zoomOK(e.target)) e.preventDefault();
+      },
+      { passive: false },
+    );
+  });
+  wz = 0;
+  wzT = 0;
+  addEventListener(
+    "wheel",
+    function (e) {
+      if (!e.ctrlKey || !document.getElementById("pzv").hidden) return;
+      e.preventDefault();
+      wz = (wz || P.fs) * Math.exp(-e.deltaY * 0.01);
+      clearTimeout(wzT);
+      wzT = setTimeout(function () {
+        wz = 0;
+      }, 400);
+      var v = Math.round(wz);
+      if (v !== P.fs) deskSz(v, 1);
+    },
+    { passive: false },
+  );
+  document.addEventListener("keydown", function (e) {
+    if (!(e.ctrlKey || e.metaKey) || e.altKey || !document.getElementById("pzv").hidden) return;
+    var k = e.key;
+    if (k === "+" || k === "=") deskSz(P.fs + 2, 1);
+    else if (k === "-" || k === "_") deskSz(P.fs - 2, 1);
+    else if (k === "0") deskSz(0, 0);
+    else return;
+    e.preventDefault();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      setP(false);
+      setJ(false);
+    }
+  });
+}
+
+function dist(e) {
+  var a = e.touches[0],
+    b = e.touches[1];
+  return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
+function showSz() {
+  szt.textContent = (P.ui === "mr" ? "अक्षरांचा आकार " : "Text size ") + Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  szt.classList.add("on");
+  clearTimeout(szTm);
+  szTm = setTimeout(function () {
+    szt.classList.remove("on");
+  }, 900);
+}
+
+function zoomOK(t) {
+  return !!(t && t.closest && t.closest(ZOOM_OK));
+}
+
+function unzoom() {
+  var vv = window.visualViewport,
+    vm = document.querySelector('meta[name="viewport"]');
+  if (!vv || !vm || vv.scale < 1.01) return;
+  var c = vm.getAttribute("content");
+  vm.setAttribute("content", c + ",maximum-scale=1");
+  setTimeout(function () {
+    vm.setAttribute("content", c);
+  }, 300);
+}
+
+// On a computer: Ctrl/⌘ + and −, Ctrl/⌘ 0 and a trackpad pinch (which the browser sends as Ctrl + wheel) change
+// the text size the same way a pinch does on a phone, instead of zooming the whole page
+function deskSz(v, fsu) {
+  v = Math.max(14, Math.min(52, v));
+  if (!pn.hidden) return fsTap(v, fsu);
+  P.fsu = fsu;
+  if (fsu) {
+    P.fs = v;
+    if (!pzF)
+      pzF = requestAnimationFrame(function () {
+        pzF = 0;
+        root.style.setProperty("--fs", P.fs + "px");
+      });
+  } else {
+    P.fs = dfs();
+    apply();
+  }
+  save();
+  szSet();
+  showSz();
+}

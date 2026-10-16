@@ -25,7 +25,7 @@ const LAYOUTS = [
   { name: "both-stacked", setup: "both", choice: "pr2", mode: "one" },
 ];
 const FONTS = ["std", "classic", "bold", "hand"];
-// Letter is chosen for US / Canada / Mexico / Philippines, A4 everywhere else (see LTR in js/app.js)
+// Letter is chosen for US / Canada / Mexico / Philippines, A4 everywhere else (see LTR in js/features/print.js)
 const PAPERS = [
   { paper: "Letter", locale: "en-US" },
   { paper: "A4", locale: "en-IN" },
