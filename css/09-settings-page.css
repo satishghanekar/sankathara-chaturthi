@@ -279,7 +279,7 @@ html[data-sp] {
 /* the preview is a fixed window: lines never wrap, so A+ visibly makes the text bigger, running past the edges
    (faded) and below the window, as it would on the page */
 .sp-pw {
-  touch-action: pan-y; /* a pinch here changes the text size (js/app.js), not the page zoom */
+  touch-action: pan-y; /* a pinch here changes the text size (js/features/pinch.js), not the page zoom */
   display: flex;
   flex-direction: column;
   align-items: center;
