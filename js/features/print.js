@@ -179,7 +179,8 @@ export function init() {
               bold = u.classList.contains("pvref") || v.classList.contains("bold");
             [].forEach.call(ms, function (mp, i) {
               var tr = document.createElement("tr");
-              if (mp.classList.contains("rf") || bold) tr.className = "pvb";
+              // the dhrupad at the top is bold; its repeats after each stanza are lighter, as on screen
+              if (bold) tr.className = "pvb";
               if (u.classList.contains("pvref")) tr.className += " pvrefrow";
               if (i === ms.length - 1) tr.className += " pvend";
               var a = document.createElement("td"),
