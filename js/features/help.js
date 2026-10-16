@@ -9,6 +9,9 @@ export function init() {
   (function () {
     var hp = document.getElementById("help");
     function open() {
+      // Help's text waits in a <template> until the first time it is opened, so it adds nothing to the page on load
+      var t = document.getElementById("hlpc");
+      if (t) t.parentNode.replaceChild(t.content, t);
       ovPush();
       // From Settings, focus goes back to the ⚙ button when Help closes
       hp._ret = pn.hidden ? document.activeElement : aa;
