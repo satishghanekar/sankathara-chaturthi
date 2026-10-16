@@ -9,6 +9,8 @@ import { fsTap, szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 
 var pz, szTm, szrTm, szt, szr, pzF, wz, wzT;
+// Where a pinch does nothing (neither resizes the text nor zooms): the home card
+var NO_PINCH = "#home .top";
 
 export function init() {
   pz = null;
@@ -29,13 +31,17 @@ export function init() {
   // applied once per frame, so the page keeps up with the fingers; and if the page still ends up
   // zoomed (a pinch that began mid-scroll can't be cancelled), it is put back to normal straight away.
   pzF = 0;
-  // This holds everywhere, the home card, Settings and the pop-ups included (decided 2026-10-16): a page that
-  // zooms on some parts and not others looks broken on a phone.
+  // The page never zooms anywhere (decided 2026-10-16): a page that zooms on some parts and not others looks
+  // broken on a phone. On the home card a pinch does nothing at all, since the card has no verses to resize.
   document.addEventListener(
     "touchstart",
     function (e) {
       if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
         if (e.cancelable) e.preventDefault();
+        if (e.target.closest && e.target.closest(NO_PINCH)) {
+          pz = null;
+          return;
+        }
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
       }
@@ -45,6 +51,8 @@ export function init() {
   document.addEventListener(
     "touchmove",
     function (e) {
+      // a two-finger move that is not resizing the text (it began on the home card) is stopped too
+      if (!pz && e.touches.length === 2 && e.cancelable && document.getElementById("pzv").hidden) e.preventDefault();
       if (pz && e.touches.length === 2) {
         if (e.cancelable) e.preventDefault();
         var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
@@ -80,6 +88,7 @@ export function init() {
           clearTimeout(szTm);
           szTm = setTimeout(function () {
             szt.classList.remove("on");
+            inView(szr);
             szr.hidden = false;
             clearTimeout(szrTm);
             szrTm = setTimeout(function () {
@@ -102,6 +111,14 @@ export function init() {
       { passive: false },
     );
   });
+  // Keep the size bubble and the Default size button where the reader can see them while either is up
+  if (window.visualViewport)
+    ["scroll", "resize"].forEach(function (n) {
+      visualViewport.addEventListener(n, function () {
+        if (szt.classList.contains("on")) inView(szt);
+        if (!szr.hidden) inView(szr);
+      });
+    });
   wz = 0;
   wzT = 0;
   addEventListener(
@@ -144,11 +161,23 @@ function dist(e) {
 
 function showSz() {
   szt.textContent = (P.ui === "mr" ? "अक्षरांचा आकार " : "Text size ") + Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  inView(szt);
   szt.classList.add("on");
   clearTimeout(szTm);
   szTm = setTimeout(function () {
     szt.classList.remove("on");
   }, 900);
+}
+
+// The bubble and the button are fixed near the top of the screen. On iPhones, "fixed" follows the layout
+// viewport, which can differ from what is on screen (at the bottom of the page as the toolbar collapses, or
+// while a pinch the browser could not stop has the page zoomed), so they could end up out of view or out of
+// reach. They are placed in the visible part of the page instead (the same place when the two agree).
+function inView(el) {
+  var vv = window.visualViewport;
+  if (!vv) return;
+  el.style.top = Math.round(vv.offsetTop + 84 / vv.scale) + "px";
+  el.style.left = Math.round(vv.offsetLeft + vv.width / 2) + "px";
 }
 
 function unzoom() {

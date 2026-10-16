@@ -217,8 +217,8 @@ test("reopens where the reader was (within 12 hours)", async ({ page }) => {
   expect(Math.abs(top)).toBeLessThan(400);
 });
 
-// Pinch resizes the text and never zooms the page, wherever it starts (the home card, Settings and the
-// pop-ups too: a page that zooms only in some places looks broken on a phone).
+// Pinch never zooms the page, wherever it starts (a page that zooms only in some places looks broken on a
+// phone). It resizes the text, except on the home card, where it does nothing.
 // Chromium only: Firefox has no mobile emulation and desktop WebKit cannot create Touch objects
 test.describe("pinch @chromium-only", () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
@@ -235,6 +235,38 @@ test.describe("pinch @chromium-only", () => {
       return ev.defaultPrevented;
     });
 
+  // spreads two fingers apart on the element and returns the text size before and after
+  const pinchOut = (page, selector) =>
+    page.locator(selector).first().evaluate(async (el) => {
+      const fs = () => document.documentElement.style.getPropertyValue("--fs");
+      const before = fs();
+      const r = el.getBoundingClientRect();
+      const t = (id, x) => new Touch({ identifier: id, target: el, clientX: r.left + x, clientY: r.top + 10 });
+      const fire = (type, touches) =>
+        el.dispatchEvent(new TouchEvent(type, { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true }));
+      fire("touchstart", [t(1, 20), t(2, 80)]);
+      fire("touchmove", [t(1, 10), t(2, 200)]);
+      await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+      const after = fs();
+      el.dispatchEvent(new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: [t(1, 10), t(2, 200)], bubbles: true }));
+      return { before, after };
+    });
+
+  test("on the home card a pinch does nothing", async ({ page }) => {
+    await openSite(page, SETUPS.marathi);
+    const r = await pinchOut(page, "#home .top .hero");
+    expect(r.after).toBe(r.before);
+    await expect(page.locator("#szt")).not.toHaveClass(/\bon\b/);
+  });
+  test("on a verse it resizes the text, with the size shown on screen", async ({ page }) => {
+    await openSite(page, SETUPS.marathi);
+    await page.locator("#a1 .items .verse p").first().scrollIntoViewIfNeeded();
+    const r = await pinchOut(page, "#a1 .items .verse p");
+    expect(parseFloat(r.after)).toBeGreaterThan(parseFloat(r.before));
+    const box = await page.locator("#szt").boundingBox();
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y + box.height).toBeLessThanOrEqual(844);
+  });
   test("on a verse it resizes the text instead of zooming", async ({ page }) => {
     await openSite(page, SETUPS.marathi);
     expect(await pinchStart(page, "#a1 .items .verse p")).toBe(true);
