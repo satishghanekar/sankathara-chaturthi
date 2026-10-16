@@ -101,7 +101,7 @@ for (const [name, prefs, choice] of [
   test(`screenshot ${name} @chromium-only`, async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width: 816, height: 1056 }, deviceScaleFactor: 1, serviceWorkers: "block", locale: "en-US" });
     const page = await context.newPage();
-    await page.addInitScript(() => (window.print = () => (window.__printed = 1)));
+    await page.addInitScript(() => (window.print = () => ((window.__printed = 1), dispatchEvent(new Event("beforeprint")))));
     await openSite(page, prefs);
     await page.locator("#prb").click();
     await page.locator("#" + choice).click();
