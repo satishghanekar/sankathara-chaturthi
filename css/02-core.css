@@ -637,7 +637,8 @@ p.fl {
 }
 #res .rs {
   display: block;
-  font: 600 12px var(--lat);
+  /* Inter for English names, the site's Devanagari font for Marathi ones (not the system's) */
+  font: 600 12px "Inter", var(--body);
   color: var(--muted);
 }
 #res .rl {
