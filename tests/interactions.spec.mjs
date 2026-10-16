@@ -217,8 +217,8 @@ test("reopens where the reader was (within 12 hours)", async ({ page }) => {
   expect(Math.abs(top)).toBeLessThan(400);
 });
 
-// Pinch: on the verses it resizes the text (the page itself doesn't zoom); on the home card, Settings and
-// the pop-ups it is the browser's own zoom, for readers who need to magnify those.
+// Pinch resizes the text and never zooms the page, wherever it starts (the home card, Settings and the
+// pop-ups too: a page that zooms only in some places looks broken on a phone).
 // Chromium only: Firefox has no mobile emulation and desktop WebKit cannot create Touch objects
 test.describe("pinch @chromium-only", () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
@@ -239,13 +239,13 @@ test.describe("pinch @chromium-only", () => {
     await openSite(page, SETUPS.marathi);
     expect(await pinchStart(page, "#a1 .items .verse p")).toBe(true);
   });
-  test("on the home card, Settings and Help the page zooms as usual", async ({ page }) => {
+  test("on the home card, Settings and Help the page does not zoom either", async ({ page }) => {
     await openSite(page, SETUPS.marathi);
-    expect(await pinchStart(page, "#home .top .hero")).toBe(false);
+    expect(await pinchStart(page, "#home .top .hero")).toBe(true);
     await page.locator("#aa").click();
-    expect(await pinchStart(page, "#panel .sp-card")).toBe(false);
+    expect(await pinchStart(page, "#panel .sp-card")).toBe(true);
     await page.locator("#xc").click();
     await page.locator("#hlpb").click();
-    expect(await pinchStart(page, "#help .hlpin")).toBe(false);
+    expect(await pinchStart(page, "#help .hlpin")).toBe(true);
   });
 });

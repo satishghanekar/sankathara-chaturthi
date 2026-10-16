@@ -8,7 +8,7 @@ import { apply } from "./bars.js";
 import { fsTap, szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 
-var pz, szTm, szrTm, szt, szr, pzF, ZOOM_OK, pzOwn, wz, wzT;
+var pz, szTm, szrTm, szt, szr, pzF, wz, wzT;
 
 export function init() {
   pz = null;
@@ -29,18 +29,12 @@ export function init() {
   // applied once per frame, so the page keeps up with the fingers; and if the page still ends up
   // zoomed (a pinch that began mid-scroll can't be cancelled), it is put back to normal straight away.
   pzF = 0;
-  // Where a pinch zooms the page as usual instead: the home card, Settings and the pop-ups have no verses to
-  // resize, and people who rely on zoom to read small print need it there (WCAG 1.4.4 / 1.4.10). The verses
-  // keep pinch-to-resize, which reflows the text instead of pushing it off the sides of the screen.
-  ZOOM_OK = "#home .top, #panel, #help, #qrm, #prm, #inm, #jump";
-  // true while a two-finger gesture that began on the reading page is in progress (only those are undone)
-  pzOwn = false;
+  // This holds everywhere, the home card, Settings and the pop-ups included (decided 2026-10-16): a page that
+  // zooms on some parts and not others looks broken on a phone.
   document.addEventListener(
     "touchstart",
     function (e) {
       if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
-        pzOwn = !zoomOK(e.target);
-        if (!pzOwn) return; // the browser's own zoom
         if (e.cancelable) e.preventDefault();
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
@@ -76,10 +70,7 @@ export function init() {
   document.addEventListener(
     "touchend",
     function (e) {
-      if (e.touches.length < 2 && pzOwn) {
-        pzOwn = false;
-        unzoom();
-      }
+      if (e.touches.length < 2) unzoom();
       if (pz && e.touches.length < 2) {
         pz = null;
         save();
@@ -100,16 +91,13 @@ export function init() {
     },
     { passive: true },
   );
-  // Safari's own gesture events: stopped on the reading page (pinch resizes the text), left alone where the
-  // page may zoom
-  addEventListener("gestureend", function (e) {
-    if (!zoomOK(e.target)) unzoom();
-  });
+  // Safari's own gesture events: always stopped (pinch resizes the text)
+  addEventListener("gestureend", unzoom);
   ["gesturestart", "gesturechange"].forEach(function (n) {
     document.addEventListener(
       n,
       function (e) {
-        if (!zoomOK(e.target)) e.preventDefault();
+        e.preventDefault();
       },
       { passive: false },
     );
@@ -161,10 +149,6 @@ function showSz() {
   szTm = setTimeout(function () {
     szt.classList.remove("on");
   }, 900);
-}
-
-function zoomOK(t) {
-  return !!(t && t.closest && t.closest(ZOOM_OK));
 }
 
 function unzoom() {
