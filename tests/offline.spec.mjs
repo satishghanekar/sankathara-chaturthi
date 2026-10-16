@@ -29,8 +29,8 @@ test("works offline after the first visit @chromium-only", async ({ page, contex
   await context.setOffline(false);
 });
 
-// The version is written twice on purpose: phones install a new service worker only when sw.js itself changes
-// (older iPhones don't look at the files it imports), so sw.js must carry it, and the page needs it at start-up.
+// The version is written twice on purpose: browsers install a new service worker when sw.js itself changes
+// (not every browser re-checks the files it imports), so sw.js must carry it, and the page needs it at start-up.
 test("version in index.html and sw.js match", async ({ request }) => {
   const html = await (await request.get("./")).text();
   const sw = await (await request.get("sw.js")).text();

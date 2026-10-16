@@ -55,7 +55,12 @@ Text, screenshots and print summaries are kept in `__snapshots__/`. They were re
 npx playwright test --update-snapshots
 ```
 
-Screenshots are recorded in Chromium on Linux. If GitHub's Chromium draws a few pixels differently from the one they were recorded with, run the update once on `main` and commit the new pictures.
+Screenshots and print summaries depend a little on the machine (font smoothing, and the odd line that lands one page later in a PDF), so there are two sets, `local/` and `ci/`, in `__snapshots__/visual.spec.mjs/chromium/` and `__snapshots__/print.spec.mjs/chromium/`. The text snapshots are the same everywhere and are shared.
+
+- **`local/`** is used on a computer. `--update-snapshots` above refreshes it.
+- **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image. To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging.
+- The print tests check page numbers against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
+- `SNAPSHOT_ENV=ci` or `SNAPSHOT_ENV=local` picks a set by hand.
 
 ## What automation can't cover
 
