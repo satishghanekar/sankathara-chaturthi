@@ -3,7 +3,7 @@
 Copied from Google Fonts so the site needs nothing from Google and works offline.
 Each font is split by script the way Google serves it (`-devanagari`, `-latin`, `-latin-ext`);
 `css/00-fonts.css` lists them with `@font-face` and `unicode-range`, so a browser only downloads the parts a page uses.
-`sw.js` and `js/app.js` (the `FONTS` list) keep the default ones for offline use; the optional text fonts are kept once someone picks them.
+`sw.js` and `js/features/offline.js` (the `FONTS` list, from `js/parts.js`) keep the default ones for offline use; the optional text fonts are kept once someone picks them.
 
 | Files | Font | Used for |
 |---|---|---|

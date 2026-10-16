@@ -1,6 +1,6 @@
 // Shared helpers for the regression suite.
 //
-// Every test opens the site with a known set of reader settings (the same object js/app.js keeps in
+// Every test opens the site with a known set of reader settings (the same object js/core/state.js keeps in
 // localStorage under "aarti2-prefs") and a fixed date, so the date card, the "in N days" badge and
 // every screenshot are the same on every run.
 
