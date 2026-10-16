@@ -601,8 +601,10 @@ h2[tabindex="-1"]:focus {
     display: block !important;
     text-align: left;
   }
-  #pv .pvside .en {
+  #pv .pvside tr:not(.rfl) .en {
     color: #000 !important;
+  }
+  #pv .pvside .en {
     line-height: 1.45;
   }
   /* the English lines themselves (td.pve) are sized below */
@@ -667,6 +669,22 @@ h2[tabindex="-1"]:focus {
   }
   [data-ref="1"] #pv .pvside tr.rfl {
     display: none;
+  }
+  /* the dhrupad repeated after each stanza: lighter and a little smaller than the stanza, as on screen
+     (css/05-home-card.css), so the stanza stays the focus; the dhrupad at the top stays bold */
+  #pv .verse p.rf,
+  #pv .item.rf p,
+  #pv .pvside tr.rfl td {
+    font-weight: 400;
+    color: #555;
+  }
+  #pv .verse p.rf,
+  #pv .item.rf p,
+  #pv .pvside tr.rfl td.pvm {
+    font-size: 0.9em;
+  }
+  #pv .pvside tr.rfl td.pve {
+    font-size: 0.73em;
   }
   #pv .pvs[data-sid="p1"] td.pvm {
     font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", var(--body);
