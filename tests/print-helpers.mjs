@@ -130,5 +130,6 @@ export function markerPages(pages) {
 /** Text compared without spaces, line breaks or Unicode composition differences. */
 // Accent marks (Vedic svara marks, macrons below) are dropped before comparing: they come from whichever
 // fallback font the machine has, and PDF text extraction places them differently from one machine to
-// the next. The letters they sit on are still compared.
-export const squash = (s) => s.normalize("NFD").replace(/\p{M}/gu, "").replace(/[\s​­]+/g, "");
+// the next. The letters they sit on are still compared. Some fonts (macOS) draw an "i" carrying a mark
+// above as a dotless "ı", and the PDF text then reads "ı", so it counts as "i".
+export const squash = (s) => s.normalize("NFD").replace(/\p{M}/gu, "").replace(/ı/g, "i").replace(/[\s​­]+/g, "");
