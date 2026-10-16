@@ -35,14 +35,15 @@ export function liSet() {
   for (var k in LI0) LI[k] = SCR.k ? LI0[k].replace('font-family:var(--head)">अ<', "font-family:'Noto Sans Kannada'\">ಕ<") : LI0[k];
 }
 
-// Short message in the middle of the screen (Marathi text m, English text e)
+// Short message near the top of the screen (Marathi text m, English text e). It has its own element,
+// separate from the text-size bubble, so a pinch can't wipe it and screen readers hear it on its own.
 export function flash(m, e) {
-  var x = document.getElementById("szt");
+  var x = document.getElementById("fl");
   x.textContent = P.ui === "en" ? e : m;
   x.classList.remove("err");
-  x.classList.add("msg", "on");
+  x.classList.add("on");
   clearTimeout(flash.t);
   flash.t = setTimeout(function () {
-    x.classList.remove("on", "msg");
+    x.classList.remove("on");
   }, 1600);
 }
