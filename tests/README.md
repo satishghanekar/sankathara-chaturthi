@@ -31,6 +31,7 @@ On GitHub every pull request runs everything (`.github/workflows/tests.yml`): Ch
 | `interactions.spec.mjs` | Language button, dhrupad, contents, search (Marathi and English letters, forgiving spelling), Settings (theme, contrast, font, size, languages, IAST), folds remembered, line highlight, Prev / Next, dialogs, picture viewer, date card, reopening where you were. |
 | `a11y.spec.mjs` | axe-core (WCAG 2.2 A/AA + best practice) on 16 screen states; every dialog fully usable with Tab and Escape; skip link; accessible names contain the visible label (WCAG 2.5.3); reduced motion; languages marked for screen readers. |
 | `offline.spec.mjs` | The site works with no internet after one visit; the version in `index.html` and `sw.js` match. |
+| `edge.spec.mjs` | The Phase 3 audit's edge cases: an iPhone 16 Pro notch upright and sideways; pressed and hovered text readable in all 5 themes; keyboard focus never hidden behind the bars; layout shift after the page appears; 360 to 7680 px wide; what screen readers are told (size, search results, notes); Windows High Contrast focus rings; WCAG text spacing; printing with the keyboard alone; limits on `!important` and breakpoints. |
 | `perf.spec.mjs` | How many times the page is laid out during load, for each language-button tap and when Settings closes (4× slowed CPU). Layout counts are the same on every machine, so this never fails because a computer was busy; the milliseconds and the tap response time are attached to the result for comparison. |
 
 ### Print tests

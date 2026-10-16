@@ -420,6 +420,7 @@ export function skRender() {
       "</button>";
     lastY = Y;
   });
+  var ph = shared.skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
   box.hidden = false;
   box.innerHTML =
     '<div class="sktd"><span class="mr">आज: ' +
@@ -434,17 +435,20 @@ export function skRender() {
     now.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) +
     "</span></div>" +
     '<div class="skt"></div>' +
-    (shared.skCache.part
-      ? ""
-      : '<div class="sks" role="listbox" aria-orientation="horizontal" aria-label="' +
-        (en ? "Sankathara Chaturthi dates" : "संकटहर चतुर्थीच्या तारखा") +
-        '">' +
-        chips +
-        "</div>") +
+    // The first, quick render has only the next date. The strip and the "Add all" button are already laid
+    // out, invisible, so the card is its full height before the page is shown and nothing below it jumps
+    // when the full list arrives (it moved the home page down by about 100px on a phone).
+    '<div class="sks"' +
+    ph +
+    ' role="listbox" aria-orientation="horizontal" aria-label="' +
+    (en ? "Sankathara Chaturthi dates" : "संकटहर चतुर्थीच्या तारखा") +
+    '">' +
+    chips +
+    "</div>" +
     '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकटहर चतुर्थीवर परत</span><span class="en" lang="en">↩ Back to next Sankathara Chaturthi</span></button>' +
-    (shared.skCache.part
-      ? ""
-      : '<button type="button" class="skl" id="skall"><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>');
+    '<button type="button" class="skl" id="skall"' +
+    ph +
+    '><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>';
   skShow(shared.skCache.sel);
 }
 

@@ -567,6 +567,8 @@ export function init() {
     function go(mode) {
       pm.hidden = true;
       ovDone();
+      // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
+      document.getElementById("prb").focus();
       busy = true;
       if (mode === "as") mode = "one";
       build(mode);

@@ -228,10 +228,14 @@ ol.toc .m {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.pn > a:active,
+/* Pressed: a header-tinted background. (--rule was used before; in High contrast it is white, the same as
+   the text, so a pressed button went blank.) */
+.pn > a:active {
+  background: var(--hdr);
+}
 .pnq a:active,
 .pnq button:active {
-  background: var(--rule);
+  background: var(--surface);
 }
 
 
@@ -318,7 +322,8 @@ ol.toc .m {
 
 /* ==== Piece spacing; contents + search overlay (#jump) ==== */
 .bar {
-  padding-inline: max(16px, calc((100vw - 46rem) / 2));
+  padding-left: max(16px, env(safe-area-inset-left, 0px), calc((var(--vw, 100vw) - 46rem) / 2));
+  padding-right: max(16px, env(safe-area-inset-right, 0px), calc((var(--vw, 100vw) - 46rem) / 2));
 }
 
 .ash {
@@ -664,10 +669,12 @@ html,
 body {
   touch-action: pan-x pan-y;
 }
-#szt {
+/* Below the top bar, which itself sits below the notch on iPhones (#fl: short messages, same look) */
+#szt,
+#fl {
   position: fixed;
   left: 50%;
-  top: 84px;
+  top: calc(84px + env(safe-area-inset-top, 0px));
   transform: translateX(-50%);
   background: var(--ink);
   color: var(--bg);
@@ -679,14 +686,15 @@ body {
   opacity: 0;
   transition: opacity 0.15s;
 }
-#szt.on {
+#szt.on,
+#fl.on {
   opacity: 0.92;
 }
 /* After a pinch: a pill in the same place that puts the text size back to the default in one tap */
 #szr {
   position: fixed;
   left: 50%;
-  top: 84px;
+  top: calc(84px + env(safe-area-inset-top, 0px));
   transform: translateX(-50%);
   z-index: 9;
   height: 40px;
