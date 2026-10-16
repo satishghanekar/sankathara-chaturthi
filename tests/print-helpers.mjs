@@ -10,6 +10,12 @@
 //     and pdf.js reads the text of every page back, so the test can check where each piece and each
 //     block actually landed.
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { test, expect } from "@playwright/test";
+import { openSite } from "./helpers.mjs";
+import { addLineMarkers } from "./print-audit-helpers.mjs";
 
 const DIGITS = { "०": 0, "१": 1, "२": 2, "३": 3, "४": 4, "५": 5, "६": 6, "७": 7, "८": 8, "९": 9,
   "೦": 0, "೧": 1, "೨": 2, "೩": 3, "೪": 4, "೫": 5, "೬": 6, "೭": 7, "೮": 8, "೯": 9 };
@@ -106,16 +112,94 @@ export async function addMarkers(page, when = "now") {
   }, when);
 }
 
-/** Print to PDF and return the text of every page. */
-export async function pdfPages(page, paper) {
+// SAVE_PDFS=1 keeps every PDF in tests/pdfs/, named after its test, to look at by eye
+const PDF_DIR = new URL("./pdfs/", import.meta.url);
+
+/**
+ * Print to PDF and return the text of every page (and the PDF itself, for the print audit).
+ * save: a path under tests/pdfs/ to keep the PDF at; by default it is kept only with SAVE_PDFS=1,
+ * named after the test.
+ */
+export async function pdfPages(page, paper, save) {
   const buf = await page.pdf({ format: paper, preferCSSPageSize: true, printBackground: true });
+  if (!save && process.env.SAVE_PDFS) save = test.info().title.replace(/ @[\w-]+/g, "").replace(/[^\w.-]+/g, "-").replace(/^-|-$/g, "") + ".pdf";
+  if (save) {
+    const f = fileURLToPath(new URL(save, PDF_DIR));
+    mkdirSync(dirname(f), { recursive: true });
+    writeFileSync(f, buf);
+  }
   const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), useSystemFonts: false, verbosity: 0 }).promise;
   const out = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const tc = await (await doc.getPage(i)).getTextContent();
     out.push(tc.items.map((x) => x.str).join(""));
   }
-  return { pages: out, bytes: buf.length };
+  return { pages: out, bytes: buf.length, buf };
+}
+
+const SCREEN_ONLY = ["Open all", "Fold all", "Check for updates", "Settings", "Add to Home Screen"];
+
+/**
+ * Open the site with the given settings, print from the Print button and read the PDF back.
+ * lines: also mark every printed line for the print audit (see print-audit-helpers.mjs).
+ */
+export async function printOnce(browser, { prefs, choice, mode, paper, locale, save, lines = false }) {
+  const context = await browser.newContext({ locale, viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
+  const page = await context.newPage();
+  const errors = [];
+  await stubPrint(page);
+  await openSite(page, prefs, { errors });
+  // What a reader sees on screen, for the completeness check (folded pieces opened for the count)
+  const onScreen = await page.evaluate(() => [...document.querySelectorAll("section.ash")].map((s) => s.id));
+  await printFromButton(page, choice);
+  const pv = await readPrintView(page);
+  await addMarkers(page);
+  const marked = lines ? await addLineMarkers(page) : null;
+  const pdf = await pdfPages(page, paper, save);
+  await context.close();
+  return { pv, pdf, errors, onScreen, mode, marked };
+}
+
+/**
+ * The checks every printout must pass (see print.spec.mjs). Returns the page count and the contents numbers.
+ */
+export function checkPrintout(r, paper) {
+  const { pv, pdf, errors, onScreen, mode } = r;
+  const at = markerPages(pdf.pages);
+  expect(errors, "no script errors").toEqual([]);
+  expect(pv.mode, "print mode set on the page").toBe(mode);
+  // every piece is in the print view, in reading order
+  expect(pv.pieces).toEqual(onScreen);
+  // contents numbers: one per piece, and each is the page the piece really starts on
+  expect(pv.toc.map((t) => t.id)).toEqual(onScreen);
+  for (const t of pv.toc) {
+    expect(t.page, `contents has a page number for ${t.id}`).not.toBe("");
+    expect(at[t.id + ":0:s"], `${t.id} starts on the page the contents says (${paper})`).toBe(toInt(t.page));
+  }
+  // no block is cut across a page break
+  const cut = [];
+  for (const key of Object.keys(at)) {
+    if (!key.endsWith(":s")) continue;
+    const end = key.replace(/:s$/, ":e");
+    if (at[end] !== at[key]) cut.push(`${key.slice(0, -2)} (pages ${at[key]}–${at[end]})`);
+  }
+  expect(cut, "blocks split across pages").toEqual([]);
+  // every block was found in the PDF (nothing lost off the page)
+  expect(Object.keys(at).length, "every block start and end printed").toBe(pv.blocks * 2);
+  // page footer "N / total" on every page
+  const n = pdf.pages.length;
+  pdf.pages.forEach((t, i) => expect(t.replace(/\s/g, ""), `footer on page ${i + 1}`).toContain(`${i + 1}/${n}`));
+  // screen-only controls never print
+  const all = pdf.pages.join("\n");
+  for (const s of SCREEN_ONLY) expect(all, `"${s}" is screen-only`).not.toContain(s);
+  // English text is all there (Devanagari and Kannada can't be read back reliably from a PDF; their
+  // completeness is covered by the block markers above)
+  if (pv.english.length) {
+    const flat = squash(all.replace(/\[\[[^\]]+\]\]|\{\{[^}]+\}\}/g, ""));
+    const missing = pv.english.filter((l) => !flat.includes(squash(l)));
+    expect(missing, "English lines missing from the PDF").toEqual([]);
+  }
+  return { pages: n, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) };
 }
 
 /** Where each marker landed: { "a1:0:s": 5, … } (page numbers from 1). */

@@ -41,11 +41,12 @@ The site is one page, `index.html`, plus plain CSS and JavaScript files. **There
 
 The Print button builds a separate print view (`#pv`, in `js/features/print.js`) for the chosen layout. Printing from the browser's own menu builds the same view.
 
+- **Fitting the text** (`js/print/`): before the pages are planned, `fit.js` measures every printed line in the page-sized frame and sets each piece's size per language, and side by side the share of the width each column gets, so that lines stay whole and the two columns stay in step. `profiles.js` holds every number it works with: per script and text font, the size that makes the script look as large as the others, and how much smaller it may go to fit (never more than 15%). A new language or script is a new entry there; the fitting itself measures whatever text and font it is given.
 - **Page planning:** the view measures every unbroken block (stanza, verse group) in a frame the size of the printed page, then packs the blocks onto pages. That is how no block is split across pages and the contents page gets real page numbers.
 - **Paper size:** Letter in the US, Canada, Mexico and the Philippines, A4 elsewhere (`LTR`).
 - **Safari and every iPhone or iPad browser** ignore CSS columns when printing, and they split table rows across pages. On them (class `wk` on `<html>`), two-column layouts are built from inline blocks, which cannot be split.
 - **Safari on a Mac** prints about 16/15 larger than Chrome, and the page plan allows for that.
-- **Tests:** `tests/print.spec.mjs` prints every layout × font × paper to PDF and checks where every block landed (see `tests/README.md`).
+- **Tests:** `tests/print.spec.mjs` prints every layout × font × paper to PDF and checks where every block and every line landed. `npm run print:audit` prints every combination a reader can choose (288 PDFs) into `tests/pdfs/`, with a report of anything that came out badly (see `tests/README.md`).
 
 ## Offline use and updates
 
