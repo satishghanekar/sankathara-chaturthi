@@ -34,7 +34,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **Keyboard:** the first Tab shows "Skip to the texts". Settings and Contents take focus when opened; Escape or tabbing out closes them and returns focus to their button. Picking a piece moves focus to its heading. The page has banner, navigation and main landmarks. High contrast is black whichever theme is picked (2026-10-14 accessibility review).
 - **Tap areas:** small controls (dhrupad markers, Settings segments and ✕, calendar and location links, the offline line, the top-bar title) have an invisible touch area of about 44 px, so they keep their look but are easier to hit ("Bigger tap areas" block at the end of the CSS).
 - **Reading:** tap a line to highlight it, pinch or A−/A+ for text size (the home page keeps its normal size), themes (light, sepia, dark), high contrast, keep the screen on (on by default on phones and tablets, off on computers), and it reopens where you were reading (within 12 hours).
-- **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="help"`).
+- **Help** (English): opened from the home page and from Settings. Update it when a feature changes (search for `id="hlpc"`, the `<template>` that holds its text until it is first opened).
 
 ## What is in this repository
 
@@ -49,6 +49,10 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
 | `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
 | `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png`, `apple-touch-icon.png`, `apple-touch-icon-precomposed.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. The two `apple-touch-icon` files are copies of `icon-180.png` at the site root, where iPhone also looks when it adds the site to the Home Screen. |
+| `tests/` | The automated tests (see *Checking a change*). Not part of the site, though Cloudflare serves the folder too. |
+| `.github/workflows/` | The test run GitHub does on every pull request, and the job that refreshes its screenshots. |
+| `_headers` | How long phones may keep each kind of file before asking again (Cloudflare Pages reads it). |
+| `ARCHITECTURE.md` | How the page, styles and scripts fit together, for anyone changing the code. |
 | `fonts/` | The four fonts, served from the site itself so nothing is fetched from Google and they work offline (see `fonts/README.md`). |
 
 There is no build step. The files in this repository are exactly what the site serves.
@@ -125,7 +129,7 @@ On GitHub, open **Commits** (the clock icon above the file list) and click the c
 `index.html` is laid out top to bottom as:
 
 1. `<head>`: title, and preloading of the main font files.
-2. Links to the style files in `css/`, in order (see `css/README.md`): labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`. Then `js/parts.js`, the list of the site's files.
+2. Links to the style files in `css/`, in order (see `css/README.md`): labelled sections (`/* ==== … ==== */`), starting with the `@font-face` rules for `fonts/`. Then `js/parts.js`, the list of the site's files, and `modulepreload` links for the script parts.
 3. `<body>`: the top bar, the settings panel, then the home page. The pieces themselves are in `content/pieces.js`; a short script at the end of `<main>` has `js/render.js` build them in place while the page loads, so the page is exactly as if they were written there.
 4. `<script type="module" src="js/main.js">`: all behaviour. `main.js` starts each part in `js/core/`, `js/text/` and `js/features/` in order (see `js/README.md`).
 
@@ -216,4 +220,6 @@ The texts are the point of the site, so after any edit:
 - Check it on a phone and on a computer, and try **Print** if the layout changed.
 - If a line or a mark looks wrong, compare it with the source booklet before changing anything.
 
-For larger changes there is an automated regression suite (Playwright, Chromium) in the project files at `site-docs/regression/`, with its own README. It compares the current site against an earlier commit: every line of text, search results, 33 screen/language/theme layouts and the main interactions, every print mode as PDF, and load and switch performance on a slowed-down phone. Run it before publishing a change to the code.
+For larger changes there is an automated test suite in `tests/` (see `tests/README.md`). It checks every line of text, search, 45 screenshots, layouts from a small phone to a wide monitor, the main interactions, accessibility, every print layout as a PDF, offline use, and how much work the page does on load. It runs by itself on GitHub for every pull request, in Chromium, Firefox, Safari's engine and phone emulation. Merge a pull request only when its checks are green.
+
+How the code fits together is in `ARCHITECTURE.md`.

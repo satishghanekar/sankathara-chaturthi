@@ -5,7 +5,7 @@
 # are always re-checked (no-cache = "ask first", not "don't store"), so an update reaches readers on
 # their next visit, and the service worker (sw.js) keeps everything for offline use either way.
 #
-# If a font file is ever replaced, give it a new name (and update css/site.css and sw.js), because
+# If a font file is ever replaced, give it a new name (and update css/00-fonts.css and js/parts.js), because
 # phones that already have the old one will not ask for it again.
 
 /fonts/*
