@@ -23,10 +23,11 @@ export function init() {
       bgo = document.getElementById("prgo"),
       po = pm.querySelector(".pro"),
       pw = document.getElementById("prw"),
+      pv2 = document.getElementById("prv"),
       bsf = document.getElementById("prsf"),
       bcp = document.getElementById("prcp"),
       last = "as", // the layout last chosen, carried to Safari
-      pn = pm.querySelector(".prn:not(#prw)"),
+      pn = pm.querySelector(".prn:not(#prw):not(#prv)"),
       busy = false,
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
     // the original's language, by the letters it is shown in (P.ind), as the Print pop-up names it: in Marathi
@@ -737,7 +738,7 @@ export function init() {
       b1.hidden = b2.hidden = pn.hidden = ready;
       po.hidden = ready || !FEAT_SW;
       bgo.hidden = !ready;
-      pw.hidden = bsf.hidden = bcp.hidden = true;
+      pw.hidden = pv2.hidden = bsf.hidden = bcp.hidden = true;
     }
     // ---- The iPhone Home Screen app cannot print: hand the printout over to Safari ----
     // Safari opens at this site's address with the print choices in it (read by js/render.js), and offers
@@ -751,11 +752,15 @@ export function init() {
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
     }
-    // open: the pop-up is already open (its Back step is in place)
-    function toSafari(open) {
+    // open: the pop-up is already open (its Back step is in place); tapped: Print now was tapped and the
+    // dialog still did not open (not the Home Screen app: another app's browser, or Safari holding it back),
+    // so the note names Share → Print too
+    function toSafari(open, tapped) {
       pmMode(true);
       bgo.hidden = true;
-      pw.hidden = bsf.hidden = bcp.hidden = false;
+      bsf.hidden = bcp.hidden = false;
+      pw.hidden = !!tapped;
+      pv2.hidden = !tapped;
       if (!open) ovPush();
       pm.hidden = false;
       bsf.focus();
@@ -787,10 +792,11 @@ export function init() {
       setTimeout(function () {
         if (seen || !busy) return;
         if (!again) return ready();
-        // a tap did not open it either: the iPhone Home Screen app (on some iOS versions) cannot print
-        if (!(iOS && standalone)) return unready();
+        // a tap did not open it either: the iPhone Home Screen app (on some iOS versions) cannot print, and
+        // neither can some apps' own browsers (a link opened from a chat app)
+        if (!iOS) return unready();
         unready();
-        toSafari();
+        toSafari(false, !standalone);
       }, 1000);
     }
     function ready() {

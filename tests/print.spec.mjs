@@ -209,6 +209,35 @@ test("iPhone: an ignored print offers Print now @chromium-only", async ({ browse
   await context.close();
 });
 
+// When Print now does not open the dialog either (an app's own browser, from a link in a chat app), the pop-up
+// says to use Share → Print, or to open the page in Safari
+test("iPhone: when Print now does not print either, Share → Print and Open in Safari are offered @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__printed = 0;
+    window.print = () => window.__printed++;
+  });
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await page.locator("#pr1").click();
+  await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
+  await page.locator("#prgo").click();
+  await expect(page.locator("#prv")).toBeVisible({ timeout: 5_000 });
+  await expect(page.locator("#prv")).toContainText("Share");
+  await expect(page.locator("#prsf")).toBeVisible();
+  await expect(page.locator("#prcp")).toBeVisible();
+  await expect(page.locator("#prw")).toBeHidden();
+  await expect(page.locator("#prgo")).toBeHidden();
+  expect(await page.evaluate(() => window.__printed)).toBe(2);
+  // the next Print shows the layout choices again
+  await page.locator("#prx").click();
+  await page.locator("#prb").click();
+  await expect(page.locator("#pr1")).toBeVisible();
+  await expect(page.locator("#prv")).toBeHidden();
+  await context.close();
+});
+
 // The iPhone Home Screen app cannot print (neither tap opens the dialog there): choosing a layout goes straight
 // to Open in Safari, without trying to print
 test("iPhone Home Screen app: a layout choice goes straight to Open in Safari @chromium-only", async ({ browser }) => {
