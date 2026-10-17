@@ -183,51 +183,64 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
 
 // iPhone: Safari opens the print dialog only in answer to a tap, and laying the print view out takes longer
 // than a tap counts for, so window.print() is quietly ignored (no beforeprint). The pop-up then offers
-// Print now, whose own tap prints. In the Home Screen app, where even that may not open it, it says so.
-for (const standalone of [false, true]) {
-  test(`iPhone: an ignored print offers Print now${standalone ? " (Home Screen app)" : ""} @chromium-only`, async ({ browser }) => {
-    const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
-    const page = await context.newPage();
-    await page.addInitScript((sa) => {
-      if (sa) Object.defineProperty(navigator, "standalone", { value: true });
-      window.__printed = 0;
-      // the first call is ignored, as iOS does once the tap has expired; a later one opens the dialog,
-      // except in the Home Screen app
-      window.print = () => {
-        if (window.__printed++ && !sa) dispatchEvent(new Event("beforeprint"));
-      };
-    }, standalone);
-    await openSite(page, SETUPS.english);
-    await page.locator("#prb").click();
-    await page.locator("#pr2").click();
-    await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator("#pr1")).toBeHidden();
-    await expect(page.locator("#prgo")).toBeFocused();
-    await page.locator("#prgo").click();
-    expect(await page.evaluate(() => window.__printed)).toBe(2);
-    if (standalone) {
-      // even Print now did not print: Open in Safari, with the print choices in the address
-      await expect(page.locator("#prw")).toBeVisible();
-      await expect(page.locator("#prgo")).toBeHidden();
-      await expect(page.locator("#prsf")).toBeVisible();
-      await expect(page.locator("#prsf")).toBeFocused();
-      await expect(page.locator("#prcp")).toBeVisible();
-      expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
-      await page.locator("#prx").click();
-    } else {
-      await page.waitForTimeout(1300);
-      await expect(page.locator("#prm")).toBeHidden();
-      expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("one");
-    }
-    // the next Print shows the layout choices again
-    await page.evaluate(() => dispatchEvent(new Event("afterprint")));
-    await page.locator("#prb").click();
-    await expect(page.locator("#pr1")).toBeVisible();
-    await expect(page.locator("#prgo")).toBeHidden();
-    await expect(page.locator("#prw")).toBeHidden();
-    await context.close();
+// Print now, whose own tap prints.
+test("iPhone: an ignored print offers Print now @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__printed = 0;
+    // the first call is ignored, as iOS does once the tap has expired; a later one opens the dialog
+    window.print = () => {
+      if (window.__printed++) dispatchEvent(new Event("beforeprint"));
+    };
   });
-}
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await page.locator("#pr2").click();
+  await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator("#pr1")).toBeHidden();
+  await expect(page.locator("#prgo")).toBeFocused();
+  await page.locator("#prgo").click();
+  expect(await page.evaluate(() => window.__printed)).toBe(2);
+  await page.waitForTimeout(1300);
+  await expect(page.locator("#prm")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("one");
+  // the next Print shows the layout choices again
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+  await page.locator("#prb").click();
+  await expect(page.locator("#pr1")).toBeVisible();
+  await expect(page.locator("#prgo")).toBeHidden();
+  await expect(page.locator("#prw")).toBeHidden();
+  await context.close();
+});
+
+// The iPhone Home Screen app cannot print (neither tap opens the dialog there): choosing a layout goes straight
+// to Open in Safari, without trying to print
+test("iPhone Home Screen app: a layout choice goes straight to Open in Safari @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "standalone", { value: true });
+    window.__printed = 0;
+    window.print = () => window.__printed++;
+  });
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await page.locator("#pr2").click();
+  await expect(page.locator("#prsf")).toBeVisible();
+  await expect(page.locator("#prsf")).toBeFocused();
+  await expect(page.locator("#prcp")).toBeVisible();
+  await expect(page.locator("#prw")).toBeVisible();
+  await expect(page.locator("#prgo")).toBeHidden();
+  expect(await page.evaluate(() => window.__printed)).toBe(0);
+  expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
+  await page.locator("#prx").click();
+  await expect(page.locator("#prm")).toBeHidden();
+  await page.locator("#prb").click();
+  await expect(page.locator("#pr1")).toBeVisible();
+  await expect(page.locator("#prw")).toBeHidden();
+  await context.close();
+});
 
 // Laid out ahead: once the page has been open a few seconds, the single-column printout is ready, so on an
 // iPhone the Print button prints on its first tap (no Print now), while the tap still counts
@@ -252,7 +265,7 @@ test("iPhone: a printout laid out ahead prints on the first tap @chromium-only",
   await context.close();
 });
 
-// The Home Screen app that has failed to print once goes straight to Open in Safari, and Safari, opened at that
+// The Home Screen app's Open in Safari: Safari, opened at that
 // address, takes the print choices, cleans the address and lays the printout out, ready to print
 test("iPhone Home Screen app: Open in Safari carries the print choices @chromium-only", async ({ browser }) => {
   const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
@@ -266,7 +279,6 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   });
   await openSite(page, SETUPS.english);
   await page.evaluate(() => {
-    localStorage.setItem("aarti2-noprint", "1");
     const p = JSON.parse(localStorage.getItem("aarti2-prefs"));
     p.ref = 0;
     p.por = "land";
