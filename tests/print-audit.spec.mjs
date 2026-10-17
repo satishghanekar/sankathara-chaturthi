@@ -22,10 +22,10 @@ import { pdfMarks, auditLines } from "./print-audit-helpers.mjs";
 test.describe.configure({ mode: "parallel" });
 test.skip(!process.env.PRINT_AUDIT, "print audit: run with npm run print:audit");
 
-// What is printed, and the two choices the Print pop-up offers for it: Portrait and Landscape (one language in a
-// column either way; both languages stacked on Portrait, side by side on Landscape)
+// What is printed, and the choices the Print pop-up offers for it: Portrait and Landscape for one language (in a
+// column either way); Landscape, side by side, for both
 const ONE = { portrait: ["pr1", "one"], landscape: ["pr2", "one"] };
-const BOTH = { portrait: ["pr1", "one"], landscape: ["pr2", "side"] };
+const BOTH = { landscape: ["pr2", "side"] };
 export const VIEWS = {
   marathi: [{ lang: "mr", lead: "mr", l2: "en" }, ONE],
   kannada: [{ lang: "mr", lead: "mr", l2: "en", ind: "kn" }, ONE],
