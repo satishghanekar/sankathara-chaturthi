@@ -16,14 +16,19 @@ import { printOnce, checkPrintout, stubPrint, printFromButton, readPrintView, ad
 
 test.describe.configure({ mode: "parallel" });
 
-// Layouts as the Print pop-up offers them: Marathi or English alone get Single column (pr1) only; Both gets
-// Side by side (pr1) and Stacked (pr2).
+// The Print pop-up's two choices: Portrait (pr1) and Landscape (pr2). One language prints in a column either
+// way; both languages print stacked on Portrait and side by side on Landscape.
 const LAYOUTS = [
   { name: "marathi-single-column", setup: "marathi", choice: "pr1", mode: "one" },
   { name: "english-single-column", setup: "english", choice: "pr1", mode: "one" },
-  { name: "both-side-by-side", setup: "both", choice: "pr1", mode: "side" },
-  { name: "both-stacked", setup: "both", choice: "pr2", mode: "one" },
-  { name: "kannada-side-by-side", setup: "kannada-both", choice: "pr1", mode: "side" },
+  { name: "both-stacked", setup: "both", choice: "pr1", mode: "one" },
+  { name: "kannada-stacked", setup: "kannada-both", choice: "pr1", mode: "one" },
+];
+const SIDEWAYS = [
+  { name: "marathi-single-column", setup: "marathi", choice: "pr2", mode: "one" },
+  { name: "english-single-column", setup: "english", choice: "pr2", mode: "one" },
+  { name: "both-side-by-side", setup: "both", choice: "pr2", mode: "side" },
+  { name: "kannada-side-by-side", setup: "kannada-both", choice: "pr2", mode: "side" },
 ];
 // iPhone 13 emulation in Chromium (the device entry names WebKit as its browser, which newContext does not take)
 const { defaultBrowserType: _bt, ...IPHONE } = devices["iPhone 13"];
@@ -37,9 +42,9 @@ const PAPERS = [
 // Special cases beyond the main grid (standard font, Letter unless stated)
 const EXTRAS = [
   { name: "iast-english-single-column", prefs: SETUPS["english-iast"], choice: "pr1", mode: "one" },
-  { name: "iast-both-side-by-side", prefs: SETUPS["both-iast"], choice: "pr1", mode: "side" },
-  { name: "english-main-side-by-side", prefs: SETUPS["english-main-both"], choice: "pr1", mode: "side" },
-  { name: "english-main-stacked", prefs: SETUPS["english-main-both"], choice: "pr2", mode: "one" },
+  { name: "iast-both-side-by-side", prefs: SETUPS["both-iast"], choice: "pr2", mode: "side" },
+  { name: "english-main-side-by-side", prefs: SETUPS["english-main-both"], choice: "pr2", mode: "side" },
+  { name: "english-main-stacked", prefs: SETUPS["english-main-both"], choice: "pr1", mode: "one" },
   { name: "kannada-single-column", prefs: SETUPS.kannada, choice: "pr1", mode: "one" },
   { name: "dhrupad-every-verse-single", prefs: SETUPS["marathi-every-verse"], choice: "pr1", mode: "one" },
   { name: "marathi-menus-single-column", prefs: SETUPS["marathi-menus"], choice: "pr1", mode: "one" },
@@ -67,9 +72,9 @@ for (const L of LAYOUTS)
       });
     }
 
-// Sideways (landscape, chosen in the Print pop-up): every layout in every font, on Letter or A4 by turns, with
-// the same checks. The text is fitted to the wider line and the pages planned for the shorter page.
-for (const L of LAYOUTS)
+// Landscape: every layout in every font, on Letter or A4 by turns, with the same checks. The text is fitted to
+// the wider line and the pages planned for the shorter page.
+for (const L of SIDEWAYS)
   FONTS.forEach((fnt, i) => {
     const P = PAPERS[i % 2];
     test(`sideways · ${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
@@ -88,9 +93,9 @@ for (const L of LAYOUTS)
 
 // Sideways special cases: the dhrupad after every verse, and Kannada
 for (const X of [
-  { name: "sideways-dhrupad-every-verse-single", prefs: SETUPS["marathi-every-verse"], choice: "pr1", mode: "one" },
-  { name: "sideways-dhrupad-every-verse-side", prefs: { ...SETUPS["marathi-every-verse"], lang: "both" }, choice: "pr1", mode: "side" },
-  { name: "sideways-kannada-single-column", prefs: SETUPS.kannada, choice: "pr1", mode: "one" },
+  { name: "sideways-dhrupad-every-verse-single", prefs: SETUPS["marathi-every-verse"], choice: "pr2", mode: "one" },
+  { name: "sideways-dhrupad-every-verse-side", prefs: { ...SETUPS["marathi-every-verse"], lang: "both" }, choice: "pr2", mode: "side" },
+  { name: "sideways-kannada-single-column", prefs: SETUPS.kannada, choice: "pr2", mode: "one" },
 ]) {
   test(`${X.name} @chromium-only`, async ({ browser }) => {
     const r = await printOnce(browser, { prefs: { ...X.prefs, por: "land" }, choice: X.choice, mode: X.mode, paper: "Letter", locale: "en-US" });
@@ -143,7 +148,7 @@ for (const [setup, por] of [["marathi", "up"], ["english", "up"], ["marathi", "l
     const page = await context.newPage();
     await stubPrint(page);
     await openSite(page, { ...SETUPS[setup], por });
-    await printFromButton(page, "pr1");
+    await printFromButton(page, por === "land" ? "pr2" : "pr1");
     const pv = await readPrintView(page);
     expect(pv.mode).toBe("one");
     expect(pv.pieces).toHaveLength(11);
@@ -163,10 +168,12 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await stubPrint(page);
   await openSite(page, SETUPS.both);
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toContainText("Side by side: Marathi | English");
-  await expect(page.locator("#pr2")).toContainText("Stacked: Marathi above English");
+  await expect(page.locator("#pr1")).toContainText("Portrait");
+  await expect(page.locator("#pr1 .prsub")).toHaveText("Marathi above English");
+  await expect(page.locator("#pr2")).toContainText("Landscape");
+  await expect(page.locator("#pr2 .prsub")).toHaveText("Side by side: Marathi | English");
   await expect(page.locator("#prq")).toHaveText("Letter");
-  await expect(page.locator("#pr1")).toBeFocused();
+  await expect(page.locator("#pr2")).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(page.locator("#prm")).toBeHidden();
   await expect(page.locator("#prb")).toBeFocused();
@@ -310,7 +317,7 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   });
   await page.reload();
   await page.locator("#prb").click();
-  await page.locator("#pr1").click();
+  await page.locator("#pr2").click();
   await expect(page.locator("#prsf")).toBeVisible();
   expect(await page.evaluate(() => window.__printed)).toBe(0);
   // the address Open in Safari goes to (Chromium has no x-safari-https, so the page stays)
@@ -341,88 +348,72 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await context.close();
 });
 
-// What the pop-up offers (CHOICE in js/print/profiles.js): for one language, single column on upright pages,
-// the only choice; for both, side by side on sideways pages, offered first, focused and marked Recommended.
-// Each choice says the page it prints on.
-for (const [setup, rec, other] of [
-  ["marathi", "Upright pages", null],
-  ["english", "Upright pages", null],
-  ["kannada", "Upright pages", null],
-  ["both", "Sideways pages · Recommended", "Upright pages"],
-  ["kannada-both", "Sideways pages · Recommended", "Upright pages"],
+// What the pop-up offers (CHOICE in js/print/profiles.js): Portrait, then Landscape, each saying what prints on
+// it; the focus is on Portrait for one language and on Landscape (side by side) for both, until the reader has
+// chosen a page
+for (const [setup, focused, sub1, sub2] of [
+  ["marathi", "#pr1", "Marathi", "Marathi"],
+  ["english", "#pr1", "English", "English"],
+  ["kannada", "#pr1", "Kannada", "Kannada"],
+  ["both", "#pr2", "Marathi above English", "Side by side: Marathi | English"],
+  ["kannada-both", "#pr2", "Kannada above English", "Side by side: Kannada | English"],
+  ["english-main-both", "#pr2", "English above Marathi", "Side by side: English | Marathi"],
 ]) {
-  test(`print pop-up recommends the layout that prints best: ${setup} @chromium-only`, async ({ page }) => {
+  test(`print pop-up offers Portrait and Landscape: ${setup} @chromium-only`, async ({ page }) => {
     await stubPrint(page);
     await openSite(page, SETUPS[setup]);
     await page.locator("#prb").click();
     await expect(page.locator(".prs button:not([hidden])").first()).toHaveId("pr1");
-    await expect(page.locator("#pr1")).toBeFocused();
-    await expect(page.locator("#pr1 .prsub")).toHaveText(rec);
-    if (other) await expect(page.locator("#pr2 .prsub")).toHaveText(other);
-    else await expect(page.locator("#pr2")).toBeHidden();
-    // neither Upright nor Sideways pressed: each choice prints on its own page
-    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("#pr1")).toContainText("Portrait");
+    await expect(page.locator("#pr2")).toContainText("Landscape");
+    await expect(page.locator("#pr1 .prsub")).toHaveText(sub1);
+    await expect(page.locator("#pr2 .prsub")).toHaveText(sub2);
+    await expect(page.locator(focused)).toBeFocused();
   });
 }
 
-// The choices print as they say: side by side on sideways pages, single column and stacked on upright ones
+// Each choice prints on its page: Portrait upright, Landscape sideways
 for (const [setup, choice, mode, landscape] of [
-  ["both", "pr1", "side", true],
-  ["both", "pr2", "one", false],
+  ["both", "pr1", "one", false],
+  ["both", "pr2", "side", true],
   ["marathi", "pr1", "one", false],
+  ["marathi", "pr2", "one", true],
 ]) {
-  test(`each choice prints on its own page: ${setup} ${mode} @chromium-only`, async ({ browser }) => {
+  test(`each choice prints on its own page: ${setup} ${choice} @chromium-only`, async ({ browser }) => {
     const r = await printOnce(browser, { prefs: { ...SETUPS[setup], por: "" }, choice, mode, paper: "Letter", locale: "en-US" });
     expect(r.pdf.landscape).toBe(landscape);
     checkPrintout(r, "Letter");
   });
 }
 
-// Upright or Sideways turns every choice that way, is remembered, and a second tap goes back to each choice's
-// own page; the note names it, and Safari, which keeps the sheet picked in its own dialog, is told to pick
-// Landscape there too when a choice prints sideways
-test("print pop-up: Upright or Sideways for every choice @chromium-only", async ({ browser }) => {
+// The page chosen is remembered (the focus is on it next time), the printer is told the page size, and Safari,
+// which keeps the sheet picked in its own dialog, is told to pick Landscape there too
+test("print pop-up: the page chosen is remembered and printed that way @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
     const page = await context.newPage();
     await stubPrint(page);
-    await openSite(page, SETUPS.both);
+    await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
-    await expect(page.locator("#proe")).toHaveText("turned as each choice says");
-    // side by side prints sideways by itself, so Safari readers are told about Landscape
     await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
-    await page.locator("#pol").click();
-    await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("#proe")).toHaveText("sideways");
-    await expect(page.locator("#pr1 .prsub")).toHaveText("Sideways pages · Recommended");
-    await expect(page.locator("#pr2 .prsub")).toHaveText("Sideways pages");
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
-    await page.locator("#pou").click();
-    await expect(page.locator("#proe")).toHaveText("upright");
-    await expect(page.locator("#pr1 .prsub")).toHaveText("Upright pages · Recommended");
-    await expect(page.locator("#prl")).toBeHidden();
-    // a second tap: back to each choice's own page
-    await page.locator("#pou").click();
-    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("#pr1 .prsub")).toHaveText("Sideways pages · Recommended");
-    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("");
-    // the page size rule the printer is given follows the choice printed
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
         return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
       });
-    await page.locator("#pr1").click();
+    await page.locator("#pr2").click();
     await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
     expect((await sizes()).pop()).toBe("landscape");
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
+    await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+    await page.locator("#prb").click();
+    await expect(page.locator("#pr2")).toBeFocused();
     await context.close();
   }
 });
 
-// A saved Upright or Sideways is kept from one visit to the next
-test("print pop-up: a saved Sideways choice is kept @chromium-only", async ({ page }) => {
+// A saved page is kept from one visit to the next
+test("print pop-up: a saved Landscape choice is kept @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, SETUPS.marathi);
   await page.evaluate(() => {
@@ -432,31 +423,21 @@ test("print pop-up: a saved Sideways choice is kept @chromium-only", async ({ pa
   });
   await page.reload();
   await page.locator("#prb").click();
-  await expect(page.locator(".pro")).toBeVisible();
-  await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#proe")).toHaveText("sideways");
-  await expect(page.locator("#pr1 .prsub")).toHaveText("Sideways pages");
+  await expect(page.locator("#pr2")).toBeFocused();
 });
 
-test("print pop-up in Marathi-only and English-only offers a single column only @chromium-only", async ({ page }) => {
+// Above the choices: the dhrupad setting, which a tap switches (for the printout and the page alike), and the
+// text font with a line of the text in it
+test("print pop-up shows the dhrupad and font settings @chromium-only", async ({ page }) => {
   await stubPrint(page);
-  await openSite(page, SETUPS.english);
+  await openSite(page, { ...SETUPS.marathi, fnt: "classic" });
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toContainText("Single column (English)");
-  await expect(page.locator("#pr2")).toBeHidden();
+  await expect(page.locator("#prdv")).toHaveText("Once", { useInnerText: true });
+  await expect(page.locator("#prfv")).toHaveText("Classic", { useInnerText: true });
+  await expect(page.locator("#prfs")).toContainText("सुखकर्ता");
+  expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Classic");
+  await page.locator("#prdh").click();
+  await expect(page.locator("#prdv")).toHaveText("After every verse", { useInnerText: true });
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).ref)).toBe(0);
+  await expect(page.locator("#prm")).toBeVisible();
 });
-
-// The choices name the languages actually printed, in the order printed (the main language first)
-for (const [setup, one, two] of [
-  ["kannada", "Single column (Kannada)", null],
-  ["kannada-both", "Side by side: Kannada | English", "Stacked: Kannada above English"],
-  ["english-main-both", "Side by side: English | Marathi", "Stacked: English above Marathi"],
-]) {
-  test(`print pop-up names the languages printed: ${setup} @chromium-only`, async ({ page }) => {
-    await stubPrint(page);
-    await openSite(page, SETUPS[setup]);
-    await page.locator("#prb").click();
-    await expect(page.locator("#pr1")).toContainText(one);
-    if (two) await expect(page.locator("#pr2")).toContainText(two);
-  });
-}
