@@ -60,6 +60,9 @@ export var LAYOUT = {
   // every share in this range (in steps of 1%) and keeps the one that leaves the fewest rows out of step.
   // (One share for a whole piece, so its dividing rule runs straight down every page of it.)
   side: { min: 0.36, max: 0.62, step: 0.01 },
+  // Side by side: a line written in two lines in one language is broken in the other too, at its preferred
+  // break nearest the same place: no further from it than this share of the line (fit.js, step 1b)
+  matchBreak: 0.25,
   // A line counts as fitting only with this much to spare. The page-sized copy the text is measured in
   // predicts the paper to within 1% on one computer (checked against Chrome's PDFs: a line measured at 99% of its column
   // never wrapped on paper, one at 101% always did), so 2% is kept spare. (The print styles turn font hinting off,
