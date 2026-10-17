@@ -40,10 +40,10 @@ On GitHub every pull request runs everything (`.github/workflows/tests.yml`): Ch
 
 Printing is checked the way a reader does it: the site's own Print button, then a choice in the pop-up. The test stops the real print dialog, prints the page to PDF in Chromium at the reader's paper size (Letter for the US and Canada, A4 elsewhere), and reads the PDF back. Before printing it adds invisible markers at the start and end of every unbroken block, so it can see exactly where each piece and block landed.
 
-The grid is every **layout** (Marathi two columns, Marathi single column, English two columns, English single column, Both side by side, Both stacked, Kannada and English side by side) × every **text font** (Standard, Classic, Bold, Handwritten) × **Letter and A4**: 56 PDFs. On top of that: the scholarly spelling (IAST), English as the main language, Kannada (two more layouts, and on A4), dhrupad after every verse, Marathi menus, everything folded on screen, printing from the browser's own menu (Ctrl/⌘ P), and Safari's table-based two-column layout. In each PDF:
+The grid is every **layout** (Marathi two columns, Marathi single column, English two columns, English single column, Both side by side, Both stacked, Kannada and English side by side) × every **text font** (Standard, Classic, Bold, Handwritten) × **Letter and A4**: 56 PDFs. Sideways (landscape): every layout × every text font again, on Letter or A4 by turns, with the same checks. On top of that: the scholarly spelling (IAST), English as the main language, Kannada (two more layouts, and on A4), dhrupad after every verse, Marathi menus, everything folded on screen, printing from the browser's own menu (Ctrl/⌘ P), and Safari's table-based two-column layout. In each PDF:
 
 - the contents page gives the page each piece really starts on;
-- no block (a heading with its dhrupad and first stanza, or a stanza) is split across pages;
+- no block (a heading with its dhrupad and first stanza, or a stanza) is split across pages, unless it is taller than a page even at its smallest (the print view marks it, and it breaks between lines);
 - every block of every piece is printed, even when folded on screen;
 - every page has its "N / total" footer;
 - screen-only controls (Open all, Settings, …) never print;
