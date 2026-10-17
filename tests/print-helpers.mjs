@@ -93,7 +93,9 @@ export async function addMarkers(page, when = "now") {
       s.className = "__pm";
       s.textContent = " [[" + t + "]] ";
       // white 1px text: printed (so pdf.js can read it) but invisible and taking no space
-      s.style.cssText = "position:absolute;font:1px/1 monospace;letter-spacing:0;word-spacing:0;text-transform:none;color:#fff;white-space:nowrap";
+      // !important: the site's own !important font rules (Kannada letters set every .mr element's font) must not
+      // reach the marker, or it is drawn in whatever font the machine falls back to and may not read back
+      s.style.cssText = ["position:absolute", "font:1px/1 monospace", "letter-spacing:0", "word-spacing:0", "text-transform:none", "color:#fff", "white-space:nowrap"].map((d) => d + " !important").join(";");
       return s;
     };
     const shown = (n) => {
