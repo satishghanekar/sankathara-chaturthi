@@ -766,8 +766,8 @@ export function init() {
     // ---- The iPhone Home Screen app cannot print: hand the printout over to Safari ----
     // Safari opens at this site's address with the print choices in it (read by js/render.js), and offers
     // Print now there. iOS 17 and later open an x-safari-https:// address in Safari; Copy link is for the rest.
-    // The app remembers that printing failed, so the next time it goes straight to this step.
-    var NOPR = "aarti2-noprint";
+    // On Satish's iPhone neither the Print tap nor a second one (Print now) opened the dialog in the app, so the
+    // app goes straight to this step once a layout is chosen.
     function link(mode) {
       var s = {};
       ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "tr", "por"].forEach(function (k) {
@@ -775,18 +775,8 @@ export function init() {
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
     }
-    function noPrint() {
-      try {
-        return !!localStorage.getItem(NOPR);
-      } catch (e) {
-        return false;
-      }
-    }
     // open: the pop-up is already open (its Back step is in place)
     function toSafari(open) {
-      try {
-        localStorage.setItem(NOPR, "1");
-      } catch (e) {}
       pmMode(true);
       bgo.hidden = true;
       pw.hidden = bsf.hidden = bcp.hidden = false;
@@ -847,8 +837,8 @@ export function init() {
     function go(mode) {
       var t0 = Date.now();
       last = mode;
-      // the Home Screen app has already failed to print here: go straight to Open in Safari
-      if (iOS && standalone && noPrint()) return toSafari(true);
+      // the iPhone Home Screen app cannot print: straight to Open in Safari
+      if (iOS && standalone) return toSafari(true);
       pm.hidden = true;
       ovDrop();
       // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
