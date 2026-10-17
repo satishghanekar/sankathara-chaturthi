@@ -361,8 +361,8 @@ export function init() {
       PAPER = LTR ? [215.9, 279.4] : [210, 297], // upright, in mm
       pcache = {}; // page plans laid out ahead, by pkey()
     // The pop-up's two choices, Portrait and Landscape, for what is printed (CHOICE in js/print/profiles.js):
-    // one language in a column, upright or sideways; both languages stacked on upright pages, or side by side on
-    // sideways ones
+    // one language in a column, upright or sideways; both languages side by side on sideways pages only (stacked,
+    // upright, only while Landscape is held back)
     function choice() {
       return CHOICE[P.lang === "both" ? "both" : "one"];
     }
@@ -518,7 +518,7 @@ export function init() {
             used -= C;
           }
         });
-        return { n: n, b: br };
+        return { n: n, b: br, f: used / H };
       }
       // 1. pieces made of blocks: measure each block and pack them onto pages. Measured 20px narrower
       // than the frame (a near-full line then wraps here first), so heights err on the tall side.
@@ -556,6 +556,24 @@ export function init() {
           if (at < 1) {
             r = fewest;
             z[id] = at;
+          }
+        }
+        // Safari keeps this plan (step 2 is Chrome's). Satish's Safari PDFs printed the Atharvashirsha in
+        // about 0.79 of the height planned for it, in Marathi, English and Kannada alike, so its contents
+        // numbers were a page out, or its last lines printed alone on a page: here prose is planned at that
+        // height, and one that only just spills onto a page, or only just fills one, is set slightly smaller
+        // (as step 2 does for Chrome), with more to spare than Chrome needs
+        if (root.classList.contains("wk") && fl.indexOf(true) >= 0) {
+          hs = hs.map(function (h, i) {
+            return fl[i] ? h * LAYOUT.page.safariProse : h;
+          });
+          r = pack(hs, 1, fl);
+          var k = 0;
+          if (r.n > 1 && r.f < 0.25) k = (0.9 * (r.n - 1)) / (r.n - 1 + r.f);
+          else if (r.f > 0.9) k = (r.n - 1 + 0.85) / (r.n - 1 + r.f);
+          if (k >= LAYOUT.page.minZoom && k < 1) {
+            z[id] = Math.round(k * 100) / 100;
+            r = pack(hs, z[id], fl);
           }
         }
         plan[id] = r;
@@ -687,12 +705,16 @@ export function init() {
         li.appendChild(s);
       });
     }
-    // Printing from the browser's own menu cannot wait, so the single-column numbers are kept ready, and so
+    // Printing from the browser's own menu cannot wait, so the numbers for what it prints (dm) are kept ready, and so
     // are those of the layout last chosen in the pop-up: then the Print button prints at once, while the tap
     // still counts on an iPhone, instead of asking for a second tap (Print now)
     var wm = "one";
+    // the browser's own menu prints what the pop-up offers first: one language in a column, both side by side
+    function dm() {
+      return P.lang === "both" && FEAT_SW ? "side" : "one";
+    }
     function warm() {
-      var m = ["one", wm].filter(function (x) {
+      var m = [dm(), wm].filter(function (x) {
         return !pcache[pkey(x)];
       })[0];
       if (!m || busy) return;
@@ -727,7 +749,10 @@ export function init() {
     // the pop-up: the layout choices (ready false), or Print now (ready true)
     function pmMode(ready) {
       b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
+      // both languages print side by side on Landscape only (stacked took a third more paper); upright
+      // stacked is left only while Landscape is held back (FEAT_SW)
       if (!FEAT_SW) b2.hidden = true;
+      else if (P.lang === "both") b1.hidden = true;
       // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
       document.getElementById("prl").hidden = !(root.classList.contains("wk") && (ready ? land(wm) : !b2.hidden));
       bgo.hidden = !ready;
@@ -865,6 +890,7 @@ export function init() {
         };
       }
       if (P.lang === "both") {
+        // (stacked: only while FEAT_SW holds Landscape back)
         opt(b1, "up", "one", M ? "वर " + l1 + ", खाली " + l2 : l1 + " above " + l2);
         opt(b2, "land", "side", M ? "शेजारी शेजारी: " + l1 + " | " + l2 : "Side by side: " + l1 + " | " + l2);
       } else {
@@ -877,7 +903,7 @@ export function init() {
       ovPush();
       pm.hidden = false;
       // the focus: the page last chosen for what is printed, or its default
-      ((P.lang === "both" ? (P.por || choice().page) : land("one") ? "land" : "up") === "land" && !b2.hidden ? b2 : b1).focus();
+      ((P.lang === "both" || land("one")) && !b2.hidden ? b2 : b1).focus();
     };
     function pmClose() {
       unready();
@@ -892,15 +918,16 @@ export function init() {
     pm.addEventListener("click", function (e) {
       if (e.target === pm) pmClose();
     });
-    // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view,
-    // single column: contents, then every piece in the chosen text language, never the home page
+    // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view (one
+    // language in a column, both side by side): contents, then every piece, never the home page
     window.addEventListener("beforeprint", function () {
       seen = true;
       if (!busy) {
-        setPage("one");
-        build("one");
-        if (pcache[pkey("one")]) pnums(pcache[pkey("one")]);
-        root.setAttribute("data-print", "one");
+        var m = dm();
+        setPage(m);
+        build(m);
+        if (pcache[pkey(m)]) pnums(pcache[pkey(m)]);
+        root.setAttribute("data-print", m);
       }
     });
     window.addEventListener("afterprint", function () {

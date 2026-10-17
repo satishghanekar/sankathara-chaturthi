@@ -55,14 +55,14 @@ export function scriptOf(text) {
 // A script with no entry above
 export var OTHER = { size: 1, minFit: 0.85 };
 
-// The Print pop-up offers two choices, Portrait and Landscape. One language prints in a column (prose pieces as
-// running paragraphs) on upright or sideways pages; the original with its English prints stacked (one above
-// the other) on upright pages, or side by side on sideways ones. page: the choice focused until the reader
-// has chosen one (P.por), from npm run print:audit (every font, dhrupad setting and paper):
+// The Print pop-up offers Portrait and Landscape for one language, which prints in a column (prose pieces as
+// running paragraphs) on either. The original with its English prints side by side on Landscape only: stacked
+// (one above the other, upright) took 21 to 27 pages against 16 to 21 side by side, so it is no longer offered
+// (Satish, 2026-10). page: the choice focused until the reader has chosen one (P.por), from npm run print:audit
+// (every font, dhrupad setting and paper):
 //   - one language: upright has no wrapped lines and the largest text, in about 13 pages, for English, Marathi
 //     and Kannada alike;
-//   - both languages: side by side, sideways, has its rows in step and almost nothing wrapped, in about 18
-//     pages; stacked is best upright (sideways it took some 33 pages, so it is not offered).
+//   - both languages: side by side, sideways, has its rows in step and almost nothing wrapped, in about 18 pages.
 // A new language is checked the same way, and gets its own entry here (keyed by P.ind) only if it differs.
 export var CHOICE = {
   one: { page: "up" },
@@ -85,7 +85,9 @@ export var LAYOUT = {
   margin: 0.98,
   // Pages: a piece is set smaller as a whole (to no less than this) when that makes it take fewer pages:
   // when it would spill a little onto another page, or its stanzas are too big to share a page.
-  page: { minZoom: 0.8 },
+  // safariProse: in Safari, the share of its planned height prose really prints in (from Satish's Safari PDFs,
+  // 2026-10: 0.785 to 0.79 in Marathi, English and Kannada; see paginate in js/features/print.js)
+  page: { minZoom: 0.8, safariProse: 0.79 },
   // How bad each outcome is, when choosing sizes. A row out of step side by side is the worst (the reader
   // loses their place), then a line broken in the middle of a phrase, then a line that wraps at a
   // preferred break; setting a piece smaller costs a little for every 1% (shrink, per 1%).
