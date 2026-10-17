@@ -6,7 +6,8 @@ import { shared, P, save } from "../core/state.js";
 import { DV } from "../text/line-breaks.js";
 import { fit } from "../print/fit.js";
 import { LAYOUT } from "../print/profiles.js";
-import { ovDone, ovPush } from "./history.js";
+import { ovDone, ovDrop, ovPush } from "./history.js";
+import { FEAT_SW } from "../core/features.js";
 
 export function init() {
   // Print: single column (as on screen), two columns, or Marathi | English side by side.
@@ -365,13 +366,17 @@ export function init() {
     // breaks pages.
     var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || ""),
       PAPER = LTR ? [215.9, 279.4] : [210, 297], // upright, in mm
-      pcache = { key: "", pg: null };
+      pcache = {}; // page plans laid out ahead, by pkey()
     // the sheet as it prints, [width, height] in mm
     function sheet() {
-      return P.por === "land" ? [PAPER[1], PAPER[0]] : PAPER;
+      return land() ? [PAPER[1], PAPER[0]] : PAPER;
+    }
+    // sideways pages: chosen in the pop-up, and the choice released (FEAT_SW)
+    function land() {
+      return FEAT_SW && P.por === "land";
     }
     function pkey(mode) {
-      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, P.por].join("|");
+      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, land()].join("|");
     }
     // Upright or Sideways: the browser is told with @page (Chrome, Edge and Firefox follow it; Safari
     // keeps the sheet the reader picks in its dialog, so the pop-up tells them to pick Landscape there)
@@ -379,7 +384,7 @@ export function init() {
     pst.media = "print";
     document.head.appendChild(pst);
     function orient() {
-      var land = P.por === "land";
+      var land = sheet() !== PAPER;
       pst.textContent = land ? "@page { size: landscape }" : "";
       document.getElementById("pou").setAttribute("aria-pressed", String(!land));
       document.getElementById("pol").setAttribute("aria-pressed", String(land));
@@ -714,13 +719,20 @@ export function init() {
         li.appendChild(s);
       });
     }
-    // Printing from the browser's own menu cannot wait, so the single-column numbers are kept ready
+    // Printing from the browser's own menu cannot wait, so the single-column numbers are kept ready, and so
+    // are those of the layout last chosen in the pop-up: then the Print button prints at once, while the tap
+    // still counts on an iPhone, instead of asking for a second tap (Print now)
+    var wm = "one";
     function warm() {
-      var k = pkey("one");
-      if (pcache.key === k || busy) return;
-      build("one");
-      pages("one", function (pg) {
-        if (pg) pcache = { key: k, pg: pg };
+      var m = ["one", wm].filter(function (x) {
+        return !pcache[pkey(x)];
+      })[0];
+      if (!m || busy) return;
+      var k = pkey(m);
+      build(m);
+      pages(m, function (pg) {
+        if (pg) pcache[k] = pg;
+        if (m !== wm) warmSoon(500);
       });
     }
     // Performance: the warm-up lays out a hidden copy of every piece, so it waits until the reader has
@@ -746,7 +758,8 @@ export function init() {
       standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
     // the pop-up: the layout choices (ready false), or Print now (ready true)
     function pmMode(ready) {
-      b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
+      b1.hidden = b2.hidden = pn.hidden = ready;
+      po.hidden = ready || !FEAT_SW;
       bgo.hidden = !ready;
       pw.hidden = bsf.hidden = bcp.hidden = true;
     }
@@ -822,7 +835,7 @@ export function init() {
     }
     bgo.onclick = function () {
       pm.hidden = true;
-      ovDone();
+      ovDrop();
       tryPrint(true);
     };
     // a print view left waiting for Print now (the pop-up closed instead) is put away
@@ -837,22 +850,27 @@ export function init() {
       // the Home Screen app has already failed to print here: go straight to Open in Safari
       if (iOS && standalone && noPrint()) return toSafari(true);
       pm.hidden = true;
-      ovDone();
+      ovDrop();
       // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
       document.getElementById("prb").focus();
       busy = true;
       if (mode === "as") mode = "one";
+      wm = mode;
       build(mode);
-      pages(mode, function (pg) {
+      var k = pkey(mode);
+      // laid out ahead (warm): print straight away
+      if (pcache[k]) return done(pcache[k]);
+      pages(mode, done);
+      function done(pg) {
         pnums(pg);
-        if (pg && mode === "one") pcache = { key: pkey("one"), pg: pg };
+        if (pg) pcache[k] = pg;
         root.setAttribute("data-print", mode);
         // the tap no longer counts: ask for another one rather than have the print quietly ignored
         if ((iOS || root.classList.contains("wk")) && Date.now() - t0 > 900) return ready();
         setTimeout(function () {
           tryPrint(false);
         }, 60);
-      });
+      }
     }
     document.getElementById("prb").onclick = function () {
       unready();
@@ -908,7 +926,7 @@ export function init() {
       seen = true;
       if (!busy) {
         build("one");
-        if (pcache.key === pkey("one")) pnums(pcache.pg);
+        if (pcache[pkey("one")]) pnums(pcache[pkey("one")]);
         root.setAttribute("data-print", "one");
       }
     });
