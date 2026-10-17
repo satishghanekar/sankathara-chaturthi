@@ -63,8 +63,9 @@ export var LAYOUT = {
   // A line counts as fitting only with this much to spare. The page-sized copy the text is measured in
   // predicts the paper to within 1% on one computer (checked against Chrome's PDFs: a line measured at 99% of its column
   // never wrapped on paper, one at 101% always did), and computers differ by about as much again:
-  // GitHub's test machine wrapped lines measured at 99% here, so 2% is kept spare.
-  margin: 0.98,
+  // GitHub's test machine wrapped lines measured at 98% to 99% here (Kannada side by side, Bold and Handwritten,
+  // with the same browser and the same web fonts), so 3% is kept spare.
+  margin: 0.97,
   // Pages: a piece is set smaller as a whole (to no less than this) when that makes it take fewer pages:
   // when it would spill a little onto another page, or its stanzas are too big to share a page.
   page: { minZoom: 0.8 },
