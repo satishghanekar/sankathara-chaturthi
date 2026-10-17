@@ -1,7 +1,7 @@
 // Features held back for a later release
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-export var FEAT_AS, FEAT_TL;
+export var FEAT_AS, FEAT_TL, FEAT_SW;
 
 export function init() {
   // Autoscroll (the ▶ in the bottom bar, its Settings switch and its Help entry) is built and tested but not
@@ -15,6 +15,11 @@ export function init() {
   // To release it: set FEAT_TL to true. Nothing else needs changing.
   FEAT_TL = false;
   if (FEAT_TL) show("tl");
+  // Sideways (landscape) printed pages: the Upright / Sideways choice in the Print pop-up is built and tested
+  // but held back (Satish, 2026-10-17: upright pages only for now). With FEAT_SW false the choice stays hidden
+  // and every printout is upright, whatever was saved (P.por is kept). The tests turn it on (window.__featSW).
+  // To release it: set FEAT_SW to true.
+  FEAT_SW = !!window.__featSW;
 }
 
 // Unhide a released feature's parts, Help's included: Help's text waits in a <template> (#hlpc) until Help

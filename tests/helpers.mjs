@@ -38,11 +38,13 @@ export const SETUPS = {
  * Open the site with the given settings.
  * @param {import('@playwright/test').Page} page
  * @param {object} prefs   settings merged over BASE_PREFS
- * @param {object} [opt]   { hash: "#a1", errors: array that collects page errors }
+ * @param {object} [opt]   { hash: "#a1", errors: array that collects page errors, sideways: true to turn on
+ *                          the held-back Sideways print choice (js/core/features.js; on by itself with por: "land") }
  */
 export async function openSite(page, prefs = {}, opt = {}) {
   const all = { ...BASE_PREFS, ...prefs };
   await page.clock.setFixedTime(FIXED_NOW);
+  if (opt.sideways || prefs.por === "land") await page.addInitScript(() => (window.__featSW = true));
   await page.addInitScript(
     ([k, v]) => {
       // only on the first load of this page: a test that reloads keeps what the site saved

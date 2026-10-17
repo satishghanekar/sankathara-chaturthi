@@ -229,6 +229,29 @@ for (const standalone of [false, true]) {
   });
 }
 
+// Laid out ahead: once the page has been open a few seconds, the single-column printout is ready, so on an
+// iPhone the Print button prints on its first tap (no Print now), while the tap still counts
+test("iPhone: a printout laid out ahead prints on the first tap @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__printed = 0;
+    window.print = () => {
+      window.__printed++;
+      dispatchEvent(new Event("beforeprint"));
+    };
+  });
+  await openSite(page, SETUPS.english);
+  await page.waitForTimeout(9000);
+  await page.locator("#prb").click();
+  await page.locator("#pr2").click();
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => window.__printed)).toBe(1);
+  await expect(page.locator("#prgo")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("one");
+  await context.close();
+});
+
 // The Home Screen app that has failed to print once goes straight to Open in Safari, and Safari, opened at that
 // address, takes the print choices, cleans the address and lays the printout out, ready to print
 test("iPhone Home Screen app: Open in Safari carries the print choices @chromium-only", async ({ browser }) => {
@@ -276,9 +299,8 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await sp.locator("#prgo").click();
   await sp.waitForTimeout(1300);
   expect(await sp.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("two");
-  // English, sideways
+  // English
   expect(await sp.evaluate(() => /Sukhkarta/.test(document.getElementById("pv").textContent))).toBe(true);
-  await expect(sp.locator("#pol")).toHaveAttribute("aria-pressed", "true");
   await sf.close();
   await context.close();
 });
@@ -290,7 +312,7 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
     const page = await context.newPage();
     await stubPrint(page);
-    await openSite(page, SETUPS.marathi);
+    await openSite(page, SETUPS.marathi, { sideways: true });
     await page.locator("#prb").click();
     await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#proe")).toHaveText("upright");
@@ -312,6 +334,27 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
     await expect(page.locator("#prl")).toBeHidden();
     await context.close();
   }
+});
+
+// Sideways is held back (js/core/features.js, FEAT_SW): no choice in the pop-up, and a saved Sideways prints upright
+test("print pop-up: upright pages only while Sideways is held back @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, SETUPS.marathi);
+  await page.evaluate(() => {
+    const p = JSON.parse(localStorage.getItem("aarti2-prefs"));
+    p.por = "land";
+    localStorage.setItem("aarti2-prefs", JSON.stringify(p));
+  });
+  await page.reload();
+  await page.locator("#prb").click();
+  await expect(page.locator("#pr1")).toBeVisible();
+  await expect(page.locator(".pro")).toBeHidden();
+  await expect(page.locator("#proe")).toHaveText("upright");
+  const sizes = await page.evaluate(() => {
+    const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
+    return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
+  });
+  expect(sizes.pop()).toBe("portrait");
 });
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {
