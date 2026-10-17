@@ -498,18 +498,21 @@ export function init() {
           br = [];
         hs.forEach(function (h, i) {
           h *= k;
-          if (used > 0 && used + h > C) {
+          // a block starts a new page when it does not fit below the last one; but a block taller than a
+          // page (it happens on a sideways page) breaks between its lines anyway, so it starts below the
+          // last block when a quarter of the page is still free, rather than leaving that space empty
+          if (used > 0 && used + h > C && (h <= C || C - used < C / 4)) {
             n++;
             used = 0;
             br.push(i);
           }
-          // a block taller than a page runs onto the next one (a sideways page holds less): it counts
-          // for every page it takes, so a piece set smaller to keep it on one page is preferred
-          while (h > C) {
-            n++;
-            h -= C;
-          }
+          // a block taller than a page runs onto the next one: it counts for every page it takes, so a
+          // piece set smaller to keep it on one page is preferred
           used += h;
+          while (used > C) {
+            n++;
+            used -= C;
+          }
         });
         return { n: n, b: br, f: used / C };
       }
