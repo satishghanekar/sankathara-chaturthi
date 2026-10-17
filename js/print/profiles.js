@@ -85,9 +85,7 @@ export var LAYOUT = {
   margin: 0.98,
   // Pages: a piece is set smaller as a whole (to no less than this) when that makes it take fewer pages:
   // when it would spill a little onto another page, or its stanzas are too big to share a page.
-  // safariProse: in Safari, the share of its planned height prose really prints in (from Satish's Safari PDFs,
-  // 2026-10: 0.785 to 0.79 in Marathi, English and Kannada; see paginate in js/features/print.js)
-  page: { minZoom: 0.8, safariProse: 0.79 },
+  page: { minZoom: 0.8 },
   // How bad each outcome is, when choosing sizes. A row out of step side by side is the worst (the reader
   // loses their place), then a line broken in the middle of a phrase, then a line that wraps at a
   // preferred break; setting a piece smaller costs a little for every 1% (shrink, per 1%).
