@@ -169,6 +169,10 @@
     column-fill: balance;
     margin: 0 0 6pt;
   }
+  /* a page's part of a two-column piece, before its last part (js/features/print.js cuts the flow at each page) */
+  #pv .pvc.pvcf {
+    column-fill: auto;
+  }
   #pv .pvc .pvk {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -198,7 +202,8 @@
   .wk[data-print] body {
     margin: 0;
   }
-  /* pages always print upright (the contents numbers are worked out for upright pages) */
+  /* upright unless the reader chose Sideways in the Print pop-up: js/features/print.js then adds
+     "@page { size: landscape }" after this (the contents numbers are worked out for the pages chosen) */
   @page {
     size: portrait;
   }

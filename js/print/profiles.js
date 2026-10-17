@@ -3,8 +3,10 @@
 // heading) are set by the print styles (css/03-menus-print-view.css); this file says how each script may
 // be adjusted from there to fit the paper, so that lines stay whole and side by side stays in step.
 //
-// To print a new language or script, give it an entry in SCRIPTS (and its fonts in css/00-fonts.css).
-// Nothing else needs tuning: the fitting measures the actual text, in the reader's font, on the paper size.
+// To print a new language or script, nothing here is required: the fitting measures the actual text, in the
+// reader's font, on the paper as it is turned, and works out each line's script from its letters (scriptOf).
+// A script with no entry in SCRIPTS is set at its styled size and may shrink as much as the others. Give it
+// an entry only when npm run print:audit ("font sizes") shows it looks larger or smaller than the others.
 
 // Each script the printed text can be in:
 //   size:   its size against the print styles' size for that line (1 = as styled), in the standard font.
@@ -32,12 +34,26 @@ export function sizeOf(sc, fnt) {
   return (sc.font && sc.font[fnt]) || sc.size;
 }
 
-// Which script a printed line is in. Lines are marked lang="mr" (the original, in whichever letters it is
-// shown) or lang="en"; data-scr on <html> says which letters the original is shown in (js/render.js).
-export function scriptOf(lang, scr) {
-  if (lang === "en") return "latn";
-  return scr === "kn" ? "knda" : "deva";
+// Which script a printed text is in, from its letters: each Indian script has its own block of 128 Unicode
+// letters, in this order from U+0900 (Devanagari) to U+0D7F (Malayalam), and anything else counts as Latin.
+// The script with the most letters wins (an English word inside Kannada text does not change it).
+var BLOCKS = ["deva", "beng", "guru", "gujr", "orya", "taml", "telu", "knda", "mlym"];
+export function scriptOf(text) {
+  var n = {},
+    top = "latn";
+  n.latn = 0;
+  for (var i = 0; i < text.length; i++) {
+    var c = text.charCodeAt(i),
+      k = c >= 0x900 && c < 0xd80 ? BLOCKS[(c - 0x900) >> 7] : /[A-Za-z\u00c0-\u024f\u1e00-\u1eff]/.test(text[i]) ? "latn" : "";
+    if (!k) continue;
+    n[k] = (n[k] || 0) + 1;
+    if (n[k] > n[top]) top = k;
+  }
+  return top;
 }
+
+// A script with no entry above
+export var OTHER = { size: 1, minFit: 0.85 };
 
 export var LAYOUT = {
   // Side by side: the share of the width the original's column may take. For each piece, the fitting tries
@@ -45,9 +61,10 @@ export var LAYOUT = {
   // (One share for a whole piece, so its dividing rule runs straight down every page of it.)
   side: { min: 0.36, max: 0.62, step: 0.01 },
   // A line counts as fitting only with this much to spare. The page-sized copy the text is measured in
-  // predicts the paper to within 1% (checked against Chrome's PDFs: a line measured at 99% of its column
-  // never wrapped on paper, one at 101% always did).
-  margin: 0.99,
+  // predicts the paper to within 1% on one computer (checked against Chrome's PDFs: a line measured at 99% of its column
+  // never wrapped on paper, one at 101% always did), and computers differ by about as much again:
+  // GitHub's test machine wrapped lines measured at 99% here, so 2% is kept spare.
+  margin: 0.98,
   // Pages: a piece is set smaller as a whole (to no less than this) when that makes it take fewer pages:
   // when it would spill a little onto another page, or its stanzas are too big to share a page.
   page: { minZoom: 0.8 },
