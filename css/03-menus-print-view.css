@@ -472,6 +472,9 @@ h2[tabindex="-1"]:focus {
     font-size: 13pt;
     line-height: 1.45;
     color: #000;
+    /* no font hinting: the paper then takes the same letter widths on every computer, the ones the fitting
+       measures (js/print/fit.js); hinted, Linux printed words up to 3% wider or narrower, by its font settings */
+    text-rendering: geometricPrecision;
   }
   #pv .pvh {
     font: 400 22pt/1.2 var(--head);
