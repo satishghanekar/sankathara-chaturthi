@@ -505,15 +505,22 @@ h2[tabindex="-1"]:focus {
   border-color: var(--rule);
   color: var(--ink);
 }
+/* the card is centred while it fits; taller than the screen (a phone on its side, or the iPhone's Open in
+   Safari state), it starts at the top and the pop-up scrolls */
 #prm {
   position: fixed;
   inset: 0;
   z-index: 20;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   padding: 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+#prm > .qrc {
+  margin-block: auto;
 }
 #prm[hidden] {
   display: none;

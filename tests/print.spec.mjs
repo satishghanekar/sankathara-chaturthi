@@ -444,6 +444,19 @@ test("print pop-up: a saved Landscape choice is kept @chromium-only", async ({ p
   await expect(page.locator("#pr2")).toBeFocused();
 });
 
+// A card taller than the screen (a phone on its side, in the iPhone's Open in Safari state) starts at the top and
+// the pop-up scrolls to Cancel, rather than running off both edges
+test("print pop-up scrolls when taller than the screen @chromium-only", async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await stubPrint(page);
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#prb").click();
+  await page.evaluate(() => ["prw", "prsf", "prcp"].forEach((i) => (document.getElementById(i).hidden = false)));
+  expect(await page.locator("#prm .qrc").evaluate((e) => e.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
+  await page.locator("#prx").scrollIntoViewIfNeeded();
+  await expect(page.locator("#prx")).toBeInViewport();
+});
+
 // Above the choices: the dhrupad setting, which a tap switches (for the printout and the page alike), and the
 // text font (a tap picks another) with a line of the text in it
 test("print pop-up shows the dhrupad and font settings @chromium-only", async ({ page }) => {
