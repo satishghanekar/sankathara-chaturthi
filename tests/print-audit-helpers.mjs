@@ -8,7 +8,9 @@
 //   - a part whose start and end are on different lines broke in the middle of a phrase (an ugly wrap);
 //   - a line that takes more lines than it has segments wrapped (at a preferred break, if no part broke);
 //   - side by side, the two cells of a row ending at different heights are out of step;
-//   - a marker missing from the PDF is text that was not printed.
+//   - a marker missing from the PDF is text that was not printed;
+//   - a part ending past its column (the page's margin, the middle of the page in two columns, or the start of
+//     the cell beside it side by side) ran over: text drawn over its neighbour or off the paper.
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 
 /** Add the line markers; returns what was marked: one entry per printed line. */
@@ -52,7 +54,8 @@ export async function addLineMarkers(page) {
       [...el.childNodes].forEach((c) => {
         if (c.nodeType === 1 && c.tagName === "BR") {
           flush();
-          seg++;
+          // the text's own line breaks start a segment; those the fitting wrote in (.pvfb) count as wraps
+          if (!c.classList.contains("pvfb")) seg++;
         } else if (c.nodeType === 1 && c.classList.contains("zs")) {
           flush();
           parts.push({ zs: c, seg });
@@ -76,36 +79,45 @@ export async function addLineMarkers(page) {
         sid: el.closest(".pvs")?.dataset.sid || "",
         lang: el.closest("[lang]")?.getAttribute("lang") || "",
         cell: side ? (el.classList.contains("pvm") ? "orig" : "en") : "",
+        // the dhrupad above two columns runs across the page
+        across: !!el.closest(".pvref"),
         row: side ? [...pv.querySelectorAll(".pvside tr")].indexOf(tr) : -1,
         text: el.textContent.replace(/\s*(\{\{[^}]*\}\}|\[\[[^\]]*\]\])\s*/g, " ").replace(/\s+/g, " ").trim(),
         parts: parts.length,
         segs: (parts.length ? parts[parts.length - 1].seg : 0) + 1,
         scale,
+        // a line break the fitting wrote in between two words of a phrase (js/print/fit.js) is a mid-phrase break
+        fitMid: el.querySelectorAll("br.pvmid").length,
       });
     });
     return out;
   });
 }
 
-/** Every marker in the PDF: { label: { p: page (from 1), y: points from the top, h: page height } } */
+/** Every marker in the PDF: { label: { p: page (from 1), x, y: points from the left and the top, h, w: page size } } */
 export async function pdfMarks(buf) {
   const doc = await pdfjs.getDocument({ data: new Uint8Array(buf), useSystemFonts: false, verbosity: 0 }).promise;
   const marks = {},
-    pages = [];
+    pages = [],
+    widths = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const pg = await doc.getPage(i),
-      h = pg.view[3];
+      h = pg.view[3],
+      w = pg.view[2];
     pages.push(h);
+    widths.push(w);
     const tc = await pg.getTextContent({ disableCombineTextItems: true });
     for (const it of tc.items) {
-      for (const m of it.str.matchAll(/\{\{([^}]+)\}\}/g)) if (!(m[1] in marks)) marks[m[1]] = { p: i, y: h - it.transform[5], h };
+      for (const m of it.str.matchAll(/\{\{([^}]+)\}\}/g)) if (!(m[1] in marks)) marks[m[1]] = { p: i, x: it.transform[4], y: h - it.transform[5], h, w };
       for (const m of it.str.matchAll(/\[\[([^\]]+)\]\]/g)) if (!(m[1] in marks)) marks["blk:" + m[1]] = { p: i, y: h - it.transform[5], h };
     }
   }
-  return { marks, pageHeights: pages };
+  return { marks, pageHeights: pages, pageWidths: widths };
 }
 
 const TOL = 4; // points: two markers closer than this in height are on the same line
+const MARGIN = (9 / 25.4) * 72; // points: the page's side margins (@page in css/03-menus-print-view.css)
+const OVER = 2; // points: how far past its column a line may end before it counts as running over
 
 /** Group heights into lines: the number of distinct lines among [{p, y}] */
 function lineCount(pts) {
@@ -120,10 +132,10 @@ function lineCount(pts) {
 }
 
 /**
- * Judge the printout from the markers. Returns the numbers for the report and a list of findings,
- * each { kind, sid, text, … }.
+ * Judge the printout from the markers (mode: the print layout, "two", "one" or "side"). Returns the numbers
+ * for the report and a list of findings, each { kind, sid, text, … }.
  */
-export function auditLines(lines, { marks, pageHeights }) {
+export function auditLines(lines, { marks, pageHeights }, mode) {
   const find = [];
   const L = lines.map((ln) => {
     const pts = [];
@@ -142,9 +154,27 @@ export function auditLines(lines, { marks, pageHeights }) {
     const used = lineCount(pts),
       bottom = pts.reduce((m, q) => (q.p > m.p || (q.p === m.p && q.y > m.y) ? q : m), { p: 0, y: 0 });
     if (missing) find.push({ kind: "text missing from the PDF", sid: ln.sid, text: ln.text });
+    broke += ln.fitMid || 0;
     if (broke) find.push({ kind: "line broken mid-phrase", sid: ln.sid, text: ln.text, lines: used });
-    return { ...ln, used, broke, bottom };
+    // how far the line reaches across the page, and where it starts
+    const xs = pts.filter((q) => q.x != null);
+    const left = xs.length ? Math.min(...xs.map((q) => q.x)) : 0,
+      right = xs.length ? Math.max(...xs.map((q) => q.x)) : 0,
+      page = xs[0] || { w: 0 };
+    return { ...ln, used, broke, bottom, left, right, pw: page.w, pts };
   });
+  // running over: past the page's margin, past the middle of the page (two columns), or into the next cell
+  let overflow = 0;
+  const over = (l, limit, where) => {
+    if (l.right <= limit + OVER) return;
+    overflow++;
+    find.push({ kind: "runs past its column", sid: l.sid, text: l.text, lines: `${where}, ${Math.round(l.right - limit)}pt over` });
+  };
+  for (const l of L) {
+    if (!l.pw) continue;
+    if (mode === "two" && !l.across) over(l, l.left < l.pw / 2 ? l.pw / 2 : l.pw - MARGIN, l.left < l.pw / 2 ? "left column" : "right column");
+    else over(l, l.pw - MARGIN, "page margin");
+  }
   // side by side: the two cells of a row should take the same number of lines
   let outOfStep = 0;
   const rows = {};
@@ -152,19 +182,24 @@ export function auditLines(lines, { marks, pageHeights }) {
   for (const r of Object.values(rows)) {
     if (r.length !== 2) continue;
     const [a, b] = r;
+    // side by side: the left cell must end before the right one starts
+    const [lc, rc] = a.left <= b.left ? [a, b] : [b, a];
+    if (lc.pw && rc.right > rc.left) over(lc, rc.left, "into the cell beside it");
     if (a.used !== b.used) {
       outOfStep++;
       const longer = a.used > b.used ? a : b;
       find.push({ kind: "side by side out of step", sid: a.sid, text: longer.text, lines: `${a.cell} ${a.used} / ${b.cell} ${b.used}` });
     }
   }
-  // pages: how full each page is before a forced break inside a piece (a mostly empty page is wasted paper)
+  // pages: how full each page is before a forced break inside a piece (a mostly empty page is wasted paper),
+  // from where its blocks and its lines land (a block taller than a page fills the page its lines run down)
   const blk = Object.entries(marks).filter(([k]) => k.startsWith("blk:"));
   const byPiece = {};
   for (const [k, v] of blk) {
     const sid = k.slice(4).split(":")[0];
     (byPiece[sid] = byPiece[sid] || []).push(v);
   }
+  for (const l of L) if (byPiece[l.sid]) byPiece[l.sid].push(...l.pts);
   const lowFill = [];
   for (const [sid, pts] of Object.entries(byPiece)) {
     const pgs = [...new Set(pts.map((q) => q.p))].sort((a, b) => a - b);
@@ -184,6 +219,7 @@ export function auditLines(lines, { marks, pageHeights }) {
     brokeMidPhrase: L.filter((l) => l.broke).length,
     missing: L.filter((l) => find.some((f) => f.kind === "text missing from the PDF" && f.text === l.text)).length,
     outOfStep,
+    overflow,
     lowFill: lowFill.length,
     resized: scales.length,
     smallest: scales.length ? Math.round(Math.min(...scales) * 100) : 100,

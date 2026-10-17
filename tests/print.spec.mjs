@@ -61,10 +61,11 @@ for (const L of LAYOUTS)
         expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${L.name}-${fnt}-${P.paper}.json`]);
         // the lines themselves (js/print/fit.js): nothing lost, side by side in step, lines broken mid-phrase only
         // where a line is too long even at its smallest (npm run print:audit shows every case)
-        const a = auditLines(r.marked, await pdfMarks(r.pdf.buf));
+        const a = auditLines(r.marked, await pdfMarks(r.pdf.buf), L.mode);
         // a failure names the lines, so it can be understood from the log alone (CI keeps no PDFs)
         const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
         expect(a.missing, which("text missing")).toBe(0);
+        expect(a.overflow, which("runs past its column")).toBe(0);
         expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
         expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
       });
@@ -80,9 +81,10 @@ for (const L of LAYOUTS)
       expect(r.pdf.landscape, "the PDF pages are sideways").toBe(true);
       const summary = checkPrintout(r, P.paper);
       expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
-      const a = auditLines(r.marked, await pdfMarks(r.pdf.buf));
+      const a = auditLines(r.marked, await pdfMarks(r.pdf.buf), L.mode);
       const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
       expect(a.missing, which("text missing")).toBe(0);
+      expect(a.overflow, which("runs past its column")).toBe(0);
       expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
       expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
     });
@@ -324,7 +326,7 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
     const page = await context.newPage();
     await stubPrint(page);
-    await openSite(page, SETUPS.marathi, { sideways: true });
+    await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
     await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#proe")).toHaveText("upright");
@@ -348,8 +350,9 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
   }
 });
 
-// Sideways is held back (js/core/features.js, FEAT_SW): no choice in the pop-up, and a saved Sideways prints upright
-test("print pop-up: upright pages only while Sideways is held back @chromium-only", async ({ page }) => {
+// Sideways is released (js/core/features.js, FEAT_SW): every reader is offered the choice, and a saved
+// Sideways is kept from one visit to the next
+test("print pop-up: a saved Sideways choice is kept @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, SETUPS.marathi);
   await page.evaluate(() => {
@@ -360,13 +363,14 @@ test("print pop-up: upright pages only while Sideways is held back @chromium-onl
   await page.reload();
   await page.locator("#prb").click();
   await expect(page.locator("#pr1")).toBeVisible();
-  await expect(page.locator(".pro")).toBeHidden();
-  await expect(page.locator("#proe")).toHaveText("upright");
+  await expect(page.locator(".pro")).toBeVisible();
+  await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#proe")).toHaveText("sideways");
   const sizes = await page.evaluate(() => {
     const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
     return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
   });
-  expect(sizes.pop()).toBe("portrait");
+  expect(sizes.pop()).toBe("landscape");
 });
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {
