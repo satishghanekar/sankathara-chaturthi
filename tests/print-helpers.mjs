@@ -161,7 +161,8 @@ export async function printOnce(browser, { prefs, choice, mode, paper, locale, s
   const page = await context.newPage();
   const errors = [];
   await stubPrint(page);
-  await openSite(page, prefs, { errors });
+  // upright pages unless the test says otherwise (por: "land" sideways, "" each layout on its best page)
+  await openSite(page, { por: "up", ...prefs }, { errors });
   // What a reader sees on screen, for the completeness check (folded pieces opened for the count)
   const onScreen = await page.evaluate(() => [...document.querySelectorAll("section.ash")].map((s) => s.id));
   await printFromButton(page, choice);
