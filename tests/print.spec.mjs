@@ -458,7 +458,7 @@ test("print pop-up scrolls when taller than the screen @chromium-only", async ({
 });
 
 // Above the choices: the dhrupad setting, which a tap switches (for the printout and the page alike), and the
-// text font (a tap picks another) with a line of the text in it
+// printout's font (a tap picks another, for the printout only) with a line of the text in it
 test("print pop-up shows the dhrupad and font settings @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, { ...SETUPS.marathi, fnt: "classic" });
@@ -467,11 +467,22 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
   await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Classic", { useInnerText: true });
   await expect(page.locator("#prfs")).toContainText("सुखकर्ता");
   expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Classic");
-  // a font picked here is the reading font too, and the sample line follows it
+  // a font picked here is the printout's only: the sample line follows it, the reading page keeps its own,
+  // and the page takes it just while it prints
   await page.locator('#prfn [data-v="bold"]').click();
   await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Bold", { useInnerText: true });
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).fnt)).toBe("bold");
-  await expect.poll(() => page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).not.toContain("SC Classic");
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
+  expect([prefs.pfn, prefs.fnt]).toEqual(["bold", "classic"]);
+  expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Bold");
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-font"))).toBe("classic");
+  expect(
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("beforeprint"));
+      const f = document.documentElement.getAttribute("data-font");
+      window.dispatchEvent(new Event("afterprint"));
+      return [f, document.documentElement.getAttribute("data-font")];
+    }),
+  ).toEqual(["bold", "classic"]);
   await page.locator("#prdh").click();
   await expect(page.locator("#prdv")).toHaveText("After every verse", { useInnerText: true });
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).ref)).toBe(0);
