@@ -62,10 +62,10 @@ export var LAYOUT = {
   side: { min: 0.36, max: 0.62, step: 0.01 },
   // A line counts as fitting only with this much to spare. The page-sized copy the text is measured in
   // predicts the paper to within 1% on one computer (checked against Chrome's PDFs: a line measured at 99% of its column
-  // never wrapped on paper, one at 101% always did), and computers differ by about as much again:
-  // GitHub's test machine wrapped lines measured at 98% to 99% here (Kannada side by side, Bold and Handwritten,
-  // with the same browser and the same web fonts), so 3% is kept spare.
-  margin: 0.97,
+  // never wrapped on paper, one at 101% always did), so 2% is kept spare. (The print styles turn font hinting off,
+  // text-rendering: geometricPrecision: with it on, Linux printed the same words up to 3% wider or narrower,
+  // depending on the computer's font settings, while the copy measured the same everywhere.)
+  margin: 0.98,
   // Pages: a piece is set smaller as a whole (to no less than this) when that makes it take fewer pages:
   // when it would spill a little onto another page, or its stanzas are too big to share a page.
   page: { minZoom: 0.8 },
