@@ -8,6 +8,7 @@ import { fit } from "../print/fit.js";
 import { LAYOUT } from "../print/profiles.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
+import { CHOICE } from "../print/profiles.js";
 
 export function init() {
   // Print: single column (as on screen), two columns, or Marathi | English side by side.
@@ -275,7 +276,7 @@ export function init() {
             // first, then its right one. A short piece is a single block.
             // estimated printed lines per column in one block, and how much longer a line may be than on an
             // upright page, for the paper as the reader turned it
-            var sh = sheet(),
+            var sh = sheet(mode),
               CAP = Math.round((22 * (sh[1] - 23)) / (PAPER[1] - 23)),
               wide = (sh[0] - 18) / (PAPER[0] - 18);
             function gl(g) {
@@ -367,39 +368,61 @@ export function init() {
     var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || ""),
       PAPER = LTR ? [215.9, 279.4] : [210, 297], // upright, in mm
       pcache = {}; // page plans laid out ahead, by pkey()
-    // the sheet as it prints, [width, height] in mm
-    function sheet() {
-      return land() ? [PAPER[1], PAPER[0]] : PAPER;
+    // What the pop-up recommends for what is printed (CHOICE in js/print/profiles.js): one language, or both
+    function choice() {
+      return CHOICE[P.lang === "both" ? "both" : "one"];
     }
-    // sideways pages: chosen in the pop-up, and the choice released (FEAT_SW)
-    function land() {
-      return FEAT_SW && P.por === "land";
+    // Sideways pages for a layout ("two", "one" or "side"): as the reader picked in the pop-up (P.por "up"
+    // or "land"), or else the way that layout prints best; upright only while Sideways is held back (FEAT_SW)
+    function land(mode) {
+      if (!FEAT_SW) return false;
+      if (P.por) return P.por === "land";
+      return choice().sheet[mode] === "land";
+    }
+    // the sheet as it prints, [width, height] in mm
+    function sheet(mode) {
+      return land(mode) ? [PAPER[1], PAPER[0]] : PAPER;
     }
     function pkey(mode) {
-      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, land()].join("|");
+      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, land(mode)].join("|");
     }
-    // Upright or Sideways: the browser is told with @page (Chrome, Edge and Firefox follow it; Safari
-    // keeps the sheet the reader picks in its dialog, so the pop-up tells them to pick Landscape there)
+    // The page as it prints: the browser is told with @page, set as each printout is made (Chrome, Edge and
+    // Firefox follow it; Safari keeps the sheet the reader picks in its dialog, so the pop-up tells them to
+    // pick Landscape there)
     var pst = document.createElement("style");
     pst.media = "print";
     document.head.appendChild(pst);
-    function orient() {
-      var land = sheet() !== PAPER;
-      pst.textContent = land ? "@page { size: landscape }" : "";
-      document.getElementById("pou").setAttribute("aria-pressed", String(!land));
-      document.getElementById("pol").setAttribute("aria-pressed", String(land));
-      document.getElementById("prom").textContent = land ? "आडव्या" : "उभ्या";
-      document.getElementById("proe").textContent = land ? "sideways" : "upright";
-      document.getElementById("prl").hidden = !(land && root.classList.contains("wk"));
+    function setPage(mode) {
+      pst.textContent = land(mode) ? "@page { size: landscape }" : "";
     }
-    [["pou", ""], ["pol", "land"]].forEach(function (o) {
+    // Upright / Sideways in the pop-up: neither pressed (each layout on its best page), or the one the reader
+    // picked, for every layout; a second tap on it goes back to each layout's best
+    function orient() {
+      var o = FEAT_SW ? P.por : "up",
+        any = [b1, b2].some(function (b) {
+          return !b.hidden && land(b.getAttribute("data-mode"));
+        });
+      document.getElementById("pou").setAttribute("aria-pressed", String(o === "up"));
+      document.getElementById("pol").setAttribute("aria-pressed", String(o === "land"));
+      document.getElementById("prom").textContent = o === "land" ? "आडव्या" : o === "up" ? "उभ्या" : "प्रत्येक पर्यायावर दिलेल्या";
+      document.getElementById("proe").textContent = o === "land" ? "sideways" : o === "up" ? "upright" : "turned as each choice says";
+      document.getElementById("prl").hidden = !(any && root.classList.contains("wk"));
+      // each choice says the page it prints on, and the one that prints best is marked Recommended
+      var M = P.ui === "mr";
+      [b1, b2].forEach(function (b) {
+        var m = b.getAttribute("data-mode"),
+          sub = b.querySelector(".prsub");
+        if (!m || !sub) return;
+        sub.textContent = (land(m) ? (M ? "आडवे पान" : "Sideways pages") : M ? "उभे पान" : "Upright pages") + (m === choice().best ? (M ? " · शिफारस" : " · Recommended") : "");
+      });
+    }
+    [["pou", "up"], ["pol", "land"]].forEach(function (o) {
       document.getElementById(o[0]).onclick = function () {
-        P.por = o[1];
+        P.por = P.por === o[1] ? "" : o[1];
         save();
         orient();
       };
     });
-    orient();
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
       if (pcss.t) return pcss.t;
@@ -431,7 +454,7 @@ export function init() {
       // Safari (macOS 26, from Satish's PDFs) prints everything about 16/15 larger than Chrome, so a
       // page holds less: lay it out on a page that much smaller
       var sf = root.classList.contains("wk") ? 15 / 16 : 1,
-        sh = sheet();
+        sh = sheet(mode);
       f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((sh[0] - 18) * mm * sf - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (sh[1] - 23) * mm * sf + "px";
       [].forEach.call(root.attributes, function (a) {
         if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
@@ -849,6 +872,7 @@ export function init() {
       busy = true;
       if (mode === "as") mode = "one";
       wm = mode;
+      setPage(mode);
       build(mode);
       var k = pkey(mode);
       // laid out ahead (warm): print straight away
@@ -876,29 +900,32 @@ export function init() {
         l1 = shared.LEAD === "en" ? en : or,
         l2 = shared.LEAD === "en" ? or : en,
         tl = " (" + (P.lang === "en" ? en : or) + ")";
-      if (P.lang === "both") {
-        b1.textContent = (M ? "शेजारी शेजारी: " : "Side by side: ") + l1 + " | " + l2;
-        b1.onclick = function () {
-          go("side");
-        };
-        b2.textContent = M ? "वर " + l1 + ", खाली " + l2 : "Stacked: " + l1 + " above " + l2;
-        b2.onclick = function () {
-          go("as");
-        };
-      } else {
-        b1.textContent = (M ? "दोन स्तंभ" : "Two columns") + tl;
-        b1.onclick = function () {
-          go("two");
-        };
-        b2.textContent = (M ? "एक स्तंभ" : "Single column") + tl;
-        b2.onclick = function () {
-          go("as");
+      // a choice: its layout's name, and under it the page it prints on (filled in by orient)
+      function opt(b, mode, name) {
+        b.textContent = name;
+        var sub = document.createElement("span");
+        sub.className = "prsub";
+        b.appendChild(sub);
+        b.setAttribute("data-mode", mode);
+        b.onclick = function () {
+          go(mode === "one" ? "as" : mode);
         };
       }
+      if (P.lang === "both") {
+        opt(b1, "side", (M ? "शेजारी शेजारी: " : "Side by side: ") + l1 + " | " + l2);
+        opt(b2, "one", M ? "वर " + l1 + ", खाली " + l2 : "Stacked: " + l1 + " above " + l2);
+      } else {
+        opt(b1, "two", (M ? "दोन स्तंभ" : "Two columns") + tl);
+        opt(b2, "one", (M ? "एक स्तंभ" : "Single column") + tl);
+      }
+      // the recommended choice comes first, and has the focus
+      var rec = b1.getAttribute("data-mode") === choice().best ? b1 : b2;
+      rec.parentNode.insertBefore(rec, rec.parentNode.firstChild);
+      orient();
       document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
       ovPush();
       pm.hidden = false;
-      b1.focus();
+      rec.focus();
     };
     function pmClose() {
       unready();
@@ -918,6 +945,7 @@ export function init() {
     window.addEventListener("beforeprint", function () {
       seen = true;
       if (!busy) {
+        setPage("one");
         build("one");
         if (pcache[pkey("one")]) pnums(pcache[pkey("one")]);
         root.setAttribute("data-print", "one");
