@@ -360,16 +360,18 @@ export function init() {
     var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || ""),
       PAPER = LTR ? [215.9, 279.4] : [210, 297], // upright, in mm
       pcache = {}; // page plans laid out ahead, by pkey()
-    // What the pop-up recommends for what is printed (CHOICE in js/print/profiles.js): one language, or both
+    // The pop-up's two choices, Portrait and Landscape, for what is printed (CHOICE in js/print/profiles.js):
+    // one language in a column, upright or sideways; both languages stacked on upright pages, or side by side on
+    // sideways ones
     function choice() {
       return CHOICE[P.lang === "both" ? "both" : "one"];
     }
-    // Sideways pages for a layout ("one" or "side"): as the reader picked in the pop-up (P.por "up"
-    // or "land"), or else the way that layout prints best; upright only while Sideways is held back (FEAT_SW)
+    // Sideways pages for a layout ("one" or "side"): with both languages, side by side; with one, as the reader
+    // last chose in the pop-up (P.por), or its default; upright only while Landscape is held back (FEAT_SW)
     function land(mode) {
       if (!FEAT_SW) return false;
-      if (P.por) return P.por === "land";
-      return choice().sheet[mode] === "land";
+      if (P.lang === "both") return mode === "side";
+      return (P.por || choice().page) === "land";
     }
     // the sheet as it prints, [width, height] in mm
     function sheet(mode) {
@@ -387,34 +389,23 @@ export function init() {
     function setPage(mode) {
       pst.textContent = land(mode) ? "@page { size: landscape }" : "";
     }
-    // Upright / Sideways in the pop-up: neither pressed (each layout on its best page), or the one the reader
-    // picked, for every layout; a second tap on it goes back to each layout's best
-    function orient() {
-      var o = FEAT_SW ? P.por : "up",
-        any = [b1, b2].some(function (b) {
-          return !b.hidden && land(b.getAttribute("data-mode"));
-        });
-      document.getElementById("pou").setAttribute("aria-pressed", String(o === "up"));
-      document.getElementById("pol").setAttribute("aria-pressed", String(o === "land"));
-      document.getElementById("prom").textContent = o === "land" ? "आडव्या" : o === "up" ? "उभ्या" : "प्रत्येक पर्यायावर दिलेल्या";
-      document.getElementById("proe").textContent = o === "land" ? "sideways" : o === "up" ? "upright" : "turned as each choice says";
-      document.getElementById("prl").hidden = !(any && root.classList.contains("wk"));
-      // each choice says the page it prints on, and of two, the one that prints best is marked Recommended
-      var M = P.ui === "mr";
-      [b1, b2].forEach(function (b) {
-        var m = b.getAttribute("data-mode"),
-          sub = b.querySelector(".prsub");
-        if (!m || !sub) return;
-        sub.textContent = (land(m) ? (M ? "आडवे पान" : "Sideways pages") : M ? "उभे पान" : "Upright pages") + (m === choice().best && P.lang === "both" ? (M ? " · शिफारस" : " · Recommended") : "");
-      });
+    // Above the choices: the dhrupad setting (a tap switches it, as the dhrupad button does) and the text font,
+    // with a line of the text in it
+    function rows() {
+      var dv = document.getElementById("prdv"),
+        fb = document.querySelector('#sfn [data-v="' + P.fnt + '"]'),
+        ln = document.querySelector("#a1 .item:not(.dh) .verse ." + (P.lang === "en" ? "en" : "mr") + " p");
+      dv.innerHTML = P.ref ? lbl("एकदाच", "Once") : lbl("प्रत्येक कडव्यानंतर", "After every verse");
+      document.getElementById("prfv").innerHTML = fb ? fb.innerHTML : "";
+      var fs = document.getElementById("prfs");
+      fs.textContent = ln ? ln.textContent.replace(/\s+/g, " ").trim() : "";
+      // (in the language of the line, not as .mr or .en: those follow the menus' language here)
+      fs.setAttribute("lang", P.lang === "en" ? "en" : P.ind === "kn" ? "kn" : "mr");
     }
-    [["pou", "up"], ["pol", "land"]].forEach(function (o) {
-      document.getElementById(o[0]).onclick = function () {
-        P.por = P.por === o[1] ? "" : o[1];
-        save();
-        orient();
-      };
-    });
+    document.getElementById("prdh").onclick = function () {
+      document.getElementById("rb").click();
+      rows();
+    };
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
       if (pcss.t) return pcss.t;
@@ -735,8 +726,10 @@ export function init() {
       standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
     // the pop-up: the layout choices (ready false), or Print now (ready true)
     function pmMode(ready) {
-      b1.hidden = b2.hidden = pn.hidden = ready;
-      po.hidden = ready || !FEAT_SW;
+      b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
+      if (!FEAT_SW) b2.hidden = true;
+      // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
+      document.getElementById("prl").hidden = !(root.classList.contains("wk") && (ready ? land(wm) : !b2.hidden));
       bgo.hidden = !ready;
       pw.hidden = pv2.hidden = bsf.hidden = bcp.hidden = true;
     }
@@ -855,35 +848,36 @@ export function init() {
         or = (NAMES[P.ind] || NAMES.mr)[M ? 0 : 1],
         l1 = shared.LEAD === "en" ? en : or,
         l2 = shared.LEAD === "en" ? or : en,
-        tl = " (" + (P.lang === "en" ? en : or) + ")";
-      // a choice: its layout's name, and under it the page it prints on (filled in by orient)
-      function opt(b, mode, name) {
-        b.textContent = name;
-        var sub = document.createElement("span");
-        sub.className = "prsub";
-        b.appendChild(sub);
+        tl = P.lang === "en" ? en : or;
+      // a choice: its page (Portrait or Landscape), and under it what prints on it
+      function opt(b, page, mode, sub) {
+        b.textContent = page === "land" ? (M ? "आडवे पान" : "Landscape") : M ? "उभे पान" : "Portrait";
+        var e = document.createElement("span");
+        e.className = "prsub";
+        e.textContent = sub;
+        b.appendChild(e);
         b.setAttribute("data-mode", mode);
+        b.setAttribute("data-page", page);
         b.onclick = function () {
+          P.por = page;
+          save();
           go(mode === "one" ? "as" : mode);
         };
       }
       if (P.lang === "both") {
-        opt(b1, "side", (M ? "शेजारी शेजारी: " : "Side by side: ") + l1 + " | " + l2);
-        opt(b2, "one", M ? "वर " + l1 + ", खाली " + l2 : "Stacked: " + l1 + " above " + l2);
+        opt(b1, "up", "one", M ? "वर " + l1 + ", खाली " + l2 : l1 + " above " + l2);
+        opt(b2, "land", "side", M ? "शेजारी शेजारी: " + l1 + " | " + l2 : "Side by side: " + l1 + " | " + l2);
       } else {
-        // one language: a single column, the one layout offered
-        opt(b1, "one", (M ? "एक स्तंभ" : "Single column") + tl);
-        b2.hidden = true;
-        b2.removeAttribute("data-mode");
+        opt(b1, "up", "one", tl);
+        opt(b2, "land", "one", tl);
       }
-      // the recommended choice comes first, and has the focus
-      var rec = b1.getAttribute("data-mode") === choice().best ? b1 : b2;
-      rec.parentNode.insertBefore(rec, rec.parentNode.firstChild);
-      orient();
+      b1.parentNode.insertBefore(b1, b2);
+      rows();
       document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
       ovPush();
       pm.hidden = false;
-      rec.focus();
+      // the focus: the page last chosen for what is printed, or its default
+      ((P.lang === "both" ? (P.por || choice().page) : land("one") ? "land" : "up") === "land" && !b2.hidden ? b2 : b1).focus();
     };
     function pmClose() {
       unready();
