@@ -27,6 +27,8 @@ const LAYOUTS = [
   { name: "both-stacked", setup: "both", choice: "pr2", mode: "one" },
   { name: "kannada-side-by-side", setup: "kannada-both", choice: "pr1", mode: "side" },
 ];
+// iPhone 13 emulation in Chromium (the device entry names WebKit as its browser, which newContext does not take)
+const { defaultBrowserType: _bt, ...IPHONE } = devices["iPhone 13"];
 const FONTS = ["std", "classic", "bold", "hand"];
 // Letter is chosen for US / Canada / Mexico / Philippines, A4 everywhere else (see LTR in js/features/print.js)
 const PAPERS = [
@@ -143,6 +145,50 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await expect(page.locator("#prm")).toBeHidden();
   expect(await page.evaluate(() => window.__printed)).toBe(0);
 });
+
+// iPhone: Safari opens the print dialog only in answer to a tap, and laying the print view out takes longer
+// than a tap counts for, so window.print() is quietly ignored (no beforeprint). The pop-up then offers
+// Print now, whose own tap prints. In the Home Screen app, where even that may not open it, it says so.
+for (const standalone of [false, true]) {
+  test(`iPhone: an ignored print offers Print now${standalone ? " (Home Screen app)" : ""} @chromium-only`, async ({ browser }) => {
+    const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+    const page = await context.newPage();
+    await page.addInitScript((sa) => {
+      if (sa) Object.defineProperty(navigator, "standalone", { value: true });
+      window.__printed = 0;
+      // the first call is ignored, as iOS does once the tap has expired; a later one opens the dialog,
+      // except in the Home Screen app
+      window.print = () => {
+        if (window.__printed++ && !sa) dispatchEvent(new Event("beforeprint"));
+      };
+    }, standalone);
+    await openSite(page, SETUPS.english);
+    await page.locator("#prb").click();
+    await page.locator("#pr2").click();
+    await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator("#pr1")).toBeHidden();
+    await expect(page.locator("#prgo")).toBeFocused();
+    await page.locator("#prgo").click();
+    expect(await page.evaluate(() => window.__printed)).toBe(2);
+    if (standalone) {
+      await expect(page.locator("#prw")).toBeVisible();
+      await expect(page.locator("#prgo")).toBeHidden();
+      await page.locator("#prx").click();
+      expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
+    } else {
+      await page.waitForTimeout(1300);
+      await expect(page.locator("#prm")).toBeHidden();
+      expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("one");
+    }
+    // the next Print shows the layout choices again
+    await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+    await page.locator("#prb").click();
+    await expect(page.locator("#pr1")).toBeVisible();
+    await expect(page.locator("#prgo")).toBeHidden();
+    await expect(page.locator("#prw")).toBeHidden();
+    await context.close();
+  });
+}
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {
   await stubPrint(page);

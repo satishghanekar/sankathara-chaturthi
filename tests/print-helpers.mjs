@@ -22,12 +22,16 @@ const DIGITS = { "०": 0, "१": 1, "२": 2, "३": 3, "४": 4, "५": 5, "�
 /** "१२" or "೧೨" or "12" → 12 */
 export const toInt = (s) => Number(String(s).replace(/./g, (c) => (c in DIGITS ? DIGITS[c] : c)));
 
-/** Stub window.print before the site loads; calls are counted in window.__printed. */
+/**
+ * Stub window.print before the site loads; calls are counted in window.__printed. Like a real print,
+ * it fires beforeprint (the dialog opened), so the site knows the print was not ignored.
+ */
 export async function stubPrint(page) {
   await page.addInitScript(() => {
     window.__printed = 0;
     window.print = () => {
       window.__printed++;
+      dispatchEvent(new Event("beforeprint"));
     };
   });
 }
@@ -40,6 +44,10 @@ export async function printFromButton(page, choice) {
   await page.locator("#prb").click();
   await page.locator("#prm").waitFor({ state: "visible" });
   await page.locator("#" + choice).click();
+  // Safari (class "wk"): when laying out took longer than a tap counts for, the pop-up asks for one more
+  // tap (Print now), as an iPhone reader sees it
+  await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
+  if (await page.locator("#prgo").isVisible()) await page.locator("#prgo").click();
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
   // From here on the page is styled as the printer sees it, so "shown" means shown on paper
   await page.emulateMedia({ media: "print" });

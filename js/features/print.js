@@ -17,7 +17,11 @@ export function init() {
       pv = document.getElementById("pv"),
       b1 = document.getElementById("pr1"),
       b2 = document.getElementById("pr2"),
-      busy = false;
+      bgo = document.getElementById("prgo"),
+      pw = document.getElementById("prw"),
+      pn = pm.querySelector(".prn:not(#prw)"),
+      busy = false,
+      seen = false; // the browser has started printing (beforeprint) since the last window.print()
     function lbl(m, e) {
       return '<span class="mr">' + m + '</span><span class="en" lang="en">' + e + "</span>";
     }
@@ -585,7 +589,55 @@ export function init() {
       warmSoon(2500);
     });
     warmSoon(3000);
+    // ---- Opening the print dialog ----
+    // Safari and every iOS browser open the print dialog only in answer to a tap, and a tap counts for
+    // about a second (through timers; not always through promises). Laying the print view out takes longer
+    // than that on a phone, so window.print() there is quietly ignored. Then the pop-up comes back with
+    // one button, Print now, whose own tap opens the dialog at once (the print view is already laid out).
+    var iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
+      standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    // the pop-up: the layout choices (ready false), or Print now (ready true)
+    function pmMode(ready) {
+      b1.hidden = b2.hidden = pn.hidden = ready;
+      bgo.hidden = !ready;
+      pw.hidden = true;
+    }
+    // print, and if the browser ignored it, offer Print now (or, after a Print now tap, say why)
+    function tryPrint(again) {
+      seen = false;
+      window.print();
+      setTimeout(function () {
+        if (seen || !busy) return;
+        if (!again) return ready();
+        // a tap did not open it either: the iPhone Home Screen app (on some iOS versions) cannot print
+        if (!(iOS && standalone)) return unready();
+        pmMode(true);
+        bgo.hidden = true;
+        pw.hidden = false;
+        ovPush();
+        pm.hidden = false;
+        document.getElementById("prx").focus();
+      }, 1000);
+    }
+    function ready() {
+      pmMode(true);
+      ovPush();
+      pm.hidden = false;
+      bgo.focus();
+    }
+    bgo.onclick = function () {
+      pm.hidden = true;
+      ovDone();
+      tryPrint(true);
+    };
+    // a print view left waiting for Print now (the pop-up closed instead) is put away
+    function unready() {
+      if (!busy) return;
+      busy = false;
+      root.removeAttribute("data-print");
+    }
     function go(mode) {
+      var t0 = Date.now();
       pm.hidden = true;
       ovDone();
       // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
@@ -597,12 +649,16 @@ export function init() {
         pnums(pg);
         if (pg && mode === "one") pcache = { key: pkey("one"), pg: pg };
         root.setAttribute("data-print", mode);
+        // the tap no longer counts: ask for another one rather than have the print quietly ignored
+        if ((iOS || root.classList.contains("wk")) && Date.now() - t0 > 900) return ready();
         setTimeout(function () {
-          window.print();
+          tryPrint(false);
         }, 60);
       });
     }
     document.getElementById("prb").onclick = function () {
+      unready();
+      pmMode(false);
       // the language names follow what is printed: the original's place holds Marathi or Kannada, and with
       // both languages shown the main one comes first (left, or on top)
       var M = P.ui === "mr",
@@ -636,6 +692,7 @@ export function init() {
       b1.focus();
     };
     function pmClose() {
+      unready();
       pm.hidden = true;
       ovDone();
       document.getElementById("prb").focus();
@@ -650,6 +707,7 @@ export function init() {
     // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view,
     // single column: contents, then every piece in the chosen text language, never the home page
     window.addEventListener("beforeprint", function () {
+      seen = true;
       if (!busy) {
         build("one");
         if (pcache.key === pkey("one")) pnums(pcache.pg);
