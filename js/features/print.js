@@ -368,8 +368,22 @@ export function init() {
     function sheet(mode) {
       return land(mode) ? [PAPER[1], PAPER[0]] : PAPER;
     }
+    // The printout's font: picked in the pop-up, else the text font. It is the page's font (data-font) only while
+    // printing, so picking one for the printout leaves the reading page as it is (Satish, 2026-10)
+    var FONTS = ["std", "classic", "bold", "hand"];
+    function pfn() {
+      return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : P.fnt;
+    }
+    function pon(mode) {
+      root.setAttribute("data-print", mode);
+      root.setAttribute("data-font", pfn());
+    }
+    function poff() {
+      root.removeAttribute("data-print");
+      root.setAttribute("data-font", P.fnt);
+    }
     function pkey(mode) {
-      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, land(mode)].join("|");
+      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, pfn(), land(mode)].join("|");
     }
     // The page as it prints: the browser is told with @page, set as each printout is made (Chrome, Edge and
     // Firefox follow it; Safari keeps the sheet the reader picks in its dialog, so the pop-up tells them to
@@ -389,20 +403,29 @@ export function init() {
     fn.onclick = function (e) {
       var b = e.target.closest("button");
       if (!b) return;
-      document.querySelector('#sfn [data-v="' + b.dataset.v + '"]').click();
+      P.pfn = b.dataset.v;
+      save();
       rows();
     };
+    // the sample line in the printout's font (set here: the page's own font rules follow the text font)
+    var FAM = { classic: "SC Classic", bold: "SC Bold", hand: "SC Hand" };
     function rows() {
       var dv = document.getElementById("prdv"),
         ln = document.querySelector("#a1 .item:not(.dh) .verse ." + (P.lang === "en" ? "en" : "mr") + " p");
       dv.innerHTML = P.ref ? lbl("एकदाच", "Once") : lbl("प्रत्येक कडव्यानंतर", "After every verse");
       [].forEach.call(fn.children, function (b) {
-        b.setAttribute("aria-pressed", b.dataset.v === P.fnt ? "true" : "false");
+        b.setAttribute("aria-pressed", b.dataset.v === pfn() ? "true" : "false");
       });
       var fs = document.getElementById("prfs");
       fs.textContent = ln ? ln.textContent.replace(/\s+/g, " ").trim() : "";
       // (in the language of the line, not as .mr or .en: those follow the menus' language here)
       fs.setAttribute("lang", P.lang === "en" ? "en" : P.ind === "kn" ? "kn" : "mr");
+      var f = pfn(),
+        kn = fs.getAttribute("lang") === "kn",
+        base = kn ? '"Noto Sans Kannada", var(--body)' : P.lang === "en" ? "var(--lat)" : "var(--body)";
+      if (f !== "std") base = '"' + (kn ? FAM[f].replace("SC ", "SC Kn ") : FAM[f]) + '", ' + base;
+      fs.style.setProperty("font-family", base, "important");
+      fs.style.setProperty("font-weight", kn && f === "bold" ? "500" : "400", "important");
     }
     document.getElementById("prdh").onclick = function () {
       document.getElementById("rb").click();
@@ -440,9 +463,10 @@ export function init() {
       // page holds less: lay it out on a page that much smaller
       var sf = root.classList.contains("wk") ? 15 / 16 : 1,
         sh = sheet(mode);
-      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((sh[0] - 18) * mm * sf - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (sh[1] - 23) * mm * sf + "px";
+      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((sh[0] - 18) * mm * sf - (pfn() !== "std" ? 16 : 12)) + "px;height:" + (sh[1] - 23) * mm * sf + "px";
       [].forEach.call(root.attributes, function (a) {
-        if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
+        var v = a.name === "data-font" ? pfn() : a.value;
+        if (a.name !== "data-print") at += " " + a.name + '="' + v.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
       });
       document.body.appendChild(f);
       function end(r) {
@@ -769,7 +793,7 @@ export function init() {
     // app goes straight to this step once a layout is chosen.
     function link(mode) {
       var s = {};
-      ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "tr", "por"].forEach(function (k) {
+      ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "pfn", "tr", "por"].forEach(function (k) {
         s[k] = P[k];
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
@@ -836,7 +860,7 @@ export function init() {
     function unready() {
       if (!busy) return;
       busy = false;
-      root.removeAttribute("data-print");
+      poff();
     }
     function go(mode) {
       var t0 = Date.now();
@@ -859,7 +883,7 @@ export function init() {
       function done(pg) {
         pnums(pg);
         if (pg) pcache[k] = pg;
-        root.setAttribute("data-print", mode);
+        pon(mode);
         // the tap no longer counts: ask for another one rather than have the print quietly ignored
         if ((iOS || root.classList.contains("wk")) && Date.now() - t0 > 900) return ready();
         setTimeout(function () {
@@ -931,12 +955,12 @@ export function init() {
         setPage(m);
         build(m);
         if (pcache[pkey(m)]) pnums(pcache[pkey(m)]);
-        root.setAttribute("data-print", m);
+        pon(m);
       }
     });
     window.addEventListener("afterprint", function () {
       busy = false;
-      root.removeAttribute("data-print");
+      poff();
     });
     // Opened by the Home Screen app's Open in Safari (see js/render.js): lay the printout out once the fonts
     // are in, then Print now asks for the tap that Safari needs
