@@ -16,13 +16,11 @@ import { printOnce, checkPrintout, stubPrint, printFromButton, readPrintView, ad
 
 test.describe.configure({ mode: "parallel" });
 
-// The Print pop-up's two choices: Portrait (pr1) and Landscape (pr2). One language prints in a column either
-// way; both languages print stacked on Portrait and side by side on Landscape.
+// The Print pop-up's choices: Portrait (pr1) and Landscape (pr2). One language prints in a column either way;
+// both languages print side by side, on Landscape only (stacked is no longer offered).
 const LAYOUTS = [
   { name: "marathi-single-column", setup: "marathi", choice: "pr1", mode: "one" },
   { name: "english-single-column", setup: "english", choice: "pr1", mode: "one" },
-  { name: "both-stacked", setup: "both", choice: "pr1", mode: "one" },
-  { name: "kannada-stacked", setup: "kannada-both", choice: "pr1", mode: "one" },
 ];
 const SIDEWAYS = [
   { name: "marathi-single-column", setup: "marathi", choice: "pr2", mode: "one" },
@@ -44,7 +42,6 @@ const EXTRAS = [
   { name: "iast-english-single-column", prefs: SETUPS["english-iast"], choice: "pr1", mode: "one" },
   { name: "iast-both-side-by-side", prefs: SETUPS["both-iast"], choice: "pr2", mode: "side" },
   { name: "english-main-side-by-side", prefs: SETUPS["english-main-both"], choice: "pr2", mode: "side" },
-  { name: "english-main-stacked", prefs: SETUPS["english-main-both"], choice: "pr1", mode: "one" },
   { name: "kannada-single-column", prefs: SETUPS.kannada, choice: "pr1", mode: "one" },
   { name: "dhrupad-every-verse-single", prefs: SETUPS["marathi-every-verse"], choice: "pr1", mode: "one" },
   { name: "marathi-menus-single-column", prefs: SETUPS["marathi-menus"], choice: "pr1", mode: "one" },
@@ -168,8 +165,7 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await stubPrint(page);
   await openSite(page, SETUPS.both);
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toContainText("Portrait");
-  await expect(page.locator("#pr1 .prsub")).toHaveText("Marathi above English");
+  await expect(page.locator("#pr1")).toBeHidden();
   await expect(page.locator("#pr2")).toContainText("Landscape");
   await expect(page.locator("#pr2 .prsub")).toHaveText("Side by side: Marathi | English");
   await expect(page.locator("#prq")).toHaveText("Letter");
@@ -348,16 +344,12 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await context.close();
 });
 
-// What the pop-up offers (CHOICE in js/print/profiles.js): Portrait, then Landscape, each saying what prints on
-// it; the focus is on Portrait for one language and on Landscape (side by side) for both, until the reader has
-// chosen a page
-for (const [setup, focused, sub1, sub2] of [
-  ["marathi", "#pr1", "Marathi", "Marathi"],
-  ["english", "#pr1", "English", "English"],
-  ["kannada", "#pr1", "Kannada", "Kannada"],
-  ["both", "#pr2", "Marathi above English", "Side by side: Marathi | English"],
-  ["kannada-both", "#pr2", "Kannada above English", "Side by side: Kannada | English"],
-  ["english-main-both", "#pr2", "English above Marathi", "Side by side: English | Marathi"],
+// What the pop-up offers (CHOICE in js/print/profiles.js): one language, Portrait then Landscape, the focus on
+// Portrait until the reader has chosen a page; both languages, Landscape (side by side) only
+for (const [setup, sub] of [
+  ["marathi", "Marathi"],
+  ["english", "English"],
+  ["kannada", "Kannada"],
 ]) {
   test(`print pop-up offers Portrait and Landscape: ${setup} @chromium-only`, async ({ page }) => {
     await stubPrint(page);
@@ -366,15 +358,39 @@ for (const [setup, focused, sub1, sub2] of [
     await expect(page.locator(".prs button:not([hidden])").first()).toHaveId("pr1");
     await expect(page.locator("#pr1")).toContainText("Portrait");
     await expect(page.locator("#pr2")).toContainText("Landscape");
-    await expect(page.locator("#pr1 .prsub")).toHaveText(sub1);
-    await expect(page.locator("#pr2 .prsub")).toHaveText(sub2);
-    await expect(page.locator(focused)).toBeFocused();
+    await expect(page.locator("#pr1 .prsub")).toHaveText(sub);
+    await expect(page.locator("#pr2 .prsub")).toHaveText(sub);
+    await expect(page.locator("#pr1")).toBeFocused();
+  });
+}
+for (const [setup, sub] of [
+  ["both", "Side by side: Marathi | English"],
+  ["kannada-both", "Side by side: Kannada | English"],
+  ["english-main-both", "Side by side: English | Marathi"],
+]) {
+  test(`print pop-up offers only Landscape side by side: ${setup} @chromium-only`, async ({ page }) => {
+    await stubPrint(page);
+    await openSite(page, { ...SETUPS[setup], por: "up" });
+    await page.locator("#prb").click();
+    await expect(page.locator(".prs button:not([hidden])")).toHaveCount(1);
+    await expect(page.locator("#pr1")).toBeHidden();
+    await expect(page.locator("#pr2")).toContainText("Landscape");
+    await expect(page.locator("#pr2 .prsub")).toHaveText(sub);
+    await expect(page.locator("#pr2")).toBeFocused();
   });
 }
 
+// The browser's own menu (Ctrl/⌘ P) prints what the pop-up offers: both languages side by side, sideways
+test("printing from the browser's menu: both languages print side by side @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, SETUPS.both);
+  await page.evaluate(() => dispatchEvent(new Event("beforeprint")));
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("side");
+  expect(await page.evaluate(() => [...document.querySelectorAll("style[media=print]")].some((e) => /size: landscape/.test(e.textContent)))).toBe(true);
+});
+
 // Each choice prints on its page: Portrait upright, Landscape sideways
 for (const [setup, choice, mode, landscape] of [
-  ["both", "pr1", "one", false],
   ["both", "pr2", "side", true],
   ["marathi", "pr1", "one", false],
   ["marathi", "pr2", "one", true],
