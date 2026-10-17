@@ -490,7 +490,9 @@ export function init() {
         // Measured against Chrome's own PDFs: the frame is 12px narrower than the page (16px with the
         // optional text fonts; printed text runs a little wider, so a near-full line wraps).
         H = hmm * mm - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom),
-        C = H * 0.96,
+        // a page is packed to 96% of its height; Safari to 90%, as its printed pages held up to a tenth less
+        // than its plan in Satish's Safari PDFs (Kannada and both languages, sideways)
+        C = H * (root.classList.contains("wk") ? 0.9 : 0.96),
         plan = {},
         z = {},
         out = { z: z, b: {}, t: {} };
@@ -558,18 +560,12 @@ export function init() {
             z[id] = at;
           }
         }
-        // Safari keeps this plan (step 2 is Chrome's). Satish's Safari PDFs printed the Atharvashirsha in
-        // about 0.79 of the height planned for it, in Marathi, English and Kannada alike, so its contents
-        // numbers were a page out, or its last lines printed alone on a page: here prose is planned at that
-        // height, and one that only just spills onto a page, or only just fills one, is set slightly smaller
-        // (as step 2 does for Chrome), with more to spare than Chrome needs
+        // Safari keeps this plan (step 2 is Chrome's): prose that only just spills onto a page, or only just
+        // fills one, is set slightly smaller here, as step 2 does for Chrome, with more to spare (in Satish's
+        // Safari PDFs the last line or two of the Atharvashirsha printed alone on a page)
         if (root.classList.contains("wk") && fl.indexOf(true) >= 0) {
-          hs = hs.map(function (h, i) {
-            return fl[i] ? h * LAYOUT.page.safariProse : h;
-          });
-          r = pack(hs, 1, fl);
           var k = 0;
-          if (r.n > 1 && r.f < 0.25) k = (0.9 * (r.n - 1)) / (r.n - 1 + r.f);
+          if (r.n > 1 && r.f < 0.3) k = (0.9 * (r.n - 1)) / (r.n - 1 + r.f);
           else if (r.f > 0.9) k = (r.n - 1 + 0.85) / (r.n - 1 + r.f);
           if (k >= LAYOUT.page.minZoom && k < 1) {
             z[id] = Math.round(k * 100) / 100;
