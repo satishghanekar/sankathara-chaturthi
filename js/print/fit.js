@@ -16,7 +16,7 @@
 //      each column gets is chosen the same way, once for each piece;
 //   4. apply: the chosen sizes (and column widths) to the copy and to the print view itself.
 // A piece is set at one size per language, so its stanzas and its dhrupad always match.
-import { SCRIPTS, scriptOf, sizeOf, LAYOUT } from "./profiles.js";
+import { SCRIPTS, OTHER, scriptOf, sizeOf, LAYOUT } from "./profiles.js";
 
 export function fit(w, d, mode, pv) {
   var side = mode === "side",
@@ -24,7 +24,6 @@ export function fit(w, d, mode, pv) {
     lines = [].slice.call(d.querySelectorAll("#pv " + sel[1].replace(", ", ", #pv "))),
     mine = pv.querySelectorAll(sel[1]),
     at = new Map(),
-    scr = d.documentElement.getAttribute("data-scr") || "",
     fnt = d.documentElement.getAttribute("data-font") || "std";
   if (!lines.length || lines.length !== mine.length) return;
   lines.forEach(function (el, i) {
@@ -32,7 +31,7 @@ export function fit(w, d, mode, pv) {
   });
   var groups = collect(w, d, side, sel[0]);
   if (!groups.length) return;
-  var geo = measure(w, d, groups, side, scr, fnt);
+  var geo = measure(w, d, groups, side, fnt);
   // side by side: each piece's share of the width for the original
   var split = {};
   if (side)
@@ -132,7 +131,7 @@ function collect(w, d, side, groupSel) {
 // 2. every line, unwrapped: its segments (its own line breaks), each a list of parts { l, r, pref } with
 // pref = a preferred place to break before this part. Side by side, also the width of the table and how
 // much of each column is not text (padding, rule), to work out a column's text width for any share.
-function measure(w, d, groups, side, scr, fnt) {
+function measure(w, d, groups, side, fnt) {
   var st = d.createElement("style"),
     r = d.createRange(),
     geo = null;
@@ -140,8 +139,17 @@ function measure(w, d, groups, side, scr, fnt) {
   d.head.appendChild(st);
   groups.forEach(function (g) {
     g.cols.forEach(function (c) {
-      var lang = c.lines[0].el.getAttribute("lang") || (c.lines[0].el.closest(".en") ? "en" : "mr"),
-        sc = SCRIPTS[scriptOf(lang, scr)] || { size: 1, minFit: 1 };
+      // the column's script, from its letters (one column holds one language)
+      var sc =
+        SCRIPTS[
+          scriptOf(
+            c.lines
+              .map(function (ln) {
+                return ln.el.textContent;
+              })
+              .join("")
+          )
+        ] || OTHER;
       c.size = sizeOf(sc, fnt);
       c.minFit = sc.minFit;
       c.lines.forEach(function (ln) {

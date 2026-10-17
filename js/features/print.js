@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { root, secs } from "../core/page.js";
-import { shared, P } from "../core/state.js";
+import { shared, P, save } from "../core/state.js";
 import { DV } from "../text/line-breaks.js";
 import { fit } from "../print/fit.js";
 import { LAYOUT } from "../print/profiles.js";
@@ -18,10 +18,14 @@ export function init() {
       b1 = document.getElementById("pr1"),
       b2 = document.getElementById("pr2"),
       bgo = document.getElementById("prgo"),
+      po = pm.querySelector(".pro"),
       pw = document.getElementById("prw"),
       pn = pm.querySelector(".prn:not(#prw)"),
       busy = false,
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
+    // the original's language, by the letters it is shown in (P.ind), as the Print pop-up names it: in Marathi
+    // menus, then in English. A new script (js/render.js) adds its name here.
+    var NAMES = { mr: ["मराठी", "Marathi"], kn: ["कन्नड", "Kannada"] };
     function lbl(m, e) {
       return '<span class="mr">' + m + '</span><span class="en" lang="en">' + e + "</span>";
     }
@@ -191,7 +195,8 @@ export function init() {
                 b = document.createElement("td");
               a.className = "pvm mr";
               b.className = "pve en";
-              a.setAttribute("lang", "mr");
+              // the original's language as the page marks it (Marathi, or the language of the letters it is shown in)
+              a.setAttribute("lang", (mp.closest("[lang]") || root).getAttribute("lang") || "mr");
               b.setAttribute("lang", "en");
               a.innerHTML = mp.innerHTML;
               b.innerHTML = es[i] ? es[i].innerHTML : "";
@@ -264,7 +269,11 @@ export function init() {
             // Safari and iOS browsers ignore CSS columns when printing. Instead, cut the piece into
             // blocks small enough for one page (even sideways) and fill each block's left column
             // first, then its right one. A short piece is a single block.
-            var CAP = 22; // estimated printed lines per column in one block
+            // estimated printed lines per column in one block, and how much longer a line may be than on an
+            // upright page, for the paper as the reader turned it
+            var sh = sheet(),
+              CAP = Math.round((22 * (sh[1] - 23)) / (PAPER[1] - 23)),
+              wide = (sh[0] - 18) / (PAPER[0] - 18);
             function gl(g) {
               var n = 0;
               g.forEach(function (u) {
@@ -273,7 +282,7 @@ export function init() {
                   return;
                 }
                 [].forEach.call(u.querySelectorAll(".verse ." + (P.lang === "en" ? "en" : "mr") + " p"), function (x) {
-                  n += Math.ceil(x.textContent.length / (P.lang === "en" ? 42 : 48)) || 1;
+                  n += Math.ceil(x.textContent.length / ((P.lang === "en" ? 42 : 48) * wide)) || 1;
                 });
                 n += 1;
               });
@@ -348,14 +357,41 @@ export function init() {
     }
     // ---- Page numbers in the printed contents ----
     // A browser cannot print "page N" for a heading, so the print view is laid out once in a hidden
-    // frame the size of a printed page (Letter in the US and Canada, A4 elsewhere, upright) and
-    // each piece's first page is worked out from the heights, as the browser breaks pages.
+    // frame the size of a printed page (Letter in the US and Canada, A4 elsewhere, upright or sideways
+    // as the reader chose) and each piece's first page is worked out from the heights, as the browser
+    // breaks pages.
     var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || ""),
-      PAPER = LTR ? [215.9, 279.4] : [210, 297],
+      PAPER = LTR ? [215.9, 279.4] : [210, 297], // upright, in mm
       pcache = { key: "", pg: null };
-    function pkey(mode) {
-      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt].join("|");
+    // the sheet as it prints, [width, height] in mm
+    function sheet() {
+      return P.por === "land" ? [PAPER[1], PAPER[0]] : PAPER;
     }
+    function pkey(mode) {
+      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, P.fnt, P.por].join("|");
+    }
+    // Upright or Sideways: the browser is told with @page (Chrome, Edge and Firefox follow it; Safari
+    // keeps the sheet the reader picks in its dialog, so the pop-up tells them to pick Landscape there)
+    var pst = document.createElement("style");
+    pst.media = "print";
+    document.head.appendChild(pst);
+    function orient() {
+      var land = P.por === "land";
+      pst.textContent = land ? "@page { size: landscape }" : "";
+      document.getElementById("pou").setAttribute("aria-pressed", String(!land));
+      document.getElementById("pol").setAttribute("aria-pressed", String(land));
+      document.getElementById("prom").textContent = land ? "आडव्या" : "उभ्या";
+      document.getElementById("proe").textContent = land ? "sideways" : "upright";
+      document.getElementById("prl").hidden = !(land && root.classList.contains("wk"));
+    }
+    [["pou", ""], ["pol", "land"]].forEach(function (o) {
+      document.getElementById(o[0]).onclick = function () {
+        P.por = o[1];
+        save();
+        orient();
+      };
+    });
+    orient();
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
       if (pcss.t) return pcss.t;
@@ -386,8 +422,9 @@ export function init() {
       f.tabIndex = -1;
       // Safari (macOS 26, from Satish's PDFs) prints everything about 16/15 larger than Chrome, so a
       // page holds less: lay it out on a page that much smaller
-      var sf = root.classList.contains("wk") ? 15 / 16 : 1;
-      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((PAPER[0] - 18) * mm * sf - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (PAPER[1] - 23) * mm * sf + "px";
+      var sf = root.classList.contains("wk") ? 15 / 16 : 1,
+        sh = sheet();
+      f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((sh[0] - 18) * mm * sf - (P.fnt && P.fnt !== "std" ? 16 : 12)) + "px;height:" + (sh[1] - 23) * mm * sf + "px";
       [].forEach.call(root.attributes, function (a) {
         if (a.name !== "data-print") at += " " + a.name + '="' + a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
       });
@@ -398,9 +435,22 @@ export function init() {
         if (f.parentNode) f.parentNode.removeChild(f);
         cb(r);
       }
-      setTimeout(function () {
-        end(null);
-      }, 2500);
+      // the text is fitted and the pages planned once the fonts are in, or after 2.5 s with the fonts there
+      // are (a font that never arrives must not stop the print); a slow phone then still gets the fitted
+      // text and the page numbers, however long the planning takes
+      var started = false;
+      function run() {
+        if (started) return;
+        started = true;
+        try {
+          // sizes first (they change the heights), then the pages
+          fit(f.contentWindow, d, mode, pv);
+          end(paginate(f.contentWindow, d, (sh[1] - 23) * sf, mm));
+        } catch (e) {
+          end(null);
+        }
+      }
+      setTimeout(run, 2500);
       try {
         var d = f.contentDocument;
         d.open();
@@ -408,15 +458,7 @@ export function init() {
         d.close();
         // lay out once so the fonts the copy uses start loading, then wait for them before measuring
         d.documentElement.offsetHeight;
-        d.fonts.ready.then(function () {
-          try {
-            // sizes first (they change the heights), then the pages
-            fit(f.contentWindow, d, mode, pv);
-            end(paginate(f.contentWindow, d, (PAPER[1] - 23) * sf, mm));
-          } catch (e) {
-            end(null);
-          }
-        });
+        d.fonts.ready.then(run);
       } catch (e) {
         end(null);
       }
@@ -440,7 +482,7 @@ export function init() {
         C = H * 0.96,
         plan = {},
         z = {},
-        out = { z: z, b: {} };
+        out = { z: z, b: {}, t: {}, c: {} };
       if (!secs.length) return out;
       function pack(hs, k) {
         var n = 1,
@@ -452,6 +494,12 @@ export function init() {
             n++;
             used = 0;
             br.push(i);
+          }
+          // a block taller than a page runs onto the next one (a sideways page holds less): it counts
+          // for every page it takes, so a piece set smaller to keep it on one page is preferred
+          while (h > C) {
+            n++;
+            h -= C;
           }
           used += h;
         });
@@ -493,44 +541,113 @@ export function init() {
         }
         plan[id] = r;
         if (r.b.length) out.b[id] = r.b;
+        // a block taller than a page even at the size chosen may break inside, between its lines
+        var tall = [];
+        hs.forEach(function (h, i) {
+          if (h * (z[id] || 1) > C) tall.push(i);
+        });
+        if (tall.length) out.t[id] = tall;
       });
       p.style.cssText = pw;
       // pages the contents take
       var first = secs[0].getBoundingClientRect().top - p.getBoundingClientRect().top - parseFloat(cs.paddingTop),
         page = Math.max(1, Math.ceil((first - 1) / H));
-      // 2. Chrome's two-column pieces: lay out as page-sized columns and count the columns each takes
-      if (secs.some(function (e) {
-          return !plan[e.getAttribute("data-sid")];
-        })) {
-        p.style.cssText =
-          "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" + cw + "px;height:" + H + "px";
-        var x0 = p.getBoundingClientRect().left + pl,
-          y0 = p.getBoundingClientRect().top;
-        var measure = function (e) {
-          var c = e.firstElementChild,
-            l = e.lastElementChild,
-            rr = l.getClientRects(),
-            b = rr[rr.length - 1] || l.getBoundingClientRect(),
-            s = Math.round((c.getBoundingClientRect().left - x0) / cw);
-          return { n: Math.round((b.left - x0) / cw) + 1 - s, f: (b.bottom - y0) / H };
-        };
-        secs.forEach(function (e) {
-          var id = e.getAttribute("data-sid");
-          if (plan[id] || !e.firstElementChild) return;
-          var r = measure(e),
-            k = 0;
-          // only just spilling onto a page, or only just filling one: set slightly smaller so it
-          // ends well inside a page
-          if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
-          else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
-          if (k >= LAYOUT.page.minZoom && k < 1) {
-            z[id] = Math.round(k * 100) / 100;
-            e.style.zoom = z[id];
-            r = measure(e);
-          }
-          plan[id] = r;
+      // 2. lay the print view out as a row of page-sized columns, which the browser breaks as it breaks
+      // pages. Chrome's two-column pieces: count the columns each takes. Pieces made of blocks: their plan
+      // (size and forced breaks) goes in first, then the columns show where each block really lands. The
+      // browser breaks a little differently from the plain sum of heights, above all in a piece set
+      // smaller (by up to a block on a sideways page), so a block it moves to the next page gets a forced
+      // break of its own there, and the contents numbers follow. (Not in Safari, which prints two columns
+      // as tables of blocks: its plan, from the heights, is the one its printouts were checked against.)
+      var fix = !root.classList.contains("wk"),
+        st = d.createElement("style");
+      st.textContent = "#pv .pvbr{break-before:column}";
+      d.head.appendChild(st);
+      secs.forEach(function (e) {
+        var id = e.getAttribute("data-sid"),
+          kids = [].slice.call(e.children);
+        if (!fix || !plan[id] || e.querySelector(".pvc")) return;
+        if (z[id]) e.style.zoom = z[id];
+        (out.t[id] || []).forEach(function (i) {
+          kids[i].classList.add("pvtall");
         });
-      }
+        plan[id].b.forEach(function (i) {
+          var br = d.createElement("div");
+          br.className = "pvbr";
+          e.insertBefore(br, kids[i]);
+        });
+      });
+      // Two passes: pages their full height for the pieces made of blocks, then 3% shorter for the
+      // two-column pieces, which are cut into pages here (below): the browser's flow and these columns
+      // can differ by a line or so, so a part cut from a slightly shorter page always fits its page.
+      if (fix)
+        [H, H * 0.97].forEach(function (h, pass) {
+          p.style.cssText =
+            "padding-top:0;padding-bottom:0;box-sizing:content-box;overflow:visible;column-gap:0;column-fill:auto;column-width:" + cw + "px;height:" + h + "px";
+          var x0 = p.getBoundingClientRect().left + pl,
+            y0 = p.getBoundingClientRect().top;
+          // the page (column) an element starts on, and the one it ends on
+          var col = function (el) {
+            return Math.floor((el.getBoundingClientRect().left - x0) / cw + 0.01);
+          };
+          var endCol = function (el) {
+            var rr = el.getClientRects();
+            return rr.length ? Math.floor((rr[rr.length - 1].left - x0) / cw + 0.01) : col(el);
+          };
+          // the pages a piece takes, and how far down its last page it ends
+          var measure = function (e) {
+            var l = e.lastElementChild,
+              rr = l.getClientRects(),
+              b = rr[rr.length - 1] || l.getBoundingClientRect();
+            return { n: endCol(l) + 1 - col(e.firstElementChild), f: (b.bottom - y0) / h };
+          };
+          secs.forEach(function (e) {
+            var id = e.getAttribute("data-sid"),
+              flow = e.querySelector(".pvc");
+            if (!e.firstElementChild) return;
+            if (!pass) {
+              if (!plan[id] || flow) return;
+              var ks = [].filter.call(e.children, function (c) {
+                  return !c.classList.contains("pvbr");
+                }),
+                last = col(ks[0]),
+                br = [];
+              ks.forEach(function (c, i) {
+                if (i && col(c) !== last) br.push(i);
+                last = endCol(c);
+              });
+              plan[id] = measure(e);
+              if (br.length) out.b[id] = br;
+              else delete out.b[id];
+              return;
+            }
+            if (!flow) return;
+            var r = measure(e),
+              k = 0;
+            // only just spilling onto a page, or only just filling one: set slightly smaller so it
+            // ends well inside a page
+            if (r.n > 1 && r.f < 0.15) k = (0.94 * (r.n - 1)) / (r.n - 1 + r.f);
+            else if (r.f > 0.94) k = (r.n - 1 + 0.9) / (r.n - 1 + r.f);
+            if (k >= LAYOUT.page.minZoom && k < 1) {
+              z[id] = Math.round(k * 100) / 100;
+              e.style.zoom = z[id];
+              r = measure(e);
+            }
+            plan[id] = r;
+            // The browser's own two-column flow breaks pages a little differently from these columns (on
+            // a sideways page by enough to move a block onto another page), so the flow is cut where the
+            // columns say each page ends: each page's part is a flow of its own, after a forced break, that
+            // fills its left column to the foot of the page and then its right one, as it did here (only
+            // the piece's last part balances its two columns).
+            var cut = [],
+              at = null;
+            [].forEach.call(flow.children, function (c, i) {
+              if (at !== null && col(c) !== at) cut.push(i);
+              at = endCol(c);
+            });
+            if (cut.length) out.c[id] = cut;
+          });
+        });
       secs.forEach(function (e) {
         var id = e.getAttribute("data-sid");
         out[id] = page + 1;
@@ -547,8 +664,36 @@ export function init() {
       });
       [].forEach.call(pv.querySelectorAll(".pvs"), function (e) {
         var id = e.getAttribute("data-sid"),
-          kids = [].slice.call(e.children);
+          fl = e.querySelectorAll(".pvc");
+        // two columns: the flow in one piece again, then cut where each page ends
+        if (fl[0]) fl[0].classList.remove("pvcf");
+        for (var j = 1; j < fl.length; j++) {
+          while (fl[j].firstChild) fl[0].appendChild(fl[j].firstChild);
+          fl[j].parentNode.removeChild(fl[j]);
+        }
+        if (fl[0] && pg && pg.c && pg.c[id]) {
+          var ch = [].slice.call(fl[0].children),
+            prev = fl[0];
+          pg.c[id].forEach(function (from, n) {
+            var part = document.createElement("div"),
+              br = document.createElement("div");
+            part.className = "pvc";
+            prev.classList.add("pvcf");
+            br.className = "pvbr";
+            ch.slice(from, pg.c[id][n + 1] || ch.length).forEach(function (c) {
+              part.appendChild(c);
+            });
+            prev.parentNode.insertBefore(br, prev.nextSibling);
+            br.parentNode.insertBefore(part, br.nextSibling);
+            prev = part;
+          });
+        }
+        var kids = [].slice.call(e.children);
         e.style.zoom = (pg && pg.z && pg.z[id]) || "";
+        var tall = (pg && pg.t && pg.t[id]) || [];
+        kids.forEach(function (k, i) {
+          k.classList.toggle("pvtall", tall.indexOf(i) >= 0);
+        });
         ((pg && pg.b && pg.b[id]) || []).forEach(function (i) {
           var br = document.createElement("div");
           br.className = "pvbr";
@@ -598,7 +743,7 @@ export function init() {
       standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
     // the pop-up: the layout choices (ready false), or Print now (ready true)
     function pmMode(ready) {
-      b1.hidden = b2.hidden = pn.hidden = ready;
+      b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
       bgo.hidden = !ready;
       pw.hidden = true;
     }
@@ -663,7 +808,7 @@ export function init() {
       // both languages shown the main one comes first (left, or on top)
       var M = P.ui === "mr",
         en = M ? "इंग्रजी" : "English",
-        or = P.ind === "kn" ? (M ? "कन्नड" : "Kannada") : M ? "मराठी" : "Marathi",
+        or = (NAMES[P.ind] || NAMES.mr)[M ? 0 : 1],
         l1 = shared.LEAD === "en" ? en : or,
         l2 = shared.LEAD === "en" ? or : en,
         tl = " (" + (P.lang === "en" ? en : or) + ")";

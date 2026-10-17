@@ -65,6 +65,8 @@ export async function readPrintView(page) {
       })),
       pieces: [...pv.querySelectorAll(".pvs")].map((s) => s.dataset.sid),
       blocks: pv.querySelectorAll(".pvk").length,
+      // blocks taller than a page, which may break between their lines ("p1:11", as the markers name them)
+      tall: [...pv.querySelectorAll(".pvs")].flatMap((s) => [...s.querySelectorAll(".pvk")].map((k, j) => (k.classList.contains("pvtall") ? s.dataset.sid + ":" + j : "")).filter(Boolean)),
       // the English lines that are actually shown in the print view (for the text check)
       english: [...pv.querySelectorAll(".en p, td.pve")]
         // shown unless the line or a parent inside the print view is display:none (the print view
@@ -144,7 +146,8 @@ export async function pdfPages(page, paper, save) {
     const tc = await (await doc.getPage(i)).getTextContent();
     out.push(tc.items.map((x) => x.str).join(""));
   }
-  return { pages: out, bytes: buf.length, buf };
+  const v = (await doc.getPage(1)).view;
+  return { pages: out, bytes: buf.length, buf, landscape: v[2] > v[3] };
 }
 
 const SCREEN_ONLY = ["Open all", "Fold all", "Check for updates", "Settings", "Add to Home Screen"];
@@ -189,7 +192,7 @@ export function checkPrintout(r, paper) {
   // no block is cut across a page break
   const cut = [];
   for (const key of Object.keys(at)) {
-    if (!key.endsWith(":s")) continue;
+    if (!key.endsWith(":s") || pv.tall.includes(key.slice(0, -2))) continue;
     const end = key.replace(/:s$/, ":e");
     if (at[end] !== at[key]) cut.push(`${key.slice(0, -2)} (pages ${at[key]}–${at[end]})`);
   }
@@ -209,7 +212,7 @@ export function checkPrintout(r, paper) {
     const missing = pv.english.filter((l) => !flat.includes(squash(l)));
     expect(missing, "English lines missing from the PDF").toEqual([]);
   }
-  return { pages: n, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) };
+  return { pages: n, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])), ...(pv.tall.length ? { tall: pv.tall } : {}) };
 }
 
 /** Where each marker landed: { "a1:0:s": 5, … } (page numbers from 1). */

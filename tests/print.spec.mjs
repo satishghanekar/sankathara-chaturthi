@@ -70,6 +70,39 @@ for (const L of LAYOUTS)
       });
     }
 
+// Sideways (landscape, chosen in the Print pop-up): every layout in every font, on Letter or A4 by turns, with
+// the same checks. The text is fitted to the wider line and the pages planned for the shorter page.
+for (const L of LAYOUTS)
+  FONTS.forEach((fnt, i) => {
+    const P = PAPERS[i % 2];
+    test(`sideways · ${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
+      const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt, por: "land" }, choice: L.choice, mode: L.mode, ...P, lines: true });
+      expect(r.pdf.landscape, "the PDF pages are sideways").toBe(true);
+      const summary = checkPrintout(r, P.paper);
+      expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
+      const a = auditLines(r.marked, await pdfMarks(r.pdf.buf));
+      const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
+      expect(a.missing, which("text missing")).toBe(0);
+      expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
+      expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
+    });
+  });
+
+// Sideways special cases: the dhrupad after every verse, Kannada, and Safari's table layout
+for (const X of [
+  { name: "sideways-dhrupad-every-verse-two", prefs: SETUPS["marathi-every-verse"], choice: "pr1", mode: "two" },
+  { name: "sideways-dhrupad-every-verse-side", prefs: { ...SETUPS["marathi-every-verse"], lang: "both" }, choice: "pr1", mode: "side" },
+  { name: "sideways-kannada-two-columns", prefs: SETUPS.kannada, choice: "pr1", mode: "two" },
+  { name: "sideways-kannada-single-column", prefs: SETUPS.kannada, choice: "pr2", mode: "one" },
+]) {
+  test(`${X.name} @chromium-only`, async ({ browser }) => {
+    const r = await printOnce(browser, { prefs: { ...X.prefs, por: "land" }, choice: X.choice, mode: X.mode, paper: "Letter", locale: "en-US" });
+    expect(r.pdf.landscape).toBe(true);
+    const summary = checkPrintout(r, "Letter");
+    expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
+  });
+}
+
 for (const X of EXTRAS) {
   test(`${X.name} @chromium-only`, async ({ browser }) => {
     const paper = X.paper || "Letter";
@@ -107,13 +140,13 @@ test("browser menu print gives the single-column print view @chromium-only", asy
 // Safari and iOS ignore CSS columns when printing, so for them (class "wk") two-column print is
 // built as a table of blocks instead. Chromium can lay that table out too, which checks the
 // Safari code path: nothing lost, contents numbers present, no block split.
-for (const setup of ["marathi", "english"]) {
-  test(`Safari two-column table layout (${setup}) @chromium-only`, async ({ browser }) => {
+for (const [setup, por] of [["marathi", ""], ["english", ""], ["marathi", "land"]]) {
+  test(`Safari two-column table layout (${setup}${por ? ", sideways" : ""}) @chromium-only`, async ({ browser }) => {
     // Safari's user agent makes the site take its Safari print path (class "wk" on <html>)
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: devices["Desktop Safari"].userAgent });
     const page = await context.newPage();
     await stubPrint(page);
-    await openSite(page, SETUPS[setup]);
+    await openSite(page, { ...SETUPS[setup], por });
     await printFromButton(page, "pr1");
     const pv = await readPrintView(page);
     expect(pv.mode).toBe("two");
@@ -125,7 +158,7 @@ for (const setup of ["marathi", "english"]) {
     const at = markerPages(pdf.pages);
     expect(Object.keys(at).length).toBe(pv.blocks * 2);
     expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-      .toMatchSnapshot([SNAP_ENV, `safari-table-${setup}.json`]);
+      .toMatchSnapshot([SNAP_ENV, `safari-table-${setup}${por ? "-sideways" : ""}.json`]);
     await context.close();
   });
 }
@@ -191,6 +224,37 @@ for (const standalone of [false, true]) {
     await context.close();
   });
 }
+
+// Upright or Sideways: the choice is remembered, the note names it, the browser is told (@page), and Safari,
+// which keeps the sheet picked in its own dialog, is told to pick Landscape there too
+test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => {
+  for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
+    const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
+    const page = await context.newPage();
+    await stubPrint(page);
+    await openSite(page, SETUPS.marathi);
+    await page.locator("#prb").click();
+    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#proe")).toHaveText("upright");
+    await page.locator("#pol").click();
+    await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("#proe")).toHaveText("sideways");
+    await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
+    // the page size rules in effect (the site's own "portrait", then the pop-up's choice after it)
+    const sizes = () =>
+      page.evaluate(() => {
+        const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
+        return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
+      });
+    expect((await sizes()).pop()).toBe("landscape");
+    await page.locator("#pou").click();
+    expect((await sizes()).pop()).toBe("portrait");
+    await expect(page.locator("#prl")).toBeHidden();
+    await context.close();
+  }
+});
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {
   await stubPrint(page);

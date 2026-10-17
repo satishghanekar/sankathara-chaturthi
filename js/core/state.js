@@ -28,6 +28,7 @@ export function init() {
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
+    por: "", // printed pages: "" upright | "land" sideways (the Print pop-up)
     fnt: "std", // text font: std | classic | bold | hand (Settings → Text font)
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
@@ -68,6 +69,7 @@ export function init() {
   if (P.lead !== "en") P.lead = "mr";
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
   if (P.ind !== "kn") P.ind = "mr";
+  if (P.por !== "land") P.por = "";
   if (P.lead === "en" || P.ind !== "mr") P.ui = "en";
   if (!P.l2 || [P.lead, P.l2, "both"].indexOf(P.lang) < 0) P.lang = P.lead;
 }
