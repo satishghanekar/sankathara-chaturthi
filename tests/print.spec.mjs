@@ -403,7 +403,8 @@ for (const [setup, choice, mode, landscape] of [
 }
 
 // The page chosen is remembered (the focus is on it next time), the printer is told the page size, and Safari,
-// which keeps the sheet picked in its own dialog, is told to pick Landscape there too
+// which keeps the sheet picked in its own dialog, is told to pick Landscape there too (and, on a Mac, that Chrome
+// prints it best)
 test("print pop-up: the page chosen is remembered and printed that way @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
@@ -412,6 +413,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
     await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
+    await expect(page.locator("#prc")).toBeVisible({ visible: !!ua });
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
