@@ -21,8 +21,8 @@ import { pdfMarks, auditLines } from "./print-audit-helpers.mjs";
 test.describe.configure({ mode: "parallel" });
 test.skip(!process.env.PRINT_AUDIT, "print audit: run with npm run print:audit");
 
-// What is printed, and the two layouts the Print pop-up offers for it
-const ONE = { "two-columns": ["pr1", "two"], "single-column": ["pr2", "one"] };
+// What is printed, and the layouts the Print pop-up offers for it (one language: a single column only)
+const ONE = { "single-column": ["pr1", "one"] };
 const BOTH = { "side-by-side": ["pr1", "side"], stacked: ["pr2", "one"] };
 export const VIEWS = {
   marathi: [{ lang: "mr", lead: "mr", l2: "en" }, ONE],

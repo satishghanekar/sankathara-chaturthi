@@ -2,6 +2,8 @@
 // Each line has the original (mr: Marathi, Hindi or Sanskrit in Devanagari) and its English spelling (en).
 // l is the line id used by highlights and print; rf marks a refrain line; kind "rf" is a repeated refrain
 // and "dh" a line said once (dhrupad-style opening); rmk is the small "repeat" note between verses.
+// prose (a piece): printed in one language it reads as running paragraphs, as in a printed booklet, and
+// para marks the stanza each paragraph starts with (a dh stanza is a paragraph of its own).
 window.CONTENT = {
  "ui": {
   "prev": {
@@ -34,6 +36,7 @@ window.CONTENT = {
     {
      "id": "p1",
      "lang": "sa",
+     "prose": true,
      "no": {
       "mr": "१.",
       "en": "1."
@@ -98,6 +101,7 @@ window.CONTENT = {
        ]
       },
       {
+       "para": true,
        "lines": [
         {
          "l": "p1l10",
@@ -214,6 +218,7 @@ window.CONTENT = {
        ]
       },
       {
+       "para": true,
        "lines": [
         {
          "l": "p1l30",
@@ -346,6 +351,7 @@ window.CONTENT = {
        ]
       },
       {
+       "para": true,
        "lines": [
         {
          "l": "p1l54",
@@ -428,6 +434,7 @@ window.CONTENT = {
        ]
       },
       {
+       "para": true,
        "lines": [
         {
          "l": "p1l68",
@@ -487,6 +494,7 @@ window.CONTENT = {
        ]
       },
       {
+       "para": true,
        "lines": [
         {
          "l": "p1l79",

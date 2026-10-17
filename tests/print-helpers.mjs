@@ -67,8 +67,9 @@ export async function readPrintView(page) {
       blocks: pv.querySelectorAll(".pvk").length,
       // blocks taller than a page, which may break between their lines ("p1:11", as the markers name them)
       tall: [...pv.querySelectorAll(".pvs")].flatMap((s) => [...s.querySelectorAll(".pvk")].map((k, j) => (k.classList.contains("pvtall") ? s.dataset.sid + ":" + j : "")).filter(Boolean)),
-      // the English lines that are actually shown in the print view (for the text check)
-      english: [...pv.querySelectorAll(".en p, td.pve")]
+      // the English lines that are actually shown in the print view (for the text check); prose runs its
+      // lines on in paragraphs (.pvpr), so each of its lines (.pvln) is one
+      english: [...pv.querySelectorAll(".en p:not(.pvpr), .en .pvln, td.pve")]
         // shown unless the line or a parent inside the print view is display:none (the print view
         // itself is hidden on screen until printing, so it is not counted)
         .filter((e) => {
@@ -209,7 +210,8 @@ export function checkPrintout(r, paper) {
   // English text is all there (Devanagari and Kannada can't be read back reliably from a PDF; their
   // completeness is covered by the block markers above)
   if (pv.english.length) {
-    const flat = squash(all.replace(/\[\[[^\]]+\]\]|\{\{[^}]+\}\}/g, ""));
+    // without the page footers, so a line of prose that runs on to the next page reads whole
+    const flat = pdf.pages.map((t, i) => squash(t.replace(/\[\[[^\]]+\]\]|\{\{[^}]+\}\}/g, "")).replace(`${i + 1}/${n}`, "")).join("");
     const missing = pv.english.filter((l) => !flat.includes(squash(l)));
     expect(missing, "English lines missing from the PDF").toEqual([]);
   }
