@@ -38,7 +38,7 @@ export const VIEWS = {
 const FONTS = { standard: "std", classic: "classic", bold: "bold", handwritten: "hand" };
 const DHRUPAD = { "dhrupad-once": 1, "dhrupad-every-verse": 0 };
 const PAPERS = { letter: ["Letter", "en-US"], a4: ["A4", "en-IN"] };
-const ORIENT = { upright: "", sideways: "land" };
+const ORIENT = { upright: "up", sideways: "land" };
 
 for (const [view, [prefs, layouts]] of Object.entries(VIEWS))
   for (const [layout, [choice, mode]] of Object.entries(layouts))
