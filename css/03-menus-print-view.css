@@ -524,9 +524,6 @@ h2[tabindex="-1"]:focus {
   #pv .pvt tr {
     break-inside: avoid;
   }
-  #pv .pv2 td:first-child {
-    border-right: 0.5pt solid #bbb;
-  }
   #pv .verse {
     margin: 0 0 0.7em;
     break-inside: avoid;
@@ -579,6 +576,37 @@ h2[tabindex="-1"]:focus {
   #pv .pvtall tr {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+  /* Prose (the Atharvashirsha in one language: js/features/print.js): running paragraphs as in a printed
+     booklet, each indented, with room between the lines for the accent marks above and below them. A paragraph
+     breaks across pages like a book's, never leaving one line alone at the foot or the top of a page. */
+  #pv .pvpara {
+    margin: 0 0 0.5em;
+  }
+  #pv .pvpr {
+    font-size: 15pt;
+    line-height: 2.1;
+    text-align: start;
+    text-indent: 2em;
+    /* stylelint-disable plugin/no-unsupported-browser-features -- Firefox ignores them: a page may then start or end on one line of a paragraph */
+    orphans: 2;
+    widows: 2;
+    /* stylelint-enable plugin/no-unsupported-browser-features */
+  }
+  #pv .pvtall p.pvpr {
+    break-inside: auto;
+    page-break-inside: auto;
+  }
+  #pv .pvpara .en .pvpr {
+    font-size: 13pt;
+    line-height: 1.9;
+  }
+  #pv .pvnb {
+    white-space: nowrap;
+  }
+  #pv .pvcen .pvpr {
+    text-align: center;
+    text-indent: 0;
   }
   #pv .pvg {
     font: 600 11pt/1.3 var(--head);

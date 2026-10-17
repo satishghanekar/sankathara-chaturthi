@@ -13,7 +13,7 @@ Automation covers the engines (Chromium, Firefox, WebKit) and emulated phones an
 | Android phone | Chrome | Install from the App button; reopen offline; pinch; Print → Save as PDF (A4). |
 | Android phone | Samsung Internet | Opens and reads; Settings; dark theme. |
 | Windows PC | Edge | Two columns and the side menu sit centred (the scrollbar doesn't push them); Ctrl + / −; Print (Letter) in each layout. Settings → Accessibility → Contrast themes on: buttons, icons and the focus ring stay visible. |
-| Mac | Safari | Print → PDF two columns (the Safari table layout); File → Add to Dock. |
+| Mac | Safari | Print → PDF single column and side by side; File → Add to Dock. |
 | Large monitor (≥ 2560 px) | any | The page uses the width without stretching lines. |
 
 ## Screen readers
