@@ -380,14 +380,25 @@ export function init() {
     function setPage(mode) {
       pst.textContent = land(mode) ? "@page { size: landscape }" : "";
     }
-    // Above the choices: the dhrupad setting (a tap switches it, as the dhrupad button does) and the text font,
-    // with a line of the text in it
+    // Above the choices: the dhrupad setting (a tap switches it, as the dhrupad button does) and the text font
+    // (the four of Settings → Text font: a tap switches it there too), with a line of the text in it
+    var fn = document.getElementById("prfn");
+    [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
+      fn.appendChild(b.cloneNode(true));
+    });
+    fn.onclick = function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      document.querySelector('#sfn [data-v="' + b.dataset.v + '"]').click();
+      rows();
+    };
     function rows() {
       var dv = document.getElementById("prdv"),
-        fb = document.querySelector('#sfn [data-v="' + P.fnt + '"]'),
         ln = document.querySelector("#a1 .item:not(.dh) .verse ." + (P.lang === "en" ? "en" : "mr") + " p");
       dv.innerHTML = P.ref ? lbl("एकदाच", "Once") : lbl("प्रत्येक कडव्यानंतर", "After every verse");
-      document.getElementById("prfv").innerHTML = fb ? fb.innerHTML : "";
+      [].forEach.call(fn.children, function (b) {
+        b.setAttribute("aria-pressed", b.dataset.v === P.fnt ? "true" : "false");
+      });
       var fs = document.getElementById("prfs");
       fs.textContent = ln ? ln.textContent.replace(/\s+/g, " ").trim() : "";
       // (in the language of the line, not as .mr or .en: those follow the menus' language here)
