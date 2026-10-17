@@ -142,8 +142,8 @@ test("browser menu print gives the single-column print view @chromium-only", asy
 // Safari and iOS ignore CSS columns when printing, so for them (class "wk") two-column print is
 // built as a table of blocks instead. Chromium can lay that table out too, which checks the
 // Safari code path: nothing lost, contents numbers present, no block split.
-for (const [setup, por] of [["marathi", ""], ["english", ""], ["marathi", "land"]]) {
-  test(`Safari two-column table layout (${setup}${por ? ", sideways" : ""}) @chromium-only`, async ({ browser }) => {
+for (const [setup, por] of [["marathi", "up"], ["english", "up"], ["marathi", "land"]]) {
+  test(`Safari two-column table layout (${setup}${por === "land" ? ", sideways" : ""}) @chromium-only`, async ({ browser }) => {
     // Safari's user agent makes the site take its Safari print path (class "wk" on <html>)
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: devices["Desktop Safari"].userAgent });
     const page = await context.newPage();
@@ -160,7 +160,7 @@ for (const [setup, por] of [["marathi", ""], ["english", ""], ["marathi", "land"
     const at = markerPages(pdf.pages);
     expect(Object.keys(at).length).toBe(pv.blocks * 2);
     expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-      .toMatchSnapshot([SNAP_ENV, `safari-table-${setup}${por ? "-sideways" : ""}.json`]);
+      .toMatchSnapshot([SNAP_ENV, `safari-table-${setup}${por === "land" ? "-sideways" : ""}.json`]);
     await context.close();
   });
 }
@@ -170,8 +170,8 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await stubPrint(page);
   await openSite(page, SETUPS.both);
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toHaveText("Side by side: Marathi | English");
-  await expect(page.locator("#pr2")).toHaveText("Stacked: Marathi above English");
+  await expect(page.locator("#pr1")).toContainText("Side by side: Marathi | English");
+  await expect(page.locator("#pr2")).toContainText("Stacked: Marathi above English");
   await expect(page.locator("#prq")).toHaveText("Letter");
   await expect(page.locator("#pr1")).toBeFocused();
   await page.keyboard.press("Escape");
@@ -319,39 +319,87 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await context.close();
 });
 
-// Upright or Sideways: the choice is remembered, the note names it, the browser is told (@page), and Safari,
-// which keeps the sheet picked in its own dialog, is told to pick Landscape there too
-test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => {
+// What the pop-up recommends (CHOICE in js/print/profiles.js): for one language, single column on upright pages,
+// offered first and focused; for both, side by side on sideways pages. Each choice says the page it prints on.
+for (const [setup, first, rec, other] of [
+  ["marathi", "#pr2", "Upright pages · Recommended", "Sideways pages"],
+  ["english", "#pr2", "Upright pages · Recommended", "Sideways pages"],
+  ["kannada", "#pr2", "Upright pages · Recommended", "Sideways pages"],
+  ["both", "#pr1", "Sideways pages · Recommended", "Upright pages"],
+  ["kannada-both", "#pr1", "Sideways pages · Recommended", "Upright pages"],
+]) {
+  test(`print pop-up recommends the layout that prints best: ${setup} @chromium-only`, async ({ page }) => {
+    await stubPrint(page);
+    await openSite(page, SETUPS[setup]);
+    await page.locator("#prb").click();
+    const second = first === "#pr1" ? "#pr2" : "#pr1";
+    await expect(page.locator(".prs button:not([hidden])").first()).toHaveId(first.slice(1));
+    await expect(page.locator(first)).toBeFocused();
+    await expect(page.locator(first + " .prsub")).toHaveText(rec);
+    await expect(page.locator(second + " .prsub")).toHaveText(other);
+    // neither Upright nor Sideways pressed: each choice prints on its own page
+    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "false");
+  });
+}
+
+// The recommended choices print as they say: side by side on sideways pages, single column on upright ones
+for (const [setup, choice, mode, landscape] of [
+  ["both", "pr1", "side", true],
+  ["both", "pr2", "one", false],
+  ["marathi", "pr2", "one", false],
+  ["marathi", "pr1", "two", true],
+]) {
+  test(`each choice prints on its own page: ${setup} ${mode} @chromium-only`, async ({ browser }) => {
+    const r = await printOnce(browser, { prefs: { ...SETUPS[setup], por: "" }, choice, mode, paper: "Letter", locale: "en-US" });
+    expect(r.pdf.landscape).toBe(landscape);
+    checkPrintout(r, "Letter");
+  });
+}
+
+// Upright or Sideways turns every choice that way, is remembered, and a second tap goes back to each choice's
+// own page; the note names it, and Safari, which keeps the sheet picked in its own dialog, is told to pick
+// Landscape there too when a choice prints sideways
+test("print pop-up: Upright or Sideways for every choice @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
     const page = await context.newPage();
     await stubPrint(page);
     await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
-    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("#proe")).toHaveText("upright");
+    await expect(page.locator("#proe")).toHaveText("turned as each choice says");
+    // two columns prints sideways by itself, so Safari readers are told about Landscape
+    await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
     await page.locator("#pol").click();
     await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("#proe")).toHaveText("sideways");
-    await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
+    await expect(page.locator("#pr1 .prsub")).toHaveText("Sideways pages");
+    await expect(page.locator("#pr2 .prsub")).toHaveText("Sideways pages · Recommended");
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
-    // the page size rules in effect (the site's own "portrait", then the pop-up's choice after it)
+    await page.locator("#pou").click();
+    await expect(page.locator("#proe")).toHaveText("upright");
+    await expect(page.locator("#pr1 .prsub")).toHaveText("Upright pages");
+    await expect(page.locator("#prl")).toBeHidden();
+    // a second tap: back to each choice's own page
+    await page.locator("#pou").click();
+    await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("#pr1 .prsub")).toHaveText("Sideways pages");
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("");
+    // the page size rule the printer is given follows the choice printed
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
         return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
       });
+    await page.locator("#pr1").click();
+    await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
     expect((await sizes()).pop()).toBe("landscape");
-    await page.locator("#pou").click();
-    expect((await sizes()).pop()).toBe("portrait");
-    await expect(page.locator("#prl")).toBeHidden();
     await context.close();
   }
 });
 
-// Sideways is released (js/core/features.js, FEAT_SW): every reader is offered the choice, and a saved
-// Sideways is kept from one visit to the next
+// A saved Upright or Sideways is kept from one visit to the next
 test("print pop-up: a saved Sideways choice is kept @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, SETUPS.marathi);
@@ -362,23 +410,18 @@ test("print pop-up: a saved Sideways choice is kept @chromium-only", async ({ pa
   });
   await page.reload();
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toBeVisible();
   await expect(page.locator(".pro")).toBeVisible();
   await expect(page.locator("#pol")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#proe")).toHaveText("sideways");
-  const sizes = await page.evaluate(() => {
-    const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
-    return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
-  });
-  expect(sizes.pop()).toBe("landscape");
+  await expect(page.locator("#pr2 .prsub")).toHaveText("Sideways pages · Recommended");
 });
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toHaveText("Two columns (English)");
-  await expect(page.locator("#pr2")).toHaveText("Single column (English)");
+  await expect(page.locator("#pr1")).toContainText("Two columns (English)");
+  await expect(page.locator("#pr2")).toContainText("Single column (English)");
 });
 
 // The choices name the languages actually printed, in the order printed (the main language first)
@@ -391,7 +434,7 @@ for (const [setup, one, two] of [
     await stubPrint(page);
     await openSite(page, SETUPS[setup]);
     await page.locator("#prb").click();
-    await expect(page.locator("#pr1")).toHaveText(one);
-    await expect(page.locator("#pr2")).toHaveText(two);
+    await expect(page.locator("#pr1")).toContainText(one);
+    await expect(page.locator("#pr2")).toContainText(two);
   });
 }
