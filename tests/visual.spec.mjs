@@ -96,7 +96,7 @@ for (const [name, size, prefs, prep] of CASES) {
 for (const [name, prefs, choice] of [
   ["print-single-column-marathi", SETUPS.marathi, "pr1"],
   ["print-single-column", SETUPS.english, "pr1"],
-  ["print-side-by-side", SETUPS.both, "pr1"],
+  ["print-side-by-side", SETUPS.both, "pr2"],
 ]) {
   test(`screenshot ${name} @chromium-only`, async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width: 816, height: 1056 }, deviceScaleFactor: 1, serviceWorkers: "block", locale: "en-US" });
