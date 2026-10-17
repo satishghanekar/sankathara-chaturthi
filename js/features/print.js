@@ -1,7 +1,7 @@
 // Print
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { root, secs } from "../core/page.js";
+import { flash, root, secs } from "../core/page.js";
 import { shared, P, save } from "../core/state.js";
 import { DV } from "../text/line-breaks.js";
 import { fit } from "../print/fit.js";
@@ -20,6 +20,9 @@ export function init() {
       bgo = document.getElementById("prgo"),
       po = pm.querySelector(".pro"),
       pw = document.getElementById("prw"),
+      bsf = document.getElementById("prsf"),
+      bcp = document.getElementById("prcp"),
+      last = "as", // the layout last chosen, carried to Safari
       pn = pm.querySelector(".prn:not(#prw)"),
       busy = false,
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
@@ -745,8 +748,59 @@ export function init() {
     function pmMode(ready) {
       b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
       bgo.hidden = !ready;
-      pw.hidden = true;
+      pw.hidden = bsf.hidden = bcp.hidden = true;
     }
+    // ---- The iPhone Home Screen app cannot print: hand the printout over to Safari ----
+    // Safari opens at this site's address with the print choices in it (read by js/render.js), and offers
+    // Print now there. iOS 17 and later open an x-safari-https:// address in Safari; Copy link is for the rest.
+    // The app remembers that printing failed, so the next time it goes straight to this step.
+    var NOPR = "aarti2-noprint";
+    function link(mode) {
+      var s = {};
+      ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "tr", "por"].forEach(function (k) {
+        s[k] = P[k];
+      });
+      return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
+    }
+    function noPrint() {
+      try {
+        return !!localStorage.getItem(NOPR);
+      } catch (e) {
+        return false;
+      }
+    }
+    // open: the pop-up is already open (its Back step is in place)
+    function toSafari(open) {
+      try {
+        localStorage.setItem(NOPR, "1");
+      } catch (e) {}
+      pmMode(true);
+      bgo.hidden = true;
+      pw.hidden = bsf.hidden = bcp.hidden = false;
+      if (!open) ovPush();
+      pm.hidden = false;
+      bsf.focus();
+    }
+    bsf.onclick = function () {
+      var u = "x-safari-" + link(last);
+      bsf.setAttribute("data-to", u); // (for the tests)
+      location.href = u;
+    };
+    bcp.onclick = function () {
+      var u = link(last);
+      try {
+        navigator.clipboard.writeText(u).then(
+          function () {
+            flash("लिंक कॉपी झाली: Safari मध्ये पेस्ट करा", "Link copied: paste it into Safari");
+          },
+          function () {
+            window.prompt("Copy this link and paste it into Safari", u);
+          },
+        );
+      } catch (e) {
+        window.prompt("Copy this link and paste it into Safari", u);
+      }
+    };
     // print, and if the browser ignored it, offer Print now (or, after a Print now tap, say why)
     function tryPrint(again) {
       seen = false;
@@ -756,12 +810,8 @@ export function init() {
         if (!again) return ready();
         // a tap did not open it either: the iPhone Home Screen app (on some iOS versions) cannot print
         if (!(iOS && standalone)) return unready();
-        pmMode(true);
-        bgo.hidden = true;
-        pw.hidden = false;
-        ovPush();
-        pm.hidden = false;
-        document.getElementById("prx").focus();
+        unready();
+        toSafari();
       }, 1000);
     }
     function ready() {
@@ -783,6 +833,9 @@ export function init() {
     }
     function go(mode) {
       var t0 = Date.now();
+      last = mode;
+      // the Home Screen app has already failed to print here: go straight to Open in Safari
+      if (iOS && standalone && noPrint()) return toSafari(true);
       pm.hidden = true;
       ovDone();
       // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
@@ -863,5 +916,16 @@ export function init() {
       busy = false;
       root.removeAttribute("data-print");
     });
+    // Opened by the Home Screen app's Open in Safari (see js/render.js): lay the printout out once the fonts
+    // are in, then Print now asks for the tap that Safari needs
+    if (window.PRQ) {
+      var mode = window.PRQ;
+      window.PRQ = "";
+      (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
+        setTimeout(function () {
+          go(mode);
+        }, 300);
+      });
+    }
   })();
 }
