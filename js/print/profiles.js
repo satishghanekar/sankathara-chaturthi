@@ -55,20 +55,19 @@ export function scriptOf(text) {
 // A script with no entry above
 export var OTHER = { size: 1, minFit: 0.85 };
 
-// What the Print pop-up recommends: for one language printed alone, and for the original with its English,
-// the layout that prints best (marked Recommended and offered first), and the way each layout's pages are
-// turned unless the reader picks Upright or Sideways themselves. Layouts by print mode: "two" (two
-// columns), "one" (single column; stacked when both languages are printed) and "side" (side by side).
-// Chosen from npm run print:audit (all 576 printouts, every font, dhrupad setting and paper):
+// What the Print pop-up offers: for one language printed alone, a single column (prose pieces as running
+// paragraphs), upright; for the original with its English, two layouts, the one that prints best marked
+// Recommended and offered first, each with the way its pages are turned unless the reader picks Upright or
+// Sideways themselves. Layouts by print mode: "one" (single column; stacked when both languages are printed)
+// and "side" (side by side). Chosen from npm run print:audit (every font, dhrupad setting and paper):
 //   - one language: single column, upright, has no wrapped lines and the largest text, in about 15 pages,
-//     for English, Marathi and Kannada alike. Two columns is better sideways (upright, its lines are set
-//     smaller and still wrap: Kannada down to 70%, English with lines broken mid-phrase);
+//     for English, Marathi and Kannada alike;
 //   - both languages: side by side, sideways, has its rows in step and almost nothing wrapped, in about 18
 //     pages (upright: 8 to 10% of lines wrap; Kannada with lines broken mid-phrase). Stacked is best upright
 //     (sideways it takes some 33 pages).
 // A new language is checked the same way, and gets its own entry here (keyed by P.ind) only if it differs.
 export var CHOICE = {
-  one: { best: "one", sheet: { two: "land", one: "up" } },
+  one: { best: "one", sheet: { one: "up" } },
   both: { best: "side", sheet: { side: "land", one: "up" } },
 };
 

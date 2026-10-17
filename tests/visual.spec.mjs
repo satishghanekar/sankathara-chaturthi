@@ -94,8 +94,8 @@ for (const [name, size, prefs, prep] of CASES) {
 
 // The print layout as the printer sees it (first part of each layout: contents and the first piece)
 for (const [name, prefs, choice] of [
-  ["print-two-columns", SETUPS.marathi, "pr1"],
-  ["print-single-column", SETUPS.english, "pr2"],
+  ["print-single-column-marathi", SETUPS.marathi, "pr1"],
+  ["print-single-column", SETUPS.english, "pr1"],
   ["print-side-by-side", SETUPS.both, "pr1"],
 ]) {
   test(`screenshot ${name} @chromium-only`, async ({ browser }) => {
