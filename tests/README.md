@@ -48,13 +48,14 @@ The grid is every **layout** (Marathi two columns, Marathi single column, Englis
 - every page has its "N / total" footer;
 - screen-only controls (Open all, Settings, …) never print;
 - every English line is in the PDF (Devanagari and Kannada text can't be read back reliably from a PDF, so for those the block markers show nothing was lost);
-- the page count and contents numbers match the recorded baseline.
+- the page count and contents numbers match the recorded baseline;
+- in the layout × font grid, upright and sideways: no line runs past its column, no text is missing, and side by side at most a few rows are out of step or lines broken mid-phrase.
 
 ### Print audit
 
-`npm run print:audit` prints every combination a reader can choose, exactly as they would: what is printed (Marathi, Kannada, English, English in IAST, and each original with English, either one first) × the two layouts the Print pop-up offers for it × the four text fonts × the dhrupad once or after every verse × Letter and A4. That is 288 PDFs, kept as `tests/pdfs/<what>/<layout>/<font>-<dhrupad>-<paper>.pdf` (for example `tests/pdfs/marathi-english/side-by-side/handwritten-dhrupad-once-letter.pdf`), each with a `.json` of what was found. It takes about two minutes.
+`npm run print:audit` prints every combination a reader can choose, exactly as they would: what is printed (Marathi, Kannada, English, English in IAST, and each original with English, either one first) × the two layouts the Print pop-up offers for it × the four text fonts × the dhrupad once or after every verse × Letter and A4 × upright and sideways pages. That is 576 PDFs, kept as `tests/pdfs/<upright|sideways>/<what>/<layout>/<font>-<dhrupad>-<paper>.pdf` (for example `tests/pdfs/sideways/marathi-english/side-by-side/handwritten-dhrupad-once-letter.pdf`), each with a `.json` of what was found. It takes about four minutes.
 
-Every printout must pass the print checks above. On top of that, every printed line is marked, invisibly, at the start and end of each of its parts (`print-audit-helpers.mjs`), and the PDF shows where each landed. `tests/pdfs/REPORT.md` then lists, worst first: text missing; side-by-side rows where one side takes more lines than the other; lines broken in the middle of a phrase rather than at a preferred break; pages left mostly empty before a page break; and how many lines were set smaller to fit. `tests/pdfs/FONT-SIZES.md` gives how large each script looks in each text font, the numbers behind `js/print/profiles.js`.
+Every printout must pass the print checks above. On top of that, every printed line is marked, invisibly, at the start and end of each of its parts (`print-audit-helpers.mjs`), and the PDF shows where each landed. `tests/pdfs/REPORT.md` then lists, worst first, with totals for upright and sideways: text missing; lines running past their column (past the page's margin, past the middle of the page in two columns, or into the cell beside them side by side); side-by-side rows where one side takes more lines than the other; lines broken in the middle of a phrase rather than at a preferred break (including a break the fitting wrote in between two words, `br.pvmid`); pages left mostly empty before a page break; and how many lines were set smaller to fit. `tests/pdfs/FONT-SIZES.md` gives how large each script looks in each text font, the numbers behind `js/print/profiles.js`.
 
 The PDFs and reports are not committed (`tests/pdfs/` is in `.gitignore`). To look at the PDFs inside VS Code, install a PDF viewer extension such as vscode-pdf.
 

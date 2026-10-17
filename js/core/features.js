@@ -15,11 +15,10 @@ export function init() {
   // To release it: set FEAT_TL to true. Nothing else needs changing.
   FEAT_TL = false;
   if (FEAT_TL) show("tl");
-  // Sideways (landscape) printed pages: the Upright / Sideways choice in the Print pop-up is built and tested
-  // but held back (Satish, 2026-10-17: upright pages only for now). With FEAT_SW false the choice stays hidden
-  // and every printout is upright, whatever was saved (P.por is kept). The tests turn it on (window.__featSW).
-  // To release it: set FEAT_SW to true.
-  FEAT_SW = !!window.__featSW;
+  // Sideways (landscape) printed pages: the Upright / Sideways choice in the Print pop-up. Released (Satish,
+  // 2026-10-17). With FEAT_SW false the choice is hidden and every printout is upright, whatever was saved
+  // (P.por is kept), should it need holding back again.
+  FEAT_SW = true;
 }
 
 // Unhide a released feature's parts, Help's included: Help's text waits in a <template> (#hlpc) until Help

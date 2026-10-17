@@ -3,8 +3,8 @@
 //   npm run print:audit        (from tests/; a few minutes)
 //
 // Every combination of what is printed (the view), the layout chosen in the Print pop-up, the text font,
-// the dhrupad setting and the paper size is printed exactly as a reader would print it, and kept as
-//   tests/pdfs/<view>/<layout>/<font>-<dhrupad>-<paper>.pdf
+// the dhrupad setting, the paper size and the way the page is turned (upright or sideways) is printed exactly as a reader would print it, and kept as
+//   tests/pdfs/<upright|sideways>/<view>/<layout>/<font>-<dhrupad>-<paper>.pdf
 // with what the audit found next to it (.json). tests/pdfs/REPORT.md then sums them up
 // (print-audit-report.mjs). Each printout must pass the checks every print test makes (contents page
 // numbers, nothing split or lost, footers); the line-by-line findings (lines broken mid-phrase, side by side
@@ -38,17 +38,19 @@ export const VIEWS = {
 const FONTS = { standard: "std", classic: "classic", bold: "bold", handwritten: "hand" };
 const DHRUPAD = { "dhrupad-once": 1, "dhrupad-every-verse": 0 };
 const PAPERS = { letter: ["Letter", "en-US"], a4: ["A4", "en-IN"] };
+const ORIENT = { upright: "", sideways: "land" };
 
 for (const [view, [prefs, layouts]] of Object.entries(VIEWS))
   for (const [layout, [choice, mode]] of Object.entries(layouts))
     for (const [font, fnt] of Object.entries(FONTS))
       for (const [dh, ref] of Object.entries(DHRUPAD))
-        for (const [pp, [paper, locale]] of Object.entries(PAPERS)) {
-          const name = `${view}/${layout}/${font}-${dh}-${pp}`;
+        for (const [pp, [paper, locale]] of Object.entries(PAPERS))
+          for (const [orient, por] of Object.entries(ORIENT)) {
+          const name = `${orient}/${view}/${layout}/${font}-${dh}-${pp}`;
           test(name, async ({ browser }) => {
-            const r = await printOnce(browser, { prefs: { ...prefs, fnt, ref }, choice, mode, paper, locale, save: name + ".pdf", lines: true });
-            const a = auditLines(r.marked, await pdfMarks(r.pdf.buf));
-            const out = { name, view, layout, font, dhrupad: dh, paper: pp, pages: r.pdf.pages.length, ...a };
+            const r = await printOnce(browser, { prefs: { ...prefs, fnt, ref, por }, choice, mode, paper, locale, save: name + ".pdf", lines: true });
+            const a = auditLines(r.marked, await pdfMarks(r.pdf.buf), mode);
+            const out = { name, orient, view, layout, font, dhrupad: dh, paper: pp, pages: r.pdf.pages.length, ...a };
             writeFileSync(fileURLToPath(new URL(`./pdfs/${name}.json`, import.meta.url)), JSON.stringify(out, null, 1));
             checkPrintout(r, paper);
           });

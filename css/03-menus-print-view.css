@@ -561,7 +561,8 @@ h2[tabindex="-1"]:focus {
   /* a block taller than a page (js/features/print.js marks it; it happens on a sideways page) breaks between
      its lines rather than running off the page */
   #pv .pvk.pvtall,
-  .wk #pv .pvk.pvtall {
+  .wk #pv .pvk.pvtall,
+  #pv .pvtall .verse {
     display: block;
     break-inside: auto;
     page-break-inside: auto;
