@@ -127,6 +127,21 @@
       pointer-events: none;
     }
   }
+  /* Safari has the prefixed property only (Satish's Safari PDFs had no border) */
+  @supports (not (box-decoration-break: clone)) and (-webkit-box-decoration-break: clone) {
+    :root[data-print] #pv {
+      -webkit-box-decoration-break: clone;
+      padding: 6mm 7mm;
+    }
+    :root[data-print] #pv::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      border: 0.75pt solid #c9ab7f;
+      border-radius: 2mm;
+      pointer-events: none;
+    }
+  }
   #pv .pvtoc {
     border-bottom: 0;
     margin-bottom: 0;
