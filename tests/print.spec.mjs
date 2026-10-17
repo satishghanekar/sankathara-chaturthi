@@ -445,15 +445,20 @@ test("print pop-up: a saved Landscape choice is kept @chromium-only", async ({ p
 });
 
 // Above the choices: the dhrupad setting, which a tap switches (for the printout and the page alike), and the
-// text font with a line of the text in it
+// text font (a tap picks another) with a line of the text in it
 test("print pop-up shows the dhrupad and font settings @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, { ...SETUPS.marathi, fnt: "classic" });
   await page.locator("#prb").click();
   await expect(page.locator("#prdv")).toHaveText("Once", { useInnerText: true });
-  await expect(page.locator("#prfv")).toHaveText("Classic", { useInnerText: true });
+  await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Classic", { useInnerText: true });
   await expect(page.locator("#prfs")).toContainText("सुखकर्ता");
   expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Classic");
+  // a font picked here is the reading font too, and the sample line follows it
+  await page.locator('#prfn [data-v="bold"]').click();
+  await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Bold", { useInnerText: true });
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).fnt)).toBe("bold");
+  await expect.poll(() => page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).not.toContain("SC Classic");
   await page.locator("#prdh").click();
   await expect(page.locator("#prdv")).toHaveText("After every verse", { useInnerText: true });
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).ref)).toBe(0);

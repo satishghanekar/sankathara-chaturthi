@@ -30,6 +30,7 @@
   [data-cols="2"] [data-lang="both"] .rftop .verse,
   .sp .sp-go:active,
   .sp-seg,
+  .prrow .prseg,
   .sp-prev {
     background: var(--surface);
   }
@@ -52,7 +53,8 @@
       0 0 0 2px var(--surface),
       0 0 0 3.5px var(--gold);
   }
-  .sp .sp-seg button[aria-pressed="true"] {
+  .sp .sp-seg button[aria-pressed="true"],
+  .prseg button[aria-pressed="true"] {
     box-shadow:
       0 1px 3px #0003,
       0 0 0 1px var(--accent);
