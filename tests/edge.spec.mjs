@@ -349,9 +349,9 @@ test("keyboard only: Tab to Print, choose a layout, print, and focus comes back 
   expect(found, "Tab never reached the Print button").toBe(true);
   await page.keyboard.press("Enter");
   await expect(page.locator("#prm")).toBeVisible();
-  await expect(page.locator("#pr1")).toBeFocused();
-  await page.keyboard.press("Tab");
   await expect(page.locator("#pr2")).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.locator("#pr1")).toBeFocused();
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBeTruthy();
