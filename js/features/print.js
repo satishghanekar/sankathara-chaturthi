@@ -199,17 +199,8 @@ export function init() {
         box.setAttribute("data-sid", sec.id);
         var hd = document.createElement("h2");
         hd.innerHTML = sec.querySelector("h2").innerHTML;
+        // the Pooja and Aarti headings are on the contents page only, not above a piece (Satish, 2026-10)
         var pre = [];
-        var gp = sec.previousElementSibling;
-        if (gp && gp.classList.contains("grp")) {
-          var gl = document.createElement("div");
-          gl.className = "pvg";
-          gl.innerHTML = gp.innerHTML;
-          [].forEach.call(gl.querySelectorAll(".allb"), function (x) {
-            x.remove(); // Open all / Fold all is for the screen only
-          });
-          pre.push(gl);
-        }
         pre.push(hd);
         var units = [],
           rt = sec.querySelector(".rftop");
@@ -502,7 +493,10 @@ export function init() {
           used = 0,
           br = [];
         hs.forEach(function (h, i) {
-          h *= k;
+          // set smaller, a block of lines is that much shorter; a paragraph also fits more words on each
+          // line, so it takes fewer lines too (Satish's Safari PDFs: English prose at 88% took two pages
+          // where heights scaled once had planned three)
+          h *= fl && fl[i] ? k * k : k;
           // a block starts a new page when it does not fit below the last one; but a block taller than a
           // page (it happens on a sideways page) breaks between its lines anyway, so it starts below the
           // last block when a quarter of the page is still free, rather than leaving that space empty. A
@@ -560,16 +554,17 @@ export function init() {
             z[id] = at;
           }
         }
-        // Safari keeps this plan (step 2 is Chrome's): prose that only just spills onto a page, or only just
-        // fills one, is set slightly smaller here, as step 2 does for Chrome, with more to spare (in Satish's
-        // Safari PDFs the last line or two of the Atharvashirsha printed alone on a page)
-        if (root.classList.contains("wk") && fl.indexOf(true) >= 0) {
-          var k = 0;
-          if (r.n > 1 && r.f < 0.3) k = (0.9 * (r.n - 1)) / (r.n - 1 + r.f);
-          else if (r.f > 0.9) k = (r.n - 1 + 0.85) / (r.n - 1 + r.f);
-          if (k >= LAYOUT.page.minZoom && k < 1) {
-            z[id] = Math.round(k * 100) / 100;
-            r = pack(hs, z[id], fl);
+        // Safari keeps this plan (step 2 is Chrome's): prose that only just spills onto a page is set at the
+        // largest size that takes a page fewer, as step 2 does for Chrome (in Satish's Safari PDFs the last
+        // line or two of the Atharvashirsha printed alone on a page). The 90% packing is its spare room.
+        if (root.classList.contains("wk") && fl.indexOf(true) >= 0 && r.n > 1 && (r.f * H) / C < 0.3) {
+          for (var u = 98; u >= LAYOUT.page.minZoom * 100; u -= 2) {
+            var v = pack(hs, u / 100, fl);
+            if (v.n < r.n) {
+              r = v;
+              z[id] = u / 100;
+              break;
+            }
           }
         }
         plan[id] = r;
@@ -751,6 +746,8 @@ export function init() {
       else if (P.lang === "both") b1.hidden = true;
       // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
       document.getElementById("prl").hidden = !(root.classList.contains("wk") && (ready ? land(wm) : !b2.hidden));
+      // Safari on a Mac: Chrome turns the page itself and prints the border and page numbers (Satish, 2026-10)
+      document.getElementById("prc").hidden = !root.classList.contains("wk") || iOS;
       bgo.hidden = !ready;
       pw.hidden = pv2.hidden = bsf.hidden = bcp.hidden = true;
     }
