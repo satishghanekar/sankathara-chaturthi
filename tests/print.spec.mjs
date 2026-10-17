@@ -62,9 +62,11 @@ for (const L of LAYOUTS)
         // the lines themselves (js/print/fit.js): nothing lost, side by side in step, lines broken mid-phrase only
         // where a line is too long even at its smallest (npm run print:audit shows every case)
         const a = auditLines(r.marked, await pdfMarks(r.pdf.buf));
-        expect(a.missing, "lines missing from the PDF").toBe(0);
-        expect(a.outOfStep, "side by side rows out of step").toBeLessThanOrEqual(6);
-        expect(a.brokeMidPhrase, "lines broken mid-phrase").toBeLessThanOrEqual(12);
+        // a failure names the lines, so it can be understood from the log alone (CI keeps no PDFs)
+        const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
+        expect(a.missing, which("text missing")).toBe(0);
+        expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
+        expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
       });
     }
 
