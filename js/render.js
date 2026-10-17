@@ -68,9 +68,29 @@
     kn: { off: 0x380, sp: { "ॐ": "ಓಂ", "ऱ": "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", "ऑ": "ಆ", "ॲ": "ಅ" }, back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]] },
   };
   var KEEP = /[॒॑।॥]/;
+  // ---- Print handed over from the iPhone Home Screen app (js/features/print.js, "Open in Safari") ----
+  // The app cannot print, so it opens Safari at …/?print=two&s={…}: the reader's print choices (language, dhrupad,
+  // font, page) are saved here first, before anything reads them, and the address is put back to the plain one.
+  // js/features/print.js then lays the printout out and offers Print now (window.PRQ is the chosen layout).
+  try {
+    var q = /[?&]print=(two|as|side)(?:&s=([^&#]*))?/.exec(location.search);
+    if (q) {
+      var got = JSON.parse(decodeURIComponent(q[2] || "") || "{}"),
+        prefs = JSON.parse(localStorage.getItem("aarti2-prefs") || "{}");
+      ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "tr", "por"].forEach(function (k) {
+        if (typeof got[k] === "string" || typeof got[k] === "number") prefs[k] = got[k];
+      });
+      // a first visit in Safari: these choices are already up to date, so the start-up changes for older settings
+      // (js/core/state.js) must not reset them
+      if (!prefs.sv) prefs.sv = 6;
+      localStorage.setItem("aarti2-prefs", JSON.stringify(prefs));
+      window.PRQ = q[1];
+      history.replaceState(null, "", location.pathname + location.hash);
+    }
+  } catch (e) {}
   var ind = "";
   try {
-    ind = (JSON.parse(localStorage.getItem("aarti2-prefs") || "{}").ind || "");
+    ind =(JSON.parse(localStorage.getItem("aarti2-prefs") || "{}").ind || "");
   } catch (e) {}
   var S = SCRIPTS[ind],
     OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed

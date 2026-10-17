@@ -206,10 +206,14 @@ for (const standalone of [false, true]) {
     await page.locator("#prgo").click();
     expect(await page.evaluate(() => window.__printed)).toBe(2);
     if (standalone) {
+      // even Print now did not print: Open in Safari, with the print choices in the address
       await expect(page.locator("#prw")).toBeVisible();
       await expect(page.locator("#prgo")).toBeHidden();
-      await page.locator("#prx").click();
+      await expect(page.locator("#prsf")).toBeVisible();
+      await expect(page.locator("#prsf")).toBeFocused();
+      await expect(page.locator("#prcp")).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
+      await page.locator("#prx").click();
     } else {
       await page.waitForTimeout(1300);
       await expect(page.locator("#prm")).toBeHidden();
@@ -225,6 +229,82 @@ for (const standalone of [false, true]) {
   });
 }
 
+// Laid out ahead: once the page has been open a few seconds, the single-column printout is ready, so on an
+// iPhone the Print button prints on its first tap (no Print now), while the tap still counts
+test("iPhone: a printout laid out ahead prints on the first tap @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    window.__printed = 0;
+    window.print = () => {
+      window.__printed++;
+      dispatchEvent(new Event("beforeprint"));
+    };
+  });
+  await openSite(page, SETUPS.english);
+  await page.waitForTimeout(9000);
+  await page.locator("#prb").click();
+  await page.locator("#pr2").click();
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => window.__printed)).toBe(1);
+  await expect(page.locator("#prgo")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("one");
+  await context.close();
+});
+
+// The Home Screen app that has failed to print once goes straight to Open in Safari, and Safari, opened at that
+// address, takes the print choices, cleans the address and lays the printout out, ready to print
+test("iPhone Home Screen app: Open in Safari carries the print choices @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    if (!location.search) Object.defineProperty(navigator, "standalone", { value: true });
+    window.__printed = 0;
+    window.print = () => {
+      if (window.__printed++ && !navigator.standalone) dispatchEvent(new Event("beforeprint"));
+    };
+  });
+  await openSite(page, SETUPS.english);
+  await page.evaluate(() => {
+    localStorage.setItem("aarti2-noprint", "1");
+    const p = JSON.parse(localStorage.getItem("aarti2-prefs"));
+    p.ref = 0;
+    p.por = "land";
+    localStorage.setItem("aarti2-prefs", JSON.stringify(p));
+  });
+  await page.reload();
+  await page.locator("#prb").click();
+  await page.locator("#pr1").click();
+  await expect(page.locator("#prsf")).toBeVisible();
+  expect(await page.evaluate(() => window.__printed)).toBe(0);
+  // the address Open in Safari goes to (Chromium has no x-safari-https, so the page stays)
+  await page.locator("#prsf").click();
+  const href = await page.locator("#prsf").getAttribute("data-to");
+  expect(href).toMatch(/^x-safari-http.*\?print=two&s=/);
+  const url = href.replace(/^x-safari-/, "");
+  // Safari: a fresh browser with its own storage
+  const sf = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const sp = await sf.newPage();
+  await sp.addInitScript(() => {
+    window.__printed = 0;
+    window.print = () => {
+      if (window.__printed++) dispatchEvent(new Event("beforeprint"));
+    };
+  });
+  await sp.goto(url);
+  await expect(sp.locator("#prgo")).toBeVisible({ timeout: 15_000 });
+  expect(await sp.evaluate(() => location.search)).toBe("");
+  const prefs = await sp.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
+  expect([prefs.lang, prefs.ref, prefs.por]).toEqual(["en", 0, "land"]);
+  await sp.locator("#prgo").click();
+  await sp.waitForTimeout(1300);
+  expect(await sp.evaluate(() => document.documentElement.getAttribute("data-print"))).toBe("two");
+  // English
+  expect(await sp.evaluate(() => /Sukhkarta/.test(document.getElementById("pv").textContent))).toBe(true);
+  await sf.close();
+  await context.close();
+});
+
 // Upright or Sideways: the choice is remembered, the note names it, the browser is told (@page), and Safari,
 // which keeps the sheet picked in its own dialog, is told to pick Landscape there too
 test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => {
@@ -232,7 +312,7 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
     const page = await context.newPage();
     await stubPrint(page);
-    await openSite(page, SETUPS.marathi);
+    await openSite(page, SETUPS.marathi, { sideways: true });
     await page.locator("#prb").click();
     await expect(page.locator("#pou")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#proe")).toHaveText("upright");
@@ -254,6 +334,27 @@ test("print pop-up: Upright or Sideways @chromium-only", async ({ browser }) => 
     await expect(page.locator("#prl")).toBeHidden();
     await context.close();
   }
+});
+
+// Sideways is held back (js/core/features.js, FEAT_SW): no choice in the pop-up, and a saved Sideways prints upright
+test("print pop-up: upright pages only while Sideways is held back @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, SETUPS.marathi);
+  await page.evaluate(() => {
+    const p = JSON.parse(localStorage.getItem("aarti2-prefs"));
+    p.por = "land";
+    localStorage.setItem("aarti2-prefs", JSON.stringify(p));
+  });
+  await page.reload();
+  await page.locator("#prb").click();
+  await expect(page.locator("#pr1")).toBeVisible();
+  await expect(page.locator(".pro")).toBeHidden();
+  await expect(page.locator("#proe")).toHaveText("upright");
+  const sizes = await page.evaluate(() => {
+    const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
+    return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
+  });
+  expect(sizes.pop()).toBe("portrait");
 });
 
 test("print pop-up in Marathi-only and English-only offers two and one column @chromium-only", async ({ page }) => {

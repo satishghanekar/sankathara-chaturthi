@@ -174,6 +174,16 @@ export function ovDone() {
   history.back();
 }
 
+// A dialog closed to print: its Back step becomes a plain one, without stepping back. Stepping back
+// (history.back()) lands a moment later, and a page moving through its history just as it asks to print
+// may lose the print on iPhone, so printing never steps back.
+export function ovDrop() {
+  if (!NAV || !hs().ov) return;
+  try {
+    history.replaceState({ y: scrollY }, "", location.href);
+  } catch (e) {}
+}
+
 // Go somewhere in the page: go() scrolls, url is "#a3" (a piece) or the bare address (home)
 export function jumpTo(go, url) {
   var ov = NAV && hs().ov;
