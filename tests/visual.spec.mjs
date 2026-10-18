@@ -5,6 +5,7 @@
 // Recorded in Chromium; the site's fonts are its own files, so shots are the same on any Linux machine.
 import { test, expect } from "@playwright/test";
 import { openSite, settle, SETUPS } from "./helpers.mjs";
+import { printFromButton } from "./print-helpers.mjs";
 
 const SIZES = {
   phone: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
@@ -103,10 +104,7 @@ for (const [name, prefs, choice] of [
     const page = await context.newPage();
     await page.addInitScript(() => (window.print = () => ((window.__printed = 1), dispatchEvent(new Event("beforeprint")))));
     await openSite(page, prefs);
-    await page.locator("#prb").click();
-    await page.locator("#" + choice).click();
-    await page.waitForFunction(() => window.__printed);
-    await page.emulateMedia({ media: "print" });
+    await printFromButton(page, choice);
     await settle(page);
     await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: false, clip: { x: 0, y: 0, width: 816, height: 2112 } });
     await context.close();
