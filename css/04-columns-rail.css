@@ -247,7 +247,6 @@
   height: 18px;
   margin: 0 !important;
 }
-/* Version number beside the Settings title, so we can tell which copy a phone is showing */
 /* Narrow phones: icons only. The words are clipped out of sight rather than removed (display:none), because
    they are each button's name for screen readers and voice control (WCAG 2.5.3 Label in Name) */
 @media (max-width: 379px) {
