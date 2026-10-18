@@ -375,16 +375,22 @@ export function init() {
     function pfn() {
       return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : P.fnt;
     }
+    // The printout's dhrupad (once, or after every verse) likewise: picked in the pop-up, else as the page shows it
+    function pref() {
+      return P.pref === 0 || P.pref === 1 ? P.pref : P.ref;
+    }
     function pon(mode) {
       root.setAttribute("data-print", mode);
       root.setAttribute("data-font", pfn());
+      root.setAttribute("data-ref", String(pref()));
     }
     function poff() {
       root.removeAttribute("data-print");
       root.setAttribute("data-font", P.fnt);
+      root.setAttribute("data-ref", String(P.ref));
     }
     function pkey(mode) {
-      return [mode, P.lang, shared.LEAD, P.ref, P.tr, P.ui, pfn(), land(mode)].join("|");
+      return [mode, P.lang, shared.LEAD, pref(), P.tr, P.ui, pfn(), land(mode)].join("|");
     }
     // The page as it prints: the browser is told with @page, set as each printout is made (Chrome, Edge and
     // Firefox follow it; Safari keeps the sheet the reader picks in its dialog, so the pop-up tells them to
@@ -395,9 +401,10 @@ export function init() {
     function setPage(mode) {
       pst.textContent = land(mode) ? "@page { size: landscape }" : "";
     }
-    // Above the choices: the dhrupad setting (a tap switches it, as the dhrupad button does) and the text font
-    // (the four of Settings → Text font: a tap switches it there too), with a line of the text in it
-    var fn = document.getElementById("prfn");
+    // Above the choices: the dhrupad setting for the printout and its font
+    // (the four of Settings → Text font), with a line of the text in it; neither changes the reading page
+    var fn = document.getElementById("prfn"),
+      dh = document.getElementById("prdg");
     [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
       fn.appendChild(b.cloneNode(true));
     });
@@ -425,15 +432,17 @@ export function init() {
       return t.length > 26 ? t.slice(0, 26).replace(/\s+\S*$/, "") + "…" : t;
     }
     function rows() {
-      var dv = document.getElementById("prdv"),
-        or = P.ind === "kn" ? "kn" : "mr",
+      var or = P.ind === "kn" ? "kn" : "mr",
         ks = P.lang === "both" ? (shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [P.lang === "en" ? "en" : "mr"];
-      dv.innerHTML = P.ref ? lbl("एकदाच", "Once") : lbl("प्रत्येक कडव्यानंतर", "After every verse");
+      [].forEach.call(dh.children, function (b) {
+        b.setAttribute("aria-pressed", b.dataset.v === String(pref()) ? "true" : "false");
+      });
       [].forEach.call(fn.children, function (b) {
         b.setAttribute("aria-pressed", b.dataset.v === pfn() ? "true" : "false");
       });
       var fs = document.getElementById("prfs");
       fs.textContent = "";
+      fs.classList.toggle("one", ks.length === 1);
       ks.forEach(function (k, i) {
         // (in the language of the line, not as .mr or .en: those follow the menus' language here)
         var lang = k === "en" ? "en" : or,
@@ -451,9 +460,13 @@ export function init() {
         e.style.setProperty("font-weight", lang === "kn" && pfn() === "bold" ? "500" : "400", "important");
       });
     }
-    document.getElementById("prdh").onclick = function () {
-      document.getElementById("rb").click();
+    dh.onclick = function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      P.pref = +b.dataset.v;
+      save();
       rows();
+      warmSoon(1500);
     };
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     function pcss() {
@@ -489,7 +502,7 @@ export function init() {
         sh = sheet(mode);
       f.style.cssText = "position:fixed;left:-10000px;top:0;border:0;visibility:hidden;width:" + ((sh[0] - 18) * mm * sf - (pfn() !== "std" ? 16 : 12)) + "px;height:" + (sh[1] - 23) * mm * sf + "px";
       [].forEach.call(root.attributes, function (a) {
-        var v = a.name === "data-font" ? pfn() : a.value;
+        var v = a.name === "data-font" ? pfn() : a.name === "data-ref" ? String(pref()) : a.value;
         if (a.name !== "data-print") at += " " + a.name + '="' + v.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
       });
       document.body.appendChild(f);
@@ -613,10 +626,13 @@ export function init() {
             z[id] = at;
           }
         }
-        // Safari keeps this plan (step 2 is Chrome's): prose that only just spills onto a page is set at the
-        // largest size that takes a page fewer, as step 2 does for Chrome (in Satish's Safari PDFs the last
-        // line or two of the Atharvashirsha printed alone on a page). The 90% packing is its spare room.
-        if (root.classList.contains("wk") && fl.indexOf(true) >= 0 && r.n > 1 && (r.f * H) / C < 0.3) {
+        // Safari keeps this plan (step 2 is Chrome's): prose that spills onto a page is set at the largest size
+        // that takes a page fewer, as step 2 does for Chrome (in Satish's Safari PDFs the last line or two of the
+        // Atharvashirsha printed alone on a page). Safari prints prose shorter than this plan (in his October
+        // 18 PDFs, an English tail planned at over a quarter of a page printed as 3 lines, and Marathi sideways
+        // planned onto a third page fitted in two), so a spill of up to 45% of a page counts. The 90% packing
+        // is its spare room.
+        if (root.classList.contains("wk") && fl.indexOf(true) >= 0 && r.n > 1 && r.f < 0.45) {
           for (var u = 98; u >= LAYOUT.page.minZoom * 100; u -= 2) {
             var v = pack(hs, u / 100, fl);
             if (v.n < r.n) {
@@ -829,7 +845,7 @@ export function init() {
     // app goes straight to this step once a layout is chosen.
     function link(mode) {
       var s = {};
-      ["lang", "lead", "l2", "ui", "ind", "ref", "fnt", "pfn", "tr", "por"].forEach(function (k) {
+      ["lang", "lead", "l2", "ui", "ind", "ref", "pref", "fnt", "pfn", "tr", "por"].forEach(function (k) {
         s[k] = P[k];
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
@@ -963,7 +979,8 @@ export function init() {
       document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
       ovPush();
       pm.hidden = false;
-      bpr.focus();
+      // (a card taller than the screen stays at its top: the Print button is below)
+      bpr.focus({ preventScroll: true });
     };
     function pmClose() {
       unready();
