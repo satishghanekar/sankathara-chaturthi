@@ -247,16 +247,14 @@
   height: 18px;
   margin: 0 !important;
 }
-/* Narrow phones: icons only. The words are clipped out of sight rather than removed (display:none), because
-   they are each button's name for screen readers and voice control (WCAG 2.5.3 Label in Name) */
+/* Narrow phones: the word sits under its icon, smaller, so the five buttons still fit and a first-time reader
+   can tell what each does (an icon alone, a phone with an arrow for App, was too hard to guess) */
 @media (max-width: 379px) {
-  #shr button > span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
+  #shr button {
+    flex-direction: column;
+    gap: 3px;
+    height: 52px;
+    font-size: 11px;
   }
 }
 

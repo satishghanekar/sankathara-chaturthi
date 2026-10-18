@@ -625,8 +625,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -823,8 +823,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -1020,8 +1020,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -1217,8 +1217,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -1467,8 +1467,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -1817,8 +1817,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
@@ -2159,8 +2159,8 @@ window.CONTENT = {
      },
      "refrain": {
       "label": {
-       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)",
-       "en": "Refrain (after every verse)"
+       "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+       "en": "Refrain (sung after every verse)"
       },
       "lines": [
        {
