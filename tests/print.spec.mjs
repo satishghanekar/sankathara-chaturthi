@@ -466,13 +466,14 @@ test("print pop-up scrolls when taller than the screen @chromium-only", async ({
   await expect(page.locator("#prx")).toBeInViewport();
 });
 
-// Above the choices: the dhrupad setting, which a tap switches (for the printout and the page alike), and the
-// printout's font (a tap picks another, for the printout only) with a line of the text in it
+// Above the choices: the printout's dhrupad and font (a tap picks another, for the printout only: the reading
+// page keeps its own), with a line of the text in it, centred for one language
 test("print pop-up shows the dhrupad and font settings @chromium-only", async ({ page }) => {
   await stubPrint(page);
   await openSite(page, { ...SETUPS.marathi, fnt: "classic" });
   await page.locator("#prb").click();
-  await expect(page.locator("#prdv")).toHaveText("Once", { useInnerText: true });
+  await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Once", { useInnerText: true });
+  await expect(page.locator("#prfs")).toHaveCSS("text-align", "center");
   await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Classic", { useInnerText: true });
   await expect(page.locator("#prfs")).toContainText("सुखकर्ता");
   expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Classic");
@@ -492,8 +493,20 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
       return [f, document.documentElement.getAttribute("data-font")];
     }),
   ).toEqual(["bold", "classic"]);
-  await page.locator("#prdh").click();
-  await expect(page.locator("#prdv")).toHaveText("After every verse", { useInnerText: true });
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).ref)).toBe(0);
+  // the dhrupad likewise: every verse in the printout, once on the reading page
+  await page.locator('#prdg [data-v="0"]').click();
+  await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Every verse", { useInnerText: true });
+  const p2 = await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
+  expect([p2.pref, p2.ref]).toEqual([0, 1]);
+  expect(
+    await page.evaluate(() => {
+      const r = () => document.documentElement.getAttribute("data-ref");
+      const was = r();
+      window.dispatchEvent(new Event("beforeprint"));
+      const f = r();
+      window.dispatchEvent(new Event("afterprint"));
+      return [was, f, r()];
+    }),
+  ).toEqual(["1", "0", "1"]);
   await expect(page.locator("#prm")).toBeVisible();
 });
