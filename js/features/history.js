@@ -151,8 +151,14 @@ export function init() {
     apply();
     save();
     if (c) c.scrollIntoView();
-    var L = P.lang === "both" ? LANGS[LK(P.lead)].n + " + " + LANGS[LK(P.l2)].n : LANGS[LK(P.lang)].n;
-    flash(L, L);
+    function nm(l) {
+      return l === "both" ? LANGS[LK(P.lead)].n + " + " + LANGS[LK(P.l2)].n : LANGS[LK(l)].n;
+    }
+    // what is shown now, and what the next tap shows, long enough to read: a tap by mistake mid-aarti is then
+    // easy to undo
+    var L = nm(P.lang),
+      N = nm(o[(o.indexOf(P.lang) + 1) % 3]);
+    flash(L + " · पुढे: " + N, L + " · Next tap: " + N, 3500);
   };
 }
 

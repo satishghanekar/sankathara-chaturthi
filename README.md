@@ -162,7 +162,7 @@ In `content/pieces.js` the pieces sit in two groups (Pooja, Aarti), in reading o
  "title": { "mr": "गणपतीची आरती", "en": "Ganapati Aarti" },
  "tag": { "mr": "मराठी", "en": "Marathi" },
  "refrain": {                               // the dhrupad shown once at the top
-  "label": { "mr": "ध्रुपद (प्रत्येक कडव्यानंतर)", "en": "Refrain (after every verse)" },
+  "label": { "mr": "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)", "en": "Refrain (sung after every verse)" },
   "lines": [ { "mr": "जय देव जय देव, जय मंगल मूर्ती ।", "en": "Jai Dev Jai Dev, Jai Mangal Murti |" }, … ]
  },
  "items": [
