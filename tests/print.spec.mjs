@@ -165,11 +165,10 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await stubPrint(page);
   await openSite(page, SETUPS.both);
   await page.locator("#prb").click();
-  await expect(page.locator("#pr1")).toBeHidden();
-  await expect(page.locator("#pr2")).toContainText("Landscape");
-  await expect(page.locator("#pr2 .prsub")).toHaveText("Side by side: Marathi | English");
+  await expect(page.locator("#prpg")).toBeHidden();
+  await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
   await expect(page.locator("#prq")).toHaveText("Letter");
-  await expect(page.locator("#pr2")).toBeFocused();
+  await expect(page.locator("#prgp")).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(page.locator("#prm")).toBeHidden();
   await expect(page.locator("#prb")).toBeFocused();
@@ -195,6 +194,7 @@ test("iPhone: an ignored print offers Print now @chromium-only", async ({ browse
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
   await page.locator("#pr1").click();
+  await page.locator("#prgp").click();
   await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator("#pr1")).toBeHidden();
   await expect(page.locator("#prgo")).toBeFocused();
@@ -224,6 +224,7 @@ test("iPhone: when Print now does not print either, Share → Print and Open in 
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
   await page.locator("#pr1").click();
+  await page.locator("#prgp").click();
   await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
   await page.locator("#prgo").click();
   await expect(page.locator("#prv")).toBeVisible({ timeout: 5_000 });
@@ -254,6 +255,7 @@ test("iPhone Home Screen app: a layout choice goes straight to Open in Safari @c
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
   await page.locator("#pr1").click();
+  await page.locator("#prgp").click();
   await expect(page.locator("#prsf")).toBeVisible();
   await expect(page.locator("#prsf")).toBeFocused();
   await expect(page.locator("#prcp")).toBeVisible();
@@ -285,6 +287,7 @@ test("iPhone: a printout laid out ahead prints on the first tap @chromium-only",
   await page.waitForTimeout(9000);
   await page.locator("#prb").click();
   await page.locator("#pr1").click();
+  await page.locator("#prgp").click();
   await page.waitForTimeout(300);
   expect(await page.evaluate(() => window.__printed)).toBe(1);
   await expect(page.locator("#prgo")).toBeHidden();
@@ -314,6 +317,7 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await page.reload();
   await page.locator("#prb").click();
   await page.locator("#pr2").click();
+  await page.locator("#prgp").click();
   await expect(page.locator("#prsf")).toBeVisible();
   expect(await page.evaluate(() => window.__printed)).toBe(0);
   // the address Open in Safari goes to (Chromium has no x-safari-https, so the page stays)
@@ -344,39 +348,42 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await context.close();
 });
 
-// What the pop-up offers (CHOICE in js/print/profiles.js): one language, Portrait then Landscape, the focus on
-// Portrait until the reader has chosen a page; both languages, Landscape (side by side) only
-for (const [setup, sub] of [
-  ["marathi", "Marathi"],
-  ["english", "English"],
-  ["kannada", "Kannada"],
+// What the pop-up offers (CHOICE in js/print/profiles.js): one language, Portrait or Landscape on one line,
+// Portrait until the reader has chosen a page, and the sample in that language; both languages, Landscape (side
+// by side) only, with a few words of each language in the sample. The focus is on Print.
+for (const [setup, words] of [
+  ["marathi", "सुखकर्ता दुःखहर्ता"],
+  ["english", "Sukhkarta Dukhharta"],
+  ["kannada", "ಸುಖಕರ್ತಾ"],
 ]) {
   test(`print pop-up offers Portrait and Landscape: ${setup} @chromium-only`, async ({ page }) => {
     await stubPrint(page);
     await openSite(page, SETUPS[setup]);
     await page.locator("#prb").click();
-    await expect(page.locator(".prs button:not([hidden])").first()).toHaveId("pr1");
-    await expect(page.locator("#pr1")).toContainText("Portrait");
-    await expect(page.locator("#pr2")).toContainText("Landscape");
-    await expect(page.locator("#pr1 .prsub")).toHaveText(sub);
-    await expect(page.locator("#pr2 .prsub")).toHaveText(sub);
-    await expect(page.locator("#pr1")).toBeFocused();
+    await expect(page.locator("#pr1")).toHaveText("Portrait");
+    await expect(page.locator("#pr2")).toHaveText("Landscape");
+    await expect(page.locator("#pr1")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("#prpv")).toBeHidden();
+    await expect(page.locator("#prfs")).toContainText(words);
+    await expect(page.locator("#prfs")).not.toContainText("·");
+    await expect(page.locator("#prgp")).toBeFocused();
   });
 }
-for (const [setup, sub] of [
-  ["both", "Side by side: Marathi | English"],
-  ["kannada-both", "Side by side: Kannada | English"],
-  ["english-main-both", "Side by side: English | Marathi"],
+for (const [setup, a, b] of [
+  ["both", "सुखकर्ता", "Sukhkarta"],
+  ["kannada-both", "ಸುಖಕರ್ತಾ", "Sukhkarta"],
+  ["english-main-both", "Sukhkarta", "सुखकर्ता"],
 ]) {
   test(`print pop-up offers only Landscape side by side: ${setup} @chromium-only`, async ({ page }) => {
     await stubPrint(page);
     await openSite(page, { ...SETUPS[setup], por: "up" });
     await page.locator("#prb").click();
-    await expect(page.locator(".prs button:not([hidden])")).toHaveCount(1);
-    await expect(page.locator("#pr1")).toBeHidden();
-    await expect(page.locator("#pr2")).toContainText("Landscape");
-    await expect(page.locator("#pr2 .prsub")).toHaveText(sub);
-    await expect(page.locator("#pr2")).toBeFocused();
+    await expect(page.locator("#prpg")).toBeHidden();
+    await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
+    const t = await page.locator("#prfs").textContent();
+    expect(t.indexOf(a)).toBeGreaterThanOrEqual(0);
+    expect(t.indexOf(b)).toBeGreaterThan(t.indexOf(a));
+    await expect(page.locator("#prgp")).toBeFocused();
   });
 }
 
@@ -402,8 +409,8 @@ for (const [setup, choice, mode, landscape] of [
   });
 }
 
-// The page chosen is remembered (the focus is on it next time), the printer is told the page size, and Safari,
-// which keeps the sheet picked in its own dialog, is told to pick Landscape there too (and, on a Mac, that Chrome
+// The page chosen is remembered (shown chosen next time), the printer is told the page size, and Safari,
+// which keeps the sheet picked in its own dialog, is told, once Landscape is chosen, to pick it there too (and, on a Mac, that Chrome
 // prints it best)
 test("print pop-up: the page chosen is remembered and printed that way @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
@@ -412,7 +419,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await stubPrint(page);
     await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
-    await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
+    await expect(page.locator("#prl")).toBeHidden();
     await expect(page.locator("#prc")).toBeVisible({ visible: !!ua });
     const sizes = () =>
       page.evaluate(() => {
@@ -420,12 +427,14 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
         return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
       });
     await page.locator("#pr2").click();
+    await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });
+    await page.locator("#prgp").click();
     await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
     expect((await sizes()).pop()).toBe("landscape");
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
     await page.evaluate(() => dispatchEvent(new Event("afterprint")));
     await page.locator("#prb").click();
-    await expect(page.locator("#pr2")).toBeFocused();
+    await expect(page.locator("#pr2")).toHaveAttribute("aria-pressed", "true");
     await context.close();
   }
 });
@@ -441,7 +450,7 @@ test("print pop-up: a saved Landscape choice is kept @chromium-only", async ({ p
   });
   await page.reload();
   await page.locator("#prb").click();
-  await expect(page.locator("#pr2")).toBeFocused();
+  await expect(page.locator("#pr2")).toHaveAttribute("aria-pressed", "true");
 });
 
 // A card taller than the screen (a phone on its side, in the iPhone's Open in Safari state) starts at the top and
