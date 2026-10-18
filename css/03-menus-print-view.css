@@ -409,8 +409,8 @@ h2[tabindex="-1"]:focus {
   font-size: 16px;
   line-height: 1.3;
 }
-/* the choices, one group of rows: the dhrupad (a tap switches it), the page, and the printout's font with a
-   short sample line */
+/* the choices, one group of rows: the printout's dhrupad, its page, and its font with a short sample line (all
+   for the printout only: the reading page keeps its own) */
 .pro {
   display: grid;
   margin: 4px 0 10px;
@@ -444,7 +444,7 @@ h2[tabindex="-1"]:focus {
   font-weight: 600;
   text-align: end;
 }
-/* the page (on the row's own line) and the four text fonts (under the label): the chosen one raised */
+/* the dhrupad and the page (on the row's own line) and the four text fonts (under the label): the chosen one raised */
 .prrow .prseg {
   grid-column: 1 / -1;
   display: flex;
@@ -499,6 +499,10 @@ h2[tabindex="-1"]:focus {
 }
 .prrow .prfs[lang="en"] {
   font-family: var(--lat);
+}
+/* one language: a few words, centred under the fonts */
+.prrow .prfs.one {
+  text-align: center;
 }
 :root[data-font]:not([data-font="std"]) .prrow .prfs {
   font-family: var(--tf), var(--body);
