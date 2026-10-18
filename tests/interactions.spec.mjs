@@ -162,10 +162,19 @@ test("on Sankashti day the card leads with moonrise, and More dates opens the re
   await expect(page.locator("#shr")).toBeVisible();
 });
 
-test("on other days the card has no More dates button @mobile", async ({ page }) => {
+// Other days: the card leads with the next Chaturthi date and its moonrise too, with the App / Share / QR /
+// Print / Help row in view and the date strip under More dates
+test("on other days the card leads with the next Chaturthi date, and More dates opens the strip @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#home")).not.toHaveClass(/\bpday\b/);
-  await expect(page.locator("#skmore")).toBeHidden();
+  await expect(page.locator("#skc .skh").first()).toContainText("पुढील चतुर्थी");
+  const more = page.locator("#skmore");
+  await expect(more).toBeVisible();
+  await expect(more).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator("#skc .sks")).toBeHidden();
+  await expect(page.locator("#shr")).toBeVisible();
+  await more.click();
+  await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
   await expect(page.locator("#shr")).toBeVisible();
 });
