@@ -62,6 +62,7 @@
 <link rel="modulepreload" href="js/features/bars.js">
 <link rel="modulepreload" href="js/features/settings-panel.js">
 <link rel="modulepreload" href="js/features/dhrupad-button.js">
+<link rel="modulepreload" href="js/features/reading-sheet.js">
 <link rel="modulepreload" href="js/features/wake-lock.js">
 <link rel="modulepreload" href="js/features/overlays.js">
 <link rel="modulepreload" href="js/features/history.js">
@@ -340,7 +341,7 @@
         <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankathara Chaturthi” returns.</li>
         <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before. On a computer it downloads a calendar file for you to open. On an iPhone it opens Calendar's Add screen. On Android it opens your calendar app with the event filled in, and the app's own reminder setting applies. Past dates have no icon.</li>
         <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankathara Chaturthi at once.</li>
-        <li>On the day itself, the card shows how long until moonrise (and, in central Ohio, the pooja time).</li>
+        <li><b>On Sankashti day</b> the card opens on tonight's moonrise in large type, how long until it rises and, in central Ohio, the pooja time; the contents below are larger too. The date strip, the calendar links and the App, Share, QR, Print and Help buttons wait under <b>More dates</b>: tap it to show them.</li>
       </ul>
 
       <h3>Buttons at the top</h3>
@@ -378,9 +379,10 @@
       <ul>
         <li><b>Tap a line</b> to highlight it, so everyone can keep their place; its whole stanza gets a soft band too, so you find it again at a glance. Tap again to clear.</li>
         <li><b>More room to read:</b> on phones and tablets, the top and bottom bars slide away as you scroll down, leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
-        <li><b>Pinch</b> (on a computer: a trackpad pinch, or Ctrl + / Ctrl − and Ctrl 0 to reset; ⌘ on a Mac) or use A− / A+ in Settings to change the text size. The page itself never zooms. On the top card of the home page a pinch does nothing, and the rest of the home page grows only a little. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
+        <li><b>Pinch</b> (on a computer: a trackpad pinch, or Ctrl + / Ctrl − and Ctrl 0 to reset; ⌘ on a Mac) or use A− / A+ (under <b>Aa</b> in the bottom bar, or in Settings) to change the text size. The page itself never zooms. On the top card of the home page a pinch does nothing, and the rest of the home page grows only a little. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
         <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the contents.</li>
-        <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
+        <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> (home) and <b>contents-and-search</b> buttons work just like the ones at the top. On the smallest phones Prev and Next show just their arrows. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or Contents is open.</li>
+        <li><b>Aa</b> (bottom bar): slides up the reading choices within reach of your thumb: <b>Language</b> (main, second or both, the same as the अ/A button), <b>Text size</b> (A− and A+, with ↺ to go back to the normal size) and <b>Dhrupad</b> (once, or after every verse), plus <b>All settings</b>. Your place stays put as you change them. Tap outside it, ✕ or your phone's Back to close it.</li>
         <li data-feat="tl" hidden><b>Tilt to scroll</b> (phones and tablets): tap the tilted-phone button in the bottom bar, holding the phone however is comfortable. Lean the top of the phone away from you and the page moves down; lean it back towards you and it moves up. The further you lean, the faster it goes; hold it still and the page stays put. The dot in the bar shows the lean. Touch the page to hold it; when you let go, the way you are holding the phone then becomes the new "still". ⏸ stops it. On an iPhone, tap <b>Allow</b> when it asks for motion access (only the first time). The tilt is read on the phone; nothing is sent anywhere.</li>
         <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
       </ul>
@@ -407,7 +409,7 @@
 <div id="szt" aria-hidden="true"></div>
 <div id="sza" class="sr" role="status"></div>
 <div id="fl" role="status" aria-live="polite"></div>
-<!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (tilt, phones and tablets), (autoscroll ▶), Next ›.
+<!-- ==== Bottom bar (footer menu, every page): ‹ Previous, Home, Contents + search, (tilt, phones and tablets), Aa (reading sheet), (autoscroll ▶), Next ›.
      While tilt to scroll runs (#asc.tl) the bar shows only the tilt meter, its label and ⏸.
      ▶ shows only once autoscroll is released (FEAT_AS) and switched on; while it runs: Home, Search, speed, ⏸. ==== -->
 <!-- slim strip with the piece name, shown while the bars are tucked away on phones and tablets (data-tuck) -->
@@ -418,10 +420,43 @@
     <button type="button" id="ash" class="asi" aria-label="Home: contents"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></button>
     <button type="button" id="asq" class="asi" aria-label="Contents and search" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h14M4 11h8M4 16h5"/><circle cx="16" cy="15.5" r="3.6"/><path d="M18.6 18.1l2.6 2.6"/></svg></button>
     <button type="button" id="tlb" class="asi" aria-label="Tilt to scroll" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="15" rx="1.6" transform="rotate(-18 12 10.5)"/><path d="M4 15c0 3 2 5 5 5.5"/><path d="M7.5 18.6 9 20.5l-2 1"/></svg></button>
+    <button type="button" id="rsb" class="asi" aria-label="Reading: language, text size, dhrupad" aria-expanded="false" aria-controls="rsh"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 19l3.6-9 3.6 9M3.9 15.6h4.4"/><path d="M11.5 19l5-13 5 13M13.4 14h6.2"/></svg></button>
     <div id="tls"><span id="tlm" aria-hidden="true"><b></b><i></i></span><span id="tlt"><span id="tll"></span><span id="tlh"></span></span><button type="button" id="tlx"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></button></div>
     <div id="ass"><button type="button" id="asm" aria-label="Slower">−</button><span id="asl" aria-live="polite"></span><button type="button" id="asp" aria-label="Faster">+</button></div>
     <button type="button" id="asb" aria-label="Autoscroll" aria-pressed="false"><svg class="ip" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg><svg class="ia" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1"/><rect x="13.5" y="5" width="4" height="14" rx="1"/></svg></button>
     <button type="button" id="asn" class="asx"></button>
+  </div>
+</div>
+<!-- ==== Reading sheet: Aa in the bottom bar slides it up over the bar. Language (main, second, both), text size
+     (A− / A+, back to the fitted size) and dhrupad (once, every verse), within thumb reach; All settings opens
+     Settings. A tap outside, ✕, Escape or the phone's Back closes it (js/features/reading-sheet.js) ==== -->
+<div id="rsh" hidden>
+  <div class="rsc" role="dialog" aria-labelledby="rsht" tabindex="-1">
+    <div class="rs-hd">
+      <h2 id="rsht"><span class="mr">वाचन</span><span class="en" lang="en">Reading</span></h2>
+      <button type="button" id="rsx" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="rs-row">
+      <span class="rs-l" id="rsll"><span class="mr">भाषा</span><span class="en" lang="en">Language</span></span>
+      <div class="rs-seg" id="rsl" role="group" aria-labelledby="rsll"></div>
+    </div>
+    <div class="rs-row">
+      <span class="rs-l" id="rszl"><span class="mr">अक्षरांचा आकार</span><span class="en" lang="en">Text size</span></span>
+      <div class="rs-sz" role="group" aria-labelledby="rszl">
+        <button type="button" id="rsm"><span class="rsa">A</span>−<span class="sr"><span class="mr"> लहान</span><span class="en" lang="en"> smaller</span></span></button>
+        <span id="rsv" role="status"></span>
+        <button type="button" id="rsp"><span class="rsa">A</span>+<span class="sr"><span class="mr"> मोठे</span><span class="en" lang="en"> larger</span></span></button>
+        <button type="button" id="rsr" aria-label="Reset text size"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+      </div>
+    </div>
+    <div class="rs-row">
+      <span class="rs-l" id="rsfl"><span class="mr">ध्रुपद</span><span class="en" lang="en">Dhrupad</span></span>
+      <div class="rs-seg" id="rsf" role="group" aria-labelledby="rsfl">
+        <button type="button" data-v="1"><span class="mr">एकदा</span><span class="en" lang="en">Once</span></button>
+        <button type="button" data-v="0"><span class="mr">प्रत्येक कडव्यानंतर</span><span class="en" lang="en">Every verse</span></button>
+      </div>
+    </div>
+    <button type="button" class="rs-go" id="rsall"><span class="rs-l"><span class="mr">सर्व सेटिंग्ज</span><span class="en" lang="en">All settings</span><small><span class="mr">अक्षरशैली, रंगसंगती, मांडणी</span><span class="en" lang="en">Font, theme, layout</span></small></span><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
   </div>
 </div>
 <button type="button" id="szr" hidden><span class="mr">↺ मूळ आकार</span><span class="en" lang="en">↺ Default size</span></button>
