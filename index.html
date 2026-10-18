@@ -183,10 +183,9 @@
       <div class="sp-card">
         <button type="button" class="sp-row sp-go" id="hlp2"><span class="sp-l"><span class="mr">मदत आणि वापर</span><span class="en" lang="en">Help and how to use</span></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         <button type="button" class="sp-row sp-go" id="inb2" hidden><span class="sp-l"><span class="mr">होम स्क्रीनवर ठेवा</span><span class="en" lang="en">Add to Home Screen</span></span><svg class="sp-ch" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-        <div class="sp-row"><span class="sp-l"><span class="mr">आवृत्ती</span><span class="en" lang="en">Version</span></span><span class="sp-v" id="ver" lang="en"></span></div>
-        <div class="sp-row" id="offrow"><span class="sp-l"><span class="mr">ऑफलाइन वापर</span><span class="en" lang="en">Offline use</span></span><span class="sp-v" id="offv"></span></div>
-        <!-- fetches the page and its files fresh; reloads if any changed, else says it is up to date -->
-        <button type="button" class="sp-row" id="upd"><span class="sp-l"><span class="mr">अपडेट तपासा</span><span class="en" lang="en">Check for updates</span></span><span class="sp-v" id="updv"></span></button>
+        <!-- one line: the version and whether the site is saved for offline use; a tap checks for updates (fetches the
+             page and its files fresh; reloads if any changed, else says it is up to date) -->
+        <button type="button" class="sp-row" id="upd"><span class="sp-l"><span id="ver" lang="en"></span> · <span id="offv"></span></span><span class="sp-v" id="updv"></span></button>
       </div>
       <!-- who made the site, always in English -->
       <p class="sp-by" lang="en">A volunteer offering by Satish Ghanekar<br><a href="mailto:satishghanekar1@gmail.com">satishghanekar1@gmail.com</a></p>
@@ -372,7 +371,7 @@
         <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
         <li><b>Theme</b> (Auto, Light, Sepia, Dark).</li>
         <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
-        <li><b>About:</b> this Help, <b>Add to Home Screen</b> (until the site is installed), the version number (v1.0), <b>Offline use</b> and <b>Check for updates</b> (see Good to know below).</li>
+        <li><b>About:</b> this Help, <b>Add to Home Screen</b> (until the site is installed), and one line with the version (v1.0) and whether the site is saved for offline use; tap that line to check for updates (see Good to know below).</li>
       </ul>
 
       <h3>While reading</h3>
@@ -396,8 +395,8 @@
 
       <h3>Good to know</h3>
       <ul>
-        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and a short “Ready to use offline” note shows. Settings → About → <b>Offline use</b> says whether it is saved. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
-        <li><b>Getting updates:</b> new changes load by themselves whenever you are online. To look straight away, open Settings: under About, the version on your phone is shown, and <b>Check for updates</b> shows “Checking…”, then “Up to date”, or reloads with the new version.</li>
+        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and a short “Ready to use offline” note shows. Settings → About shows “Offline ready” beside the version once it is saved. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
+        <li><b>Getting updates:</b> new changes load by themselves whenever you are online. To look straight away, open Settings and tap the version line under About: it shows “Checking…”, then “Up to date”, or reloads with the new version.</li>
         <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
         <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
       </ul>
