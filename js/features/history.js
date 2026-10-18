@@ -7,7 +7,7 @@ import { LANGS, LK, aa, cur, hb, jp, pjOpen, pn } from "../core/apply.js";
 import { TK, apply, goHome, tuckHold } from "./bars.js";
 import { setJ, setP } from "./overlays.js";
 
-var NAV, popSkip, adT, hmb;
+var NAV, popSkip, adT, hmb, ovFrom;
 
 export function init() {
   // Opening a panel or dialog adds a Back step, so the phone's Back closes it instead of leaving the site.
@@ -21,10 +21,23 @@ export function init() {
     var was = ovOpen();
     setP(false);
     setJ(false);
+    var shut = 0;
     ["qrm", "prm", "inm", "pzv"].forEach(function (i) {
       var d = document.getElementById(i);
-      if (d) d.hidden = true;
+      if (d && !d.hidden) {
+        d.hidden = true;
+        shut = 1;
+      }
     });
+    // Closed with the phone's Back: focus goes back to the button that opened it, as with ✕ or Escape, so a
+    // screen reader doesn't start again from the top of the page (WCAG 2.4.3)
+    if (shut) {
+      document.documentElement.style.overflow = "";
+      if (ovFrom && ovFrom.isConnected && ovFrom.getClientRects().length)
+        try {
+          ovFrom.focus({ preventScroll: true });
+        } catch (x) {}
+    }
     if (popSkip) {
       popSkip--;
       return;
@@ -160,6 +173,7 @@ function ovOpen() {
 
 export function ovPush() {
   if (!NAV || hs().ov || ovOpen()) return;
+  ovFrom = document.activeElement;
   try {
     history.replaceState({ y: scrollY }, "", location.href);
     history.pushState({ ov: 1, y: scrollY }, "", location.href);
