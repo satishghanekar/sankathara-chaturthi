@@ -415,7 +415,7 @@ h2[tabindex="-1"]:focus {
   margin-top: 2px;
   font-size: 13px;
   font-weight: 400;
-  opacity: 0.8;
+  opacity: 0.85; /* 0.8 fell just under AA (4.48:1) in Sepia */
 }
 /* above the choices: the dhrupad setting (a button: a tap switches it) and the text font, with a sample line */
 .pro {

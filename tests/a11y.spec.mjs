@@ -7,7 +7,10 @@ import { openSite, SETUPS } from "./helpers.mjs";
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
 async function axe(page) {
-  const r = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+  // axe 4.14's label-content-name-mismatch counts the letters drawn inside aria-hidden SVG icons (अ / A, धृ)
+  // and joins the date chip's stacked lines without a space ("28Oct"); the "label in name" test below
+  // checks WCAG 2.5.3 on the text people actually see.
+  const r = await new AxeBuilder({ page }).withTags(TAGS).disableRules(["label-content-name-mismatch"]).analyze();
   return r.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(" ")).slice(0, 5).join(", ")}`);
 }
 
