@@ -403,6 +403,25 @@ test("the ↻ ध्रुपद bubble stays open until the next tap (WCAG 2.2.
   await expect(m).toHaveAttribute("aria-expanded", "false");
 });
 
+test("a 320px phone: the home buttons show their words, and a note sits above the bottom bar, on screen @chromium-only", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await openSite(page, SETUPS.both);
+  for (const id of ["#shb", "#qrb", "#prb"]) {
+    const w = page.locator(id + " > span.en");
+    await expect(w).toBeVisible();
+    const b = await page.locator(id).boundingBox(), t = await w.boundingBox();
+    expect(t.x >= b.x - 0.5 && t.x + t.width <= b.x + b.width + 0.5, `${id} word inside its button`).toBe(true);
+  }
+  await page.locator("#home-btn").click();
+  const fl = page.locator("#fl");
+  await expect(fl).toHaveClass(/\bon\b/);
+  await expect(fl).toContainText("Next tap:");
+  const f = await fl.boundingBox(), bar = await page.locator("#asc").boundingBox();
+  expect(f.x).toBeGreaterThanOrEqual(0);
+  expect(f.x + f.width).toBeLessThanOrEqual(320);
+  expect(f.y + f.height, "note above the bottom bar").toBeLessThanOrEqual(bar.y);
+});
+
 test("CSS: no new !important, :root:root boosts or unlisted breakpoints (L1, L2)", () => {
   const dir = new URL("../css/", import.meta.url);
   const css = readdirSync(dir)
