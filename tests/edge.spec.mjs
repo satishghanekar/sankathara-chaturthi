@@ -403,7 +403,7 @@ test("the ↻ ध्रुपद bubble stays open until the next tap (WCAG 2.2.
   await expect(m).toHaveAttribute("aria-expanded", "false");
 });
 
-test("a 320px phone: the home buttons show their words, and a note sits above the bottom bar, on screen @chromium-only", async ({ page }) => {
+test("a 320px phone: the home buttons show their words, and a note sits under the top bar, on screen @chromium-only", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await openSite(page, SETUPS.both);
   for (const id of ["#shb", "#qrb", "#prb"]) {
@@ -416,10 +416,10 @@ test("a 320px phone: the home buttons show their words, and a note sits above th
   const fl = page.locator("#fl");
   await expect(fl).toHaveClass(/\bon\b/);
   await expect(fl).toContainText("Next tap:");
-  const f = await fl.boundingBox(), bar = await page.locator("#asc").boundingBox();
+  const f = await fl.boundingBox(), bar = await page.locator("body > .bar").first().boundingBox();
   expect(f.x).toBeGreaterThanOrEqual(0);
   expect(f.x + f.width).toBeLessThanOrEqual(320);
-  expect(f.y + f.height, "note above the bottom bar").toBeLessThanOrEqual(bar.y);
+  expect(f.y, "note under the top bar").toBeGreaterThanOrEqual(bar.y + bar.height - 0.5);
 });
 
 test("CSS: no new !important, :root:root boosts or unlisted breakpoints (L1, L2)", () => {
