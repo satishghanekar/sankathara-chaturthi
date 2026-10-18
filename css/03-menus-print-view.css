@@ -131,11 +131,8 @@ a.t {
   display: block;
   margin: auto;
 }
-/* short notes sit just above the bottom bar, clear of the picture, the card's fold button and the search box
-   near the top (the size bubble keeps its place under the top bar, by the fingers that pinch) */
+/* short notes keep their place under the top bar (02-core) and wrap on narrow phones instead of running off the sides */
 #fl {
-  top: auto;
-  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   margin: 0 auto;
