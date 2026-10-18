@@ -5,7 +5,7 @@ import { flash } from "../core/page.js";
 import { shared, P, save } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
-var SKTZ, SKCITY, SKWM, SKMM, SKMS, skToday, foldTouched;
+var SKTZ, SKCITY, SKWM, SKMM, SKMS, skToday, foldTouched, pdMore;
 
 export function init() {
   // Default place for each time zone: [latitude, longitude, Marathi name, English name]
@@ -220,6 +220,15 @@ export function init() {
         document.getElementById("cvb").onclick();
       });
   });
+  // Sankashti day: "More dates" opens the strip, the calendar links and the App/Share/QR/Print/Help row (this visit only)
+  pdMore = false;
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest("#skmore")) return;
+    pdMore = !pdMore;
+    pdSet();
+    // the strip was hidden, so put the chosen date back in the middle of it
+    if (pdMore && shared.skCache) skShow(shared.skCache.sel);
+  });
   setInterval(skCd, 60000);
   document.addEventListener("click", function (e) {
     if (!e.target.closest) return;
@@ -356,6 +365,7 @@ export function skRender() {
     box.innerHTML =
       '<div class="skh"><span class="mr">पुढील संकटहर चतुर्थी</span><span class="en" lang="en">Next Sankathara Chaturthi</span></div><button type="button" class="skl" id="skl">📍 <span class="mr">तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा</span><span class="en" lang="en">Use my location to show the date and moonrise</span></button>';
     skSlim();
+    pdSet();
     return;
   }
   // The next Sankathara Chaturthi first (fast); then, a moment later, every Sankashti from 1 January last year
@@ -437,6 +447,9 @@ export function skRender() {
     now.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) +
     "</span></div>" +
     '<div class="skt"></div>' +
+    // Sankashti day only (CSS: #home.pday): everything below it waits behind this button
+    '<button type="button" class="skmore" id="skmore" aria-expanded="false"><span class="mr">आणखी तारखा</span><span class="en" lang="en">More dates</span>' +
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
     // The first, quick render has only the next date. The strip and the "Add all" button are already laid
     // out, invisible, so the card is its full height before the page is shown and nothing below it jumps
     // when the full list arrives (it moved the home page down by about 100px on a phone).
@@ -452,6 +465,21 @@ export function skRender() {
     ph +
     '><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>';
   skShow(shared.skCache.sel);
+  pdSet();
+}
+
+// Sankashti day (the next date is today): the card opens on tonight's moonrise and the pooja time, and the
+// contents are set larger (CSS: #home.pday). The date strip, the calendar links and the App/Share/QR/Print/Help
+// row wait under "More dates" (#home.pmore while open).
+function pdSet() {
+  var h = document.getElementById("home"),
+    b = document.getElementById("skmore"),
+    C = shared.skCache,
+    on = !!(C && skLoc() && C.list[C.ni] && Math.round((C.list[C.ni].day - skMid()) / 86400000) === 0);
+  if (!h) return;
+  h.classList.toggle("pday", on);
+  h.classList.toggle("pmore", on && pdMore);
+  if (b) b.setAttribute("aria-expanded", String(on && pdMore));
 }
 
 // Hide the "·" before the place name when the name wraps onto its own line
@@ -555,11 +583,11 @@ function skShow(k, focus) {
         '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg></button>'
       : "") +
     "</div>" +
-    '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय ' +
+    '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय <b>' +
     f.tmr +
-    '</span><span class="en" lang="en">Moonrise ' +
+    '</b></span><span class="en" lang="en">Moonrise <b>' +
     f.ten +
-    '</span><span class="skp" lang="en"><span class="skdt">· </span>' +
+    '</b></span><span class="skp" lang="en"><span class="skdt">· </span>' +
     L.en +
     '<button type="button" class="skli" id="skl" aria-label="' +
     (P.ui === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
