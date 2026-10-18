@@ -18,7 +18,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `00-fonts.css` | `@font-face` rules for `fonts/`. `unicode-range` makes the browser download only the parts a page uses. |
 | `01-theme.css` | Colour and font variables on `:root` for the light, sepia and dark themes and high contrast. |
 | `02-core.css` | The first full set of rules for the reading page: page, top bar, contents, pieces, language switching, search, phones held sideways, section headings. Also the first print rules. |
-| `03-menus-print-view.css` | Top-bar title, Share / QR / Print, Add to Home Screen, the print view (`#pv`) built for the Print button, the piece header card, and the dhrupad at the top of a piece. |
+| `03-menus-print-view.css` | Top-bar title, Share / QR / Print, the Print pop-up (`#prm`), Add to Home Screen, the print view (`#pv`) built for the Print button, the piece header card, and the dhrupad at the top of a piece. |
 | `04-columns-rail.css` | Wide screens: two stanza columns, piece and stanza numbers, button rows, both languages side by side, and the left contents menu (`#rail`). |
 | `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament, fade-in, and the dhrupad markers. |
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
@@ -37,9 +37,11 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-ref`: the dhrupad, `1` = once, `0` = after every stanza.
   - `data-cols`: `1` or `2` columns.
   - `data-rail`: the left menu is shown.
-  - `data-print`: the print layout being printed.
+  - `data-print`: `one` or `side`, only while printing; then `data-font` and `data-ref` take the Print pop-up's font and dhrupad.
   - `data-font`: the text font.
   - `data-tuck`: the bars are tucked away.
+  - `data-lead="en"`: English is the main language; `data-scr`: Kannada letters.
+  - `data-pf`, `data-xf`, `data-tf`: the Pooja, Aarti and Contents folds.
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
 ## Breakpoints
@@ -56,7 +58,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`) |
 | `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers |
 
-The same test keeps the number of `!important` (70) and `:root:root` (10) from growing: they only win over earlier rules, and each new one makes the next change harder.
+The same test keeps the number of `!important` (70) and `:root:root` (11) from growing: they only win over earlier rules, and each new one makes the next change harder.
 
 ## Checks
 
