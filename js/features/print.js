@@ -21,6 +21,7 @@ export function init() {
       b1 = document.getElementById("pr1"),
       b2 = document.getElementById("pr2"),
       bgo = document.getElementById("prgo"),
+      bpr = document.getElementById("prgp"),
       po = pm.querySelector(".pro"),
       pw = document.getElementById("prw"),
       pv2 = document.getElementById("prv"),
@@ -409,23 +410,46 @@ export function init() {
     };
     // the sample line in the printout's font (set here: the page's own font rules follow the text font)
     var FAM = { classic: "SC Classic", bold: "SC Bold", hand: "SC Hand" };
+    // the sample: the first words of the first verse, in each language printed (the main one first), in the
+    // printout's font. Set here: the page's own font rules follow the text font
+    function fam(lang) {
+      var f = pfn(),
+        kn = lang === "kn",
+        base = kn ? '"Noto Sans Kannada", var(--body)' : lang === "en" ? "var(--lat)" : "var(--body)";
+      return f === "std" ? base : '"' + (kn ? FAM[f].replace("SC ", "SC Kn ") : FAM[f]) + '", ' + base;
+    }
+    function words(k) {
+      var p = document.querySelector("#a1 .item:not(.dh) .verse ." + k + " p"),
+        t = p ? p.textContent.replace(/\s+/g, " ").trim() : "";
+      t = t.split(/[,|।]/)[0].trim();
+      return t.length > 26 ? t.slice(0, 26).replace(/\s+\S*$/, "") + "…" : t;
+    }
     function rows() {
       var dv = document.getElementById("prdv"),
-        ln = document.querySelector("#a1 .item:not(.dh) .verse ." + (P.lang === "en" ? "en" : "mr") + " p");
+        or = P.ind === "kn" ? "kn" : "mr",
+        ks = P.lang === "both" ? (shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [P.lang === "en" ? "en" : "mr"];
       dv.innerHTML = P.ref ? lbl("एकदाच", "Once") : lbl("प्रत्येक कडव्यानंतर", "After every verse");
       [].forEach.call(fn.children, function (b) {
         b.setAttribute("aria-pressed", b.dataset.v === pfn() ? "true" : "false");
       });
       var fs = document.getElementById("prfs");
-      fs.textContent = ln ? ln.textContent.replace(/\s+/g, " ").trim() : "";
-      // (in the language of the line, not as .mr or .en: those follow the menus' language here)
-      fs.setAttribute("lang", P.lang === "en" ? "en" : P.ind === "kn" ? "kn" : "mr");
-      var f = pfn(),
-        kn = fs.getAttribute("lang") === "kn",
-        base = kn ? '"Noto Sans Kannada", var(--body)' : P.lang === "en" ? "var(--lat)" : "var(--body)";
-      if (f !== "std") base = '"' + (kn ? FAM[f].replace("SC ", "SC Kn ") : FAM[f]) + '", ' + base;
-      fs.style.setProperty("font-family", base, "important");
-      fs.style.setProperty("font-weight", kn && f === "bold" ? "500" : "400", "important");
+      fs.textContent = "";
+      ks.forEach(function (k, i) {
+        // (in the language of the line, not as .mr or .en: those follow the menus' language here)
+        var lang = k === "en" ? "en" : or,
+          e = i ? document.createElement("span") : fs;
+        if (i) {
+          fs.appendChild(document.createTextNode(" · "));
+          e.setAttribute("lang", lang);
+          e.textContent = words(k);
+          fs.appendChild(e);
+        } else {
+          fs.setAttribute("lang", lang);
+          fs.appendChild(document.createTextNode(words(k)));
+        }
+        e.style.setProperty("font-family", fam(lang), "important");
+        e.style.setProperty("font-weight", lang === "kn" && pfn() === "bold" ? "500" : "400", "important");
+      });
     }
     document.getElementById("prdh").onclick = function () {
       document.getElementById("rb").click();
@@ -772,15 +796,27 @@ export function init() {
     // one button, Print now, whose own tap opens the dialog at once (the print view is already laid out).
     var iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
       standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-    // the pop-up: the layout choices (ready false), or Print now (ready true)
+    // the page choice as chosen, and Safari's Landscape note with it
+    function pages1() {
+      var up = !land("one");
+      b1.setAttribute("aria-pressed", String(up));
+      b2.setAttribute("aria-pressed", String(!up));
+      document.getElementById("prl").hidden = !(root.classList.contains("wk") && land(dm()));
+    }
+    bpr.onclick = function () {
+      var m = dm();
+      go(m === "one" ? "as" : m);
+    };
+    // the pop-up: the choices (ready false), or Print now (ready true)
     function pmMode(ready) {
-      b1.hidden = b2.hidden = pn.hidden = po.hidden = ready;
-      // both languages print side by side on Landscape only (stacked took a third more paper); upright
-      // stacked is left only while Landscape is held back (FEAT_SW)
-      if (!FEAT_SW) b2.hidden = true;
-      else if (P.lang === "both") b1.hidden = true;
+      bpr.hidden = pn.hidden = po.hidden = ready;
+      // both languages print side by side on Landscape only (stacked took a third more paper): no choice to
+      // make, the row just says so; upright only while Landscape is held back (FEAT_SW)
+      var one = !FEAT_SW || P.lang === "both";
+      document.getElementById("prpg").hidden = one;
+      document.getElementById("prpv").hidden = !one;
       // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
-      document.getElementById("prl").hidden = !(root.classList.contains("wk") && (ready ? land(wm) : !b2.hidden));
+      document.getElementById("prl").hidden = !(root.classList.contains("wk") && land(ready ? wm : dm()));
       // Safari on a Mac: Chrome turns the page itself and prints the border and page numbers (Satish, 2026-10)
       document.getElementById("prc").hidden = !root.classList.contains("wk") || iOS;
       bgo.hidden = !ready;
@@ -900,38 +936,34 @@ export function init() {
         en = M ? "इंग्रजी" : "English",
         or = (NAMES[P.ind] || NAMES.mr)[M ? 0 : 1],
         l1 = shared.LEAD === "en" ? en : or,
-        l2 = shared.LEAD === "en" ? or : en,
-        tl = P.lang === "en" ? en : or;
-      // a choice: its page (Portrait or Landscape), and under it what prints on it
-      function opt(b, page, mode, sub) {
-        b.textContent = page === "land" ? (M ? "आडवे पान" : "Landscape") : M ? "उभे पान" : "Portrait";
-        var e = document.createElement("span");
-        e.className = "prsub";
-        e.textContent = sub;
-        b.appendChild(e);
-        b.setAttribute("data-mode", mode);
+        l2 = shared.LEAD === "en" ? or : en;
+      // the page: Portrait or Landscape (one language), a tap picks it; both languages: Landscape, side by side
+      function opt(b, page) {
+        b.textContent = page === "land" ? (M ? "आडवे" : "Landscape") : M ? "उभे" : "Portrait";
         b.setAttribute("data-page", page);
         b.onclick = function () {
           P.por = page;
           save();
-          go(mode === "one" ? "as" : mode);
+          wm = dm();
+          pages1();
+          warmSoon(1500);
         };
       }
-      if (P.lang === "both") {
-        // (stacked: only while FEAT_SW holds Landscape back)
-        opt(b1, "up", "one", M ? "वर " + l1 + ", खाली " + l2 : l1 + " above " + l2);
-        opt(b2, "land", "side", M ? "शेजारी शेजारी: " + l1 + " | " + l2 : "Side by side: " + l1 + " | " + l2);
-      } else {
-        opt(b1, "up", "one", tl);
-        opt(b2, "land", "one", tl);
-      }
-      b1.parentNode.insertBefore(b1, b2);
+      opt(b1, "up");
+      opt(b2, "land");
+      document.getElementById("prpv").textContent = !FEAT_SW
+        ? M
+          ? "उभे: वर " + l1 + ", खाली " + l2
+          : "Portrait: " + l1 + " above " + l2
+        : M
+          ? "आडवे: शेजारी शेजारी"
+          : "Landscape, side by side";
+      pages1();
       rows();
       document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
       ovPush();
       pm.hidden = false;
-      // the focus: the page last chosen for what is printed, or its default
-      ((P.lang === "both" || land("one")) && !b2.hidden ? b2 : b1).focus();
+      bpr.focus();
     };
     function pmClose() {
       unready();
