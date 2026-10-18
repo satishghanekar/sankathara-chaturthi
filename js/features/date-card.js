@@ -220,7 +220,8 @@ export function init() {
         document.getElementById("cvb").onclick();
       });
   });
-  // Sankashti day: "More dates" opens the strip, the calendar links and the App/Share/QR/Print/Help row (this visit only)
+  // "More dates" opens the strip and "Add all upcoming dates" (and on Sankashti day the App/Share/QR/Print/Help row);
+  // it starts closed on every visit
   pdMore = false;
   document.addEventListener("click", function (e) {
     if (!e.target.closest || !e.target.closest("#skmore")) return;
@@ -447,7 +448,7 @@ export function skRender() {
     now.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) +
     "</span></div>" +
     '<div class="skt"></div>' +
-    // Sankashti day only (CSS: #home.pday): everything below it waits behind this button
+    // More dates (CSS: #home.skn): everything below it waits behind this button
     '<button type="button" class="skmore" id="skmore" aria-expanded="false"><span class="mr">आणखी तारखा</span><span class="en" lang="en">More dates</span>' +
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
     // The first, quick render has only the next date. The strip and the "Add all" button are already laid
@@ -468,18 +469,25 @@ export function skRender() {
   pdSet();
 }
 
-// Sankashti day (the next date is today): the card opens on tonight's moonrise and the pooja time, and the
-// contents are set larger (CSS: #home.pday). The date strip, the calendar links and the App/Share/QR/Print/Help
-// row wait under "More dates" (#home.pmore while open).
+// Angaraki (on a Tuesday): the name before "Sankathara", or before "Chaturthi" where the heading has no "Sankathara"
+function skAng(t, a, b, w) {
+  return t.indexOf(a) >= 0 ? t.replace(a, w + a) : t.replace(b, w + b);
+}
+
+// The card leads with the next Chaturthi date and its moonrise; the date strip, today's date and "Add all upcoming
+// dates" wait under "More dates" (CSS: #home.skn, and #home.pmore while open). On Sankashti day itself (#home.pday)
+// the moonrise is set large, the contents are larger, and the App/Share/QR/Print/Help row waits under More dates too.
 function pdSet() {
   var h = document.getElementById("home"),
     b = document.getElementById("skmore"),
     C = shared.skCache,
-    on = !!(C && skLoc() && C.list[C.ni] && Math.round((C.list[C.ni].day - skMid()) / 86400000) === 0);
+    has = !!(C && skLoc() && C.list[C.ni]),
+    on = has && Math.round((C.list[C.ni].day - skMid()) / 86400000) === 0;
   if (!h) return;
+  h.classList.toggle("skn", has);
   h.classList.toggle("pday", on);
-  h.classList.toggle("pmore", on && pdMore);
-  if (b) b.setAttribute("aria-expanded", String(on && pdMore));
+  h.classList.toggle("pmore", has && pdMore);
+  if (b) b.setAttribute("aria-expanded", String(has && pdMore));
 }
 
 // Hide the "·" before the place name when the name wraps onto its own line
@@ -510,11 +518,11 @@ function skSlim() {
   }
   var f = skFmt(o),
     dd = Math.round((o.day - skMid()) / 86400000),
-    hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : "पुढील संकटहर चतुर्थी",
-    he = dd === 0 ? "Sankathara Chaturthi today" : dd === 1 ? "Sankathara Chaturthi tomorrow" : "Next Sankathara Chaturthi";
+    hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : "पुढील चतुर्थी",
+    he = dd === 0 ? "Sankathara Chaturthi today" : dd === 1 ? "Sankathara Chaturthi tomorrow" : "Next Chaturthi date";
   if (f.ang) {
-    hm = hm.replace("संकटहर", "अंगारकी संकटहर");
-    he = he.replace("Sankathara", "Angaraki Sankathara");
+    hm = skAng(hm, "संकटहर", "चतुर्थी", "अंगारकी ");
+    he = skAng(he, "Sankathara", "Chaturthi", "Angaraki ");
   }
   skToday = dd === 0;
   t.innerHTML =
@@ -546,20 +554,20 @@ function skShow(k, focus) {
   var o = C.list[k],
     f = skFmt(o),
     dd = Math.round((o.day - skMid()) / 86400000);
-  var hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : k === C.ni ? "पुढील संकटहर चतुर्थी" : k < C.ni ? "मागील संकटहर चतुर्थी" : "आगामी संकटहर चतुर्थी",
+  var hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : k === C.ni ? "पुढील चतुर्थी" : k < C.ni ? "मागील संकटहर चतुर्थी" : "आगामी संकटहर चतुर्थी",
     he =
       dd === 0
         ? "Sankathara Chaturthi today"
         : dd === 1
           ? "Sankathara Chaturthi tomorrow"
           : k === C.ni
-            ? "Next Sankathara Chaturthi"
+            ? "Next Chaturthi date"
             : k < C.ni
               ? "Previous Sankathara Chaturthi"
               : "Upcoming Sankathara Chaturthi";
   if (f.ang) {
-    hm = hm.replace("संकटहर", "अंगारकी संकटहर");
-    he = he.replace("Sankathara", "Angaraki Sankathara");
+    hm = skAng(hm, "संकटहर", "चतुर्थी", "अंगारकी ");
+    he = skAng(he, "Sankathara", "Chaturthi", "Angaraki ");
   }
   box.className = "skc" + (dd === 0 ? " today" : "");
   box.querySelector(".skt").innerHTML =
