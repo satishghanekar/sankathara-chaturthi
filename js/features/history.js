@@ -22,11 +22,12 @@ export function init() {
     setP(false);
     setJ(false);
     var shut = 0;
-    ["qrm", "prm", "inm", "pzv"].forEach(function (i) {
+    ["qrm", "prm", "inm", "pzv", "rsh"].forEach(function (i) {
       var d = document.getElementById(i);
       if (d && !d.hidden) {
         d.hidden = true;
         shut = 1;
+        if (i === "rsh") document.getElementById("rsb").setAttribute("aria-expanded", "false");
       }
     });
     // Closed with the phone's Back: focus goes back to the button that opened it, as with ✕ or Escape, so a
@@ -53,7 +54,7 @@ export function init() {
   // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help, Settings)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
-    var d = ["help", "qrm", "prm", "inm", "pzv", "panel"]
+    var d = ["help", "qrm", "prm", "inm", "pzv", "rsh", "panel"]
       .map(function (i) {
         return document.getElementById(i);
       })
@@ -170,7 +171,7 @@ function ovOpen() {
   return (
     !pn.hidden ||
     !jp.hidden ||
-    ["qrm", "prm", "inm", "help", "pzv"].some(function (i) {
+    ["qrm", "prm", "inm", "help", "pzv", "rsh"].some(function (i) {
       var e = document.getElementById(i);
       return e && !e.hidden;
     })

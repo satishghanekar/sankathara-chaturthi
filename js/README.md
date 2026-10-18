@@ -34,6 +34,7 @@ There is no build step: the browser loads these files as they are.
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
 | `features/settings-panel.js` | Settings panel |
 | `features/dhrupad-button.js` | Dhrupad button: toggle once / after every stanza, keeping the reader's place |
+| `features/reading-sheet.js` | Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach |
 | `features/wake-lock.js` | Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested. |
 | `features/overlays.js` | Overlays: settings panel (setP) and contents + search (setJ); opening one closes the other (no `init()`: used by bars, clicks, pinch, help and history) |
 | `features/history.js` | Back button |
