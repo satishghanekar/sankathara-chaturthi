@@ -43,7 +43,9 @@ export async function printFromButton(page, choice) {
   if (!(await page.locator("#prb").isVisible())) await page.locator("#slim").click();
   await page.locator("#prb").click();
   await page.locator("#prm").waitFor({ state: "visible" });
-  await page.locator("#" + choice).click();
+  // the page (Portrait pr1 or Landscape pr2; both languages have only Landscape, so no choice shows), then Print
+  if (await page.locator("#" + choice).isVisible()) await page.locator("#" + choice).click();
+  await page.locator("#prgp").click();
   // Safari (class "wk"): when laying out took longer than a tap counts for, the pop-up asks for one more
   // tap (Print now), as an iPhone reader sees it
   await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
