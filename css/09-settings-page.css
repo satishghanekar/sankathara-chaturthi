@@ -297,7 +297,14 @@ html[data-sp] {
   flex-direction: column;
   align-items: center;
 }
-/* Check for updates: "Checking…", then "Up to date" in green, or "No internet" in amber */
+/* About: the version line (version · offline state) in plain weight; a tap on it checks for updates, so the
+   right side reads "Check for updates" in the accent colour, then "Checking…", "Up to date" in green, or "No internet" in amber */
+.sp #upd .sp-l {
+  font-weight: 400;
+}
+.sp #upd:not([data-s="ok"], [data-s="off"]) #updv {
+  color: var(--accent);
+}
 .sp #upd[data-s="ok"] #updv {
   color: var(--ok);
 }
