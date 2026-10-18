@@ -26,6 +26,8 @@ const STATES = [
   ["everything folded", { ...SETUPS.marathi, pf: 1, xf: 1, tf: 1, fold: 1 }],
   ["Settings open", SETUPS.marathi, (p) => p.locator("#aa").click()],
   ["Settings open, dark", { ...SETUPS.marathi, th: "dark" }, (p) => p.locator("#aa").click()],
+  ["Settings open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#aa").click()],
+  ["Print open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#prb").click()],
   ["search open", SETUPS.marathi, async (p) => {
     await p.locator("#hm").click();
     await p.locator("#q").fill("deva");
