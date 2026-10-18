@@ -208,6 +208,8 @@ export function init() {
     foldTouched = true;
     save();
     foldSet();
+    // a fold is remembered, so say how to get the card back (it can fold by a tap on Ganesha or Home)
+    if (P.fold) flash("कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा", "Card folded · tap its line to open it", 3000);
   };
   // One-hand use: tapping the Ganesha picture folds the card, and tapping the folded slim line opens it
   ["#home .hero", "#slim"].forEach(function (s) {
