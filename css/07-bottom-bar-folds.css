@@ -672,16 +672,30 @@
   }
 }
 
-/* Text font (Settings): Standard keeps the site's own fonts; the others change the texts (Marathi and English).
+/* Text font (Settings): Standard keeps the site's own fonts; the others change only the texts (Marathi and English),
+   the piece titles and the home page's Contents list.
    The Atharvashirsha's Marathi lines keep their Sanskrit font, which has the Vedic accent marks. */
 :root[data-font="classic"] {
   --tf: "SC Classic";
+  --tfl: "SC Classic";
 }
 :root[data-font="bold"] {
   --tf: "SC Bold";
+  --tfl: "SC Bold";
 }
 :root[data-font="hand"] {
   --tf: "SC Hand";
+  --tfl: "SC Hand";
+}
+/* --tfl is the chosen font for English. Bold (Sura) and Handwritten (Kalam) lack the scholarly English letters
+   (ā ī ū ṃ ṇ ṭ ḍ ḥ ṛ ś ṣ ṅ ḷ), which would come from another font in the middle of a word; with the scholarly
+   spelling (data-tr="iast") their English lines use a font that has them all: Bold the Classic serif, Handwritten
+   the standard one. */
+:root[data-font="bold"][data-tr="iast"] {
+  --tfl: "SC Classic";
+}
+:root[data-font="hand"][data-tr="iast"] {
+  --tfl: "Inter";
 }
 :root[data-font]:not([data-font="std"]) .ash .items,
 :root[data-font]:not([data-font="std"]) .ash .rftop {
@@ -691,7 +705,7 @@
 :root[data-font]:not([data-font="std"]) .ash .rftop .en,
 :root[data-font]:not([data-font="std"]) .ash .items .en p,
 :root[data-font]:not([data-font="std"]) .ash .rftop .en p {
-  font-family: var(--tf), var(--lat);
+  font-family: var(--tfl), var(--lat);
 }
 /* the chosen font also reaches the printed copy (#pv has no .ash wrapper); headings keep theirs */
 :root[data-font]:not([data-font="std"]) #pv .pvs {
@@ -700,26 +714,17 @@
 :root[data-font]:not([data-font="std"]) #pv .pvs .en,
 :root[data-font]:not([data-font="std"]) #pv .pvs .en p,
 :root[data-font]:not([data-font="std"]) #pv .pvs td.pve {
-  font-family: var(--tf), var(--lat);
+  font-family: var(--tfl), var(--lat);
 }
 :root[data-font]:not([data-font="std"]) #pv .pvs h2 .en {
   font-family: inherit;
 }
-/* and the home page, the section bars (पूजा, आरती) and the piece title cards: their font names point to the
-   chosen font first. The home page's buttons and offline line, and the Open all / Fold all pill, stay in the site's own fonts (they are controls). */
-:root[data-font]:not([data-font="std"]) #home,
-:root[data-font]:not([data-font="std"]) .grp,
+/* and each piece's title row: its font names point to the chosen font first. The home card, the section rows
+   (पूजा, आरती, Contents), the menus and every control stay in the site's own fonts. */
 :root[data-font]:not([data-font="std"]) .ash header {
   --head: var(--tf), "Tiro Devanagari Marathi", "Kohinoor Devanagari", "Noto Sans Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, serif;
   --body: var(--tf), "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, sans-serif;
-  --lat: var(--tf), "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
-}
-:root[data-font]:not([data-font="std"]) #home #shr,
-:root[data-font]:not([data-font="std"]) #home #cvb,
-:root[data-font]:not([data-font="std"]) .grp .allb {
-  --head: "Tiro Devanagari Marathi", "Kohinoor Devanagari", "Noto Sans Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, serif;
-  --body: "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, sans-serif;
-  --lat: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --lat: var(--tfl), "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 /* and the home page's Table of Contents: piece names, numbers and languages */
 :root[data-font]:not([data-font="std"]) #home .tocg ol.toc .m,
@@ -727,7 +732,7 @@
   font-family: var(--tf), var(--head);
 }
 :root[data-font]:not([data-font="std"]) #home .tocg ol.toc .en {
-  font-family: var(--tf), var(--lat);
+  font-family: var(--tfl), var(--lat);
 }
 /* the font row: label on top, the four choices across the full width */
 

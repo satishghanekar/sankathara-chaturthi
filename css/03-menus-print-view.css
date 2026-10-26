@@ -524,7 +524,7 @@ h2[tabindex="-1"]:focus {
   font-family: var(--tf), var(--body);
 }
 :root[data-font]:not([data-font="std"]) .prrow .prfs[lang="en"] {
-  font-family: var(--tf), var(--lat);
+  font-family: var(--tfl), var(--lat);
 }
 .prn {
   font-size: 13px;
