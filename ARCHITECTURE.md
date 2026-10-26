@@ -30,7 +30,7 @@ The site is one page, `index.html`, plus plain CSS and JavaScript files. **There
   - It sets the `data-*` switches the styles react to: `data-lang` on each region, and `data-ref`, `data-cols`, `data-rail`, `data-font`, `data-pref` and `data-hc` on `<html>`.
   - It sets `--fs`, the text size.
   - Anything that changes a setting updates `P`, calls `save()`, then calls `apply()`.
-- **Auto-fit** (`js/text/autofit.js`) works out the largest text size at which every verse line fits the screen on one row.
+- **Auto-fit** (`js/text/autofit.js`) works out the largest text size at which every verse line fits the screen on one row. On phones the default is 110% of that (`phoneBoost()` in `js/core/state.js`, 2026-10-25), so a few long lines wrap; it still shows as 100%.
   - It measures all lines at once in a hidden copy, so the page is laid out only once.
   - It remembers each result per language, font, layout and window size.
   - It is skipped when the reader has chosen a size (`P.fsu`).
