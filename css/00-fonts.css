@@ -142,7 +142,7 @@
 }
 
 /* Text font choices (Settings → Text font). Each family joins its Marathi and English letters; a browser downloads
-   a file only when someone picks that font (the service worker then keeps it for offline use). */
+   a file when that font is shown; the service worker saves them all on the first visit (js/parts.js), so a newly picked font shows at once, even offline. */
 @font-face {
   font-family: "SC Classic";
   font-style: normal;
