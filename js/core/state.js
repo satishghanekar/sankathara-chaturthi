@@ -83,6 +83,15 @@ export function dfs() {
   return co && s >= 600 ? 28 : 24;
 }
 
+// Phones (a touch screen under 600px on its short side) read best a little larger than the size at which every
+// line fits on one row: their default is 110% of it (Satish's pick on an iPhone 16 Pro, 2026-10-25), and the
+// size shown in the pinch bubble, Settings and the reading sheet counts that as 100%. A few long lines wrap.
+export function phoneBoost() {
+  var s = Math.min(screen.width || innerWidth, screen.height || innerHeight),
+    co = window.matchMedia && matchMedia("(pointer:coarse)").matches;
+  return co && s < 600 ? 1.1 : 1;
+}
+
 export function save() {
   try {
     localStorage.setItem(K, JSON.stringify(P));

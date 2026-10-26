@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { root, secs } from "../core/page.js";
-import { shared, P, dfs } from "../core/state.js";
+import { shared, P, dfs, phoneBoost } from "../core/state.js";
 import { skDot } from "../features/date-card.js";
 import { ZW } from "./line-breaks.js";
 
@@ -141,7 +141,8 @@ export function autoFs() {
     w = document.querySelector(".wrap"),
     cw = CW[wk] || (CW[wk] = w ? w.clientWidth : vw() - 32);
   if (!r || !cw) return;
-  var f = Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r)));
+  // the largest size (up to the device default) at which every line fits, made a little larger on phones (phoneBoost)
+  var f = Math.round(Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r))) * phoneBoost());
   shared.FSA = f;
   if (P.fsu) return;
   if (f !== P.fs) {
