@@ -56,8 +56,10 @@ export function spSet() {
   // Preview: the first two lines of the Ganapati aarti, main language large and second small. Its size, font and
   // line spacing come from the CSS (.sp-p1 / .sp-p2 in css/09-settings-page.css, which follow the same text size
   // and font as the pieces), so A−, A+, reset and the font buttons change it at once.
-  var q = function (l, cls) {
-    var ps = [].slice.call(document.querySelectorAll("#a1 .items .verse > ." + l + " p"), 0, 2);
+  // The dhrupad follows Settings → Dhrupad as on the page, by CSS alone (data-ref on the root): Once shows its first
+  // line at the top and the ↻ marker under the stanza (.sp-rt, .sp-rmk); Every verse shows it after the stanza (.sp-re).
+  var q = function (l, cls, sel, n) {
+    var ps = [].slice.call(document.querySelectorAll("#a1 " + sel + " > ." + l + " p"), 0, n);
     return ps.length
       ? '<div class="' + cls + '" lang="' + LK(l) + '">' +
           ps.map(function (p) {
@@ -65,7 +67,17 @@ export function spSet() {
           }).join("") + "</div>"
       : "";
   };
-  var h = '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw">' + q(P.lead, "sp-p1") + (P.l2 ? q(P.l2, "sp-p2") : "") + "</div>";
+  var two = function (sel, n, cls) {
+    return q(P.lead, "sp-p1" + cls, sel, n) + (P.l2 ? q(P.l2, "sp-p2" + cls, sel, n) : "");
+  };
+  var mk = document.querySelector("#a1 .rmk ." + P.lead);
+  var h =
+    '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw">' +
+    two(".rftop .verse", 1, " sp-rf sp-rt") +
+    two(".items .item:not(.rf) .verse", 2, "") +
+    (mk ? '<div class="sp-rmk" lang="' + LK(P.lead) + '">' + mk.textContent + "</div>" : "") +
+    two(".rftop .verse", 1, " sp-rf sp-re") +
+    "</div>";
   document.getElementById("sprev").innerHTML = h;
 }
 
