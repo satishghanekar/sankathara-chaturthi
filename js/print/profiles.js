@@ -16,7 +16,7 @@
 //           fonts of one script are not all drawn the same size. Measured, not guessed: the height of the
 //           script's ordinary letters at one point size (tests/print-audit.spec.mjs prints the table:
 //           "font sizes"). At the same point size Devanagari is about 63 in every font, while Kannada is
-//           80 (standard), 82 (classic), 74 (bold) and 54 (handwritten). Kannada is set to look a little
+//           80 (standard), 82 (classic) and 54 (handwritten). Kannada is set to look a little
 //           larger than Devanagari, about 70 (its letters read better a little larger); the handwritten
 //           one is drawn small but wide, so it stays at its own size: any larger and its lines no longer
 //           fit beside their English (checked with npm run print:audit).
@@ -29,7 +29,7 @@ export var SCRIPTS = {
   latn: { size: 1, minFit: 0.85 }, // English, in either spelling (simple or IAST)
 };
 
-// The size a script is set at in a text font (std, classic, bold or hand)
+// The size a script is set at in a text font (std, classic or hand)
 export function sizeOf(sc, fnt) {
   return (sc.font && sc.font[fnt]) || sc.size;
 }

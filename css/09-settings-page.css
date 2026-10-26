@@ -479,9 +479,6 @@ html[data-scr="kn"] #bt[data-tl="mr"] #btt,
   --kf: "SC Kn Classic";
   --kv: "SC Kn Classic";
 }
-:root[data-font="bold"] {
-  --kf: "SC Kn Bold";
-}
 :root[data-font="hand"] {
   --kf: "SC Kn Hand";
 }
@@ -494,14 +491,6 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #home .tocg .nm,
 html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"],
 html[data-scr="kn"][data-font]:not([data-font="std"]) #prfs[lang="kn"] {
   font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
-}
-/* Baloo Tamma at its regular weight is no heavier than the standard font; a step up keeps Bold looking bold */
-html[data-scr="kn"][data-font="bold"] .ash .mr,
-html[data-scr="kn"][data-font="bold"] #pv .mr,
-html[data-scr="kn"][data-font="bold"] #home .tocg .mr,
-html[data-scr="kn"][data-font="bold"] .sp-pw [lang="kn"],
-html[data-scr="kn"][data-font="bold"] #prfs[lang="kn"] {
-  font-weight: 500;
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr *,

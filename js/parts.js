@@ -63,7 +63,7 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "js/" + f + ".js";
   });
-  // Font files kept for offline use: all of them, including the optional text fonts (Classic, Bold, Handwritten,
+  // Font files kept for offline use: all of them, including the optional text fonts (Classic, Handwritten,
   // in Marathi and Kannada), so a font picked in Settings shows at once, even with a weak signal or none
   var fonts = [
     "inter-latin",
@@ -82,12 +82,6 @@ var SITE_PARTS = (function () {
     "noto-serif-deva-devanagari",
     "noto-serif-latin",
     "noto-serif-latin-ext",
-    "sura-devanagari-400",
-    "sura-devanagari-700",
-    "sura-latin-400",
-    "sura-latin-700",
-    "sura-latin-ext-400",
-    "sura-latin-ext-700",
     "kalam-devanagari-400",
     "kalam-devanagari-700",
     "kalam-latin-400",
@@ -95,7 +89,6 @@ var SITE_PARTS = (function () {
     "kalam-latin-ext-400",
     "kalam-latin-ext-700",
     "noto-serif-kannada-kannada",
-    "baloo-tamma-kannada",
     "hubballi-kannada",
   ].map(function (f) {
     return "fonts/" + f + ".woff2";

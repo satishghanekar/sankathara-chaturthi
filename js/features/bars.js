@@ -217,7 +217,7 @@ export function apply() {
   [].forEach.call(document.querySelectorAll("#su button"), function (b) {
     b.setAttribute("aria-pressed", String(b.dataset.v === P.ui));
   });
-  if (["std", "classic", "bold", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
+  if (["std", "classic", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
   root.setAttribute("data-font", P.fnt);
   root.setAttribute("data-tr", P.tr); // the English style, for the fonts that lack the scholarly letters (css/07)
   [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
