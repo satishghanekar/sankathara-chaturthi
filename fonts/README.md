@@ -11,13 +11,13 @@ Each font is split by script the way Google serves it (`-devanagari`, `-kannada`
 | `noto-sans-deva-*` | Noto Sans Devanagari (variable, 400–700) | Marathi menus and buttons |
 | `tiro-marathi-*` | Tiro Devanagari Marathi | Marathi and Hindi texts, headings |
 | `tiro-sanskrit-*` | Tiro Devanagari Sanskrit | Atharvashirsha (Vedic swara marks) |
-| `noto-serif-*` | Noto Serif Devanagari + Noto Serif (variable) | Text font: Classic (loaded only when picked) |
-| `sura-*` | Sura (400, 700) | Text font: Bold (loaded only when picked) |
-| `kalam-*` | Kalam (400, 700) | Text font: Handwritten (loaded only when picked) |
+| `noto-serif-*` | Noto Serif Devanagari + Noto Serif (variable) | Text font: Classic (saved for offline on the first visit) |
+| `sura-*` | Sura (400, 700) | Text font: Bold (saved for offline on the first visit) |
+| `kalam-*` | Kalam (400, 700) | Text font: Handwritten (saved for offline on the first visit) |
 | `noto-sans-kannada-kannada` | Noto Sans Kannada (variable), Kannada letters only | Kannada letters in the Standard font, and the dandas and Vedic marks in every font |
-| `noto-serif-kannada-kannada` | Noto Serif Kannada (variable) | Text font Classic, in Kannada (loaded only when picked) |
-| `baloo-tamma-kannada` | Baloo Tamma 2 (variable, 400–800) | Text font Bold, in Kannada (loaded only when picked) |
-| `hubballi-kannada` | Hubballi (400) | Text font Handwritten, in Kannada (loaded only when picked) |
+| `noto-serif-kannada-kannada` | Noto Serif Kannada (variable) | Text font Classic, in Kannada (saved for offline on the first visit) |
+| `baloo-tamma-kannada` | Baloo Tamma 2 (variable, 400–800) | Text font Bold, in Kannada (saved for offline on the first visit) |
+| `hubballi-kannada` | Hubballi (400) | Text font Handwritten, in Kannada (saved for offline on the first visit) |
 
 All of them are under the SIL Open Font License 1.1 (https://openfontlicense.org), which allows using and
 redistributing them with a website. Inter © The Inter Project Authors; Noto Sans Devanagari © Google LLC;

@@ -291,7 +291,7 @@ html[data-sp] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 150px;
+  height: 196px; /* room for the dhrupad as well as the two lines */
   overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
     linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
@@ -344,6 +344,39 @@ html[data-sp] {
 }
 .sp-p1[lang="en"],
 .sp-p2[lang="en"] {
+  font-family: var(--lat);
+}
+/* the dhrupad in the preview follows Settings → Dhrupad (data-ref on the root), as on the page: Once puts it at the
+   top (.sp-rt) and the ↻ marker under the stanza (.sp-rmk); Every verse sings it after the stanza (.sp-re) */
+.sp-pw > .sp-rt,
+.sp-pw > .sp-rmk,
+:root[data-ref="1"] .sp-pw > .sp-re {
+  display: none;
+}
+:root[data-ref="1"] .sp-pw > .sp-rt {
+  display: flex;
+}
+:root[data-ref="1"] .sp-pw > .sp-rmk {
+  display: block;
+}
+.sp-pw > .sp-rf p {
+  font-weight: 600;
+}
+.sp-pw > .sp-rt.sp-p1 {
+  margin-bottom: 2px;
+}
+.sp-pw > .sp-rt + .sp-rt {
+  margin-bottom: 6px;
+}
+.sp-pw > .sp-re.sp-p1 {
+  margin-top: 6px;
+}
+.sp-pw > .sp-rmk {
+  margin-top: 2px;
+  font: 600 calc(var(--fs) * 0.6) / 1.4 var(--body);
+  color: var(--muted);
+}
+.sp-pw > .sp-rmk[lang="en"] {
   font-family: var(--lat);
 }
 /* two columns on wide screens make the pieces' text a little larger */
