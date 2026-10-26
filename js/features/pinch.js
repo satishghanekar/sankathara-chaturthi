@@ -8,7 +8,7 @@ import { apply } from "./bars.js";
 import { fsTap, szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 
-var pz, szTm, szrTm, szaT, szt, szr, pzF, wz, wzT;
+var pz, szTm, szrTm, szaT, szt, szr, pzF, wz, wzT, spot;
 // Where a pinch does nothing (neither resizes the text nor zooms): the home card
 var NO_PINCH = "#home .top";
 
@@ -45,6 +45,8 @@ export function init() {
         }
         szr.hidden = true;
         pz = { d: dist(e) || 1, fs: P.fs };
+        // the line between the fingers stays between them while the text grows or shrinks
+        spot = spotAt(mid(e).x, mid(e).y);
       }
     },
     { passive: false },
@@ -62,14 +64,11 @@ export function init() {
           if (v !== P.fs) fsTap(v, 1);
           return;
         }
+        if (spot) spot.y = mid(e).y;
         if (v !== P.fs) {
           P.fs = v;
           P.fsu = 1;
-          if (!pzF)
-            pzF = requestAnimationFrame(function () {
-              pzF = 0;
-              root.style.setProperty("--fs", P.fs + "px");
-            });
+          resize();
         }
         showSz();
       }
@@ -82,6 +81,7 @@ export function init() {
       if (e.touches.length < 2) unzoom();
       if (pz && e.touches.length < 2) {
         pz = null;
+        spot = null;
         save();
         szSet();
         // Offer a one-tap way back to the default size for a few seconds (Settings has its own reset)
@@ -133,7 +133,8 @@ export function init() {
         wz = 0;
       }, 400);
       var v = Math.round(wz);
-      if (v !== P.fs) deskSz(v, 1);
+      // a trackpad pinch keeps the line under the pointer where it is
+      if (v !== P.fs) deskSz(v, 1, e.clientX, e.clientY);
     },
     { passive: false },
   );
@@ -152,6 +153,43 @@ export function init() {
       setJ(false);
     }
   });
+}
+
+// The text size, set once per frame; then the page is scrolled so the spot the reader is resizing at (the line
+// between their fingers, or under the pointer) is back where it was on screen: without this, everything above
+// it grows or shrinks too and pushes it off the screen
+function resize() {
+  if (pzF) return;
+  pzF = requestAnimationFrame(function () {
+    pzF = 0;
+    root.style.setProperty("--fs", P.fs + "px");
+    keepSpot(spot);
+  });
+}
+
+// The line (or heading, or other block) at a point on the screen, and how far down it the point is, as a
+// share of its height, so the same place in it can be found again after its lines wrap differently.
+// Nothing for the bars, menus and pop-ups, which do not move with the text.
+function spotAt(x, y) {
+  var e = document.elementFromPoint(x, y);
+  if (!e || !e.closest || e.closest(".bar, #szt, #szr, #rsh, #panel, #ofm, dialog")) return null;
+  var a = e.closest(".verse p, .rftop p, .rmk, .ash header, .grp, li, p, h2, h3") || e;
+  if (a === document.body || a === document.documentElement) return null;
+  var r = a.getBoundingClientRect();
+  return { el: a, f: r.height ? Math.min(1, Math.max(0, (y - r.top) / r.height)) : 0, y: y };
+}
+
+function keepSpot(s) {
+  if (!s || s.el.offsetParent === null) return;
+  var r = s.el.getBoundingClientRect(),
+    d = r.top + s.f * r.height - s.y;
+  if (Math.abs(d) >= 1) scrollBy(0, d);
+}
+
+function mid(e) {
+  var a = e.touches[0],
+    b = e.touches[1];
+  return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
 }
 
 function dist(e) {
@@ -204,20 +242,19 @@ function unzoom() {
 
 // On a computer: Ctrl/⌘ + and −, Ctrl/⌘ 0 and a trackpad pinch (which the browser sends as Ctrl + wheel) change
 // the text size the same way a pinch does on a phone, instead of zooming the whole page
-function deskSz(v, fsu) {
+// (keys keep the line in the middle of the screen where it is; a trackpad pinch the one under the pointer)
+function deskSz(v, fsu, x, y) {
   v = Math.max(14, Math.min(52, v));
   if (!pn.hidden) return fsTap(v, fsu);
   P.fsu = fsu;
+  if (!pzF) spot = spotAt(x == null ? innerWidth / 2 : x, y == null ? innerHeight / 2 : y);
   if (fsu) {
     P.fs = v;
-    if (!pzF)
-      pzF = requestAnimationFrame(function () {
-        pzF = 0;
-        root.style.setProperty("--fs", P.fs + "px");
-      });
+    resize();
   } else {
     P.fs = dfs();
     apply();
+    keepSpot(spot);
   }
   save();
   szSet();
