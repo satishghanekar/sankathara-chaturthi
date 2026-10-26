@@ -371,7 +371,7 @@ export function init() {
     }
     // The printout's font: picked in the pop-up, else the text font. It is the page's font (data-font) only while
     // printing, so picking one for the printout leaves the reading page as it is (Satish, 2026-10)
-    var FONTS = ["std", "classic", "bold", "hand"];
+    var FONTS = ["std", "classic", "hand"];
     function pfn() {
       return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : P.fnt;
     }
@@ -416,7 +416,7 @@ export function init() {
       rows();
     };
     // the sample line in the printout's font (set here: the page's own font rules follow the text font)
-    var FAM = { classic: "SC Classic", bold: "SC Bold", hand: "SC Hand" };
+    var FAM = { classic: "SC Classic", hand: "SC Hand" };
     // the sample: the first words of the first verse, in each language printed (the main one first), in the
     // printout's font. Set here: the page's own font rules follow the text font
     function fam(lang) {
@@ -457,7 +457,7 @@ export function init() {
           fs.appendChild(document.createTextNode(words(k)));
         }
         e.style.setProperty("font-family", fam(lang), "important");
-        e.style.setProperty("font-weight", lang === "kn" && pfn() === "bold" ? "500" : "400", "important");
+        e.style.setProperty("font-weight", "400", "important");
       });
     }
     dh.onclick = function (e) {

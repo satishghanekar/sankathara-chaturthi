@@ -37,7 +37,7 @@ export const VIEWS = {
   "english-marathi": [{ lang: "both", lead: "en", l2: "mr" }, BOTH],
   "english-kannada": [{ lang: "both", lead: "en", l2: "mr", ind: "kn" }, BOTH],
 };
-const FONTS = { standard: "std", classic: "classic", bold: "bold", handwritten: "hand" };
+const FONTS = { standard: "std", classic: "classic", handwritten: "hand" };
 const DHRUPAD = { "dhrupad-once": 1, "dhrupad-every-verse": 0 };
 const PAPERS = { letter: ["Letter", "en-US"], a4: ["A4", "en-IN"] };
 
@@ -60,9 +60,9 @@ for (const [view, [prefs, layouts]] of Object.entries(VIEWS))
 // js/print/profiles.js. When adding a script or a font, add its families and sample text here and set its
 // size so its letters come out about as tall as the others (tests/pdfs/FONT-SIZES.md).
 const FAMILIES = {
-  deva: { std: '"Noto Sans Devanagari"', classic: '"SC Classic"', bold: '"SC Bold"', hand: '"SC Hand"' },
-  knda: { std: '"Noto Sans Kannada"', classic: '"SC Kn Classic"', bold: '"SC Kn Bold"', hand: '"SC Kn Hand"' },
-  latn: { std: "Inter", classic: '"SC Classic"', bold: '"SC Bold"', hand: '"SC Hand"' },
+  deva: { std: '"Noto Sans Devanagari"', classic: '"SC Classic"', hand: '"SC Hand"' },
+  knda: { std: '"Noto Sans Kannada"', classic: '"SC Kn Classic"', hand: '"SC Kn Hand"' },
+  latn: { std: "Inter", classic: '"SC Classic"', hand: '"SC Hand"' },
 };
 // ordinary letters, without tall or deep marks: their height is how big the script looks
 const LETTERS = { deva: "कमन", knda: "ಕಮನ", latn: "xzu" };
