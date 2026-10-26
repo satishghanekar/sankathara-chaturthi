@@ -219,6 +219,7 @@ export function apply() {
   });
   if (["std", "classic", "bold", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
   root.setAttribute("data-font", P.fnt);
+  root.setAttribute("data-tr", P.tr); // the English style, for the fonts that lack the scholarly letters (css/07)
   [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
     b.setAttribute("aria-pressed", String(b.dataset.v === P.fnt));
   });
