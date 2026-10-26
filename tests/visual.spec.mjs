@@ -69,7 +69,6 @@ const CASES = [
   ["home-sepia-desktop", "desktop", { ...SETUPS.marathi, th: "sepia" }],
   // text fonts
   ["font-classic", "phone", { ...SETUPS.both, fnt: "classic" }, goTo("a1")],
-  ["font-bold", "phone", { ...SETUPS.both, fnt: "bold" }, goTo("a1")],
   ["font-hand", "phone", { ...SETUPS.both, fnt: "hand" }, goTo("a1")],
   // folds
   ["folded-sections", "phone", { ...SETUPS.marathi, pf: 1, af: ["a1", "a2"], tf: 1, fold: 1 }],

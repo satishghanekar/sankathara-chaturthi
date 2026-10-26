@@ -12,13 +12,11 @@ Each font is split by script the way Google serves it (`-devanagari`, `-kannada`
 | `tiro-marathi-*` | Tiro Devanagari Marathi | Marathi and Hindi texts, headings |
 | `tiro-sanskrit-*` | Tiro Devanagari Sanskrit | Atharvashirsha (Vedic swara marks) |
 | `noto-serif-*` | Noto Serif Devanagari + Noto Serif (variable) | Text font: Classic (saved for offline on the first visit) |
-| `sura-*` | Sura (400, 700) | Text font: Bold (saved for offline on the first visit) |
 | `kalam-*` | Kalam (400, 700) | Text font: Handwritten (saved for offline on the first visit) |
 | `noto-sans-kannada-kannada` | Noto Sans Kannada (variable), Kannada letters only | Kannada letters in the Standard font, and the dandas and Vedic marks in every font |
 | `noto-serif-kannada-kannada` | Noto Serif Kannada (variable) | Text font Classic, in Kannada (saved for offline on the first visit) |
-| `baloo-tamma-kannada` | Baloo Tamma 2 (variable, 400–800) | Text font Bold, in Kannada (saved for offline on the first visit) |
 | `hubballi-kannada` | Hubballi (400) | Text font Handwritten, in Kannada (saved for offline on the first visit) |
 
 All of them are under the SIL Open Font License 1.1 (https://openfontlicense.org), which allows using and
 redistributing them with a website. Inter © The Inter Project Authors; Noto Sans Devanagari © Google LLC;
-Tiro Devanagari Marathi and Sanskrit © Tiro Typeworks Ltd.; Noto Serif, Noto Sans Kannada and Noto Serif Kannada © Google LLC; Baloo Tamma 2 © Ek Type; Hubballi © Erin McLaughlin; Sura © Carolina Giovagnoli; Kalam © Indian Type Foundry.
+Tiro Devanagari Marathi and Sanskrit © Tiro Typeworks Ltd.; Noto Serif, Noto Sans Kannada and Noto Serif Kannada © Google LLC; Hubballi © Erin McLaughlin; Sura © Carolina Giovagnoli; Kalam © Indian Type Foundry.
