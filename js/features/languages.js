@@ -9,7 +9,8 @@ import { apply } from "./bars.js";
 import { trPick } from "./settings-panel.js";
 import { buildIX } from "../text/search.js";
 
-var PICK;
+var PICK,
+  spH; // the preview as last built
 
 export function init() {
   // The language lists: each language once, English twice (one per spelling), and None for the second language.
@@ -53,32 +54,43 @@ export function spSet() {
     b.setAttribute("aria-pressed", String(b.dataset.v === String(P.ref)));
   });
   if (pn.hidden) return; // the rest is the preview, made when Settings is open
-  // Preview: the first two lines of the Ganapati aarti, main language large and second small. Its size, font and
-  // line spacing come from the CSS (.sp-p1 / .sp-p2 in css/09-settings-page.css, which follow the same text size
-  // and font as the pieces), so A−, A+, reset and the font buttons change it at once.
-  // The dhrupad follows Settings → Dhrupad as on the page, by CSS alone (data-ref on the root): Once shows its first
-  // line at the top and the ↻ marker under the stanza (.sp-rt, .sp-rmk); Every verse shows it after the stanza (.sp-re).
-  var q = function (l, cls, sel, n) {
-    var ps = [].slice.call(document.querySelectorAll("#a1 " + sel + " > ." + l + " p"), 0, n);
-    return ps.length
-      ? '<div class="' + cls + '" lang="' + LK(l) + '">' +
-          ps.map(function (p) {
-            return "<p>" + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p>"; // a danda never starts a line
-          }).join("") + "</div>"
-      : "";
+  // Preview: the Ganapati aarti as the page shows it, main language large and second small under each line: the
+  // first line of verses 1 and 2, with the dhrupad (tinted) where Settings → Dhrupad puts it. Once: on top, with
+  // ↻ ध्रुपद under each verse; Every verse: after each verse. Both layouts are always here and the CSS shows one
+  // (data-ref on the root), sliding the dhrupad in and out, so a tap on Once / Every verse changes it at once.
+  // Size, font and line spacing come from the CSS (.sp-p1 / .sp-p2 in css/09-settings-page.css, which follow the
+  // same text size and font as the pieces), so A−, A+, reset and the font buttons change it at once too.
+  var line = function (l, cls, el) {
+    var p = el && el.querySelector("." + l + " p");
+    if (!p) return "";
+    // a danda never starts a line
+    return '<div class="' + cls + '" lang="' + LK(l) + '"><p>' + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p></div>";
   };
-  var two = function (sel, n, cls) {
-    return q(P.lead, "sp-p1" + cls, sel, n) + (P.l2 ? q(P.l2, "sp-p2" + cls, sel, n) : "");
+  var unit = function (el, cls) {
+    return '<div class="sp-u' + (cls || "") + '">' + line(P.lead, "sp-p1", el) + (P.l2 ? line(P.l2, "sp-p2", el) : "") + "</div>";
   };
-  var mk = document.querySelector("#a1 .rmk ." + P.lead);
+  // a part that comes and goes with the setting (sp-once: shown with Once; sp-every: with Every verse)
+  var tg = function (when, html) {
+    return '<div class="sp-tg ' + when + '"><div>' + html + "</div></div>";
+  };
+  var rf = document.querySelector("#a1 .rftop .verse"),
+    vs = document.querySelectorAll("#a1 .items .item:not(.rf) .verse"),
+    mk = document.querySelector("#a1 .rmk ." + P.lead),
+    lab = document.querySelector("#a1 .rftop .lab ." + P.lead),
+    mark = mk ? '<div class="sp-rmk" lang="' + LK(P.lead) + '">' + mk.textContent + "</div>" : "",
+    refrain = unit(rf, " sp-rf");
   var h =
-    '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw">' +
-    two(".rftop .verse", 1, " sp-rf sp-rt") +
-    two(".items .item:not(.rf) .verse", 2, "") +
-    (mk ? '<div class="sp-rmk" lang="' + LK(P.lead) + '">' + mk.textContent + "</div>" : "") +
-    two(".rftop .verse", 1, " sp-rf sp-re") +
+    '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw' + (P.l2 ? "" : " sp-one") + '">' +
+    tg("sp-once", (lab ? '<div class="sp-lab" lang="' + LK(P.lead) + '">' + lab.textContent.replace(/\s*\(.*\)\s*$/, "") + "</div>" : "") + refrain) +
+    unit(vs[0]) +
+    tg("sp-once", mark) +
+    tg("sp-every", refrain) +
+    unit(vs[1]) +
+    tg("sp-once", mark) +
+    tg("sp-every", refrain) +
     "</div>";
-  document.getElementById("sprev").innerHTML = h;
+  // rebuilt only when it differs, so a tap on Once / Every verse leaves it in place and the dhrupad can slide
+  if (h !== spH) document.getElementById("sprev").innerHTML = spH = h;
 }
 
 function spKey(slot) {
