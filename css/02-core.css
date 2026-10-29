@@ -108,33 +108,6 @@ button[aria-pressed="true"] {
   text-wrap: balance;
 }
 
-ol.toc {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--rule);
-}
-ol.toc li {
-  border-bottom: 1px solid var(--rule);
-}
-ol.toc a {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 14px 4px;
-  min-height: 48px;
-  text-decoration: none;
-  color: var(--ink);
-}
-ol.toc a:active {
-  background: var(--surface);
-}
-ol.toc .m {
-  font: 400 1.05em/1.3 var(--head);
-  color: var(--ink);
-}
-
-
 /* ==== Pieces: header, verses, previous / next links ==== */
 .ash h2 {
   font: 400 1.4em/1.3 var(--head);
@@ -238,7 +211,6 @@ ol.toc .m {
   background: var(--surface);
 }
 
-
 /* ==== Language switching: .mr and .en parts shown according to data-lang ==== */
 :root {
   --lat: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
@@ -266,7 +238,6 @@ ol.toc .m {
 }
 
 [data-lang="both"] h2 .en,
-[data-lang="both"] ol.toc .en,
 [data-lang="both"] .pn > a > .en {
   display: block;
   font-size: 0.55em;
@@ -274,8 +245,7 @@ ol.toc .m {
   font-weight: 400;
 }
 
-[data-lang="en"] h2,
-[data-lang="en"] ol.toc .m {
+[data-lang="en"] h2 {
   font-family: var(--lat);
 }
 [data-lang="en"] h2 {
@@ -286,10 +256,6 @@ ol.toc .m {
 .ash h2 {
   overflow-wrap: anywhere;
 }
-[data-lang="en"] ol.toc .m {
-  font-size: 0.95em;
-  font-weight: 600;
-}
 
 /* ==== Settings panel ==== */
 
@@ -297,11 +263,6 @@ ol.toc .m {
 @media (min-width: 820px) {
   .wrap {
     max-width: 46rem;
-  }
-  ol.toc {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 32px;
   }
   .bar {
     margin-inline: -16px;
@@ -318,7 +279,6 @@ ol.toc .m {
   font-size: 0.55em;
   color: var(--muted);
 }
-
 
 /* ==== Piece spacing; contents + search overlay (#jump) ==== */
 .bar {
@@ -384,7 +344,6 @@ ol.toc .m {
   opacity: 0.8;
 }
 
-
 /* ==== Reduced motion; print (first set of print rules, more further down) ==== */
 /* Readers who ask their phone for less motion get none: no transitions or animations anywhere.
    "none" rather than the common 0.01ms trick: a short duration on every element (transition-property
@@ -433,16 +392,6 @@ ol.toc .m {
     padding: 0 0 10px;
     break-after: page;
   }
-  ol.toc {
-    display: block;
-  }
-  ol.toc a {
-    padding: 6px 4px;
-    min-height: 0;
-  }
-  ol.toc .m {
-    font-size: 15pt;
-  }
   .ash {
     break-before: auto;
     break-inside: auto;
@@ -481,7 +430,6 @@ ol.toc .m {
     }
   }
 }
-
 
 /* ==== Tapped-line highlight, high contrast, language tag ==== */
 :root {
@@ -666,7 +614,8 @@ p.fl {
   font-size: 15px;
 }
 
-#hm {
+/* Print, in the top bar */
+#prb {
   font-size: 22px;
   padding-inline: 12px;
 }
@@ -729,7 +678,6 @@ body {
   color: var(--accent);
 }
 
-
 /* ==== Phones held sideways ==== */
 @media (orientation: landscape) and (max-height: 520px) {
   body {
@@ -775,7 +723,6 @@ body {
   }
 }
 
-
 /* ==== Group headings (पूजा / भजने / आरती) in the contents; "coming soon"; section dividers ==== */
 .gh {
   font: 700 0.74em/1.2 var(--body);
@@ -792,16 +739,6 @@ body {
 }
 [data-lang="en"] .gh {
   font-family: var(--lat);
-}
-ol.toc li.soon .m {
-  display: block;
-  padding: 14px 4px;
-  color: var(--muted);
-  font: 400 0.9em/1.3 var(--body);
-}
-[data-lang="both"] ol.toc li.soon .en {
-  display: inline;
-  margin-left: 0.5em;
 }
 #jump li.jh {
   grid-column: 1/-1;
@@ -836,14 +773,6 @@ ol.toc li.soon .m {
 .grp[data-lang="both"] .en {
   margin-left: 0.6em;
   color: var(--muted);
-}
-
-@media (min-width: 820px) {
-  .tocg ol.toc {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 32px;
-  }
 }
 @media print {
   .gh {

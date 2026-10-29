@@ -4,7 +4,7 @@
 import { root } from "../core/page.js";
 import { aa, jp, pn } from "../core/apply.js";
 import { mark } from "./bars.js";
-import { fsFlush, szSet } from "./settings-panel.js";
+import { fsFlush, spTab, szSet } from "./settings-panel.js";
 import { ovDone, ovPush } from "./history.js";
 import { spSet } from "./languages.js";
 
@@ -30,12 +30,18 @@ export function setP(o) {
   ovFocus(pn, o);
   pn.hidden = !o;
   if (o) {
+    // under the top bar, as in Nitya Upasana
+    pn.style.top = Math.round(document.querySelector(".bar").getBoundingClientRect().bottom) + "px";
     spSet();
     szSet(); // a pinch on the page changes the size without passing through here
   }
   // the Settings page covers the whole page; the page under it doesn't scroll
   if (o) root.setAttribute("data-sp", "1");
-  else root.removeAttribute("data-sp");
+  else {
+    root.removeAttribute("data-sp");
+    // it opens on Reading next time
+    spTab("read");
+  }
   if (o) {
     pn.scrollTop = 0;
     pn.focus({ preventScroll: true });
@@ -63,7 +69,7 @@ export function setJ(o) {
   ovFocus(jp, o);
   jp.hidden = !o;
   if (o && !jp.contains(document.activeElement)) jp.focus({ preventScroll: true });
-  [].forEach.call(document.querySelectorAll("#hm,.pns,#asq"), function (b) {
+  [].forEach.call(document.querySelectorAll(".pns,#asq"), function (b) {
     b.setAttribute("aria-expanded", String(o));
   });
   if (o) {

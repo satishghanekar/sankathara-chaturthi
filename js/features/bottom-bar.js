@@ -10,12 +10,13 @@ import { TL, tlLabel, tlStop } from "./tilt.js";
 import { apply } from "./bars.js";
 import { wake } from "./wake-lock.js";
 import { goHomeNav } from "./history.js";
+import { openLibrary } from "./history.js";
 
 export var asc, asb;
 var AS, ASPD;
 
 export function init() {
-  // The bottom bar is the footer menu on every page: ‹ Prev, Home, Contents + search, ▶, Next ›.
+  // The bottom bar is the footer menu on every page: ‹ Prev, Home, Library, ▶, Next ›.
   // Its parts share the "as" prefix (asc, asv, ash, asq, asb, asn) because it began as the autoscroll bar.
   // ▶ appears only when autoscroll is released (FEAT_AS) and switched on in Settings (P.ason; root data-ason).
   //
@@ -93,7 +94,7 @@ export function init() {
     goHomeNav();
   };
   document.getElementById("asq").onclick = function () {
-    document.getElementById("hm").onclick();
+    openLibrary();
   };
   document.getElementById("tas").onclick = function () {
     change({ ason: P.ason ? 0 : 1 }, function () {
@@ -178,9 +179,9 @@ export function asLabel() {
     b.setAttribute("aria-label", (mr ? x[1] : x[2]).replace(/[‹›]/g, "").trim() + (t ? ": " + t.textContent : ""));
     b.disabled = !a;
   });
-  document.getElementById("ash").setAttribute("aria-label", mr ? "मुख्य पान: अनुक्रमणिका" : "Home: contents");
+  document.getElementById("ash").setAttribute("aria-label", mr ? "मुख्य पान" : "Home");
   tlLabel();
-  document.getElementById("asq").setAttribute("aria-label", mr ? "अनुक्रमणिका आणि शोध" : "Contents and search");
+  document.getElementById("asq").setAttribute("aria-label", mr ? "संग्रह" : "Library");
 }
 
 // The steps to scroll through: each open piece's heading, its dhrupad at the top, every sung line in order,
@@ -296,10 +297,10 @@ function asStart() {
   // keep the piece in view where it is while the rest folds away
   var c0 = cur(),
     t0 = c0 && c0.getBoundingClientRect().top;
-  // fold the home card and contents, open every piece; a folded section (Pooja / Aarti) stays folded and is skipped,
+  // fold the home card, open every piece; a folded section (Pooja / Aarti) stays folded and is skipped,
   // unless every section is folded, then all open again
   /** @type {Record<string, any>} */
-  var ch = { fold: 1, tf: 1, af: [] };
+  var ch = { fold: 1, af: [] };
   if (P.pf && P.xf) ch.pf = ch.xf = 0;
   change(ch, apply);
   if (c0 && c0.offsetParent !== null) scrollBy(0, c0.getBoundingClientRect().top - t0);

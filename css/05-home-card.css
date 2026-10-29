@@ -189,7 +189,6 @@
   }
 }
 
-
 /* ==== Next Sankashti card (home page) ==== */
 .skc {
   margin: 0 0 14px;
@@ -402,16 +401,8 @@
   }
 }
 
-
-/* ==== Desktop: the left menu replaces the home-page contents list ==== */
+/* ==== Desktop: the left menu (#rail) ==== */
 @media screen and (min-width: 1100px) {
-  [data-rail="1"] #home .tocg {
-    display: none;
-  }
-  /* The rail lists the contents, so the fold button has nothing to fold */
-  [data-rail="1"] #tfr {
-    display: none !important;
-  }
   #rail .rhome {
     display: flex;
     align-items: center;
@@ -439,7 +430,6 @@
     margin-left: 4px;
   }
 }
-
 
 /* ==== Tappable dhrupad marker (every text with refrain: every-verse): sits right under the stanza; tap shows the dhrupad above ==== */
 @media screen {

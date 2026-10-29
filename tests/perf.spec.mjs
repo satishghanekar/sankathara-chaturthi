@@ -33,7 +33,7 @@ async function metrics(cdp) {
 }
 const diff = (a, b) => Object.fromEntries(Object.keys(a).map((k) => [k, Math.round(b[k] - a[k])]));
 
-test("load and the language button lay the page out only a few times @chromium-only", async ({ browser }) => {
+test("load and the language choices lay the page out only a few times @chromium-only", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: "block" });
   const page = await context.newPage();
   const cdp = await context.newCDPSession(page);
@@ -56,11 +56,18 @@ test("load and the language button lay the page out only a few times @chromium-o
   const load = diff(t0, await metrics(cdp));
 
   // Marathi → English → both: each is a first visit to that language, so the text is fitted again
+  // The language choices are in the reading sheet (Aa in the bottom bar), as in Nitya Upasana; it stays open for the
+  // three taps, as it does for a reader
+  await page.locator("#rsb").evaluate((b) => b.click());
+  await expect(page.locator("#rsl button")).toHaveCount(3);
+  await page.waitForTimeout(1000);
   const taps = [];
   for (let i = 0; i < 3; i++) {
+    await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
     await page.evaluate(() => (window.__slow = 0));
     const t = await metrics(cdp);
-    await page.locator("#home-btn").click();
+    // Language in the reading sheet: English, both, then Marathi again
+    await page.locator("#rsl button").nth((i + 1) % 3).evaluate((b) => b.click());
     await page.waitForTimeout(1000);
     taps.push({ ...diff(t, await metrics(cdp)), responseMs: Math.round(await page.evaluate(() => window.__slow)) });
   }

@@ -18,7 +18,7 @@ There is no build step: the browser loads these files as they are.
 
 | File | What it does |
 |---|---|
-| `core/page.js` | Page basics: the <html> element, the language button icons, the short message (flash) |
+| `core/page.js` | Page basics: the <html> element, the short message (flash) |
 | `core/state.js` | Settings (P), loaded from this device; `change()`, the one way the parts write them |
 | `core/words.js` | Helpers for writing words on the page, shared by the parts that build their own HTML: `esc`, Devanagari digits (`dv`, `num`), the menu language (`ui`), the reading languages (`lead`, `second`), Marathi in the chosen script (`scr`, `scrKey`, `mrLang`) and the month and weekday names (`MONTHS`, `DAYS`). Pure, unit-tested in `tests/unit/words.test.mjs`; no `init()`. Use these rather than writing a copy in a part (as in Nitya Upasana; `text/content.js` keeps its own `esc`, so the text parser does not depend on the settings) |
 | `store/migrate.js` | The settings as plain data: defaults, the upgrade of settings saved by older versions, the tidy-up (pure, unit-tested in `tests/unit/migrate.test.mjs`; no `init()`) |
@@ -35,14 +35,15 @@ There is no build step: the browser loads these files as they are.
 | `features/bottom-bar.js` | Bottom bar (#asc) and autoscroll |
 | `features/tilt.js` | Tilt to scroll (bottom bar, phones and tablets) |
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
-| `features/settings-panel.js` | Settings panel |
-| `features/dhrupad-button.js` | Dhrupad button: toggle once / after every stanza, keeping the reader's place |
+| `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More (`#spv`, `spTab()`; each `.sp-grp` says its tab), as in Nitya Upasana |
+| `features/dhrupad-button.js` | Dhrupad: `refToggle()` switches once / after every stanza, keeping the reader's place (used by the Aa sheet and Settings; no `init()`) |
 | `features/reading-sheet.js` | Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach |
 | `features/wake-lock.js` | Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested. |
-| `features/overlays.js` | Overlays: settings panel (setP) and contents + search (setJ); opening one closes the other (no `init()`: used by bars, clicks, pinch, help and history) |
+| `features/overlays.js` | Overlays: settings panel (setP, under the top bar) and the Library (setJ); opening one closes the other (no `init()`: used by bars, clicks, pinch, help and history) |
 | `features/history.js` | Back button |
 | `features/languages.js` | Settings page: languages |
-| `features/contents-list.js` | Contents list inside the contents + search overlay (built from the home page contents) |
+| `features/contents-list.js` | The Library's list: every text under पूजा and आरती, built from the texts (`CONTENT.groups`); `libraryGroups()` also builds the left menu (`text/layout.js`) |
+| `features/more-menu.js` | ⋯ in the top bar (as in Nitya Upasana): App, Share, QR and Help in a small menu; `focusBack()` sends focus to ⋯ when a pop-up opened from it closes |
 | `features/clicks.js` | Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it |
 | `features/pinch.js` | Pinch with two fingers to change the text size (the page itself never zooms) |
 | `text/search-core.js` | Search rules and ranking, without the page (the same file as in Nitya Upasana; tests/unit/search.test.mjs): svara marks and punctuation ignored, forgiving spellings, a typo forgiven, Devanagari typed matched through its English letters |
