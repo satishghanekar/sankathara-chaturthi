@@ -1,13 +1,13 @@
 // Settings page: languages
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { liSet } from "../core/page.js";
 import { P, change } from "../core/state.js";
 import { refit } from "../text/autofit.js";
 import { LANGS, LK, cur, pn } from "../core/apply.js";
 import { apply } from "./bars.js";
 import { trPick } from "./settings-panel.js";
 import { buildIX } from "../text/search.js";
+import { refToggle } from "./dhrupad-button.js";
 
 var PICK,
   spH; // the preview as last built
@@ -22,16 +22,23 @@ export function init() {
   document.getElementById("sl2s").onchange = function () {
     spPick(2, this.value);
   };
+  // Show: the main language, the second or both, as Language in the Aa sheet does
+  document.getElementById("slw").onclick = function (e) {
+    var b = e.target.closest("button");
+    if (!b || b.dataset.v === P.lang) return;
+    var c = cur();
+    change({ lang: b.dataset.v }, apply);
+    if (c) c.scrollIntoView();
+  };
   document.getElementById("srf").onclick = function (e) {
     var b = e.target.closest("button");
-    if (b && b.dataset.v !== String(P.ref)) document.getElementById("rb").click();
+    if (b && b.dataset.v !== String(P.ref)) refToggle();
   };
 }
 
 // Show the settings that depend on the language choice
 export function spSet() {
-  var mr = P.ui === "mr",
-    v1 = document.getElementById("sl1v"),
+  var v1 = document.getElementById("sl1v"),
     v2 = document.getElementById("sl2v");
   var k1 = spKey(P.lead),
     k2 = P.l2 ? spKey(P.l2) : "";
@@ -50,6 +57,17 @@ export function spSet() {
   // menus are in English or the main language, so with English as the main language there is nothing to pick
   // (nor with Kannada, which has no menus of its own yet)
   document.getElementById("surow").hidden = LK(P.lead) !== "mr";
+  // Show: one button per language and Both, named in their own language (as in the Aa sheet)
+  document.getElementById("slwrow").hidden = !P.l2;
+  document.getElementById("slw").innerHTML = P.l2
+    ? [P.lead, P.l2, "both"]
+        .map(function (v) {
+          var l = v === "both" ? P.ui : LK(v),
+            t = v === "both" ? (P.ui === "mr" ? "दोन्ही" : "Both") : LANGS[LK(v)].n;
+          return '<button type="button" data-v="' + v + '" lang="' + l + '" aria-pressed="' + (v === P.lang) + '">' + t + "</button>";
+        })
+        .join("")
+    : "";
   [].forEach.call(document.querySelectorAll("#srf button"), function (b) {
     b.setAttribute("aria-pressed", String(b.dataset.v === String(P.ref)));
   });
@@ -80,7 +98,7 @@ export function spSet() {
     mark = mk ? '<div class="sp-rmk" lang="' + LK(P.lead) + '">' + mk.textContent + "</div>" : "",
     refrain = unit(rf, " sp-rf");
   var h =
-    '<div class="sp-pt">' + (mr ? "नमुना" : "Preview") + '</div><div class="sp-pw' + (P.l2 ? "" : " sp-one") + '">' +
+    '<div class="sp-pw' + (P.l2 ? "" : " sp-one") + '">' +
     tg("sp-once", (lab ? '<div class="sp-lab" lang="' + LK(P.lead) + '">' + lab.textContent.replace(/\s*\(.*\)\s*$/, "") + "</div>" : "") + refrain) +
     unit(vs[0]) +
     tg("sp-once", mark) +
@@ -137,7 +155,6 @@ function spPick(w, k) {
   change(ch, function () {
     if (sw) {
       SCR.set(ind);
-      liSet();
       buildIX();
     }
     apply();

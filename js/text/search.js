@@ -1,5 +1,5 @@
 // @ts-check
-// Search: every Marathi line with its English line, in the Contents + search overlay (#jump); matches ignore svara marks
+// Search: every Marathi line with its English line, in the Library (#jump); matches ignore svara marks
 // and punctuation, forgive the spellings people type and a typo, and Devanagari typed also finds what is written in
 // English letters. The rules and the ranking are in ./search-core.js (as in Nitya Upasana, unit-tested); this part
 // builds the index from the lines the pieces show and shows the results.

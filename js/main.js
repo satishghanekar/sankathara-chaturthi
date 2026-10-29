@@ -35,7 +35,6 @@ import { init as startBottomBar } from "./features/bottom-bar.js";
 import { init as startTilt } from "./features/tilt.js";
 import { init as startBars } from "./features/bars.js";
 import { init as startSettingsPanel } from "./features/settings-panel.js";
-import { init as startDhrupadButton } from "./features/dhrupad-button.js";
 import { init as startReadingSheet } from "./features/reading-sheet.js";
 import { init as startWakeLock } from "./features/wake-lock.js";
 import { init as startHistory } from "./features/history.js";
@@ -49,6 +48,7 @@ import { init as startPictureViewer } from "./features/picture-viewer.js";
 import { init as startHelp } from "./features/help.js";
 import { init as startPrint } from "./features/print.js";
 import { init as startShare } from "./features/share.js";
+import { init as startMoreMenu } from "./features/more-menu.js";
 import { init as startOffline } from "./features/offline.js";
 
 function start() {
@@ -69,7 +69,6 @@ function start() {
     startTilt(); // Tilt to scroll (bottom bar, phones and tablets)
     startBars(); // Bars tuck away while reading (CSS: "Bars tuck away while reading")
     startSettingsPanel(); // Settings panel
-    startDhrupadButton(); // Dhrupad button: toggle once / after every stanza, keeping the reader's place
     startReadingSheet(); // Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad
     startWakeLock(); // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
     startHistory(); // Back button
@@ -83,6 +82,7 @@ function start() {
     startHelp(); // Help: opens over the page; the phone's Back button closes it
     startPrint(); // Print
     startShare(); // Share, QR code and the Add to Home Screen buttons
+    startMoreMenu(); // More (⋯ in the top bar): App, Share, QR and Help in a small menu
     startOffline(); // Offline use: home-screen app details and the service worker (sw.js)
   } finally {
     // Show the page (see "data-ready" in css/02-core.css), even if a part failed to start

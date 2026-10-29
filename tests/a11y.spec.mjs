@@ -2,7 +2,7 @@
 // keyboard-only use of every dialog, and accessible names that contain the visible label.
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { openSite, SETUPS } from "./helpers.mjs";
+import { openSite, SETUPS, openMore, tapMore } from "./helpers.mjs";
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
@@ -29,11 +29,12 @@ const STATES = [
   ["Settings open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#aa").click()],
   ["Print open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#prb").click()],
   ["search open", SETUPS.marathi, async (p) => {
-    await p.locator("#hm").click();
+    await p.locator("#asq").click();
     await p.locator("#q").fill("deva");
   }],
-  ["Help open", SETUPS.marathi, (p) => p.locator("#hlpb").click()],
-  ["QR open", SETUPS.marathi, (p) => p.locator("#qrb").click()],
+  ["Help open", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
+  ["QR open", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
+  ["More menu open", SETUPS.marathi, (p) => openMore(p)],
   ["Print open", SETUPS.marathi, (p) => p.locator("#prb").click()],
   ["picture open", SETUPS.marathi, (p) => p.locator("#iconb").click()],
 ];
@@ -61,6 +62,8 @@ for (const [name, opener, dialog] of DIALOGS) {
     // WebKit only tabs to links and form fields unless the "Press Tab to highlight each item" option is on
     test.skip(browserName === "webkit", "Safari's default Tab skips buttons");
     await openSite(page, SETUPS.marathi);
+    // Help and QR are in the ⋯ menu
+    if (opener === "#hlpb" || opener === "#qrb") await openMore(page);
     await page.locator(opener).focus();
     await page.keyboard.press("Enter");
     await page.waitForTimeout(200);
