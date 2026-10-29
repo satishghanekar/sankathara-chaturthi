@@ -75,11 +75,17 @@ export async function settle(page) {
 
 /** The text a reader sees in every piece, piece by piece (hidden parts excluded). */
 export async function pieceText(page) {
-  return page.evaluate(() =>
-    [...document.querySelectorAll("section.ash")]
+  // Home on its own (data-hv) hides the reading page: it is shown for the read, as opening a text would
+  return page.evaluate(() => {
+    const r = document.documentElement,
+      hv = r.getAttribute("data-hv");
+    r.removeAttribute("data-hv");
+    const t = [...document.querySelectorAll("section.ash")]
       .map((s) => "### " + s.id + "\n" + s.innerText.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim())
-      .join("\n\n"),
-  );
+      .join("\n\n");
+    if (hv !== null) r.setAttribute("data-hv", hv);
+    return t;
+  });
 }
 
 /** True when the page is wider than the window (a sideways scroll appears). */
