@@ -82,7 +82,9 @@ export function init() {
 }
 
 function tuck(on) {
-  on = on && !root.hasAttribute("data-rail") && !root.hasAttribute("data-menu");
+  // never on Home (data-home): its bars stay put. A long Home scrolled past the tuck point, and the bars hid and came
+  // back mid-scroll, which iPhones drew in the middle of the page (Satish, 2026-10-27, as in Nitya Upasana)
+  on = on && !root.hasAttribute("data-rail") && !root.hasAttribute("data-menu") && !root.hasAttribute("data-home");
   if (on === root.hasAttribute("data-tuck")) return;
   if (on) root.setAttribute("data-tuck", "1");
   else root.removeAttribute("data-tuck");
@@ -109,6 +111,10 @@ export function tuckHold() {
 // Highlight the current piece in the menus; update the progress line
 export function mark() {
   var c = cur();
+  // On the home page (no piece at the top yet): the bottom bar keeps only the Library and Reading (css/05-home-card.css),
+  // as in Nitya Upasana
+  if (c) root.removeAttribute("data-home");
+  else if (!root.hasAttribute("data-home")) root.setAttribute("data-home", "1");
   // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
   var en = P.lang === "en",
     tt = en ? "Sankathara Chaturthi" : SCR.to("संकटहर चतुर्थी"),
@@ -232,7 +238,7 @@ export function apply() {
   [].forEach.call(document.querySelectorAll(".wrap > .ash,#pv,#jl,#rail"), function (e) {
     e.setAttribute("data-lang", P.lang);
   });
-  [].forEach.call(document.querySelectorAll(".bar,#shr,#spv,#none,#panel,#home > *,#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
+  [].forEach.call(document.querySelectorAll(".bar,#shr,#asc,#none,.libhd,.rch,#spv,#panel,#home > *,#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
     e.setAttribute("data-lang", P.ui);
   });
   root.lang = SCR.k || "mr"; // the page is Marathi (or Kannada); English parts carry lang="en" themselves (screen readers pick the voice from this)
