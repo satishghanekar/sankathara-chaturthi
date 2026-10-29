@@ -357,6 +357,7 @@ html[data-sp] {
   display: grid;
   grid-template-rows: 1fr;
   opacity: 1;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- where grid rows don't animate (iOS 15) the part just opens or shuts, and fades */
   transition:
     grid-template-rows 0.3s ease,
     opacity 0.3s ease;
