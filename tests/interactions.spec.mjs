@@ -183,8 +183,10 @@ test("piece fold is remembered across a reload @mobile", async ({ page }) => {
   await page.reload();
   await settle(page);
   await expect(page.locator("#a2 .items")).toBeHidden();
-  // going to a folded piece from the contents opens it
-  await page.locator('a[data-go="a2"]:visible').first().click();
+  // going to a folded piece from the Library opens it (the bars, tucked away while reading, are brought back first)
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await page.locator("#asq").click();
+  await page.locator('#jl a[data-go="a2"]').click();
   await expect(page.locator("#a2 .items")).toBeVisible();
 });
 
