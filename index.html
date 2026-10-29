@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.7.4">
+<meta name="version" content="aarti-v1.7.6">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -38,6 +38,7 @@
 <link rel="stylesheet" href="css/07-bottom-bar-folds.css">
 <link rel="stylesheet" href="css/08-contents-book.css">
 <link rel="stylesheet" href="css/09-settings-page.css">
+<link rel="stylesheet" href="css/13-library.css">
 <link rel="stylesheet" href="css/15-print.css">
 <link rel="stylesheet" href="css/99-fallbacks.css">
 <!-- The list of the site's files, for Check for updates and the offline copy. In the head: in the body it would
@@ -118,13 +119,37 @@
   <button type="button" id="qrb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg><span class="mr">QR<span class="sr"> कोड</span></span><span class="en" lang="en">QR<span class="sr"> code</span></span></button>
   <button type="button" id="hlpb"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.8-2.5 2.3-2.5 3.9"/><path d="M12 17.2v.01"/></svg><span class="mr">मदत</span><span class="en" lang="en">Help</span></button>
 </div>
-<!-- ==== Library: every text by section, and search (list filled in by the script: js/features/contents-list.js) ==== -->
-<div id="jump" hidden role="dialog" aria-label="Library" tabindex="-1">
-  <input id="q" type="search" placeholder="Find a line (Marathi or English letters)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a line">
+<!-- ==== Library: every text by section, with search; the search box at the foot on phones, and Recent, as in Nitya
+     Upasana (js/features/contents-list.js, js/text/search.js) ==== -->
+<div id="jump" hidden role="dialog" aria-labelledby="jlt" tabindex="-1">
+  <div class="libin">
+  <!-- Everything but the search box, in a scroll of its own on phones and tablets, so the box below is never inside
+       the scroll (an iPhone kept scrolling the list to the box's place at its end) -->
+  <div class="libsc">
+  <!-- Back (‹) and the title, as in Nitya Upasana (which has its Chants | Books tabs here too) -->
+  <div class="libhd">
+    <button type="button" id="jbk"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="sr"><span class="mr">मागे</span><span class="en" lang="en">Back</span></span></button>
+    <h2 id="jlt"><span lang="mr">संग्रह</span> <span class="tsdot" aria-hidden="true">·</span> <span lang="en">Library</span></h2>
+  </div>
+  <!-- Recent (js/text/search.js rcShow): the last places this person went to from search or from here, newest first,
+       while the search box is empty; × takes one away, Clear all of them (Satish, 2026-10-27) -->
+  <section id="rcn" hidden aria-labelledby="rcnh">
+    <div class="rch"><h3 id="rcnh"><span class="mr">अलीकडे</span><span class="en" lang="en">Recent</span></h3><button type="button" id="rcc"><span class="mr">सर्व काढा</span><span class="en" lang="en">Clear</span></button></div>
+    <ul id="rcl"></ul>
+  </section>
   <div id="none" hidden><span class="mr">काही सापडले नाही</span><span class="en" lang="en">Nothing found</span></div>
   <ul id="res"></ul>
   <div id="srs" class="sr" role="status"></div>
-  <ul id="jl"></ul>
+  <!-- Every text by section (js/features/contents-list.js): वैदिक मंत्र and आरती, each with its texts in reading order -->
+  <div id="jl">
+  </div>
+  </div>
+  <!-- the search box at the foot of the page, within thumb reach and kept just above the phone's keyboard; at the top on
+       wide screens (css/13-library.css) -->
+  <div id="qbar">
+    <input id="q" type="search" placeholder="Find a text or a line" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Find a text or a line">
+  </div>
+  </div>
 </div>
 <!-- ==== Settings page: opened by the ⚙ button, it covers the whole page until Back (or the phone's Back) closes it.
      Groups of rows in rounded cards (Languages, Reading, Screen, About), like phone settings ==== -->

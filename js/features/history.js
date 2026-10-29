@@ -2,12 +2,12 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { bt, onPiece } from "../core/page.js";
-import { aa, cur, jp, pjOpen, pn } from "../core/apply.js";
+import { aa, cur, jp, pn, unfold } from "../core/apply.js";
 import { TK, apply, goHome, tuckHold } from "./bars.js";
 import { refit } from "../text/autofit.js";
-import { setJ, setP } from "./overlays.js";
+import { anyOpen, closeForBack, pageEls, setJ, setP, trapped } from "./overlays.js";
 
-var NAV, popSkip, adT, ovFrom;
+var NAV, popSkip, adT, ovFrom, keep;
 
 export function init() {
   // Opening a panel or dialog adds a Back step, so the phone's Back closes it instead of leaving the site.
@@ -21,15 +21,7 @@ export function init() {
     var was = ovOpen();
     setP(false);
     setJ(false);
-    var shut = 0;
-    ["qrm", "prm", "inm", "pzv", "rsh"].forEach(function (i) {
-      var d = document.getElementById(i);
-      if (d && !d.hidden) {
-        d.hidden = true;
-        shut = 1;
-        if (i === "rsh") document.getElementById("rsb").setAttribute("aria-expanded", "false");
-      }
-    });
+    var shut = closeForBack();
     // Closed with the phone's Back: focus goes back to the button that opened it, as with ✕ or Escape, so a
     // screen reader doesn't start again from the top of the page (WCAG 2.4.3)
     if (shut) {
@@ -41,27 +33,37 @@ export function init() {
     }
     if (popSkip) {
       popSkip--;
+      // Firefox moves focus when it steps back to an address with a #piece in it: the close (✕, Escape) had put it
+      // back on the button that opened the pop-up, so it goes back there
+      var k = keep;
+      keep = null;
+      var back = function () {
+        if (k && k !== document.activeElement && k.isConnected && k.getClientRects().length)
+          try {
+            k.focus({ preventScroll: true });
+          } catch (x) {}
+      };
+      back();
+      // (and once more after the browser has finished stepping back, unless focus has gone somewhere on purpose)
+      requestAnimationFrame(function () {
+        if (document.activeElement === document.body) back();
+      });
       return;
     }
     if (was) return;
     var st = e.state,
       el = location.hash && document.getElementById(location.hash.slice(1));
-    pjOpen(el);
+    unfold(el);
     homeView(!el || el.id === "home");
     if (st && typeof st.y === "number") scrollTo(0, st.y);
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
   });
-  // Keyboard: Tab stays inside an open dialog (QR, Print, Add to Home Screen, Help, Settings)
+  // Keyboard: Tab stays inside an open dialog (those marked trap in LAYERS, js/features/overlays.js: Help, QR, Print,
+  // Add to Home Screen, the picture, the reading sheet, Settings)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
-    var d = ["help", "qrm", "prm", "inm", "pzv", "rsh", "panel"]
-      .map(function (i) {
-        return document.getElementById(i);
-      })
-      .filter(function (x) {
-        return x && !x.hidden;
-      })[0];
+    var d = trapped();
     if (!d) return;
     // Everything Tab can land on, dropdowns included: leaving <select> out made Tab from the language dropdowns
     // jump back to the top of Settings, so the rest of the page could not be reached by keyboard (WCAG 2.1.1).
@@ -123,7 +125,7 @@ export function init() {
     } catch (x) {}
   });
   // Tabbing out of an open panel closes it, so it doesn't stay over the page you have moved on to
-  [pn, jp].forEach(function (el) {
+  pageEls().forEach(function (el) {
     el.addEventListener("focusout", function (e) {
       var t = e.relatedTarget;
       if (el.hidden || !t || el.contains(t) || t.closest(".bar,#help")) return;
@@ -152,15 +154,9 @@ function hs() {
   return history.state || {};
 }
 
+// Something is open over the page (LAYERS in js/features/overlays.js)
 function ovOpen() {
-  return (
-    !pn.hidden ||
-    !jp.hidden ||
-    ["qrm", "prm", "inm", "help", "pzv", "rsh"].some(function (i) {
-      var e = document.getElementById(i);
-      return e && !e.hidden;
-    })
-  );
+  return anyOpen();
 }
 
 export function ovPush() {
@@ -177,6 +173,11 @@ export function ovPush() {
 export function ovDone() {
   if (!NAV || !hs().ov || ovOpen() || popSkip) return;
   popSkip++;
+  // where the close puts focus (some put it back after this call, so it is read once the close has finished)
+  keep = /** @type {HTMLElement | null} */ (document.activeElement);
+  Promise.resolve().then(function () {
+    if (popSkip) keep = /** @type {HTMLElement | null} */ (document.activeElement);
+  });
   history.back();
 }
 

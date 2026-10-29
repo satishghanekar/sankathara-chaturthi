@@ -1,20 +1,27 @@
 // @ts-check
-// Search: every Marathi line with its English line, in the Library (#jump); matches ignore svara marks
-// and punctuation, forgive the spellings people type and a typo, and Devanagari typed also finds what is written in
-// English letters. The rules and the ranking are in ./search-core.js (as in Nitya Upasana, unit-tested); this part
-// builds the index from the lines the pieces show and shows the results.
+// Search across the library, in the Library page (#jump): texts by title (Marathi, English, scholarly spelling), id and
+// category first, under "Texts" ("रचना"), then every line, original and English, under "Lines"
+// ("ओळी"); matches ignore svara marks and punctuation, forgive the spellings people type and a typo, and Devanagari
+// typed also finds what is written in English letters. The rules and the ranking are in ./search-core.js
+// (unit-tested); this part builds the index from the texts, as the pieces show them, and shows the results.
+// Recent (#rcn) lists the last places the person went to from here (a text, or a line in it; P.rc, per person) while
+// the box is empty. The box is at the foot of the page on phones, kept above the keyboard (--kb on #jump).
+// As in Nitya Upasana, where the texts' categories come from its Library (js/features/library.js); here from the
+// sections (js/features/contents-list.js).
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { P } from "../core/state.js";
-import { ENS, IA } from "./iast.js";
-import { jp } from "../core/apply.js";
-import { buildIndex, fold, marks, search, LIMIT } from "./search-core.js";
+import { P, change } from "../core/state.js";
+import { IA, englishStyle, titleText } from "./iast.js";
+import { numberStanzas } from "./stanza-numbers.js";
+import { breakLines } from "./line-breaks.js";
+import { pieceEl } from "../core/page.js";
+import { jp, unfold } from "../core/apply.js";
+import { buildIndex, fold, marks, search } from "./search-core.js";
 import { goLine } from "../features/bars.js";
 import { jumpTo } from "../features/history.js";
-import { ul } from "../features/contents-list.js";
+import { categoryOfSection, textsForSearch, ul } from "../features/contents-list.js";
 
 /** @typedef {import("./search-core.js").Index} Index */
-/** @typedef {import("./search-core.js").LineIn} LineIn */
 
 /** @type {Index | null} */
 var IX = null;
@@ -36,7 +43,6 @@ function scr() {
 }
 
 export function init() {
-  buildIX();
   q = /** @type {HTMLInputElement} */ (document.getElementById("q"));
   res = /** @type {HTMLElement} */ (document.getElementById("res"));
   none = /** @type {HTMLElement} */ (document.getElementById("none"));
@@ -68,16 +74,144 @@ export function init() {
     clearTimeout(qT);
     qT = setTimeout(find, 120);
   });
+  // Recent: drawn each time the Library opens; Clear empties it
+  new MutationObserver(function () {
+    if (!jp.hidden) rcShow();
+  }).observe(jp, { attributes: true, attributeFilter: ["hidden"] });
+  /** @type {HTMLElement} */ (document.getElementById("rcc")).onclick = function () {
+    change({ rc: [] });
+    rcShow();
+    q.focus();
+  };
+  // The phone's keyboard covers the foot of the page, where the box is: the Library is lifted by its height
+  var vv = window.visualViewport;
+  if (vv) {
+    var v = vv,
+      kb = function () {
+        jp.style.setProperty("--kb", Math.max(0, Math.round(innerHeight - v.height - v.offsetTop)) + "px");
+      };
+    v.addEventListener("resize", kb);
+    v.addEventListener("scroll", kb);
+  }
 }
 
-/** @param {number} n  lines found; -1: nothing searched @param {boolean} more  more than LIMIT */
-function say(n, more) {
+/** Open a text at its top @param {string} sec */
+function openText(sec) {
+  var el = pieceEl(sec);
+  unfold(el);
+  jumpTo(function () {
+    if (el) el.scrollIntoView();
+  }, "#" + sec);
+}
+
+/** Open a text at one of its lines @param {string} sec @param {string} id */
+function openLine(sec, id) {
+  jumpTo(function () {
+    goLine(id, true);
+  }, "#" + sec);
+}
+
+// ---- Recent ----
+var RC_MAX = 8;
+
+/** Remember a place, first in Recent: a text, or a line in it @param {string} sec @param {string} id */
+function remember(sec, id) {
+  var k = id ? sec + "|" + id : sec;
+  change({
+    rc: [k].concat((P.rc || []).filter(function (/** @type {string} */ x) { return x !== k; })).slice(0, RC_MAX),
+  });
+}
+
+/** Recent, while nothing is searched: each place as a search result shows it, with × to take it away */
+export function rcShow() {
+  var box = /** @type {HTMLElement} */ (document.getElementById("rcn")),
+    list = /** @type {HTMLElement} */ (document.getElementById("rcl"));
+  if (!box || !list) return;
+  list.innerHTML = "";
+  var L = P.lang === "en" ? "en" : "mr",
+    LL = L === "en" ? "en" : scr().k || "mr",
+    mrUi = P.ui === "mr",
+    n = 0;
+  (P.rc || []).forEach(function (/** @type {string} */ k) {
+    var p = k.split("|"),
+      sec = p[0],
+      id = p[1] || "",
+      el = pieceEl(sec);
+    if (!el) return; // a text no longer in the Library
+    /** @param {string} l */
+    var line = function (l) {
+      var x = el && el.querySelector('.verse > .' + l + ' > p[data-l="' + id + '"]');
+      return x ? txt(x) : "";
+    };
+    if (id && !line("mr")) return; // a line no longer in the text
+    var li = document.createElement("li"),
+      b = document.createElement("button"),
+      x = document.createElement("button"),
+      c = categoryOfSection(sec);
+    b.type = x.type = "button";
+    b.className = "rcg";
+    if (id) {
+      li.className = "rln";
+      b.appendChild(span("rs", LL, sectionTitle(sec, L)));
+      b.appendChild(span("rl", LL, line(L)));
+      if (P.lang === "both") b.appendChild(span("rl2", "en", line("en")));
+    } else {
+      li.className = "rt";
+      if (c) b.appendChild(span("rs", LL, L === "en" ? c.name.en : scr().to(c.name.mr)));
+      b.appendChild(span("rl", LL, sectionTitle(sec, L)));
+      if (P.lang === "both") b.appendChild(span("rl2", "en", sectionTitle(sec, "en")));
+    }
+    b.onclick = function () {
+      remember(sec, id);
+      if (id) openLine(sec, id);
+      else openText(sec);
+    };
+    x.className = "rcx";
+    x.textContent = "×";
+    x.setAttribute("aria-label", (mrUi ? "काढा: " : "Remove: ") + (b.textContent || ""));
+    x.onclick = function () {
+      change({ rc: (P.rc || []).filter(function (/** @type {string} */ y) { return y !== k; }) });
+      rcShow();
+    };
+    li.appendChild(b);
+    li.appendChild(x);
+    list.appendChild(li);
+    n++;
+  });
+  // only while the whole list shows (nothing searched)
+  box.hidden = !n || ul.hidden;
+
+  /** @param {string} cls @param {string} lang @param {string} t */
+  function span(cls, lang, t) {
+    var s = document.createElement("span");
+    s.className = cls;
+    s.lang = lang;
+    s.textContent = t;
+    return s;
+  }
+}
+
+/**
+ * The number found, read out to screen readers: lines (n), and texts (t) when any were found
+ * @param {number} n  -1: nothing searched
+ * @param {number} t
+ * @param {boolean} more
+ */
+function say(n, t, more) {
   var m = "",
-    en = P.ui === "en";
-  if (n === 0) m = en ? "Nothing found" : "काही सापडले नाही";
-  else if (n > 0) {
-    m = more ? (en ? LIMIT + " or more" : (LIMIT).toLocaleString("mr-IN") + " किंवा अधिक") : en ? String(n) : n.toLocaleString("mr-IN");
-    m += en ? (n === 1 && !more ? " result" : " results") : " ओळी सापडल्या";
+    en = P.ui !== "mr";
+  /** @param {number} x */
+  var num = function (x) {
+    return en ? String(x) : x.toLocaleString("mr-IN");
+  };
+  if (n === 0 && !t) m = en ? "Nothing found" : "काही सापडले नाही";
+  else if (n >= 0) {
+    var ln = more || n >= 40 ? (en ? "40 or more" : "४० किंवा अधिक") : num(n);
+    m = ln + (en ? (n === 1 ? " result" : " results") : " ओळी सापडल्या");
+    if (t)
+      m = en
+        ? t + (t === 1 ? " text" : " texts") + " and " + ln + (n === 1 ? " line" : " lines")
+        : num(t) + " रचना आणि " + ln + " ओळी सापडल्या";
   }
   clearTimeout(srsT);
   srsT = setTimeout(function () {
@@ -87,99 +221,176 @@ function say(n, more) {
 
 function find() {
   qT = 0;
-  var v = q.value,
-    ix = /** @type {Index} */ (IX);
+  var v = q.value;
   res.innerHTML = "";
   none.hidden = true;
+  var found = search(ix(), v);
   ul.hidden = Array.from(fold(v, scr().from).replace(/ /g, "")).length >= 2;
-  if (!ul.hidden) return say(-1, false);
-  var found = search(ix, v),
-    n = found.lines.length + (found.more ? 1 : 0);
-  say(found.more ? LIMIT : found.lines.length, found.more);
+  rcShow();
+  if (!ul.hidden) return say(-1, 0, false);
+  var n = found.texts.length + found.lines.length;
+  say(found.lines.length, found.texts.length, found.more);
   if (!n) {
     none.hidden = false;
     return;
   }
   /**
-   * Show the line with the words that match the search in bold
+   * The words that match the search, in bold
    * @param {HTMLElement} el
    * @param {string} txt
    */
   function mk(el, txt) {
     txt.split(/(\s+)/).forEach(function (w) {
-      if (w && marks(ix, w, v)) {
+      if (w && marks(ix(), w, v)) {
         var bb = document.createElement("mark");
         bb.textContent = w;
         el.appendChild(bb);
       } else el.appendChild(document.createTextNode(w));
     });
   }
-  var frag = document.createDocumentFragment();
+  /** @param {string} cls @param {string} lang @param {string} txt @param {boolean} marked */
+  function span(cls, lang, txt, marked) {
+    var s = document.createElement("span");
+    s.className = cls;
+    s.lang = lang;
+    if (marked) mk(s, txt);
+    else s.textContent = txt;
+    return s;
+  }
+  // The results follow the language shown on the reading page (P.lang), as the list does; the group names the menus
+  var frag = document.createDocumentFragment(),
+    L = P.lang === "en" ? "en" : "mr",
+    LL = L === "en" ? "en" : scr().k || "mr",
+    mrUi = P.ui === "mr";
+  /** @param {string} mr @param {string} en */
+  function head(mr, en) {
+    var li = document.createElement("li"),
+      h = document.createElement("h3");
+    li.className = "rh";
+    h.lang = mrUi ? "mr" : "en";
+    h.textContent = mrUi ? mr : en;
+    li.appendChild(h);
+    frag.appendChild(li);
+  }
+  // Texts first (by title, id or category), with their category: a tap opens the text
+  if (found.texts.length) head("रचना", "Texts");
+  found.texts.forEach(function (r) {
+    var li = document.createElement("li"),
+      b = document.createElement("button"),
+      c = categoryOfSection(r.sec);
+    li.className = "rt";
+    b.type = "button";
+    if (c) b.appendChild(span("rs", LL, L === "en" ? c.name.en : scr().to(c.name.mr), false));
+    b.appendChild(span("rl", LL, sectionTitle(r.sec, L), true));
+    if (P.lang === "both") b.appendChild(span("rl2", "en", sectionTitle(r.sec, "en"), true));
+    b.onclick = function () {
+      remember(r.sec, "");
+      openText(r.sec);
+    };
+    li.appendChild(b);
+    frag.appendChild(li);
+  });
+  // Then the lines: a tap opens the text at that line
+  if (found.lines.length) head("ओळी", "Lines");
   found.lines.forEach(function (r) {
     var li = document.createElement("li"),
       b = document.createElement("button");
     b.type = "button";
-    var s1 = document.createElement("span");
-    s1.className = "rs";
-    s1.lang = P.lang === "en" ? "en" : "mr";
-    s1.textContent = sectionTitle(r.sec);
-    var s2 = document.createElement("span");
-    s2.className = "rl";
-    s2.lang = P.lang === "en" ? "en" : "mr";
-    mk(s2, P.lang === "en" ? r.e : r.m);
-    b.appendChild(s1);
-    b.appendChild(s2);
-    if (P.lang === "both") {
-      var s3 = document.createElement("span");
-      s3.className = "rl2";
-      s3.lang = "en";
-      mk(s3, r.e);
-      b.appendChild(s3);
-    }
+    b.appendChild(span("rs", LL, sectionTitle(r.sec, L), false));
+    b.appendChild(span("rl", LL, P.lang === "en" ? r.e : r.m, true));
+    if (P.lang === "both") b.appendChild(span("rl2", "en", r.e, true));
     b.onclick = function () {
-      jumpTo(function () {
-        goLine(r.id, true);
-      }, "#" + r.sec);
+      remember(r.sec, r.id);
+      openLine(r.sec, r.id);
     };
     li.appendChild(b);
     frag.appendChild(li);
   });
   res.appendChild(frag);
+  // each new search shows its best results first: the list from its top (on phones it scrolls in .libsc)
+  jp.scrollTop = 0;
+  /** @type {HTMLElement} */ (jp.querySelector(".libsc")).scrollTop = 0;
 }
 
-/** @param {Element} el */
-function txt(el) {
-  return el.innerHTML
-    .replace(/<br\s*\/?>/g, " ")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "&");
-}
-
-// The index: every line in the pieces themselves (not the copies in the print view or the dhrupad bubble), each once
-// per piece, with its English as shown and the everyday spelling (ENS) to search while the scholarly one is shown.
-// Built again when the script or the English style changes.
+/** The index, built again when the script, the English spelling or the categories change: on the next search */
 export function buildIX() {
+  IX = null;
+}
+
+/**
+ * The index, built the first time it is needed, from every piece as the reading page shows it (only the pieces opened
+ * so far are on the page, js/core/page.js): a copy of them, out of the page, in the chosen script and English
+ * style, with their stanza numbers and line breaks
+ * @returns {Index}
+ */
+function ix() {
+  if (IX) return IX;
+  /** @type {any} */
+  var w = window,
+    C = w.CONTENT,
+    all = document.createElement("div");
+  all.innerHTML = C
+    ? C.categories
+        .map(function (/** @type {any} */ g) {
+          return g.pieces
+            .map(function (/** @type {any} */ p) {
+              return w.renderPiece(p, C);
+            })
+            .join("");
+        })
+        .join("")
+    : "";
+  /** @type {HTMLElement[]} */
+  var secs = [].slice.call(all.children);
+  secs.forEach(function (s) {
+    w.SCR.el(s);
+  });
+  // the everyday English is searched too while the scholarly one is shown, so "sukhakarta" still finds it
+  /** @type {Record<string, string>} */
+  var ens = {};
+  [].forEach.call(all.querySelectorAll(".verse > .en > p[data-l]"), function (/** @type {HTMLElement} */ p) {
+    ens[p.getAttribute("data-l") || ""] = p.textContent || "";
+  });
+  englishStyle(all);
+  numberStanzas(all);
+  breakLines(all);
   /** @type {Record<string, number>} */
   var seen = {};
-  /** @type {LineIn[]} */
+  /** @type {import("./search-core.js").LineIn[]} */
   var lines = [];
-  [].forEach.call(document.querySelectorAll(".ash .mr p[data-l]"), function (/** @type {HTMLElement} */ p) {
-    if (p.closest("#pv, .rmkpop")) return;
-    var id = /** @type {string} */ (p.getAttribute("data-l")),
+  var from = scr().from;
+  [].forEach.call(all.querySelectorAll(".ash .mr p[data-l]"), function (/** @type {HTMLElement} */ p) {
+    var id = p.getAttribute("data-l") || "",
       sec = /** @type {HTMLElement} */ (p.closest(".ash")),
       en = sec.querySelector('.en p[data-l="' + id + '"]'),
       m = txt(p),
-      k = sec.id + "|" + fold(m, scr().from);
+      e = en ? txt(en) : "",
+      k = sec.id + "|" + fold(m, from);
     if (seen[k]) return;
     seen[k] = 1;
-    lines.push({ id: id, sec: sec.id, text: sec.id, m: m, e: en ? txt(en) : "", extra: ENS[id] || "" });
+    lines.push({ id: id, sec: sec.id, text: sec.id, m: m, e: e, extra: ens[id] && ens[id] !== e ? ens[id] : "" });
   });
-  IX = buildIndex({ texts: [], lines: lines, roman: IA, from: scr().from });
+  IX = buildIndex({
+    texts: textsForSearch(),
+    lines: lines,
+    roman: IA,
+    from: from,
+  });
+  return IX;
 }
 
-/** The piece's title in the language shown @param {string} id */
-function sectionTitle(id) {
-  var h = /** @type {HTMLElement} */ (/** @type {HTMLElement} */ (document.getElementById(id)).querySelector("h2")),
-    s = h.querySelector(P.lang === "en" ? ".en" : ".mr");
-  return /** @type {string} */ ((s || h).textContent);
+/** A line's text as shown, with its line breaks as spaces @param {Element} p */
+function txt(p) {
+  return p.innerHTML
+    .replace(/<br\s*\/?>/g, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/​/g, "");
+}
+
+/** A text's title as its heading shows it (script, English style) @param {string} id @param {string} L */
+function sectionTitle(id, L) {
+  return titleText(id, L === "en");
 }
