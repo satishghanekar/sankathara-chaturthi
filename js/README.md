@@ -3,7 +3,7 @@
 There is no build step: the browser loads these files as they are.
 
 - `parts.js` and `render.js` are plain scripts. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
-- The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json`, `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
+- The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json` and `../content/groups.json` (the reading page's groups), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
 - `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (`features/overlays.js` and the `print/` files are imported by the parts that use them). `print/` holds the print layout, used by `features/print.js`.
 
 ## How the parts fit together
@@ -25,7 +25,7 @@ There is no build step: the browser loads these files as they are.
 | `text/layout.js` | Layout helpers that run once |
 | `features/astronomy.js` | Astronomy for the Next Sankathara Chaturthi card |
 | `features/date-card.js` | Next Sankathara Chaturthi card (computed on this device; works offline) |
-| `text/dhrupad-markers.js` | Tappable dhrupad markers (Aartis 1–5, 7 and 9) |
+| `text/dhrupad-markers.js` | Tappable dhrupad markers (every text with refrain: every-verse) |
 | `text/stanza-numbers.js` | Stanza numbers |
 | `text/line-breaks.js` | Preferred line breaks |
 | `text/autofit.js` | Auto-fit text size |

@@ -4,10 +4,12 @@
 // (tests/unit/content.test.mjs) can prove the result is exactly what the site showed before the texts became files.
 //
 // What the files leave to the app:
-// - the piece numbers (१. 1.) come from the order in library.json's groups;
+// - which texts the reading page shows, in which group (पूजा, आरती) and order, and so the piece numbers (१. 1.):
+//   content/groups.json, this site's own file (library.json, categories.json and the text files are written as in
+//   Nitya Upasana, so a text can be copied from one site to the other as it is);
 // - the language tag (मराठी Marathi) from library.json's "languages";
 // - with "refrain: every-verse", the dhrupad label at the top and, after every stanza, the "↻ ध्रुपद" note and
-//   the dhrupad again (library.json's "refrain");
+//   the dhrupad again (library.json's "refrain"); [once] lines and [note]s before the dhrupad go above it (lead);
 // - line ids: the text's "line-ids" prefix and a count of the lines as shown (repeats included);
 // - the credit links: [name](address) becomes a link that opens in a new tab, with its label and ↗.
 
@@ -18,12 +20,15 @@ import { parseText, toHtml } from "./format.js";
  * @typedef {import("./format.js").Pair} Pair
  * @typedef {{ id: string, file: string, title: string, titleEn: string, category: string, language: string, lines: number }} LibraryText
  * @typedef {{ id: string, btn: string, name: Pair, texts: string[] }} LibraryGroup
- * @typedef {{ texts: LibraryText[], groups: LibraryGroup[], pageLanguage: string, languages: Record<string, Pair>,
+ * @typedef {{ texts: LibraryText[], pageLanguage: string, languages: Record<string, Pair>,
  *   refrain: { label: Pair, note: Pair }, ui: { prev: Pair, next: Pair }, wiki: Record<string, Record<string, string>> }} Library
  * @typedef {{ l: string, rf?: true, mr: string, en: string }} Line
- * @typedef {{ kind?: string, bold?: true, para?: true, lines?: Line[], rmk?: Pair }} Item
+ * @typedef {{ kind?: string, bold?: true, para?: true, lines?: Line[], rmk?: Pair, nt?: true }} Item
+ *   rmk: a small line between blocks: the dhrupad's marker (↻ ध्रुपद), or, with nt, a [note] from the text file (Phalashruti,
+ *   ↻ ३ वेळा), which is part of the text and always shown, whatever the dhrupad setting
  * @typedef {{ id: string, lang?: string, cls?: string, prose?: true, no: Pair, title: Pair, tag: Pair,
- *   refrain?: { label: Pair, lines: Pair[] }, items: Item[], credit: string }} Piece
+ *   lead?: Item[], refrain?: { label: Pair, lines: Pair[] }, items: Item[], credit: string }} Piece
+ *   lead: what comes before the dhrupad at the top (refrain), [once] lines and [note]s, shown above it
  * @typedef {{ ui: Library["ui"], wiki: Library["wiki"], groups: { id: string, btn: string, name: Pair, pieces: Piece[] }[] }} Content
  */
 
@@ -95,6 +100,8 @@ export function toPiece(t, n, lib) {
   var p = /** @type {any} */ ({ id: t.legacyId || t.id });
   if (t.language !== lib.pageLanguage) p.lang = t.language;
   if (t.refrain === "always") p.cls = "norf";
+  // stanza-numbers: as-written: the numbers are part of the text, so js/text/stanza-numbers.js adds none
+  if (t.stanzaNumbers === "as-written") p.cls = (p.cls ? p.cls + " " : "") + "ownsn";
   if (t.layout === "prose") p.prose = true;
   p.no = { mr: String(n).replace(/[0-9]/g, function (d) { return DIGITS[+d]; }) + ".", en: n + "." };
   p.title = { mr: t.title, en: t.titleEn };
@@ -103,9 +110,13 @@ export function toPiece(t, n, lib) {
   var items = [];
   var blocks = t.blocks;
   if (t.refrain === "every-verse") {
-    var dh = blocks[0],
-      rep = blocks[1] && blocks[1].kind === "dhrupad-repeated" ? blocks[1] : dh;
-    blocks = blocks.slice(rep === dh ? 1 : 2);
+    // the dhrupad is the first block that is not [once] lines or a [note] (js/text/format.js checks there is one)
+    var d = 0;
+    while (blocks[d].kind === "once" || blocks[d].kind === "note") d++;
+    var lead = blocks.slice(0, d),
+      dh = blocks[d],
+      rep = blocks[d + 1] && blocks[d + 1].kind === "dhrupad-repeated" ? blocks[d + 1] : dh;
+    blocks = blocks.slice(rep === dh ? d + 1 : d + 2);
     p.refrain = {
       label: pair(lib.refrain.label),
       lines: dh.lines.map(function (x) {
@@ -121,27 +132,44 @@ export function toPiece(t, n, lib) {
         }),
       });
     };
+    // a [note] of the text's own, or [once] lines (shown as a line said once): where they stand, no dhrupad after them
+    /** @param {import("./format.js").Block} b @returns {Item} */
+    var own = function (b) {
+      return b.kind === "note" ? { rmk: pair(/** @type {Pair} */ (b.note)), nt: true } : { kind: "dh", lines: b.lines.map(line) };
+    };
+    if (lead.length) p.lead = lead.map(own);
     if (t.refrainFirst) again();
     blocks.forEach(function (b) {
-      if (b.kind === "note") items.push({ rmk: pair(/** @type {Pair} */ (b.note)) });
+      if (b.kind === "note" || b.kind === "once") items.push(own(b));
       else {
         items.push(b.para ? { para: true, lines: b.lines.map(line) } : { lines: b.lines.map(line) });
         again();
       }
     });
-  } else
-    blocks.forEach(function (b) {
+  } else {
+    // [once] lines at the very top (an invocation: ॥ श्री गणेशाय नमः ॥) go above the text (lead), as in a text with a dhrupad
+    var top = 0;
+    while (blocks[top] && blocks[top].kind === "once") top++;
+    if (top)
+      p.lead = blocks.slice(0, top).map(function (b) {
+        return /** @type {Item} */ ({ kind: "dh", lines: b.lines.map(line) });
+      });
+    blocks.slice(top).forEach(function (b) {
       /** @type {Item} */
       var it = {};
-      if (b.kind === "note") it.rmk = pair(/** @type {Pair} */ (b.note));
+      if (b.kind === "note") {
+        it.rmk = pair(/** @type {Pair} */ (b.note));
+        it.nt = true;
+      }
       else {
-        if (b.kind === "dhrupad") it.kind = "dh";
+        if (b.kind === "dhrupad" || b.kind === "once") it.kind = "dh";
         if (b.bold) it.bold = true;
         if (b.para) it.para = true;
         it.lines = b.lines.map(line);
       }
       items.push(it);
     });
+  }
   p.items = items;
   p.credit = credits(t.credit, t.creditEn) + (t.creditNote || t.creditNoteEn ? "<small>" + credits(t.creditNote, t.creditNoteEn) + "</small>" : "");
   return p;
@@ -151,9 +179,10 @@ export function toPiece(t, n, lib) {
  * CONTENT from the library and the text files.
  * @param {Library} lib  content/library.json
  * @param {Record<string, string>} files  each text's file, by text id
+ * @param {LibraryGroup[]} groups  content/groups.json: the reading page's groups, each with its texts in order
  * @returns {Content}
  */
-export function buildContent(lib, files) {
+export function buildContent(lib, files, groups) {
   /** @type {Record<string, Text>} */
   var texts = {};
   lib.texts.forEach(function (x) {
@@ -165,13 +194,13 @@ export function buildContent(lib, files) {
   return {
     ui: lib.ui,
     wiki: lib.wiki,
-    groups: lib.groups.map(function (g) {
+    groups: groups.map(function (g) {
       return {
         id: g.id,
         btn: g.btn,
         name: pair(g.name),
         pieces: g.texts.map(function (id, i) {
-          if (!texts[id]) throw new Error('library.json: group "' + g.id + '" lists "' + id + '", which is not in its texts');
+          if (!texts[id]) throw new Error('groups.json: group "' + g.id + '" lists "' + id + '", which is not in its texts');
           return toPiece(texts[id], i + 1, lib);
         }),
       };

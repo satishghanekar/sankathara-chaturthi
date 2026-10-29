@@ -1,5 +1,5 @@
 // One-off migration (slice 1, Oct 2026): turns the old content/pieces.js (kept, unchanged, as the test fixture
-// tests/unit/fixtures/pieces.js) into one plain-text file per text in content/texts/, plus content/library.json
+// tests/unit/fixtures/pieces.js) into one plain-text file per text in content/texts/, plus content/library.json, content/groups.json
 // and content/categories.json. Before writing anything it rebuilds CONTENT from what it is about to write
 // (js/text/content.js, as the site does) and stops unless the result is identical to the old CONTENT.
 //
@@ -65,11 +65,12 @@ function creditText(html) {
   return { credit: m[1], creditEn: m[2], creditNote: m[3], creditNoteEn: m[4] };
 }
 
-const lib = { texts: [], groups: [], pageLanguage: PAGE_LANG, languages: {}, refrain: null, ui: C.ui, wiki: C.wiki };
+const groups = [];
+const lib = { texts: [], pageLanguage: PAGE_LANG, languages: {}, refrain: null, ui: C.ui, wiki: C.wiki };
 const files = {};
 
 for (const g of C.groups) {
-  lib.groups.push({ id: g.id, btn: g.btn, name: g.name, texts: g.pieces.map((p) => IDS[p.id][0]) });
+  groups.push({ id: g.id, btn: g.btn, name: g.name, texts: g.pieces.map((p) => IDS[p.id][0]) });
   for (const p of g.pieces) {
     const [id, category] = IDS[p.id];
     const language = p.lang || PAGE_LANG;
@@ -134,12 +135,13 @@ for (const g of C.groups) {
 }
 
 // The proof: the site's own code rebuilds exactly the old CONTENT from the new files
-const built = buildContent(lib, files);
+const built = buildContent(lib, files, groups);
 must(same(built, C), "the rebuilt CONTENT differs from the old one");
 must(JSON.stringify(built) === JSON.stringify(C), "the rebuilt CONTENT has its keys in a different order");
 
 mkdirSync(new URL("content/texts/", root), { recursive: true });
 for (const [id, raw] of Object.entries(files)) writeFileSync(new URL("content/texts/" + id + ".txt", root), raw);
 writeFileSync(new URL("content/library.json", root), JSON.stringify(lib, null, 1) + "\n");
+writeFileSync(new URL("content/groups.json", root), JSON.stringify(groups, null, 1) + "\n");
 writeFileSync(new URL("content/categories.json", root), JSON.stringify(CATEGORIES, null, 1) + "\n");
 console.log("Wrote " + Object.keys(files).length + " texts, " + lib.texts.reduce((a, t) => a + t.lines, 0) + " line pairs; CONTENT identical.");

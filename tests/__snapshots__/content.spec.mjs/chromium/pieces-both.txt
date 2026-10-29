@@ -822,63 +822,59 @@ Eka Janardani Shri Dattadhyan || 4 ||
 6.
 ज्ञानेश्वरांची आरती
 Dnyaneshwar Aarti
+ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)Refrain (sung after every verse)
+
+आरती ज्ञानराजा ॥ धृ. ॥
+
+Aarti Dnyanaraja || Dhr. ||
 
 आरती ज्ञानराजा ।​
 हो महाकैवल्यतेजा, कैवल्यतेजा ।
 
 सेविती साधुसंत ।​
-हो मनु वेधला माझा, वेधला माझा ।
-
-आरती ज्ञानराजा ॥ धृ. ॥
+हो मनु वेधला माझा, वेधला माझा ॥ १ ॥
 
 Aarti Dnyanaraja | Ho Mahakaivalyateja, Kaivalyateja |
 
-Seviti Sadhusant | Ho Manu Vedhala Majha, Vedhala Majha |
+Seviti Sadhusant | Ho Manu Vedhala Majha, Vedhala Majha || 1 ||
 
-Aarti Dnyanaraja || Dhr. ||
+↻ ध्रुपदRefrain
 
 लोपलें ज्ञान जगीं ।​
 हित नेणती कोणी, नेणती कोणी ।
 
 अवतार पांडुरंग ।​
-नाम ठेविलें ज्ञानी, ठेविलें ज्ञानी ॥ १ ॥
-
-आरती ज्ञानराजा ॥ धृ. ॥
+नाम ठेविलें ज्ञानी, ठेविलें ज्ञानी ॥ २ ॥
 
 Lopale Dnyan Jagi | Hita Nenati Koni, Nenati Koni |
 
-Avatar Pandurang | Nam Thevile Dnyani, Thevile Dnyani || 1 ||
+Avatar Pandurang | Nam Thevile Dnyani, Thevile Dnyani || 2 ||
 
-Aarti Dnyanaraja || Dhr. ||
+↻ ध्रुपदRefrain
 
 कनकाचें ताट करीं ।​
 उभ्या गोपिका नारी, गोपिका नारी ।
 
 नारद तुंबरु हो ।​
-साम गायन करी, गायन करी ॥ २ ॥
-
-आरती ज्ञानराजा ॥ धृ. ॥
+साम गायन करी, गायन करी ॥ ३ ॥
 
 Kanakache Taat Kari | Ubhya Gopika Nari, Gopika Nari |
 
-Narad Tumbaru Ho | Saama Gaayan Kari, Gaayan Kari || 2 ||
+Narad Tumbaru Ho | Saama Gaayan Kari, Gaayan Kari || 3 ||
 
-Aarti Dnyanaraja || Dhr. ||
+↻ ध्रुपदRefrain
 
 प्रगट गुह्य बोले ।​
 विश्व ब्रह्मची केलें, ब्रह्मची केलें ।
 
 रामा जनार्दनी ।​
-पायीं मस्तक ठेविलें, मस्तक ठेविलें ॥ ३ ॥
-
-आरती ज्ञानराजा ॥ धृ. ॥
+पायीं मस्तक ठेविलें, मस्तक ठेविलें ॥ ४ ॥
 
 Pragat Guhya Bole | Vishwa Brahmachi Kele, Brahmachi Kele |
 
-Rama Janardani | Paayi Mastak Thevile, Mastak Thevile || 3 ||
+Rama Janardani | Paayi Mastak Thevile, Mastak Thevile || 4 ||
 
-Aarti Dnyanaraja || Dhr. ||
-
+↻ ध्रुपदRefrain
 रचना : रामा जनार्दन
 
 ### a7
@@ -887,9 +883,11 @@ Aarti Dnyanaraja || Dhr. ||
 Vitthal Aarti
 ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)Refrain (sung after every verse)
 
-येई ओ विठ्ठले माझी माऊली ये । ​येई ओ विठ्ठले माझी माऊली ये ॥ धृ. ॥
+येई ओ विठ्ठले माझी माऊली ये ।​
+येई ओ विठ्ठले माझी माऊली ये ॥ धृ. ॥
 
-Yei O Vitthale Majhi Maauli Ye | Yei O Vitthale Majhi Maauli Ye || Dhr. ||
+Yei O Vitthale Majhi Maauli Ye |
+Yei O Vitthale Majhi Maauli Ye || Dhr. ||
 
 ↻ ध्रुपदRefrain
 

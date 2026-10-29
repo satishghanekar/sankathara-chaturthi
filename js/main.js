@@ -60,7 +60,7 @@ function start() {
     startLayout(); // Layout helpers that run once
     startAstronomy(); // Astronomy for the Next Sankathara Chaturthi card
     startDateCard(); // Next Sankathara Chaturthi card (computed on this device; works offline)
-    startDhrupadMarkers(); // Tappable dhrupad markers (Aartis 1–5, 7 and 9)
+    startDhrupadMarkers(); // Tappable dhrupad markers (every text with refrain: every-verse)
     startStanzaNumbers(); // Stanza numbers
     startLineBreaks(); // Preferred line breaks
     startAutofit(); // Auto-fit text size

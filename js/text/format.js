@@ -21,12 +21,12 @@
  * @typedef {{ orig: string, en: string, rf: boolean }} TextLine
  *   one line pair as written in the file; rf: after [refrain] in its block (shown as a refrain line)
  * @typedef {{ mr: string, en: string }} Pair
- * @typedef {{ kind: "dhrupad" | "dhrupad-repeated" | "stanza" | "note", n?: number, para?: boolean, bold?: boolean,
+ * @typedef {{ kind: "dhrupad" | "dhrupad-repeated" | "stanza" | "note" | "once", n?: number, para?: boolean, bold?: boolean,
  *   note?: Pair, lines: TextLine[] }} Block
  * @typedef {{
  *   id: string, title: string, titleEn: string, category: string, language: string,
  *   legacyId?: string, lineIds?: string, lineIdExceptions?: Record<string, string>,
- *   refrain: "every-verse" | "always" | "none", refrainFirst?: boolean, layout?: "prose",
+ *   refrain: "every-verse" | "always" | "none", refrainFirst?: boolean, layout?: "prose", stanzaNumbers?: "as-written",
  *   credit?: string, creditEn?: string, creditNote?: string, creditNoteEn?: string, source?: string,
  *   blocks: Block[]
  * }} Text
@@ -46,6 +46,7 @@ const FIELDS = [
   ["refrain", "refrain", false],
   ["refrain-before-first", "refrainFirst", false],
   ["layout", "layout", false],
+  ["stanza-numbers", "stanzaNumbers", false],
   ["credit", "credit", false],
   ["credit-en", "creditEn", false],
   ["credit-note", "creditNote", false],
@@ -105,6 +106,7 @@ export function parseText(raw, name) {
     if (key === "language" && LANGUAGES.indexOf(val) < 0) fail(at, "language must be one of " + LANGUAGES.join(", "));
     if (key === "refrain" && REFRAINS.indexOf(val) < 0) fail(at, "refrain must be one of " + REFRAINS.join(", "));
     if (key === "layout" && val !== "prose") fail(at, 'layout can only be "prose"');
+    if (key === "stanza-numbers" && val !== "as-written") fail(at, 'stanza-numbers can only be "as-written"');
     if (key === "refrain-before-first") {
       if (val !== "yes") fail(at, 'refrain-before-first can only be "yes"');
       t[prop] = true;
@@ -157,6 +159,7 @@ export function parseText(raw, name) {
       if (b === "dhrupad") cur = { kind: "dhrupad", lines: [] };
       else if (b === "dhrupad bold") cur = { kind: "dhrupad", bold: true, lines: [] };
       else if (b === "dhrupad repeated") cur = { kind: "dhrupad-repeated", lines: [] };
+      else if (b === "once") cur = { kind: "once", lines: [] };
       else if ((s = /^(para )?([1-9][0-9]*)$/.exec(b))) {
         stanzas++;
         if (+s[2] !== stanzas) fail(where, "stanza [" + s[2] + "] should be [" + stanzas + "]");
@@ -184,19 +187,24 @@ export function parseText(raw, name) {
   // How the blocks fit the refrain pattern
   /** @type {Block[]} */
   var bl = t.blocks;
+  // with refrain: every-verse, the dhrupad is the first block that is not [once] lines or a [note]
+  var d = 0;
+  if (t.refrain === "every-verse")
+    while (bl[d] && (bl[d].kind === "once" || bl[d].kind === "note")) d++;
   bl.forEach(function (b, k) {
-    if (b.kind === "dhrupad-repeated" && !(t.refrain === "every-verse" && k === 1))
+    if (b.kind === "dhrupad-repeated" && !(t.refrain === "every-verse" && k === d + 1))
       fail(file, "[dhrupad repeated] comes right after the [dhrupad] of a text with refrain: every-verse");
   });
   if (t.refrain === "every-verse") {
-    if (!bl.length || bl[0].kind !== "dhrupad" || bl[0].bold) fail(file, "refrain: every-verse needs a [dhrupad] block first");
-    bl.slice(1).forEach(function (b) {
+    if (!bl[d] || bl[d].kind !== "dhrupad" || bl[d].bold)
+      fail(file, "refrain: every-verse needs a [dhrupad] block first (only [once] lines and [note]s may come before it)");
+    bl.slice(d + 1).forEach(function (b) {
       if (b.kind === "dhrupad") fail(file, "refrain: every-verse has one [dhrupad] block, the first");
     });
-    bl.slice(0, 2).forEach(function (b) {
+    bl.slice(d, d + 2).forEach(function (b) {
       if (b.lines.some(function (l) { return l.rf; })) fail(file, "the [dhrupad] of refrain: every-verse is all refrain: no [refrain] inside it");
     });
-    if (bl[1] && bl[1].kind === "dhrupad-repeated" && bl[1].lines.length !== bl[0].lines.length)
+    if (bl[d + 1] && bl[d + 1].kind === "dhrupad-repeated" && bl[d + 1].lines.length !== bl[d].lines.length)
       fail(file, "[dhrupad repeated] needs as many lines as [dhrupad]");
   } else if (t.refrainFirst) fail(file, "refrain-before-first needs refrain: every-verse");
   return /** @type {Text} */ (t);
@@ -226,6 +234,7 @@ export function formatText(t) {
     if (k) out.push("");
     if (b.kind === "dhrupad") out.push(b.bold ? "[dhrupad bold]" : "[dhrupad]");
     else if (b.kind === "dhrupad-repeated") out.push("[dhrupad repeated]");
+    else if (b.kind === "once") out.push("[once]");
     else if (b.kind === "note") out.push("[note: " + (b.note && b.note.mr) + " | " + (b.note && b.note.en) + "]");
     else out.push("[" + (b.para ? "para " : "") + b.n + "]");
     var inRf = false;

@@ -61,7 +61,7 @@
    "titleEn": "Dnyaneshwar Aarti",
    "category": "aarti",
    "language": "mr",
-   "lines": 12
+   "lines": 9
   },
   {
    "id": "aarti-yei-o-vitthale",
@@ -98,39 +98,6 @@
    "category": "aarti",
    "language": "hi",
    "lines": 30
-  }
- ],
- "groups": [
-  {
-   "id": "g-pooja",
-   "btn": "pfb",
-   "name": {
-    "mr": "पूजा",
-    "en": "Pooja"
-   },
-   "texts": [
-    "vedic-chant-atharvashirsha"
-   ]
-  },
-  {
-   "id": "g-aarti",
-   "btn": "xfb",
-   "name": {
-    "mr": "आरती",
-    "en": "Aarti"
-   },
-   "texts": [
-    "aarti-sukhkarta",
-    "aarti-shendur-lal-chadhayo",
-    "aarti-durge-durghat-bhari",
-    "aarti-lavathavati-vikrala",
-    "aarti-trigunatmak-traimurti",
-    "aarti-dnyanaraja",
-    "aarti-yei-o-vitthale",
-    "aarti-ghalin-lotangan",
-    "aarti-jai-ganesh-deva",
-    "aarti-jai-jagdish-hare"
-   ]
   }
  ],
  "pageLanguage": "mr",

@@ -47,7 +47,8 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `js/parts.js` | The list of the site's style, script and font files, shared by the page and the service worker. |
 | `js/main.js` and `js/core/`, `js/text/`, `js/features/`, `js/print/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
 | `content/texts/` | The texts, one plain-text file each (`aarti-sukhkarta.txt`, …): each line in Marathi/Hindi/Sanskrit with its everyday English line under it, the title and the author line. **Edit the texts here** (see *How to add a text*). |
-| `content/library.json`, `content/categories.json` | The list of texts and how the reading page groups them (Pooja, Aarti), with the few words the app adds (language tags, the dhrupad label); the categories (Vedic Chant, Aarti, Stotra, Ashtak). |
+| `content/library.json`, `content/categories.json` | The list of texts, with the few words the app adds (language tags, the dhrupad label); the categories (Vedic Chant, Aarti, Stotra, Ashtak). Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
+| `content/groups.json` | This site's own: which texts the reading page shows under पूजा and आरती, in order (the piece numbers and Previous / Next follow it). |
 | `js/text/format.js`, `js/text/content.js`, `js/text/load.js` | Read the text files, turn them into the pieces' data and put them into the page when it opens. |
 | `js/render.js` | Builds each piece's HTML from that data. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
@@ -205,13 +206,14 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 
 | Block | |
 |---|---|
-| `[1]`, `[2]`, … | A stanza, numbered in order. In an aarti the app adds ॥ १ ॥ at its end; do not type it. (The Atharvashirsha's numbers are part of its text, and its blocks are simply counted.) |
+| `[1]`, `[2]`, … | A stanza, numbered in order. In an aarti the app adds ॥ १ ॥ at its end; do not type it (unless the header says `stanza-numbers: as-written`). (The Atharvashirsha's numbers are part of its text, and its blocks are simply counted.) |
 | `[para 3]` | A stanza that starts a new paragraph when printed as prose. |
-| `[dhrupad]` | With `refrain: every-verse`: the dhrupad, first in the file. Otherwise: lines said once, where they stand. |
+| `[dhrupad]` | With `refrain: every-verse`: the dhrupad, first in the file (only `[once]` lines and `[note]`s may come before it). Otherwise: lines said once, where they stand. |
+| `[once]` | Lines said once, where they stand, never followed by the dhrupad (an invocation such as ॥ श्री गणेशाय नमः ॥, or a closing इति … सम्पूर्णम्). At the top of the text they are shown centred above it (and above the dhrupad). |
 | `[dhrupad bold]` | The same, shown in bold (Ghalin Lotangan's closing mantra). |
 | `[dhrupad repeated]` | Right after `[dhrupad]`, only when the repeats are written differently from the top (Vitthal Aarti breaks its repeated dhrupad in two). |
 | `[refrain]` | Inside a block: the lines after it are refrain lines (shown as the refrain, or hidden with the dhrupad set to once). |
-| `[note: ↻ ३ वेळा \| 3 times]` | The small note between blocks, in both languages. |
+| `[note: ↻ ३ वेळा \| 3 times]` | The small note between blocks, in both languages; part of the text, so shown whatever the dhrupad setting. |
 
 **Inside a line:**
 
@@ -223,10 +225,14 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 ### Adding it to the site
 
 1. Write the file in `content/texts/`.
-2. In `content/library.json`, add it to `"texts"` (its `id`, `file`, `title`, `titleEn`, `category`, `language` and `lines`, the number of line pairs in the file) and to the `"texts"` of its group in `"groups"` (Pooja or Aarti), where it should appear. The piece number (१. 1.) and Previous / Next come from that order.
+2. In `content/library.json`, add it to `"texts"` (its `id`, `file`, `title`, `titleEn`, `category`, `language` and `lines`, the number of line pairs in the file), and in `content/groups.json` add its `id` to the `"texts"` of its group (Pooja or Aarti), where it should appear. The piece number (१. 1.) and Previous / Next come from that order.
 3. In `js/parts.js`, add `texts/<id>.txt` to the `content` list, so the text is kept for offline use.
 4. Add a line for it in the home-page contents in `index.html` (`<ol class="toc">` under आरती), with its `legacy-id` (or `id`) in `href` and `data-go`.
 5. Run the checks (`cd tests && npm run unit`): they read every text, check `library.json` and `js/parts.js` against the files and name any mistake with its line number. Then look at it on the site (see *Checking a change*), commit and push (change the version if this is a new release).
+
+### Taking a text from Nitya Upasana
+
+The text files, `content/library.json` and `content/categories.json` are written exactly as in Nitya Upasana (https://github.com/satishghanekar/nitya-upasana), and the checks hold both sites to it. To take a text from there: copy its file from Nitya's `content/texts/` into this site's, copy its entry from Nitya's `content/library.json` into this one's `"texts"` as it is, then do steps 2–5 above for `groups.json`, `js/parts.js` and the home-page contents. A text from here goes to Nitya the same way (there, a category and a place in a routine instead of a group).
 
 When **editing** a text, only the file changes, unless a title or the number of lines changes (then update `content/library.json` too; the checks say so). Line ids follow the order of the lines, so a fix within a line keeps them; adding or removing a line renumbers the lines after it (a highlighted line saved on a phone may then point at its neighbour).
 
