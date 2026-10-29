@@ -2,9 +2,10 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { change } from "../core/state.js";
-import { jp, pn, unfold } from "../core/apply.js";
+import { pieceEl } from "../core/page.js";
+import { jp, unfold, pn } from "../core/apply.js";
 import { setJ, setP } from "./overlays.js";
-import { goHomeNav, jumpTo } from "./history.js";
+import { jumpTo } from "./history.js";
 import { hlMark } from "../core/startup.js";
 
 export function init() {
@@ -12,8 +13,7 @@ export function init() {
     var a = e.target.closest && e.target.closest("a[data-go]");
     if (a) {
       e.preventDefault();
-      var el = document.getElementById(a.getAttribute("data-go"));
-      if (el && el.id === "home" && a.closest("#rail")) return goHomeNav();
+      var el = pieceEl(a.getAttribute("data-go"));
       unfold(el);
       if (el)
         jumpTo(
@@ -37,13 +37,14 @@ export function init() {
       change({ hl: was ? "" : id });
     }
   });
-  // A click outside an open overlay closes it
+  // A click outside an open overlay closes it (not the page's own clicks on a hidden download link or file
+  // picker, marked data-keep: saving or restoring a backup from Settings keeps Settings open)
   document.addEventListener(
     "click",
     function (e) {
       var x = e.target;
       if (!x.closest) return;
-      if (x.closest("#panel,#jump,.bar")) return;
+      if (x.closest("#panel,#jump,#lbm,.bar,[data-keep]")) return;
       if (!pn.hidden || !jp.hidden) {
         setP(false);
         setJ(false);

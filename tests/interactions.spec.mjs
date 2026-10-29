@@ -1,6 +1,6 @@
 // Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, PREFS_KEY, tapMore } from "./helpers.mjs";
+import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText } from "./helpers.mjs";
 
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
@@ -15,6 +15,7 @@ test("the top bar has Print, ⋯ and Settings, and no language or dhrupad button
 
 test("Settings → Show switches main → second → both and is remembered @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
+  await buildAll(page);
   const lang = () => page.locator("#a1").getAttribute("data-lang");
   expect(await lang()).toBe("mr");
   await page.locator("#aa").click();
@@ -28,6 +29,8 @@ test("Settings → Show switches main → second → both and is remembered @mob
   expect((await prefs(page)).lang).toBe("en");
   await page.reload();
   await settle(page);
+  // (a text built after the reload takes the remembered language too)
+  await buildAll(page);
   expect(await lang()).toBe("en");
 });
 
@@ -110,10 +113,10 @@ test("home lists the evening's texts; a title opens that text and Next goes on @
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#tsh")).toHaveText("संध्याकाळ · Evening");
   await expect(page.locator("#tsn")).toHaveText("11 texts", { useInnerText: true });
-  expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.dataset.go))).toEqual(["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"]);
+  expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.getAttribute("href")))).toEqual(["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"].map((x) => "./#" + x));
   await expect(page.locator("#tsl li").first()).toContainText("Ganapati Atharvashirsha");
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("Sanskrit", { useInnerText: true });
-  await page.locator('#tsl a[data-go="a3"]').click();
+  await page.locator('#tsl a[href="./#a3"]').click();
   await page.waitForTimeout(400);
   const top = await page.locator("#a3").evaluate((e) => e.getBoundingClientRect().top);
   expect(Math.abs(top)).toBeLessThan(200);
@@ -128,9 +131,11 @@ test("Home is on its own; a text shows the reading page, Home and Back bring Hom
   await expect(page.locator("#tsc")).toBeVisible();
   await expect(page.locator("#p1")).toBeHidden();
   await expect(page.locator("#a1")).toBeHidden();
-  await page.locator('#tsl a[data-go="a2"]').click();
+  // a title on Home reads the evening from there: its texts, one after another in one scroll (data-run)
+  await page.locator('#tsl a[href="./#a2"]').click();
   await expect(page.locator("#a2")).toBeVisible();
   await expect(page.locator("#a1")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-run"))).toBe("1");
   await expect(page.locator("#home")).toBeHidden();
   await page.goBack();
   await expect(page.locator("#tsc")).toBeVisible();
@@ -141,6 +146,12 @@ test("Home is on its own; a text shows the reading page, Home and Back bring Hom
   await page.locator("#ash").click();
   await expect(page.locator("#tsc")).toBeVisible();
   await expect(page.locator("#a2")).toBeHidden();
+  // Home left the evening; the Library opens one text on its own, as in Nitya Upasana (.solo)
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-run"))).toBeNull();
+  await readText(page, "a5");
+  await expect(page.locator("#a5")).toHaveClass(/\bsolo\b/);
+  await expect(page.locator("#a4")).toBeHidden();
+  await expect(page.locator("#a6")).toBeHidden();
   // a link to a text opens the reading page
   await openSite(page, SETUPS.marathi, { hash: "#a5" });
   await expect(page.locator("#a5")).toBeVisible();
@@ -232,6 +243,7 @@ test("main and second language from the Settings dropdowns", async ({ page }) =>
 
 test("piece fold is remembered across a reload @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await readText(page, "a2");
   await page.locator("#a2 header").click();
   await page.waitForTimeout(200);
   expect((await prefs(page)).af).toContain("a2");
@@ -254,7 +266,7 @@ test("no section rows while reading, and an old section fold hides nothing @mobi
   expect(await rootAttr(page, "data-pf")).toBeNull();
   expect(await rootAttr(page, "data-xf")).toBeNull();
   await expect(page.locator("#a1 .items")).toBeVisible();
-  await page.evaluate(() => document.getElementById("p1").scrollIntoView());
+  await readText(page, "p1");
   await expect(page.locator("#p1 .items")).toBeVisible();
 });
 
@@ -301,6 +313,7 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
 test("Aa opens the reading sheet: language, text size and dhrupad, then Escape closes it @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
+  await buildAll(page);
   const rsb = page.locator("#rsb");
   await rsb.click();
   await expect(page.locator("#rsh")).toBeVisible();
@@ -406,7 +419,7 @@ test("picture opens full screen and closes", async ({ page }) => {
 });
 
 test("IAST spelling switches in place without a reload", async ({ page }) => {
-  await openSite(page, SETUPS.english);
+  await openSite(page, SETUPS.english, { hash: "#a1" });
   const first = () => page.locator("#a1 .items .verse .en p").first().textContent();
   expect(await first()).toContain("Sukhkarta");
   await page.evaluate((k) => {
@@ -488,7 +501,7 @@ test.describe("pinch @chromium-only", () => {
     expect(box.y + box.height).toBeLessThanOrEqual(844);
   });
   test("on a verse it resizes the text instead of zooming", async ({ page }) => {
-    await openSite(page, SETUPS.marathi);
+    await openSite(page, SETUPS.marathi, { hash: "#a1" });
     expect(await pinchStart(page, "#a1 .items .verse p")).toBe(true);
   });
   test("on the home card, Settings and Help the page does not zoom either", async ({ page }) => {
@@ -533,4 +546,22 @@ test("Home's session: the evening alone has no switch; with a morning too, the s
   await expect(page.locator("#tsh")).toContainText("Evening");
   await expect(page.locator("#tsl li")).toHaveCount(3);
   await expect(page.locator("#tsl li .t2").first()).toHaveText("Sukhkarta Dukhharta");
+});
+
+// Reading the evening, as a session is read in Nitya Upasana: Next › goes on through it, and after its last text goes
+// back Home and says the session is over
+test("reading the evening: Next › after the last text goes Home and ends it @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  await page.locator('#tsl a[href="./#a9"]').click();
+  await expect(page.locator("#a9")).toBeVisible();
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#asn")).toHaveAttribute("aria-label", /Aarti Jai Jagdish Hare/);
+  await page.locator("#asn").click();
+  await expect.poll(() => page.url()).toContain("#a10");
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#asn")).toHaveAttribute("aria-label", "Next: Home");
+  await page.locator("#asn").click();
+  await expect(page.locator("#tsc")).toBeVisible();
+  await expect(page.locator("#fl")).toHaveText("End of the session");
+  expect(await page.evaluate(() => document.documentElement.getAttribute("data-run"))).toBeNull();
 });
