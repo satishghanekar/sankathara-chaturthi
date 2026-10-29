@@ -29,6 +29,8 @@ jobs:
           cache-dependency-path: tests/package-lock.json
       - run: npm ci
       - run: npm run lint
+      # the text files: format, library.json and the proof that the page is unchanged (Vitest, tests/unit)
+      - run: npm run unit
   playwright:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
