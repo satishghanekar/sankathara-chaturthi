@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { flash } from "../core/page.js";
-import { P, save } from "../core/state.js";
+import { P, change } from "../core/state.js";
 import { apply } from "./bars.js";
 
 export function init() {
@@ -27,9 +27,7 @@ export function refToggle(quiet) {
       break;
     }
   }
-  P.ref = P.ref ? 0 : 1;
-  apply();
-  save();
+  change({ ref: P.ref ? 0 : 1 }, apply);
   if (a && a.offsetParent !== null) {
     window.scrollBy(0, a.getBoundingClientRect().top - t);
   }

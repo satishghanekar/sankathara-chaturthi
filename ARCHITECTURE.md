@@ -20,11 +20,11 @@ The site is one page, `index.html`, plus plain CSS and JavaScript files. **There
 
 - **`P`** (`js/core/state.js`) holds everything the reader chose: languages, theme, font, text size, folds, the highlighted line, and so on.
   - It is saved on the device only, in `localStorage["aarti2-prefs"]`. Nothing is ever sent anywhere.
-  - `P.sv` is the settings version. The migrations below it in `state.js` upgrade settings saved by older versions of the site.
+  - `P.sv` is the settings version. `js/store/migrate.js` (as in Nitya Upasana, without its profiles) has the defaults, the steps that upgrade settings saved by older versions of the site, and the tidy-up; a saved value of the wrong kind is never trusted. It is pure, so `tests/unit/migrate.test.mjs` checks it against the settings every older version saved.
 - **`apply()`** (`js/features/bars.js`) is the only place that turns `P` into the page.
   - It sets the `data-*` switches the styles react to: `data-lang` on each region, and `data-ref`, `data-cols`, `data-rail`, `data-font`, `data-pref` and `data-hc` on `<html>`.
   - It sets `--fs`, the text size.
-  - Anything that changes a setting updates `P`, calls `save()`, then calls `apply()`.
+  - Anything that changes a setting calls `change({ … }, then)` (`js/core/state.js`, as in Nitya Upasana): the values go into `P`, `then` (usually `apply()`) brings the page up to date, and everything is saved. Only the size while a pinch is under way, the auto-fit's size and start-up repairs write `P` directly.
 - **Auto-fit** (`js/text/autofit.js`) works out the largest text size at which every verse line fits the screen on one row. On phones the default is 110% of that (`phoneBoost()` in `js/core/state.js`, 2026-10-25), so a few long lines wrap; it still shows as 100%.
   - It measures all lines at once in a hidden copy, so the page is laid out only once.
   - It remembers each result per language, font, layout and window size.

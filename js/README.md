@@ -4,12 +4,12 @@ There is no build step: the browser loads these files as they are.
 
 - `parts.js` and `render.js` are plain scripts. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
 - The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json` and `../content/groups.json` (the reading page's groups), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
-- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (`features/overlays.js` is imported by the parts that use it).
+- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (and `store/`, the settings as data) (`features/overlays.js` is imported by the parts that use it).
 
 ## How the parts fit together
 
 - Loading a part only defines its functions and variables. Each part's `init()` does its start-up work (reads the page, adds listeners), and `main.js` calls the `init()`s in a fixed order. That is the order the code ran in when it was one file (`app.js`), so a part can rely on everything above it in `main.js` being ready.
-- A part imports what it uses from other parts by name, for example `import { P, save } from "../core/state.js"`. Functions can be imported in any order. A variable belongs to the part that sets it, and other parts only read it.
+- A part imports what it uses from other parts by name, for example `import { P, change } from "../core/state.js"`. Functions can be imported in any order. A variable belongs to the part that sets it, and other parts only read it.
 - `shared` (in `core/state.js`) holds the few values that several parts change: `skCache`, `skKey`, `rmkPop`, `FSA`, `fontN`, `LEAD` and `wl`. They are read and written as `shared.LEAD` and so on.
 - The settings are `P` (`core/state.js`), saved on this device only (localStorage key `aarti2-prefs`). `apply()` (`features/bars.js`) turns `P` into the `data-*` switches on `<html>` that the styles react to (see `../css/README.md`).
 - A new file must also be added to `parts.js`, so it is kept for offline use. `tests/site-files.spec.mjs` checks this.
@@ -19,7 +19,8 @@ There is no build step: the browser loads these files as they are.
 | File | What it does |
 |---|---|
 | `core/page.js` | Page basics: the <html> element, the language button icons, the short message (flash) |
-| `core/state.js` | Settings (P), loaded from this device |
+| `core/state.js` | Settings (P), loaded from this device; `change()`, the one way the parts write them |
+| `store/migrate.js` | The settings as plain data: defaults, the upgrade of settings saved by older versions, the tidy-up (pure, unit-tested in `tests/unit/migrate.test.mjs`; no `init()`) |
 | `core/features.js` | Features held back for a later release |
 | `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) |
 | `text/layout.js` | Layout helpers that run once |
