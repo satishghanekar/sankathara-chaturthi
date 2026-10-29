@@ -381,6 +381,10 @@ html[data-sp] {
 .sp-pw .sp-rf p {
   font-weight: 600;
 }
+/* the dhrupad's English line in the full text colour: muted on the gold tint it fell below 4.5:1 */
+.sp-pw .sp-rf .sp-p2 {
+  color: var(--ink);
+}
 [data-hc="1"] .sp-pw .sp-rf {
   background: none;
   outline: 1px solid currentColor;
