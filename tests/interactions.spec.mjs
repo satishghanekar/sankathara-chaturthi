@@ -156,7 +156,7 @@ test("the evening's list follows the menu language @mobile", async ({ page }) =>
 test("the evening's list is in Kannada letters when they are chosen @mobile", async ({ page }) => {
   await openSite(page, SETUPS.kannada);
   await expect(page.locator("#tsh span").first()).toHaveText("ಸಂಧ್ಯಾಕಾಳ");
-  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("ಗಣಪತೀಚೀ ಆರತೀ");
+  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("ಸುಖಕರ್ತಾ ದುಃಖಹರ್ತಾ");
 });
 
 test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {
@@ -358,7 +358,7 @@ test("tapping a line highlights it and is remembered @mobile", async ({ page }) 
 // up brings the bars back only once the page stops moving; scrolling down hides them at once
 test("scrolling up brings the bars back once the page stops, not mid-scroll @mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await openSite(page, SETUPS.marathi, { hash: "#p1" }); // the Atharvashirsha, a long text, so the page goes on scrolling
   await page.waitForTimeout(800);
   const tucked = () => page.evaluate(() => document.documentElement.hasAttribute("data-tuck"));
   const steps = (dy) =>
