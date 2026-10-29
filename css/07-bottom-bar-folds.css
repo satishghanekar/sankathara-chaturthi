@@ -400,11 +400,13 @@
     padding-inline: 14px;
   }
 }
-/* ==== Fold headings (Contents, Pooja, Aarti): one look, full-width rows lined up with the folded pieces ==== */
+/* ==== Fold headings (Contents, Pooja, Aarti): one look, full-width rows lined up with the folded pieces ====
+   The section rows (वैदिक मंत्र, आरती, with their folds and Open all / Fold all) are not on the reading page any more, as
+   in Nitya Upasana, where a text is read without them (Satish, 2026-10-29); printouts still head each section with one */
 @media screen {
   .grp,
   #home + .grp {
-    display: block;
+    display: none;
     max-width: 46rem;
     margin: 10px auto 0;
   }

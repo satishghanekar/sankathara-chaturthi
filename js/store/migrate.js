@@ -114,6 +114,9 @@ export function migratePrefs(saved, env) {
  * @param {Prefs} P
  */
 export function tidy(P) {
+  // the reading page's section rows (वैदिक मंत्र, आरती) and their folds are gone, as in Nitya Upasana (2026-10-29): a
+  // section folded before then must not keep its texts hidden with no row left to open it
+  P.pf = P.xf = 0;
   if (P.lead !== "en") P.lead = "mr";
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
   if (P.ind !== "kn") P.ind = "mr";

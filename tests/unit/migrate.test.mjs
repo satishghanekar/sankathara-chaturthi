@@ -62,8 +62,8 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   test("v4: the reader's dhrupad and screen choices stay; folds, location and the highlighted line carry over", () => {
     const p = migratePrefs(SHAPES.v4, PHONE).prefs;
     expect([p.ref, p.wake, p.tr, p.hl, p.fold, p.tf]).toEqual([1, 1, "iast", "s1l3", 1, 1]);
-    // the Vedic Chant / Aarti section folds are kept
-    expect([p.pf, p.xf]).toEqual([1, 0]);
+    // the section folds are cleared since the section rows went (2026-10-29), so none keeps its texts hidden
+    expect([p.pf, p.xf]).toEqual([0, 0]);
     expect(p.loc).toEqual({ lat: 40.1, lon: -83.1 });
     expect(p.af).toEqual(["a3"]);
     expect(migratePrefs(SHAPES.v4, DESK).prefs.wake).toBe(0); // v5 on a computer
@@ -104,7 +104,7 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   test("What to print (version 1.2): the texts left out are kept", () => {
     const { prefs, changed } = migratePrefs(SHAPES.v6skip, PHONE);
     expect(changed).toBe(false);
-    expect([prefs.pskip, prefs.fnt, prefs.por, prefs.pf]).toEqual([["a2", "a10"], "hand", "land", 1]);
+    expect([prefs.pskip, prefs.fnt, prefs.por, prefs.pf]).toEqual([["a2", "a10"], "hand", "land", 0]);
     expect(migratePrefs({ ...SHAPES.v6skip, pskip: "a2" }, PHONE).prefs.pskip).toEqual([]);
   });
 
