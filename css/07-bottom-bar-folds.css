@@ -1,5 +1,5 @@
 /* 07-bottom-bar-folds.css: Bottom bar, bars tucking away, folding contents and pieces, bigger tap areas
-   Part 8 of 12 of the site styles. index.html loads the parts in number order, and the order
+   Part 8 of 13 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Sections:
    - Bottom bar (footer menu on every page; replaced the Previous / Next cards at the end of each piece)
@@ -797,4 +797,14 @@ html[data-asb="1"] {
   #rsh {
     display: none;
   }
+}
+
+/* ==== The Library page (#jump), as in Nitya Upasana's same file ==== */
+/* and the home page's Table of Contents: piece names, numbers and languages */
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .m,
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .lt {
+  font-family: var(--tf), var(--head);
+}
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .en {
+  font-family: var(--tf), var(--lat);
 }
