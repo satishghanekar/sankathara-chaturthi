@@ -1,8 +1,10 @@
 // The file list in js/parts.js is shared by the page ("Check for updates") and the service worker (the
 // offline copy), but the page itself loads files from its own <link> and <script> tags. These checks keep
 // the two in step, so a new style or script file is never missing from the offline copy.
+// Also the size budget: what a first visit downloads.
 import { test, expect } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { gzipSync } from "node:zlib";
 import { siteParts } from "./helpers.mjs";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
@@ -52,4 +54,15 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
   // the manifest's app icons exist
   const manifest = JSON.parse(readFileSync(new URL("../manifest.json", import.meta.url), "utf8"));
   for (const i of manifest.icons) expect(existsSync(new URL("../" + i.src, import.meta.url)), i.src).toBe(true);
+});
+
+// What a first visit downloads, compressed as a server sends it (gzip, file by file). Each limit is a little above the
+// size when it was set, so the site can't grow by much unnoticed: when a change needs more, raise the limit in the same
+// change and say why. (Set 2026-10-29: scripts 138 KB, styles 49 KB, index.html 19 KB.)
+test("the scripts, styles and page stay within their size budget", () => {
+  const parts = siteParts();
+  const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(145_000);
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(52_000);
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(21_000);
 });

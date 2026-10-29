@@ -67,7 +67,9 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`) |
 | `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers |
 
-The same test keeps the number of `!important` (70) and `:root:root` (11) from growing: they only win over earlier rules, and each new one makes the next change harder.
+The same test keeps the number of `!important` (47) and `:root:root` (11) from growing: they only win over earlier rules, and each new one makes the next change harder.
+
+Hover colours go inside `@media (hover: hover)`, so they show with a mouse and never stick after a tap on a phone or iPad.
 
 ## Checks
 
