@@ -147,6 +147,8 @@ export function autoFs() {
   // the largest size (up to the device default) at which every line fits, made a little larger on phones (phoneBoost)
   var f = Math.round(Math.max(18, Math.min(dfs(), Math.floor((cw * 0.98) / r))) * phoneBoost());
   FSA = f;
+  // (the Library's list follows the text size from this one: css/13-library.css)
+  root.style.setProperty("--fsa", String(f));
   if (P.fsu) return;
   if (f !== P.fs) {
     P.fs = f;
