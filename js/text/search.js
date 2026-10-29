@@ -1,32 +1,56 @@
-// Search: every Marathi line with its English line; matches ignore svara marks and punctuation
+// @ts-check
+// Search: every Marathi line with its English line, in the Contents + search overlay (#jump); matches ignore svara marks
+// and punctuation, forgive the spellings people type and a typo, and Devanagari typed also finds what is written in
+// English letters. The rules and the ranking are in ./search-core.js (as in Nitya Upasana, unit-tested); this part
+// builds the index from the lines the pieces show and shows the results.
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { P } from "../core/state.js";
-import { ENS } from "./iast.js";
+import { ENS, IA } from "./iast.js";
 import { jp } from "../core/apply.js";
+import { buildIndex, fold, marks, search, LIMIT } from "./search-core.js";
 import { goLine } from "../features/bars.js";
 import { jumpTo } from "../features/history.js";
 import { ul } from "../features/contents-list.js";
 
-var IX, q, res, none, srs, qT, srsT;
+/** @typedef {import("./search-core.js").Index} Index */
+/** @typedef {import("./search-core.js").LineIn} LineIn */
+
+/** @type {Index | null} */
+var IX = null;
+/** @type {HTMLInputElement} */
+var q;
+/** @type {HTMLElement} */
+var res;
+/** @type {HTMLElement} */
+var none;
+/** @type {HTMLElement} */
+var srs;
+/** @type {ReturnType<typeof setTimeout> | 0} */
+var qT = 0,
+  srsT = 0;
+
+/** @returns {any} SCR (js/render.js): the chosen script */
+function scr() {
+  return /** @type {any} */ (window).SCR;
+}
 
 export function init() {
-  IX = [];
   buildIX();
-  q = document.getElementById("q");
-  res = document.getElementById("res");
-  none = document.getElementById("none");
-  srs = document.getElementById("srs");
-  qT = srsT = 0;
+  q = /** @type {HTMLInputElement} */ (document.getElementById("q"));
+  res = /** @type {HTMLElement} */ (document.getElementById("res"));
+  none = /** @type {HTMLElement} */ (document.getElementById("none"));
+  srs = /** @type {HTMLElement} */ (document.getElementById("srs"));
   // Keyboard: ↓ / ↑ move through the results, Enter in the box opens the first one
-  jp.addEventListener("keydown", function (e) {
+  jp.addEventListener("keydown", function (/** @type {KeyboardEvent} */ e) {
     // results still waiting for the pause in typing are built now, so the key acts on them
     if (qT && (e.key === "ArrowDown" || e.key === "Enter")) {
       clearTimeout(qT);
       find();
     }
+    /** @type {HTMLElement[]} */
     var bs = [].slice.call(res.querySelectorAll("button")),
-      i = bs.indexOf(document.activeElement);
+      i = bs.indexOf(/** @type {HTMLElement} */ (document.activeElement));
     if (e.key === "ArrowDown" && bs.length) {
       e.preventDefault();
       bs[Math.min(bs.length - 1, i + 1)].focus();
@@ -46,13 +70,14 @@ export function init() {
   });
 }
 
-function say(n) {
+/** @param {number} n  lines found; -1: nothing searched @param {boolean} more  more than LIMIT */
+function say(n, more) {
   var m = "",
     en = P.ui === "en";
   if (n === 0) m = en ? "Nothing found" : "काही सापडले नाही";
   else if (n > 0) {
-    m = n >= 40 ? (en ? "40 or more" : "४० किंवा अधिक") : en ? String(n) : n.toLocaleString("mr-IN");
-    m += en ? (n === 1 ? " result" : " results") : " ओळी सापडल्या";
+    m = more ? (en ? LIMIT + " or more" : (LIMIT).toLocaleString("mr-IN") + " किंवा अधिक") : en ? String(n) : n.toLocaleString("mr-IN");
+    m += en ? (n === 1 && !more ? " result" : " results") : " ओळी सापडल्या";
   }
   clearTimeout(srsT);
   srsT = setTimeout(function () {
@@ -62,36 +87,27 @@ function say(n) {
 
 function find() {
   qT = 0;
-  var v = nz(q.value);
+  var v = q.value,
+    ix = /** @type {Index} */ (IX);
   res.innerHTML = "";
   none.hidden = true;
-  ul.hidden = v.length >= 2;
-  if (v.length < 2) return say(-1);
-  var tk = v.split(" "),
-    lk = tk.map(lz),
-    out = [];
-  function has(t, ks) {
-    for (var j = 0; j < ks.length; j++) if (t.indexOf(ks[j]) < 0) return false;
-    return true;
-  }
-  // Exact matches first, then the forgiving ones
-  for (var i = 0; i < IX.length && out.length < 40; i++) if (has(IX[i].t, tk)) out.push(IX[i]);
-  for (i = 0; i < IX.length && out.length < 40; i++) if (out.indexOf(IX[i]) < 0 && has(IX[i].l, lk)) out.push(IX[i]);
-  say(out.length);
-  if (!out.length) {
+  ul.hidden = Array.from(fold(v, scr().from).replace(/ /g, "")).length >= 2;
+  if (!ul.hidden) return say(-1, false);
+  var found = search(ix, v),
+    n = found.lines.length + (found.more ? 1 : 0);
+  say(found.more ? LIMIT : found.lines.length, found.more);
+  if (!n) {
     none.hidden = false;
     return;
   }
-  // Show the line with the words that match the search in bold
+  /**
+   * Show the line with the words that match the search in bold
+   * @param {HTMLElement} el
+   * @param {string} txt
+   */
   function mk(el, txt) {
     txt.split(/(\s+)/).forEach(function (w) {
-      var n = nz(w),
-        hit =
-          n &&
-          tk.some(function (k, j) {
-            return k.length > 1 && (n.indexOf(k) >= 0 || lz(n).indexOf(lk[j]) >= 0);
-          });
-      if (hit) {
+      if (w && marks(ix, w, v)) {
         var bb = document.createElement("mark");
         bb.textContent = w;
         el.appendChild(bb);
@@ -99,7 +115,7 @@ function find() {
     });
   }
   var frag = document.createDocumentFragment();
-  out.forEach(function (r) {
+  found.lines.forEach(function (r) {
     var li = document.createElement("li"),
       b = document.createElement("button");
     b.type = "button";
@@ -131,58 +147,39 @@ function find() {
   res.appendChild(frag);
 }
 
-function nz(s) {
-  return SCR.from(s) // Kannada letters, in the text or typed, match as the Devanagari they come from
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // IAST letters match plain ones: ā → a, ṣ → s
-    .replace(/[\u200b\u200c\u200d\u0951\u0952\u1CDA]/g, "")
-    .replace(/[।॥|,.\-]/g, " ")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
+/** @param {Element} el */
+function txt(el) {
+  return el.innerHTML
+    .replace(/<br\s*\/?>/g, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&");
 }
 
-// Forgiving form of English letters, so spellings people type still match: double letters count once
-// (vitthal = vithal), ee = i, oo = u, and the short "a" between consonants or at a word's end is ignored
-// (ganapati = ganpati, sukhakarta = sukhkarta, jagadish = jagdish). Marathi letters are left alone.
-function lz(s) {
-  return s
-    .replace(/ee/g, "i")
-    .replace(/oo/g, "u")
-    .replace(/([a-z])\1+/g, "$1")
-    .replace(/([bcdfghjklmnpqrstvwxyz])a(?=[bcdfghjklmnpqrstvwxyz])/g, "$1")
-    .replace(/([bcdfghjklmnpqrstvwxyz])a\b/g, "$1");
-}
-
+// The index: every line in the pieces themselves (not the copies in the print view or the dhrupad bubble), each once
+// per piece, with its English as shown and the everyday spelling (ENS) to search while the scholarly one is shown.
+// Built again when the script or the English style changes.
 export function buildIX() {
+  /** @type {Record<string, number>} */
   var seen = {};
-  IX = [];
-  // only the lines in the pieces themselves: not the copies in the print view or the dhrupad bubble
-  [].forEach.call(document.querySelectorAll(".ash .mr p[data-l]"), function (p) {
+  /** @type {LineIn[]} */
+  var lines = [];
+  [].forEach.call(document.querySelectorAll(".ash .mr p[data-l]"), function (/** @type {HTMLElement} */ p) {
     if (p.closest("#pv, .rmkpop")) return;
-    var id = p.getAttribute("data-l"),
-      sec = p.closest(".ash"),
+    var id = /** @type {string} */ (p.getAttribute("data-l")),
+      sec = /** @type {HTMLElement} */ (p.closest(".ash")),
       en = sec.querySelector('.en p[data-l="' + id + '"]'),
-      m = p.innerHTML
-        .replace(/<br\s*\/?>/g, " ")
-        .replace(/<[^>]+>/g, "")
-        .replace(/&amp;/g, "&"),
-      e = en
-        ? en.innerHTML
-            .replace(/<br\s*\/?>/g, " ")
-            .replace(/<[^>]+>/g, "")
-            .replace(/&amp;/g, "&")
-        : "",
-      k = sec.id + "|" + nz(m);
-    if (ENS[id]) e += " \u0000" + ENS[id];
+      m = txt(p),
+      k = sec.id + "|" + fold(m, scr().from);
     if (seen[k]) return;
     seen[k] = 1;
-    IX.push({ id: id, sec: sec.id, m: m, e: e.split(" \u0000")[0], t: nz(m) + " " + nz(e), l: lz(nz(e)) });
+    lines.push({ id: id, sec: sec.id, text: sec.id, m: m, e: en ? txt(en) : "", extra: ENS[id] || "" });
   });
+  IX = buildIndex({ texts: [], lines: lines, roman: IA, from: scr().from });
 }
 
+/** The piece's title in the language shown @param {string} id */
 function sectionTitle(id) {
-  var h = document.getElementById(id).querySelector("h2"),
+  var h = /** @type {HTMLElement} */ (/** @type {HTMLElement} */ (document.getElementById(id)).querySelector("h2")),
     s = h.querySelector(P.lang === "en" ? ".en" : ".mr");
-  return (s || h).textContent;
+  return /** @type {string} */ ((s || h).textContent);
 }

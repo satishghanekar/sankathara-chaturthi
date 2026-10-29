@@ -44,7 +44,8 @@ There is no build step: the browser loads these files as they are.
 | `features/contents-list.js` | Contents list inside the contents + search overlay (built from the home page contents) |
 | `features/clicks.js` | Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it |
 | `features/pinch.js` | Pinch with two fingers to change the text size (the page itself never zooms) |
-| `text/search.js` | Search: every Marathi line with its English line; matches ignore svara marks and punctuation |
+| `text/search-core.js` | Search rules and ranking, without the page (the same file as in Nitya Upasana; tests/unit/search.test.mjs): svara marks and punctuation ignored, forgiving spellings, a typo forgiven, Devanagari typed matched through its English letters |
+| `text/search.js` | Search: builds the index from every Marathi line with its English line, and shows the results (rules in `search-core.js`) |
 | `core/startup.js` | Start-up |
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |
