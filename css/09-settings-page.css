@@ -73,8 +73,10 @@ html[data-sp] {
   color: var(--accent);
   cursor: pointer;
 }
-#xc:hover {
-  background: var(--hdrl);
+@media (hover: hover) {
+  #xc:hover {
+    background: var(--hdrl);
+  }
 }
 #xc:focus-visible {
   outline: 2px solid var(--ink);
@@ -353,11 +355,6 @@ html[data-sp] {
 @media (prefers-reduced-motion: reduce) {
   .sp .sp-sw::after {
     transition: none;
-  }
-}
-@media print {
-  .sp {
-    display: none !important;
   }
 }
 
