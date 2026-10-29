@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { root, secs } from "../core/page.js";
-import { shared, P, save } from "../core/state.js";
+import { shared, P, change } from "../core/state.js";
 import { FEAT_AS } from "../core/features.js";
 import { rmkClose, rmkOpen } from "../text/dhrupad-markers.js";
 import { cur } from "../core/apply.js";
@@ -96,10 +96,10 @@ export function init() {
     document.getElementById("hm").onclick();
   };
   document.getElementById("tas").onclick = function () {
-    P.ason = P.ason ? 0 : 1;
-    if (!P.ason) asStop();
-    save();
-    apply();
+    change({ ason: P.ason ? 0 : 1 }, function () {
+      if (!P.ason) asStop();
+      apply();
+    });
   };
   // The bar is always there, like the top bar (data-asb leaves room for it under the text).
   // asShow() keeps ▶ in step with the settings, and Prev / Next with the piece on screen.
@@ -298,12 +298,10 @@ function asStart() {
     t0 = c0 && c0.getBoundingClientRect().top;
   // fold the home card and contents, open every piece; a folded section (Pooja / Aarti) stays folded and is skipped,
   // unless every section is folded, then all open again
-  P.fold = 1;
-  P.tf = 1;
-  if (P.pf && P.xf) P.pf = P.xf = 0;
-  P.af = [];
-  save();
-  apply();
+  /** @type {Record<string, any>} */
+  var ch = { fold: 1, tf: 1, af: [] };
+  if (P.pf && P.xf) ch.pf = ch.xf = 0;
+  change(ch, apply);
   if (c0 && c0.offsetParent !== null) scrollBy(0, c0.getBoundingClientRect().top - t0);
   asRun();
 }
@@ -368,8 +366,11 @@ function asSpeed(d) {
   if (v === o || !id) return;
   // keep the same point in the current line
   if (AS.on && AS.u[AS.i]) AS.t *= ASPD[v] / ASPD[o];
-  P.asp[id] = v;
-  save();
+  /** @type {Record<string, number>} */
+  var asp = {};
+  for (var k in P.asp) asp[k] = P.asp[k];
+  asp[id] = v;
+  change({ asp: asp });
   asLabel();
 }
 
