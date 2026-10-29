@@ -87,9 +87,6 @@ export function asLabel() {
     b.setAttribute("aria-label", (mr ? x[1] : x[2]).replace(/[‹›]/g, "").trim() + (name ? ": " + name : ""));
     b.disabled = !a && !ss;
   });
-  // (here the Home and Library buttons are named in the menu language too)
-  /** @type {HTMLElement} */ (document.getElementById("ash")).setAttribute("aria-label", mr ? "मुख्य पान" : "Home");
-  /** @type {HTMLElement} */ (document.getElementById("asq")).setAttribute("aria-label", mr ? "संग्रह" : "Library");
 }
 
 // Previous / Next follow the links in each piece's .pn block (kept in the page but never shown on screen,
