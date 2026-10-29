@@ -33,8 +33,7 @@ There is no build step: the browser loads these files as they are.
 | `text/line-breaks.js` | Preferred line breaks |
 | `text/autofit.js` | Auto-fit text size |
 | `core/apply.js` | Current piece, folds and menus |
-| `features/bottom-bar.js` | Bottom bar (#asc) and autoscroll |
-| `features/tilt.js` | Tilt to scroll (bottom bar, phones and tablets) |
+| `features/bottom-bar.js` | Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›, as in Nitya Upasana |
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
 | `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More (`#spv`, `spTab()`; each `.sp-grp` says its tab), as in Nitya Upasana |
 | `features/dhrupad-button.js` | Dhrupad: `refToggle()` switches once / after every stanza, keeping the reader's place (used by the Aa sheet and Settings; no `init()`) |
