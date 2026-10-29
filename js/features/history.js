@@ -1,7 +1,7 @@
 // Back button
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { bt } from "../core/page.js";
+import { bt, onPiece } from "../core/page.js";
 import { aa, cur, jp, pjOpen, pn } from "../core/apply.js";
 import { TK, apply, goHome, tuckHold } from "./bars.js";
 import { refit } from "../text/autofit.js";
@@ -100,14 +100,16 @@ export function init() {
     goHomeNav();
   });
   // Home and Library at the end of each piece do exactly what the bottom bar's buttons do
-  [].forEach.call(document.querySelectorAll(".pnh"), function (h) {
-    h.addEventListener("click", function (e) {
-      e.preventDefault();
-      goHomeNav();
+  onPiece(function (sec) {
+    [].forEach.call(sec.querySelectorAll(".pnh"), function (h) {
+      h.addEventListener("click", function (e) {
+        e.preventDefault();
+        goHomeNav();
+      });
     });
-  });
-  [].forEach.call(document.querySelectorAll(".pns"), function (b) {
-    b.onclick = openLibrary;
+    [].forEach.call(sec.querySelectorAll(".pns"), function (b) {
+      b.onclick = openLibrary;
+    });
   });
   // Skip link: focus goes to the first text on screen (a piece, or the page), without changing the address
   document.getElementById("skip").addEventListener("click", function (e) {

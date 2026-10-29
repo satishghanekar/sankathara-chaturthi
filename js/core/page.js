@@ -1,9 +1,22 @@
-// Page basics: the <html> element, the short message (flash)
+// Page basics: the <html> element, the short message (flash), and the pieces on the reading page
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { P } from "./state.js";
 
-export var root, secs, bt;
+/** @type {HTMLElement} */
+export var root;
+/** @type {HTMLElement | null} */
+export var bt;
+// The pieces built so far (pieceEl), in reading order. As in Nitya Upasana, where a piece is built the first time it
+// is opened; here the reading page is the whole evening in one scroll, so init() builds them all.
+/** @type {HTMLElement[]} */
+export var secs = [];
+/** @type {((sec: HTMLElement) => void)[]} */
+var steps = [];
+/** @type {Record<string, number>} */
+var at = {};
+/** @type {any[]} */
+var order = [];
 
 export function init() {
   root = document.documentElement;
@@ -11,8 +24,75 @@ export function init() {
   (function (u) {
     if (/AppleWebKit/.test(u) && !/Chrome\/|Chromium|Edg\/|OPR\//.test(u)) root.classList.add("wk");
   })(navigator.userAgent);
-  secs = [].slice.call(document.querySelectorAll(".ash"));
   bt = document.getElementById("bt");
+  // every piece in reading order: by category, as the Library lists them (js/text/content.js)
+  /** @type {any} */
+  var C = /** @type {any} */ (window).CONTENT;
+  secs = [];
+  steps = [];
+  at = {};
+  order = [];
+  if (C)
+    C.categories.forEach(function (/** @type {any} */ c) {
+      c.pieces.forEach(function (/** @type {any} */ p) {
+        at[p.id] = order.length;
+        order.push(p);
+      });
+    });
+  // Every piece now, in reading order, each section's row (वैदिक मंत्र, आरती: hidden on screen, it heads the section in
+  // a printout) before its first piece
+  /** @type {any} */
+  var w = window,
+    end = document.getElementById("pieces");
+  if (C && end)
+    C.categories.forEach(function (/** @type {any} */ c) {
+      end.insertAdjacentHTML("beforebegin", w.renderGroup(c));
+      w.SCR.add(/** @type {HTMLElement} */ (end.previousElementSibling));
+      c.pieces.forEach(function (/** @type {any} */ p) {
+        pieceEl(p.id);
+      });
+    });
+}
+
+/**
+ * What a part does to each piece when it is built: the steps the parts used to run over every piece at start-up
+ * (the English style, grid places, stanza numbers, line breaks, the fold button…), in the order the parts start.
+ * A piece built before a part starts (the one opened at start-up) gets that part's step straight away.
+ * @param {(sec: HTMLElement) => void} fn
+ */
+export function onPiece(fn) {
+  steps.push(fn);
+  secs.slice().forEach(function (s) {
+    fn(s);
+  });
+}
+
+/**
+ * The element with this id. A piece (a3) not opened before is built first, from CONTENT (js/render.js renderPiece,
+ * with the pieces before and after it for its Previous / Next), in the chosen script, and each part's step is run on it.
+ * @param {string} id
+ * @returns {HTMLElement | null}
+ */
+export function pieceEl(id) {
+  if (!id) return null;
+  var el = document.getElementById(id);
+  if (el || !(id in at)) return el;
+  /** @type {any} */
+  var w = window,
+    i = at[id],
+    // in reading order, before the next piece built so far (or where index.html keeps their place, #pieces)
+    next = secs.filter(function (s) {
+      return at[s.id] > i;
+    })[0],
+    mark = next || /** @type {HTMLElement} */ (document.getElementById("pieces"));
+  mark.insertAdjacentHTML("beforebegin", w.renderPiece(order[i], w.CONTENT, order[i - 1], order[i + 1]));
+  el = /** @type {HTMLElement} */ (mark.previousElementSibling);
+  w.SCR.add(el);
+  secs.splice(next ? secs.indexOf(next) : secs.length, 0, el);
+  steps.forEach(function (f) {
+    f(/** @type {HTMLElement} */ (el));
+  });
+  return el;
 }
 
 // Short message near the top of the screen (Marathi text m, English text e). It has its own element,

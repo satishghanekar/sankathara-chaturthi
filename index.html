@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.7.2">
+<meta name="version" content="aarti-v1.7.3">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -269,9 +269,8 @@
       <ol id="tsl"></ol>
     </section>
   </section>
-  <!-- ==== Vedic Chant and Aarti: every piece, from the text files in content/texts/. js/text/load.js (started by js/main.js)
-       fetches them and has js/render.js build the pieces here, in place of #pieces (right after #home: the styles
-       space "#home + .grp") ==== -->
+  <!-- ==== Vedic Chant and Aarti: every piece, from the text files in content/texts/ (fetched by js/text/load.js). js/core/page.js
+       builds each one here, just before #pieces (right after #home), with js/render.js ==== -->
   <div id="pieces" hidden></div>
   <script src="js/render.js"></script>
 </main>
