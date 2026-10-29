@@ -6,7 +6,7 @@ import { shared, P } from "../core/state.js";
 import { foldSet, skDot, skRender } from "./date-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
 import { cur, pfSet, pjOpen } from "../core/apply.js";
-import { asLabel, asShow, asb, asc } from "./bottom-bar.js";
+import { asLabel, asShow, asc } from "./bottom-bar.js";
 import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 import { spSet } from "./languages.js";
@@ -56,11 +56,6 @@ export function init() {
     if (e.target.closest(".verse p, a, button, input, select, label, .rmk, .rmkpop, #asc, .bar")) return;
     tuck(false);
   });
-  // when autoscroll stops, the bars come back, so ▶ (and the rest) is at hand again
-  if (window.MutationObserver)
-    new MutationObserver(function () {
-      if (!asc.classList.contains("on")) tuckHold();
-    }).observe(asc, { attributes: true, attributeFilter: ["class"] });
   tkStrip.addEventListener("click", function () {
     tuck(false);
   });
@@ -77,7 +72,7 @@ export function init() {
   MQ1000 = matchMedia("(min-width: 1000px)");
   MQ1100 = matchMedia("(min-width: 1100px)");
   // The parts of apply() that read where things are on screen (the current piece for the top bar title,
-  // the menus and the autoscroll speed) wait for the next frame, when the browser lays the page out
+  // and the bottom bar's Prev and Next) wait for the next frame, when the browser lays the page out
   // anyway; reading them straight away cost one extra full-page layout per change.
   tailF = 0;
 }
@@ -208,7 +203,7 @@ function leadSet() {
 
 function applyTail() {
   tailF = 0;
-  if (asb) {
+  if (asc) {
     asLabel();
     asShow();
   }
@@ -272,7 +267,6 @@ export function apply() {
   });
   document.getElementById("tc").setAttribute("aria-pressed", String(!!P.hc));
   document.getElementById("tw").setAttribute("aria-pressed", String(!!P.wake));
-  document.getElementById("tas").setAttribute("aria-pressed", String(!!P.ason));
   if (!tailF) tailF = requestAnimationFrame(applyTail);
   szSet();
 }

@@ -51,7 +51,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 
 | Query | What changes |
 |---|---|
-| `(max-width: 359px)` | The smallest phones: the bottom bar drops the tilt label, the words of Prev and Next, and narrows the autoscroll speed; Settings tightens |
+| `(max-width: 359px)` | The smallest phones: the bottom bar drops the words of Prev and Next; Settings tightens |
 | `(max-width: 379px)` | Narrow phones: the home buttons put their word under the icon; the bottom bar closes its gaps |
 | `(max-width: 420px)` | Phones: Prev / Next at the end of a piece take a narrower middle column |
 | `(min-width: 600px)` | Large phones and tablets: a larger home-page text limit |

@@ -45,7 +45,6 @@ var SITE_PARTS = (function () {
     "text/autofit",
     "core/apply",
     "features/bottom-bar",
-    "features/tilt",
     "features/bars",
     "features/settings-panel",
     "features/dhrupad-button",
