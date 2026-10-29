@@ -146,8 +146,8 @@ Each piece is one file in `content/texts/`. Its `legacy-id` is the id of its `<s
 | File in `content/texts/` | legacy-id | Piece |
 |---|---|---|
 | `vedic-chant-atharvashirsha.txt` | `p1` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
-| `aarti-sukhkarta.txt` | `a1` | Aarti 1. गणपतीची आरती |
-| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. गणपति जी की आरती |
+| `aarti-sukhkarta.txt` | `a1` | Aarti 1. सुखकर्ता दुःखहर्ता |
+| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
 | `aarti-durge-durghat-bhari.txt` | `a3` | Aarti 3. देवीची आरती |
 | `aarti-lavathavati-vikrala.txt` | `a4` | Aarti 4. शंकराची आरती |
 | `aarti-trigunatmak-traimurti.txt` | `a5` | Aarti 5. दत्ताची आरती |
@@ -167,8 +167,8 @@ A text is one plain-text file in `content/texts/`, named after its id (`aarti-su
 
 ```
 id: aarti-sukhkarta
-title: गणपतीची आरती
-title-en: Ganapati Aarti
+title: सुखकर्ता दुःखहर्ता
+title-en: Sukhkarta Dukhharta
 category: aarti
 language: mr
 legacy-id: a1
@@ -248,7 +248,7 @@ When English style is set to *sukhakartā*, `js/text/iast.js` (function `IA`) re
 - Swara marks in the Atharvashirsha: ॒ (anudatta) becomes a line under the vowel, ॑ (svarita) a tick above, ᳚ a double tick, matching the group's printed śivāñjali booklet.
 - Hindi nukta letters: ड़ ṛ, ढ़ ṛh.
 
-To change a rule, edit `IA` in `js/text/iast.js` and check the Atharvashirsha and Ganapati Aarti against the printed booklet afterwards.
+To change a rule, edit `IA` in `js/text/iast.js` and check the Atharvashirsha and Sukhkarta Dukhharta against the printed booklet afterwards.
 
 ## Checking a change
 
