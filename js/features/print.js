@@ -16,7 +16,7 @@ import { flash, root } from "../core/page.js";
 import { shared, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
-import { DV } from "../text/line-breaks.js";
+import { createWhat, whatWords } from "../print/what.js";
 
 // The page each printout is made for: one language upright, both languages side by side on a sideways page
 var CHOICE = { one: { page: "up" }, both: { page: "land" } };
@@ -37,17 +37,18 @@ export function init() {
       last = "as", // the layout last chosen, carried to Safari
       pn = pm.querySelector(".prn:not(#prw):not(#prv)"),
       busy = false,
-      // the texts the printout being made holds (their piece ids), or null for every text: what is ticked under What
-      // to print, set as Print is tapped, for that printout only (the browser's own Print menu prints every text)
-      /** @type {string[] | null} */
-      sel = null,
+      /** @type {{ m: string, ids: string[] | null } | null} the printout being made from the builder */
+      job = null,
+      /** @type {{ m: string, ids: string[] | null } | null} the printout just printed, until the reader is back */
+      again = null,
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
     // the original's language, by the letters it is shown in (P.ind), as the Print pop-up names it: in Marathi
     // menus, then in English. A new script (js/render.js) adds its name here.
     var NAMES = { mr: ["मराठी", "Marathi"], kn: ["कन्नड", "Kannada"] };
-    // the language printed: as the page shows it ("mr", "en" or "both")
+    // The printout's language: picked under How (the original, English or both), else as the page shows it (P.lang).
+    // Like the font, it is the printout's only: the reading page keeps its own
     function plang() {
-      return P.lang;
+      return ["mr", "en", "both"].indexOf(P.plang) >= 0 ? P.plang : P.lang;
     }
 
 
@@ -298,12 +299,13 @@ export function init() {
     // Build the print view (#pv): contents (when more than one text prints), then the texts chosen (sel), in reading order.
     // mode: "one" (one language) or "side" (both, side by side). The texts are read from the page's own pieces, which
     // are all there, folded or not (each part by what it is, never by what the screen shows)
-    /** @param {string} mode */
-    function build(mode) {
-      write(pv, mode, source());
+    /** @param {string} mode @param {string[] | null} ids  the texts (piece ids), or null for every text @param {HTMLElement} [into] */
+    function build(mode, ids, into) {
+      write(into || pv, mode, source(ids));
     }
     // the pieces to print and the groups (पूजा, आरती) the contents list them under, with each group's name
-    function source() {
+    /** @param {string[] | null} sel */
+    function source(sel) {
       /** @type {any} */
       var C = window.CONTENT,
         all = [],
@@ -438,99 +440,33 @@ export function init() {
       });
     }
 
-    // A browser cannot print "page N" for a heading, so the print view is laid out once in a hidden
-    // frame the size of a printed page (Letter in the US and Canada, A4 elsewhere, upright or sideways
-    // as the reader chose) and each piece's first page is worked out from the heights, as the browser
-    // breaks pages.
-    // ---- What to print: every text, ticked unless the reader left it out (P.pskip), under पूजा and आरती ----
-    var wl = /** @type {HTMLElement} */ (document.getElementById("prwl")),
-      wn = /** @type {HTMLElement} */ (document.getElementById("prwn"));
-    // every piece's id, in reading order
-    function allIds() {
-      /** @type {string[]} */
-      var out = [];
-      /** @type {any} */ (window).CONTENT.groups.forEach(function (/** @type {any} */ g) {
-        g.pieces.forEach(function (/** @type {any} */ p) {
-          out.push(p.id);
-        });
-      });
-      return out;
-    }
-    // the texts ticked, in reading order
-    function chosen() {
-      return allIds().filter(function (id) {
-        return P.pskip.indexOf(id) < 0;
-      });
-    }
-    // the list: each group's name, then a tick and the title of each of its texts (as the page heads it)
-    function whatList() {
-      [].forEach.call(wl.querySelectorAll(".prwg"), function (/** @type {Element} */ x) {
-        x.remove();
-      });
-      /** @type {any} */ (window).CONTENT.groups.forEach(function (/** @type {any} */ g) {
-        var box = mk("div", "prwg"),
-          gh = document.querySelector("#" + g.id + " button");
-        box.setAttribute("role", "group");
-        var nm = box.appendChild(mk("div", "prwgh", gh ? gh.innerHTML : ""));
-        [].forEach.call(nm.querySelectorAll("svg"), function (/** @type {Element} */ x) {
-          x.remove();
-        });
-        box.setAttribute("aria-label", nm.textContent.trim());
-        g.pieces.forEach(function (/** @type {any} */ p) {
-          var h = document.querySelector("#" + p.id + " header h2"),
-            lb = mk("label", "prwt"),
-            cb = /** @type {HTMLInputElement} */ (mk("input"));
-          cb.type = "checkbox";
-          cb.value = p.id;
-          lb.appendChild(cb);
-          lb.appendChild(mk("span", "prwtt", h ? h.innerHTML : p.id));
-          box.appendChild(lb);
-        });
-        wl.appendChild(box);
-      });
-      whatShow();
-    }
-    // the ticks and the count as chosen
-    function whatShow() {
-      var n = chosen().length,
-        all = allIds().length,
-        M = P.ui === "mr";
-      [].forEach.call(wl.querySelectorAll("input"), function (/** @type {HTMLInputElement} */ cb) {
-        cb.checked = P.pskip.indexOf(cb.value) < 0;
-      });
-      wn.textContent = n === all ? (M ? "सर्व " + DV(all) : "All " + all) : M ? DV(n) + " / " + DV(all) : n + " of " + all;
-    }
-    wl.addEventListener("change", function (e) {
-      var cb = /** @type {HTMLInputElement} */ (e.target);
-      if (!cb || cb.type !== "checkbox") return;
-      var skip = P.pskip.filter(function (id) {
-        return id !== cb.value;
-      });
-      if (!cb.checked) skip.push(cb.value);
-      change({ pskip: skip }, whatShow);
-    });
-    wl.addEventListener("click", function (e) {
-      var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest("[data-a]"));
-      if (!b) return;
-      change({ pskip: b.getAttribute("data-a") === "none" ? allIds() : [] }, whatShow);
-    });
-
-    // ---- The page: Letter in the US, Canada, Mexico and the Philippines, A4 elsewhere; upright or sideways ----
     var LTR = /-(US|CA|MX|PH)$/i.test(navigator.language || "");
     // The pop-up's two choices, Portrait and Landscape, for what is printed: one language in a column, upright or
     // sideways; both languages side by side on sideways pages
     function choice() {
-      return CHOICE[P.lang === "both" ? "both" : "one"];
+      return CHOICE[plang() === "both" ? "both" : "one"];
     }
     // Sideways pages for a layout ("one" or "side"): with both languages, side by side; with one, as the reader
     // last chose in the pop-up (P.por), or its default; upright only while Landscape is held back (FEAT_SW)
+    /** @param {string} mode */
     function land(mode) {
       if (!FEAT_SW) return false;
-      if (P.lang === "both") return mode === "side";
+      if (plang() === "both") return mode === "side";
       return (P.por || choice().page) === "land";
     }
-    // The printout's font: picked in the pop-up, else the text font. It is the page's font (data-font) only while
-    // printing, so picking one for the printout leaves the reading page as it is (Satish, 2026-10)
+    // Letter paper: as picked under How (P.ppr), else as the device's region suggests
+    function letter() {
+      return P.ppr ? P.ppr === "letter" : LTR;
+    }
+    // the sheet as it prints, [width, height] in mm
+    /** @param {string} mode */
+    function sheet(mode) {
+      var pp = letter() ? [215.9, 279.4] : [210, 297]; // upright
+      return land(mode) ? [pp[1], pp[0]] : pp;
+    }
+    // The printout's font: one of the same three as Settings → Text font, picked in the pop-up, else the text font. It
+    // is the page's font (data-font) only while printing, so picking one for the printout leaves the reading page as it
+    // is (Satish, 2026-10)
     var FONTS = ["std", "classic", "hand"];
     function pfn() {
       return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : P.fnt;
@@ -553,6 +489,7 @@ export function init() {
         } catch (e) {}
       });
     }
+    /** @param {string} mode */
     function pon(mode) {
       root.setAttribute("data-print", mode);
       root.setAttribute("data-font", pfn());
@@ -563,111 +500,300 @@ export function init() {
       root.setAttribute("data-font", P.fnt);
       root.setAttribute("data-ref", String(P.ref));
     }
+
+    // ---- The print builder (as in Nitya Upasana): What (js/print/what.js), then How (the rows below) ----
+    // On a phone one step at a time (data-step on #prm: Next, and ‹ What to print back); from 760px side by side
+    // (css/03-menus-print-view.css). The bottom bar keeps the running total and Next or Print.
+    // The shelves: the reading page's groups (पूजा, आरती) and their texts, in reading order
+    function shelves() {
+      /** @type {any} */
+      var C = window.CONTENT;
+      return (C ? C.groups : []).map(function (/** @type {any} */ g) {
+        return {
+          category: { id: g.id, name: g.name },
+          texts: g.pieces.map(function (/** @type {any} */ p) {
+            return { id: p.id, sec: p.id, title: p.title.mr, titleEn: p.title.en, language: p.lang || "mr" };
+          }),
+        };
+      });
+    }
+    // every piece's id, in reading order
+    function allIds() {
+      /** @type {string[]} */
+      var out = [];
+      shelves().forEach(function (s) {
+        s.texts.forEach(function (t) {
+          out.push(t.id);
+        });
+      });
+      return out;
+    }
+    var what = createWhat(/** @type {HTMLElement} */ (document.getElementById("prwl")), {
+        shelves: shelves,
+        // the texts left out are kept (P.pskip), so the next printout starts with the same choice
+        onChange: function () {
+          var c = what.pick();
+          change({
+            pskip: c
+              ? allIds().filter(function (id) {
+                  return /** @type {string[]} */ (c).indexOf(id) < 0;
+                })
+              : [],
+          });
+          refresh();
+        },
+      }),
+      bnx = /** @type {HTMLElement} */ (document.getElementById("prnx")),
+      wide = window.matchMedia ? matchMedia("(min-width: 760px)") : null;
+    // the texts ticked (their piece ids), or null for every text
+    function chosen() {
+      return what.pick();
+    }
+    // the bottom bar and the preview follow every choice
+    function refresh() {
+      summary();
+      preview();
+    }
+    // The preview under How: the first page of the first text ticked, as it prints, made small. Written as the print
+    // view is (build), into a frame the size of the page, cut off at the page's foot
+    var shv = /** @type {HTMLElement} */ (document.getElementById("prsheet")),
+      pshown = "";
+    // the first text ticked, in reading order (as it prints)
+    function first() {
+      var c = chosen(),
+        f = allIds().filter(function (id) {
+          return !c || c.indexOf(id) >= 0;
+        })[0];
+      return f ? [f] : null;
+    }
+    function preview() {
+      if (pm.hidden) return;
+      var M = P.ui === "mr",
+        ids = first(),
+        m = dm(),
+        k = ids ? [m, ids[0], plang(), shared.LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter()].join("|") : "",
+        sh = sheet(m),
+        w = 120; // its width (css/03-menus-print-view.css .prsheet)
+      shv.setAttribute("aria-label", M ? "पहिल्या पानाची झलक" : "Preview of the first page");
+      shv.style.height = Math.round((w * sh[1]) / sh[0]) + "px";
+      if (k === pshown && shv.firstChild) return;
+      pshown = k;
+      shv.textContent = "";
+      if (!ids) return;
+      var box = document.createElement("div");
+      box.id = "pv";
+      build(m, ids, box);
+      var mm = 96 / 25.4,
+        f = document.createElement("iframe");
+      f.setAttribute("aria-hidden", "true");
+      f.tabIndex = -1;
+      f.title = "Preview";
+      f.style.cssText = "border:0;width:" + sh[0] * mm + "px;height:" + sh[1] * mm + "px;transform-origin:0 0;transform:scale(" + w / (sh[0] * mm) + ")";
+      shv.appendChild(f);
+      try {
+        var d = /** @type {Document} */ (f.contentDocument);
+        d.open();
+        d.write('<!doctype html><html data-print="' + m + '"' + attrs() + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden;background:#fff}body{box-sizing:content-box;padding:17mm 19mm 0;height:" + (sh[1] - 36) + "mm}</style></head><body>" + box.outerHTML + "</body></html>");
+        d.close();
+      } catch (e) {}
+    }
+    // the paper, and the button that changes it (Letter or A4)
+    function paperRow() {
+      var M = P.ui === "mr",
+        o = letter() ? "A4" : "Letter";
+      /** @type {HTMLElement} */ (document.getElementById("prp")).textContent = /** @type {HTMLElement} */ (document.getElementById("prq")).textContent = letter() ? "Letter" : "A4";
+      /** @type {HTMLElement} */ (document.getElementById("prpa")).textContent = M ? o + " वापरा" : "Use " + o;
+      // Safari keeps the paper picked in its own dialog: when it is not the region's, it is told to pick it there
+      [].forEach.call(document.querySelectorAll(".przp"), function (/** @type {HTMLElement} */ x) {
+        x.textContent = letter() ? "Letter" : "A4";
+      });
+      /** @type {HTMLElement} */ (document.getElementById("prz")).hidden = !(root.classList.contains("wk") && letter() !== LTR);
+    }
+    /** @type {HTMLElement} */ (document.getElementById("prpa")).onclick = function () {
+      change({ ppr: letter() ? "a4" : "letter" });
+      paperRow();
+      refresh();
+    };
+    // the bottom bar: "5 texts" (or the one text's name), or that a text must be picked (Next and Print wait for one)
+    function summary() {
+      var w = whatWords(),
+        t = what.total(),
+        el = /** @type {HTMLElement} */ (document.getElementById("prsum"));
+      el.textContent = "";
+      el.lang = P.ui === "mr" ? "mr" : "en";
+      var a = document.createElement("span");
+      // one text: its name
+      a.textContent = t.one || (t.texts ? w.texts(t.texts) : w.pick);
+      if (t.one) a.lang = t.oneLang;
+      el.appendChild(a);
+      /** @type {HTMLButtonElement} */ (bpr).disabled = /** @type {HTMLButtonElement} */ (bnx).disabled = !t.texts;
+    }
+    /** @param {string} s */
+    function step(s) {
+      pm.setAttribute("data-step", s);
+      pm.scrollTop = 0;
+    }
+    bnx.onclick = function () {
+      step("how");
+      bpr.focus({ preventScroll: true });
+    };
+    /** @type {HTMLElement} */ (document.getElementById("prbk")).onclick = function () {
+      step("what");
+      bnx.focus({ preventScroll: true });
+    };
     // The page as it prints: the browser is told with @page, set as each printout is made (Chrome, Edge and
     // Firefox follow it; Safari keeps the sheet the reader picks in its dialog, so the pop-up tells them to
     // pick Landscape there)
     var pst = document.createElement("style");
     pst.media = "print";
     document.head.appendChild(pst);
+    /** @param {string} mode */
     function setPage(mode) {
-      pst.textContent = land(mode) ? "@page { size: landscape }" : "";
+      // the paper only when picked under How: otherwise the printer's own, as before
+      var sz = P.ppr ? (letter() ? "letter " : "A4 ") : "";
+      pst.textContent = sz || land(mode) ? "@page { size: " + sz + (land(mode) ? "landscape" : "portrait") + " }" : "";
     }
-    // Above the choices: the dhrupad setting for the printout and its font
-    // (the four of Settings → Text font), with a line of the text in it; neither changes the reading page
-    var fn = document.getElementById("prfn"),
-      dh = document.getElementById("prdg");
-    [].forEach.call(document.querySelectorAll("#sfn button"), function (b) {
+    // Above the choices: the dhrupad setting for the printout and its font (the three of Settings → Text font), with
+    // a word of the text in each; neither changes the reading page
+    var fn = /** @type {HTMLElement} */ (document.getElementById("prfn")),
+      dh = /** @type {HTMLElement} */ (document.getElementById("prdg"));
+    [].forEach.call(document.querySelectorAll("#sfn button"), function (/** @type {HTMLElement} */ b) {
       fn.appendChild(b.cloneNode(true));
     });
+    // each font a tile: a word of the text in that font (set in rows), over the font's name
+    [].forEach.call(fn.children, function (/** @type {HTMLElement} */ b) {
+      var nm = document.createElement("span"),
+        x = document.createElement("span");
+      nm.className = "prfm";
+      x.className = "prfx";
+      x.setAttribute("aria-hidden", "true");
+      while (b.firstChild) nm.appendChild(b.firstChild);
+      b.appendChild(x);
+      b.appendChild(nm);
+    });
     fn.onclick = function (e) {
-      var b = e.target.closest("button");
+      var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest("button"));
       if (!b) return;
-      change({ pfn: b.dataset.v }, rows);
+      change({ pfn: b.dataset.v });
+      fontsAhead();
+      rows();
+      refresh();
     };
-    // the sample line in the printout's font (set here: the page's own font rules follow the text font)
+    // the printout's fonts by name (Standard is the page's own)
+    /** @type {Record<string, string>} */
     var FAM = { classic: "SC Classic", hand: "SC Hand" };
-    // the sample: the first words of the first verse, in each language printed (the main one first), in the
-    // printout's font. Set here: the page's own font rules follow the text font
-    function fam(lang) {
-      var f = pfn(),
+    // a tile's word in its font. Set here: the page's own font rules follow the text font
+    /** @param {string} lang @param {string} [font] (else the printout's) */
+    function fam(lang, font) {
+      var f = font || pfn(),
         kn = lang === "kn",
         base = kn ? '"Noto Sans Kannada", var(--body)' : lang === "en" ? "var(--lat)" : "var(--body)";
-      return f === "std" ? base : '"' + (kn ? FAM[f].replace("SC ", "SC Kn ") : FAM[f]) + '", ' + base;
+      return f === "std" || !FAM[f] ? base : '"' + (kn ? FAM[f].replace("SC ", "SC Kn ") : FAM[f]) + '", ' + base;
     }
+    /** @param {string} k */
     function words(k) {
       var p = document.querySelector("#a1 .item:not(.dh) .verse ." + k + " p"),
-        t = p ? p.textContent.replace(/\s+/g, " ").trim() : "";
+        t = p ? (p.textContent || "").replace(/\s+/g, " ").trim() : "";
       t = t.split(/[,|।]/)[0].trim();
       return t.length > 26 ? t.slice(0, 26).replace(/\s+\S*$/, "") + "…" : t;
     }
     function rows() {
       var or = P.ind === "kn" ? "kn" : "mr",
-        ks = P.lang === "both" ? (shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [P.lang === "en" ? "en" : "mr"];
-      [].forEach.call(dh.children, function (b) {
+        ks = plang() === "both" ? (shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [plang() === "en" ? "en" : "mr"];
+      [].forEach.call(dh.children, function (/** @type {HTMLElement} */ b) {
         b.setAttribute("aria-pressed", b.dataset.v === String(pref()) ? "true" : "false");
       });
-      [].forEach.call(fn.children, function (b) {
+      // each tile: the first word of the text in the main language printed, in that tile's font (in the language of
+      // the word, not as .mr or .en: those follow the menus' language here)
+      var lang = ks[0] === "en" ? "en" : or,
+        w = words(ks[0]).split(" ")[0].replace(/…$/, "");
+      [].forEach.call(fn.children, function (/** @type {HTMLElement} */ b) {
         b.setAttribute("aria-pressed", b.dataset.v === pfn() ? "true" : "false");
-      });
-      var fs = document.getElementById("prfs");
-      fs.textContent = "";
-      fs.classList.toggle("one", ks.length === 1);
-      ks.forEach(function (k, i) {
-        // (in the language of the line, not as .mr or .en: those follow the menus' language here)
-        var lang = k === "en" ? "en" : or,
-          e = i ? document.createElement("span") : fs;
-        if (i) {
-          fs.appendChild(document.createTextNode(" · "));
-          e.setAttribute("lang", lang);
-          e.textContent = words(k);
-          fs.appendChild(e);
-        } else {
-          fs.setAttribute("lang", lang);
-          fs.appendChild(document.createTextNode(words(k)));
-        }
-        e.style.setProperty("font-family", fam(lang), "important");
-        e.style.setProperty("font-weight", "400", "important");
+        var x = /** @type {HTMLElement} */ (b.querySelector(".prfx"));
+        x.textContent = w;
+        x.setAttribute("lang", lang);
+        x.style.setProperty("font-family", fam(lang, b.dataset.v), "important");
+        x.style.setProperty("font-weight", "400", "important");
       });
     }
     dh.onclick = function (e) {
-      var b = e.target.closest("button");
+      var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest("button"));
       if (!b) return;
-      change({ pref: +b.dataset.v }, rows);
+      change({ pref: +(b.dataset.v || 0) });
+      rows();
+      refresh();
     };
-    // the layout last chosen in the pop-up
-    var wm = "one";
+    // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
+    /** @returns {string} */
+    function pcss() {
+      if (pcss.t) return pcss.t;
+      /** @type {string[]} */
+      var out = [];
+      /** @param {CSSRuleList} rules */
+      function walk(rules) {
+        [].forEach.call(rules, function (/** @type {any} */ r) {
+          if (r.type === 4) {
+            var m = r.media.mediaText;
+            if (/print/.test(m)) walk(r.cssRules);
+            else if (!/screen/.test(m)) out.push(r.cssText);
+          } else if (r.type !== 6) out.push(r.cssText);
+        });
+      }
+      [].forEach.call(document.styleSheets, function (/** @type {CSSStyleSheet} */ sh) {
+        try {
+          walk(sh.cssRules);
+        } catch (e) {}
+      });
+      return (pcss.t = out.join("\n"));
+    }
+    /** @type {string} */
+    pcss.t = "";
+    // the page's own attributes as the printout has them (its font and dhrupad), for a copy of it in a frame
+    function attrs() {
+      var at = "";
+      [].forEach.call(root.attributes, function (/** @type {Attr} */ a) {
+        var v = a.name === "data-font" ? pfn() : a.name === "data-ref" ? String(pref()) : a.value;
+        if (a.name !== "data-print") at += " " + a.name + '="' + v.replace(/&/g, "&amp;").replace(/"/g, "&quot;") + '"';
+      });
+      return at;
+    }
     // the browser's own menu prints what the pop-up offers first: one language in a column, both side by side
     function dm() {
-      return P.lang === "both" && FEAT_SW ? "side" : "one";
+      return plang() === "both" && FEAT_SW ? "side" : "one";
     }
     // ---- Opening the print dialog ----
-    // Safari and every iOS browser open the print dialog only in answer to a tap, and a tap counts for
-    // about a second (through timers; not always through promises). Laying the print view out takes longer
-    // than that on a phone, so window.print() there is quietly ignored. Then the pop-up comes back with
-    // one button, Print now, whose own tap opens the dialog at once (the print view is already laid out).
+    // Safari and every iOS browser open the print dialog only in answer to a tap. The print view is written at once
+    // (nothing is measured), so Print opens it from the same tap; should a browser still ignore it, the pop-up comes
+    // back with one button, Print now, whose own tap opens the dialog.
     var iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
-      standalone = navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+      standalone = /** @type {any} */ (navigator).standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
     // the page choice as chosen, and Safari's Landscape note with it
     function pages1() {
       var up = !land("one");
       b1.setAttribute("aria-pressed", String(up));
       b2.setAttribute("aria-pressed", String(!up));
-      document.getElementById("prl").hidden = !(root.classList.contains("wk") && land(dm()));
+      /** @type {HTMLElement} */ (document.getElementById("prl")).hidden = !(root.classList.contains("wk") && land(dm()));
     }
     bpr.onclick = function () {
       var m = dm();
       go(m === "one" ? "as" : m);
     };
     // the pop-up: the choices (ready false), or Print now (ready true)
+    /** @param {boolean} ready */
     function pmMode(ready) {
       bpr.hidden = pn.hidden = po.hidden = ready;
+      /** @type {HTMLElement} */ (document.getElementById("prst")).hidden = /** @type {HTMLElement} */ (document.getElementById("prsum")).hidden = bnx.hidden = ready;
+      // (neither step: the title shows, without ‹ What to print)
+      if (ready) pm.setAttribute("data-step", "ready");
       // both languages print side by side on Landscape only (stacked took a third more paper): no choice to
       // make, the row just says so; upright only while Landscape is held back (FEAT_SW)
-      var one = !FEAT_SW || P.lang === "both";
-      document.getElementById("prpg").hidden = one;
-      document.getElementById("prpv").hidden = !one;
+      var one = !FEAT_SW || plang() === "both";
+      /** @type {HTMLElement} */ (document.getElementById("prpg")).hidden = one;
+      /** @type {HTMLElement} */ (document.getElementById("prpv")).hidden = !one;
       // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
-      document.getElementById("prl").hidden = !(root.classList.contains("wk") && land(ready ? wm : dm()));
+      /** @type {HTMLElement} */ (document.getElementById("prl")).hidden = !(root.classList.contains("wk") && land(dm()));
+      // Safari on a Mac: Chrome turns the page itself (Satish, 2026-10)
+      /** @type {HTMLElement} */ (document.getElementById("prc")).hidden = !root.classList.contains("wk") || iOS;
       bgo.hidden = !ready;
       pw.hidden = pv2.hidden = bsf.hidden = bcp.hidden = true;
     }
@@ -676,9 +802,11 @@ export function init() {
     // Print now there. iOS 17 and later open an x-safari-https:// address in Safari; Copy link is for the rest.
     // On Satish's iPhone neither the Print tap nor a second one (Print now) opened the dialog in the app, so the
     // app goes straight to this step once a layout is chosen.
+    /** @param {string} mode */
     function link(mode) {
+      /** @type {Record<string, any>} */
       var s = {};
-      ["lang", "lead", "l2", "ui", "ind", "ref", "pref", "fnt", "pfn", "tr", "por", "pskip"].forEach(function (k) {
+      ["lang", "lead", "l2", "ui", "ind", "ref", "pref", "fnt", "pfn", "plang", "ppr", "tr", "por", "pskip"].forEach(function (k) {
         s[k] = P[k];
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
@@ -686,6 +814,7 @@ export function init() {
     // open: the pop-up is already open (its Back step is in place); tapped: Print now was tapped and the
     // dialog still did not open (not the Home Screen app: another app's browser, or Safari holding it back),
     // so the note names Share → Print too
+    /** @param {boolean} open @param {boolean} [tapped] */
     function toSafari(open, tapped) {
       pmMode(true);
       bgo.hidden = true;
@@ -717,6 +846,7 @@ export function init() {
       }
     };
     // print, and if the browser ignored it, offer Print now (or, after a Print now tap, say why)
+    /** @param {boolean} again */
     function tryPrint(again) {
       seen = false;
       window.print();
@@ -745,31 +875,31 @@ export function init() {
     function unready() {
       if (!busy) return;
       busy = false;
-      sel = null;
       poff();
     }
+    /** @param {string} mode */
     function go(mode) {
       last = mode;
-      if (!chosen().length) return flash("किमान एक रचना निवडा", "Pick at least one text");
+      if (!what.total().texts) return flash("किमान एक रचना निवडा", "Pick at least one text");
       // the iPhone Home Screen app cannot print: straight to Open in Safari
       if (iOS && standalone) return toSafari(true);
       pm.hidden = true;
       ovDrop();
       // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
-      document.getElementById("prb").focus();
+      /** @type {HTMLElement} */ (document.getElementById("prb")).focus();
       busy = true;
       if (mode === "as") mode = "one";
-      wm = mode;
       // every text ticked: the whole printout, as the browser's own Print menu makes it
-      sel = chosen().length === allIds().length ? null : chosen();
+      job = { m: mode, ids: chosen() };
       setPage(mode);
       fontsAhead();
-      build(mode);
+      build(mode, job.ids);
       pon(mode);
       // nothing is measured, so the print view is ready at once: print from this tap
       tryPrint(false);
     }
-    document.getElementById("prb").onclick = function () {
+    // Open the builder at What, with the ticks as last left (P.pskip)
+    function openPrint() {
       unready();
       pmMode(false);
       // the language names follow what is printed: the original's place holds Marathi or Kannada, and with
@@ -780,18 +910,42 @@ export function init() {
         l1 = shared.LEAD === "en" ? en : or,
         l2 = shared.LEAD === "en" ? or : en;
       // the page: Portrait or Landscape (one language), a tap picks it; both languages: Landscape, side by side
+      /** @param {HTMLElement} b @param {string} page */
       function opt(b, page) {
         b.textContent = page === "land" ? (M ? "आडवे" : "Landscape") : M ? "उभे" : "Portrait";
         b.setAttribute("data-page", page);
         b.onclick = function () {
           change({ por: page });
-          wm = dm();
           pages1();
+          refresh();
         };
       }
       opt(b1, "up");
       opt(b2, "land");
-      document.getElementById("prpv").textContent = !FEAT_SW
+      // the language: the main one, the other, or both (the main one first, as on the page). Both prints side by side
+      // on Landscape, so the page row then says so instead of offering a choice
+      var lg = /** @type {HTMLElement} */ (document.getElementById("prlg")),
+        LV = shared.LEAD === "en" ? ["en", "mr", "both"] : ["mr", "en", "both"];
+      lg.textContent = "";
+      LV.forEach(function (v) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("data-v", v);
+        b.textContent = v === "both" ? (M ? "दोन्ही" : "Both") : v === "en" ? en : or;
+        lg.appendChild(b);
+      });
+      lg.onclick = function (e) {
+        var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest("button"));
+        if (!b) return;
+        change({ plang: b.getAttribute("data-v") });
+        langRow();
+        pmMode(false);
+        pages1();
+        rows();
+        refresh();
+      };
+      langRow();
+      /** @type {HTMLElement} */ (document.getElementById("prpv")).textContent = !FEAT_SW
         ? M
           ? "उभे: वर " + l1 + ", खाली " + l2
           : "Portrait: " + l1 + " above " + l2
@@ -800,20 +954,36 @@ export function init() {
           : "Landscape, side by side";
       pages1();
       rows();
-      whatList();
-      document.getElementById("prp").textContent = document.getElementById("prq").textContent = LTR ? "Letter" : "A4";
+      paperRow();
+      /** @type {HTMLElement} */ (document.getElementById("prx")).setAttribute("aria-label", M ? "रद्द" : "Cancel");
+      // What, drawn afresh (the reading languages and the menu language may have changed), with the texts last left out
+      what.render();
+      what.set(
+        allIds().filter(function (id) {
+          return P.pskip.indexOf(id) < 0;
+        }),
+      );
+      fontsAhead();
+      step("what");
       ovPush();
       pm.hidden = false;
-      // (a card taller than the screen stays at its top: the Print button is below)
-      bpr.focus({ preventScroll: true });
-    };
+      refresh();
+      // (a card taller than the screen stays at its top: Next or Print is in the bar at the bottom)
+      (wide && wide.matches ? bpr : bnx).focus({ preventScroll: true });
+    }
+    function langRow() {
+      [].forEach.call(/** @type {HTMLElement} */ (document.getElementById("prlg")).children, function (/** @type {HTMLElement} */ b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === plang()));
+      });
+    }
+    /** @type {HTMLElement} */ (document.getElementById("prb")).onclick = openPrint;
     function pmClose() {
       unready();
       pm.hidden = true;
       ovDone();
-      document.getElementById("prb").focus();
+      /** @type {HTMLElement} */ (document.getElementById("prb")).focus();
     }
-    document.getElementById("prx").onclick = pmClose;
+    /** @type {HTMLElement} */ (document.getElementById("prx")).onclick = pmClose;
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && !pm.hidden) pmClose();
     });
@@ -821,26 +991,43 @@ export function init() {
       if (e.target === pm) pmClose();
     });
     // Printing from the browser's own menu (or Share → Print on a phone) gets the same print view (one
-    // language in a column, both side by side): contents, then every piece, never the home page
+    // language in a column, both side by side): contents, then every piece, never the home page.
+    // Safari lays the page out again after afterprint (its print sheet, a change of paper there): until the reader is
+    // back on the page, that is still the printout chosen, not every text
     window.addEventListener("beforeprint", function () {
       seen = true;
       if (!busy) {
-        var m = dm();
-        setPage(m);
-        build(m);
-        pon(m);
+        var j = again || { m: dm(), ids: null };
+        setPage(j.m);
+        build(j.m, j.ids);
+        pon(j.m);
       }
     });
+    // a tap or a key on the page (Ctrl+P too): the reader is back, and the browser's own Print prints every text
+    ["pointerdown", "keydown"].forEach(function (t) {
+      document.addEventListener(
+        t,
+        function () {
+          again = null;
+        },
+        true,
+      );
+    });
     window.addEventListener("afterprint", function () {
+      if (busy) again = job;
       busy = false;
-      sel = null;
       poff();
     });
     // Opened by the Home Screen app's Open in Safari (see js/render.js): lay the printout out once the fonts
     // are in, then Print now asks for the tap that Safari needs
-    if (window.PRQ) {
-      var mode = window.PRQ;
-      window.PRQ = "";
+    if (/** @type {any} */ (window).PRQ) {
+      var mode = /** @type {any} */ (window).PRQ;
+      /** @type {any} */ (window).PRQ = "";
+      what.set(
+        allIds().filter(function (id) {
+          return P.pskip.indexOf(id) < 0;
+        }),
+      );
       (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
         setTimeout(function () {
           go(mode);

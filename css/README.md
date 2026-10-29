@@ -55,6 +55,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(max-width: 379px)` | Narrow phones: the home buttons put their word under the icon; the bottom bar closes its gaps |
 | `(max-width: 420px)` | Phones: Prev / Next at the end of a piece take a narrower middle column |
 | `(min-width: 600px)` | Large phones and tablets: a larger home-page text limit |
+| `(min-width: 760px)` | The print builder (as in Nitya Upasana): below, What and How one step at a time (Next and back); from 760px (iPads upright too) side by side, the list scrolling on its own |
 | `(min-width: 820px)` | Tablets and up: two-column contents, wider spacing |
 | `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`) |
 | `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers |

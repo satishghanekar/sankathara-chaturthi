@@ -31,6 +31,7 @@
   .sp .sp-go:active,
   .sp-seg,
   .prrow .prseg,
+  #prfn button[aria-pressed="true"],
   .sp-prev,
   .sp-pw .sp-rf {
     background: var(--surface);

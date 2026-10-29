@@ -36,12 +36,19 @@ export async function stubPrint(page) {
 }
 
 /** Press Print on the home page, then the given choice ("pr1" = first button, "pr2" = second). */
+/** On a phone the print builder shows What first: Next goes on to How (on a wide screen both show at once) */
+export async function howStep(page) {
+  if (await page.locator("#prnx").isVisible()) await page.locator("#prnx").click();
+  await page.locator("#prgp").waitFor({ state: "visible" });
+}
+
 export async function printFromButton(page, choice) {
   await page.evaluate(() => scrollTo(0, 0));
   // a folded home card hides its buttons: open it first, as a reader would (tap the slim line)
   if (!(await page.locator("#prb").isVisible())) await page.locator("#slim").click();
   await page.locator("#prb").click();
   await page.locator("#prm").waitFor({ state: "visible" });
+  await howStep(page);
   // the page (Portrait pr1 or Landscape pr2; both languages have only Landscape, so no choice shows), then Print
   if (await page.locator("#" + choice).isVisible()) await page.locator("#" + choice).click();
   await page.locator("#prgp").click();

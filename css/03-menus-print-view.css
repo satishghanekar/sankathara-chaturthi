@@ -501,26 +501,54 @@ h2[tabindex="-1"]:focus {
 .prseg2 button {
   padding: 4px 12px;
 }
-/* a line of the text in the chosen font, as it prints */
-.prrow .prfs {
-  grid-column: 1 / -1;
-  font: 400 15px/1.4 var(--body);
-  overflow: hidden;
+/* the language: three equal choices */
+.prseg3 button {
+  flex: 1 1 0;
+}
+/* The print font as tiles (mockup 1): a word of the text in each font over its name, Best across the top; the chosen
+   one outlined in the accent colour (filled, the word would lose its look) */
+/* the three fonts of Settings → Text font, side by side */
+.prrow #prfn {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0;
+  background: none;
+}
+#prfn button {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-height: 64px;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  text-align: start;
+}
+#prfn button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--ink);
+}
+.prfx {
+  font-size: 22px;
+  line-height: 1.3;
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
-.prrow .prfs[lang="en"] {
-  font-family: var(--lat);
+.prfx[lang="en"] {
+  font-size: 19px;
 }
-/* one language: a few words, centred under the fonts */
-.prrow .prfs.one {
-  text-align: center;
+.prfm {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
 }
-:root[data-font]:not([data-font="std"]) .prrow .prfs {
-  font-family: var(--tf), var(--body);
-}
-:root[data-font]:not([data-font="std"]) .prrow .prfs[lang="en"] {
-  font-family: var(--tfl), var(--lat);
+#prfn button[aria-pressed="true"] .prfm {
+  color: var(--accent);
+  font-weight: 600;
 }
 .prn {
   font-size: 13px;
@@ -532,36 +560,89 @@ h2[tabindex="-1"]:focus {
   font-size: 12px;
   line-height: 1.4;
 }
-.prx {
-  border-color: var(--rule);
-  color: var(--ink);
+/* the preview of the first page (js/features/print.js preview: a page-sized frame made small), beside the note */
+.prpre {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
 }
-/* Cancel and Print side by side */
-/* Cancel and Print stay in reach at the bottom of the screen while a tall pop-up scrolls (a phone on its side) */
+.prpre .prnote {
+  flex: 1;
+  margin: 0;
+}
+.prsheet {
+  flex: none;
+  width: 120px;
+  height: 170px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+.prsheet iframe {
+  display: block;
+  pointer-events: none;
+}
+/* not laid out yet: an empty sheet, faded */
+.prsheet.prsw {
+  opacity: 0.6;
+}
+/* Use A4 / Use Letter */
+.prnote .prpa {
+  height: 32px;
+  min-width: 0;
+  margin: 6px 0 0;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  display: block;
+}
+/* The bottom bar: the running total ("5 texts · ~8 pages") and Next (a phone's What step) or Print, always in view
+   under the steps (they scroll) */
 .pract {
-  position: sticky;
-  bottom: 0;
   margin: 0 -18px -18px;
   padding: 10px 18px 18px;
+  border-top: 1px solid var(--rule);
   border-radius: 0 0 16px 16px;
   background: var(--bg);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 .pract button {
   margin: 0;
 }
-.pract #prgp {
+.pract #prgp,
+.pract #prnx {
   background: var(--accent);
   color: var(--bg);
   font-weight: 600;
 }
-.pract #prgp[hidden] {
+.pract #prgp[hidden],
+.pract #prnx[hidden],
+.prsum[hidden],
+.prst[hidden] {
   display: none;
 }
-.pract:has(#prgp[hidden]) {
-  grid-template-columns: 1fr;
+.prsum {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+  font: 400 14px/1.35 var(--lat);
+  color: var(--muted);
+}
+.prsum [lang="mr"],
+.prsum [lang="kn"] {
+  font-family: var(--body);
+  font-size: 15px;
+  color: var(--ink);
+}
+.prsum b {
+  font-weight: 600;
+  color: var(--ink);
 }
 /* the card is centred while it fits; taller than the screen (a phone on its side, or the iPhone's Open in
    Safari state), it starts at the top and the pop-up scrolls */
@@ -581,6 +662,253 @@ h2[tabindex="-1"]:focus {
   margin-block: auto;
 }
 #prm[hidden] {
+  display: none;
+}
+/* ---- The print builder (print redesign P4, mockup 1): the title with Cancel (✕), then What and How. On a phone one
+   step at a time (data-step on #prm: Next, and ‹ What to print back); from 760px the two side by side ---- */
+/* The card is as tall as its content, up to the screen: then the steps scroll between the title and the bottom bar */
+#prm > .prc {
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100%);
+  /* vh first for browsers without dvh (Chrome < 108); dvh follows the phone's moving address bar */
+  max-height: calc(100vh - 40px);
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- vh fallback on the line above */
+  max-height: calc(100dvh - 40px);
+  padding-top: 0;
+  text-align: start;
+}
+#prm > .prc > * {
+  flex: none;
+}
+#prm > .prc > .prst {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 -18px;
+  padding: 0 18px;
+}
+.prhd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 -18px 4px;
+  padding: 10px 10px 6px 18px;
+  border-radius: 16px 16px 0 0;
+  background: var(--bg);
+}
+.prhd .qrt {
+  flex: 1;
+  margin: 0;
+}
+.prbk {
+  flex: none;
+  min-height: 44px;
+  margin: 0 auto 0 -8px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 600;
+}
+@media (max-width: 759.98px) {
+  #prm:not([data-step="how"]) .prbk,
+  #prm[data-step="how"] .prhd .qrt,
+  #prm[data-step="what"] .prhw,
+  #prm[data-step="what"] #prgp,
+  #prm[data-step="how"] .prwh,
+  #prm[data-step="how"] #prnx {
+    display: none;
+  }
+}
+.prsh {
+  margin: 6px 0 8px;
+  font: 600 13px/1.3 var(--lat);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+/* What has two tabs, Texts and Today (the chosen one filled, like the choices under How) */
+.prwq {
+  margin-bottom: 4px;
+}
+.prcg {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  border-bottom: 1px solid var(--rule);
+  font: 600 13px/1.3 var(--lat);
+  color: var(--muted);
+}
+.prcg span[lang="mr"],
+.prcg span[lang="kn"] {
+  font-family: var(--body);
+  font-size: 14px;
+}
+.prcga {
+  margin-top: 6px;
+}
+.prcb {
+  flex: none;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+.prgr[hidden] {
+  display: none;
+}
+#prwl .tt {
+  flex: 1;
+  min-width: 0;
+}
+#prwl .tt .t1 {
+  display: block;
+  font: 400 17px/23px var(--head);
+  overflow-wrap: anywhere;
+}
+#prwl .tt .t1[lang="en"] {
+  font-family: var(--lat);
+  font-size: 16px;
+  line-height: 22px;
+}
+#prwl .tt .t2 {
+  display: block;
+  color: var(--muted);
+  font: 400 12.5px/17px var(--lat);
+}
+#prwl .tt .t2[lang="mr"],
+#prwl .tt .t2[lang="kn"] {
+  font-family: var(--body);
+  font-size: 13.5px;
+}
+#prwl[lang="mr"] .prcb,
+#prwl[lang="mr"] .prwq {
+  font-family: var(--body);
+}
+@media (min-width: 760px) {
+  #prm > .prc {
+    width: min(880px, 100%);
+  }
+  .prst {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  /* both steps on screen: the list scrolls on its own, the choices stay in view */
+  #prwl {
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+  }
+  #prm .prbk,
+  #prm .pract #prnx {
+    display: none;
+  }
+  .pract {
+    grid-template-columns: 1fr minmax(200px, 40%);
+    align-items: center;
+  }
+}
+
+/* The list of texts with ticks (as Nitya Upasana's text picker, css/14-builder.css there: the What step uses it) */
+.tpkq {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--hdrl);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.2 var(--lat);
+}
+.tpkq::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+.tpkl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tpkl li {
+  border-bottom: 1px solid var(--rule);
+}
+.tpkl li:last-child {
+  border-bottom: 0;
+}
+.tpkl li[hidden] {
+  display: none;
+}
+.tpkr {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.tpkr input {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.tpkc {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--muted);
+  border-radius: 6px;
+  color: transparent;
+}
+.tpkr input:checked + .tpkc {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+.tpkr input:focus-visible + .tpkc {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.tpkl .tt .t1 {
+  display: block;
+  font: 400 17px/23px var(--head);
+  overflow-wrap: anywhere;
+}
+.tpkl .tt .t2 {
+  display: block;
+  color: var(--muted);
+  font: 400 12.5px/17px var(--lat);
+}
+.tpkn {
+  margin: 0;
+  padding: 10px 0;
+  color: var(--muted);
+  text-align: center;
+}
+.tpkn[hidden] {
   display: none;
 }
 
