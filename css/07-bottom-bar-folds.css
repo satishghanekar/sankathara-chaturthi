@@ -131,6 +131,14 @@
 [data-tuck="1"] #asc {
   visibility: hidden;
 }
+/* never on Home: back on Home with the bars tucked, they show again (js/features/bars.js tuck(), as in Nitya Upasana) */
+[data-home="1"][data-tuck="1"] #tuck {
+  visibility: hidden;
+}
+[data-home="1"][data-tuck="1"] body > .bar,
+[data-home="1"][data-tuck="1"] #asc {
+  visibility: visible;
+}
 @media print {
   #tuck {
     display: none !important;
