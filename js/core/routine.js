@@ -14,6 +14,20 @@
  * @typedef {Partial<Record<Session, SessionPlan>>} Routine
  */
 
+/** The sessions of a day, in order, as in Nitya Upasana @type {Session[]} */
+export const SESSIONS = ["morning", "afternoon", "evening"];
+
+/**
+ * The session of the day at this moment (Nitya Upasana's sessionAt(), in its js/core/time-of-day.js): morning until
+ * noon, afternoon until 5 pm, then evening
+ * @param {Date} now
+ * @returns {Session}
+ */
+export function sessionAt(now) {
+  var h = now.getHours();
+  return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
+}
+
 /** Date.getDay() order: 0 Sunday … 6 Saturday @type {DayKey[]} */
 export const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 

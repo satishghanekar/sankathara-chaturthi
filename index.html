@@ -285,11 +285,19 @@
     <div id="skc" class="skc" hidden></div>
     <h1 class="sr"><span class="mr">संकटहर चतुर्थी</span><span class="en" lang="en">Sankathara Chaturthi</span></h1>
     </div>
-    <!-- The evening's texts (js/features/session-card.js, from content/routines.json), as Nitya Upasana's Today card
-         lists a session: each title goes to that text in the reading page, the whole evening in one scroll -->
+    <!-- The session's texts (js/features/session-card.js, from content/routines.json), as Nitya Upasana's Today card
+         lists a session: each title goes to that text in the reading page. Morning | Afternoon | Evening (#tss, Nitya's
+         switch) shows only once two or more sessions have texts; a session with none is left out (today, the evening only) -->
     <section id="tsc" aria-labelledby="tsh" hidden>
-      <div class="tshd"><h2 id="tsh"></h2><span id="tsn"></span></div>
-      <ol id="tsl"></ol>
+      <div id="tss" role="tablist" hidden>
+        <button type="button" role="tab" id="tss-morning" data-s="morning" aria-controls="tsp" aria-selected="false" tabindex="-1"><span class="tsnm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 18h18"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 6v3M5.6 10.6l1.8 1.4M18.4 10.6 16.6 12"/></svg><span class="tsw"></span></span><span class="tshn"></span></button>
+        <button type="button" role="tab" id="tss-afternoon" data-s="afternoon" aria-controls="tsp" aria-selected="false" tabindex="-1"><span class="tsnm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="tsw"></span></span><span class="tshn"></span></button>
+        <button type="button" role="tab" id="tss-evening" data-s="evening" aria-controls="tsp" aria-selected="false" tabindex="-1"><span class="tsnm"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1.6 2 2 3.6 0 5.5C10 6.6 10.4 5 12 3z"/><path d="M4 12h16c0 3.3-3.6 6-8 6s-8-2.7-8-6z"/><path d="M9 21h6"/></svg><span class="tsw"></span></span><span class="tshn"></span></button>
+      </div>
+      <div id="tsp" role="tabpanel">
+        <div class="tshd"><h2 id="tsh"></h2><span id="tsn"></span></div>
+        <ol id="tsl"></ol>
+      </div>
     </section>
   </section>
   <!-- ==== Vedic Chant and Aarti: every piece, from the text files in content/texts/ (fetched by js/text/load.js). js/core/page.js
