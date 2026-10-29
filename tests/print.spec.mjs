@@ -207,7 +207,7 @@ test("print builder: a group's Select all and Clear, and one text alone @chromiu
   // one text alone: its name in the bar, and it prints without contents
   await page.locator('.prcb[data-cat=""]').click();
   await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
-  await expect(page.locator("#prsum span").first()).toHaveText("गणपतीची आरती");
+  await expect(page.locator("#prsum span").first()).toHaveText("सुखकर्ता दुःखहर्ता");
   await page.locator("#prgp").click();
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
   const pv = await page.evaluate(() => ({ pieces: [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid), toc: !!document.querySelector("#pv .pvcov") }));
@@ -291,7 +291,7 @@ test("print builder: the preview and the paper @chromium-only", async ({ browser
   await page.locator('.prcb[data-cat=""]').click();
   await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
   await page.locator("#prnx").click();
-  await expect(title()).toContainText("Ganapati Aarti", { timeout: 20_000 });
+  await expect(title()).toContainText("Sukhkarta Dukhharta", { timeout: 20_000 });
   await page.locator("#prgp").click();
   await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
   const rules = await page.evaluate(() => [...document.querySelectorAll("style[media=print]")].map((s) => s.textContent).join(" "));
