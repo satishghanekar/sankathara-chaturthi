@@ -6,6 +6,7 @@ import { root } from "../core/page.js";
 import { P } from "../core/state.js";
 import { cur } from "../core/apply.js";
 import { goHomeNav, openLibrary } from "./history.js";
+import { pageEls } from "./overlays.js";
 
 export var asc;
 
@@ -30,11 +31,13 @@ export function init() {
   // asShow() keeps Prev / Next with the piece on screen.
   asc.hidden = false;
   root.setAttribute("data-asb", "1");
-  // the bar steps aside while Settings (#panel) or the Library (#jump) is open
+  // the bar steps aside while one of the pages is open, Settings or the Library (pageEls(), js/features/overlays.js);
+  // data-menu names the page
   (function () {
-    var ms = [document.getElementById("panel"), document.getElementById("jump")];
+    var ms = pageEls();
     function menu() {
-      if (ms.some(function (m) { return m && !m.hidden; })) root.setAttribute("data-menu", "1");
+      var m = ms.filter(function (m) { return m && !m.hidden; })[0];
+      if (m) root.setAttribute("data-menu", m.id);
       else root.removeAttribute("data-menu");
     }
     var mo = new MutationObserver(menu);
