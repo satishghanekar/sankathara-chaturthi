@@ -146,8 +146,8 @@ Each piece is one file in `content/texts/`. Its `legacy-id` is the id of its `<s
 | File in `content/texts/` | legacy-id | Piece |
 |---|---|---|
 | `vedic-chant-atharvashirsha.txt` | `p1` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
-| `aarti-sukhkarta.txt` | `a1` | Aarti 1. गणपतीची आरती |
-| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. गणपति जी की आरती |
+| `aarti-sukhkarta.txt` | `a1` | Aarti 1. सुखकर्ता दुःखहर्ता |
+| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
 | `aarti-durge-durghat-bhari.txt` | `a3` | Aarti 3. देवीची आरती |
 | `aarti-lavathavati-vikrala.txt` | `a4` | Aarti 4. शंकराची आरती |
 | `aarti-trigunatmak-traimurti.txt` | `a5` | Aarti 5. दत्ताची आरती |
@@ -167,7 +167,7 @@ A text is one plain-text file in `content/texts/`, named after its id (`aarti-su
 
 ```
 id: aarti-sukhkarta
-title: गणपतीची आरती
+title: सुखकर्ता दुःखहर्ता
 title-en: Ganapati Aarti
 category: aarti
 language: mr
