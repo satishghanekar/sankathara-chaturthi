@@ -149,7 +149,7 @@
 /* ==== Settings panel (final rules): like phone settings. Two rounded cards with hairlines between rows,
    label on the left, a small sliding control on the right; switches for High contrast and Keep screen on;
    App and Help as quiet links at the bottom ==== */
-/* a feature held back for a later release (see FEAT_AS in the script) */
+/* a feature held back for a later release (see js/core/features.js) */
 [data-feat][hidden] {
   display: none !important;
 }
