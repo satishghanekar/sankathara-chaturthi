@@ -11,7 +11,7 @@
 // PDFs can only be made by Chromium, so this suite is Chromium-only.
 import { test, expect, devices } from "@playwright/test";
 import { openSite, SETUPS, SNAP_ENV } from "./helpers.mjs";
-import { printOnce, checkPrintout, stubPrint, printFromButton, readPrintView, addMarkers, pdfPages, markerPages } from "./print-helpers.mjs";
+import { printOnce, checkPrintout, stubPrint, printFromButton, howStep, readPrintView, addMarkers, pdfPages, markerPages } from "./print-helpers.mjs";
 
 test.describe.configure({ mode: "parallel" });
 
@@ -113,43 +113,229 @@ test("browser menu print gives every text @chromium-only", async ({ browser }) =
   await context.close();
 });
 
-// What to print: the texts ticked print, with their own contents; one text alone prints without contents; nothing
-// ticked prints nothing and says so. The choice is remembered.
-test("What to print: only the texts ticked print @chromium-only", async ({ browser }) => {
-  const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block" });
+// ---- The print builder (as in Nitya Upasana): What, then How ----
+// A phone shows one step at a time: What first, every text ticked, with how many in the bar; Next goes on to How,
+// ‹ What to print comes back. What is ticked is what prints, with its own contents, and is remembered (P.pskip).
+test("print builder: pick texts on a phone, then print just those @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
   const page = await context.newPage();
   await stubPrint(page);
   await openSite(page, SETUPS.marathi);
   await page.locator("#prb").click();
-  await expect(page.locator("#prwn")).toHaveText("All 11");
-  await expect(page.locator("#prwl input:checked")).toHaveCount(11);
-  await page.locator('#prwl [data-a="none"]').click();
-  await expect(page.locator("#prwl input:checked")).toHaveCount(0);
+  await expect(page.locator("#prwh")).toBeVisible();
+  await expect(page.locator("#prhw")).toBeHidden();
+  await expect(page.locator("#prgp")).toBeHidden();
+  await expect(page.locator("#prnx")).toBeFocused();
+  const boxes = page.locator("#prwl .tpkl input");
+  await expect(boxes).toHaveCount(11);
+  expect(await boxes.evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
+  await expect(page.locator("#prsum")).toContainText("11 texts");
+  // the groups of the reading page, in its order
+  await expect(page.locator("#prwl .prgr")).toHaveCount(2);
+  expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["g-pooja", "g-aarti"]);
+  // Clear everything: nothing to print, so Next waits
+  await page.locator('.prcb[data-cat=""]').click();
+  await expect(page.locator("#prsum")).toContainText("Pick at least one text");
+  await expect(page.locator("#prnx")).toBeDisabled();
+  await expect(page.locator('.prcb[data-cat=""]')).toHaveText("Select all");
+  // two texts, one found by search
+  await page.locator(".prwq").fill("datta");
+  await expect(page.locator("#prwl .tpkl li:visible")).toHaveCount(1);
+  await page.locator("#prwl .tpkl li:visible input").check();
+  await page.locator(".prwq").fill("");
+  await page.locator('#prwl .tpkl li[data-id="p1"] input').check();
+  await expect(page.locator("#prsum span").first()).toHaveText("2 texts");
+  // Next, and back
+  await page.locator("#prnx").click();
+  await expect(page.locator("#prhw")).toBeVisible();
+  await expect(page.locator("#prwh")).toBeHidden();
+  await expect(page.locator("#prgp")).toBeFocused();
+  await page.locator("#prbk").click();
+  await expect(page.locator("#prwh")).toBeVisible();
+  await expect(page.locator('#prwl .tpkl li[data-id="p1"] input')).toBeChecked();
+  await page.locator("#prnx").click();
   await page.locator("#prgp").click();
-  await expect(page.locator("#fl")).toContainText("Pick at least one text");
-  expect(await page.evaluate(() => window.__printed)).toBe(0);
-  await page.locator('#prwl input[value="p1"]').check();
-  await page.locator('#prwl input[value="a5"]').check();
-  await expect(page.locator("#prwn")).toHaveText("2 of 11");
-  await page.locator("#prgp").click();
-  await page.waitForFunction(() => window.__printed > 0);
+  await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
+  if (await page.locator("#prgo").isVisible()) await page.locator("#prgo").click();
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
   await page.emulateMedia({ media: "print" });
   const pv = await readPrintView(page);
   expect(pv.pieces).toEqual(["p1", "a5"]);
-  expect(pv.toc.map((t) => t.id)).toEqual(["p1", "a5"]);
+  expect(pv.toc.map((x) => x.id)).toEqual(["p1", "a5"]);
   await addMarkers(page);
   const pdf = await pdfPages(page, "Letter");
   const at = markerPages(pdf.pages);
   expect(at["a5:0:s"]).toBeGreaterThan(at["p1:0:s"]);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(9);
-  // one text alone: just that text, no contents
-  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await page.emulateMedia({ media: "screen" });
+  // Safari laying the page out again after afterprint (its print sheet) still prints the two
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+  await page.evaluate(() => dispatchEvent(new Event("beforeprint")));
+  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(2);
+  // the browser's own menu, once the reader is back on the page, prints every text again
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+  await page.locator("body").dispatchEvent("pointerdown");
+  await page.evaluate(() => dispatchEvent(new Event("beforeprint")));
+  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(11);
+  // and the builder keeps the two ticked
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await page.locator("#prb").click();
-  await page.locator('#prwl input[value="p1"]').uncheck();
+  await expect(page.locator("#prsum span").first()).toHaveText("2 texts");
+  await context.close();
+});
+
+// Select all and Clear for one group leave the other as it is; one text on its own prints without a contents page.
+// Wide screens show What and How side by side, with Print in reach at once.
+test("print builder: a group's Select all and Clear, and one text alone @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await expect(page.locator("#prwh")).toBeVisible();
+  await expect(page.locator("#prhw")).toBeVisible();
+  await expect(page.locator("#prnx")).toBeHidden();
+  await expect(page.locator("#prgp")).toBeFocused();
+  const first = page.locator('#prwl .prgr[data-cat="g-pooja"]'),
+    second = page.locator('#prwl .prgr[data-cat="g-aarti"]');
+  await first.locator(".prcb").click();
+  expect(await first.locator("input").evaluateAll((l) => l.every((x) => !x.checked))).toBe(true);
+  expect(await second.locator("input").evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
+  await expect(first.locator(".prcb")).toHaveText("Select all");
+  await expect(page.locator('.prcb[data-cat=""]')).toHaveText("Select all");
+  await first.locator(".prcb").click();
+  await expect(first.locator(".prcb")).toHaveText("Clear");
+  await expect(page.locator('.prcb[data-cat=""]')).toHaveText("Clear");
+  // one text alone: its name in the bar, and it prints without contents
+  await page.locator('.prcb[data-cat=""]').click();
+  await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
+  await expect(page.locator("#prsum span").first()).toHaveText("गणपतीची आरती");
   await page.locator("#prgp").click();
-  await page.waitForFunction(() => window.__printed > 1);
-  expect(await page.evaluate(() => [document.querySelectorAll("#pv .pvcov").length, [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid)])).toEqual([0, ["a5"]]);
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
+  const pv = await page.evaluate(() => ({ pieces: [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid), toc: !!document.querySelector("#pv .pvcov") }));
+  expect(pv).toEqual({ pieces: ["a1"], toc: false });
+});
+
+// The words follow the menu language: Marathi menus, Marathi words and digits
+test("print builder: Marathi menus @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await stubPrint(page);
+  await openSite(page, SETUPS["marathi-menus"]);
+  await page.locator("#prb").click();
+  await expect(page.locator(".prwq")).toHaveAttribute("placeholder", "रचना शोधा");
+  await expect(page.locator('.prcb[data-cat=""]')).toHaveText("सर्व काढा");
+  await expect(page.locator("#prsum span").first()).toHaveText(/^[०-९]+ रचना$/);
+  await expect(page.locator("#prx")).toHaveAttribute("aria-label", "रद्द");
+  await context.close();
+});
+
+// The printout's language, picked under How: for the printout only, the reading page keeps its own
+test("print builder: the printout's language @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await stubPrint(page);
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#prb").click();
+  await howStep(page);
+  await expect(page.locator("#prlg button")).toHaveText(["Marathi", "English", "Both"]);
+  await expect(page.locator("#prlg [aria-pressed=true]")).toHaveText("Marathi");
+  await expect(page.locator("#prpg")).toBeVisible();
+  await page.locator('#prlg [data-v="both"]').click();
+  await expect(page.locator("#prpg")).toBeHidden();
+  await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
+  await page.locator('#prlg [data-v="en"]').click();
+  await expect(page.locator("#prpg")).toBeVisible();
+  await expect(page.locator("#prfn .prfx").first()).toHaveText("Sukhkarta");
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
+  expect([prefs.plang, prefs.lang]).toEqual(["en", "mr"]);
+  // just one text, in English; the reading page stays in Marathi
+  await page.locator("#prbk").click();
+  await page.locator('.prcb[data-cat=""]').click();
+  await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
+  await page.locator("#prnx").click();
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
+  if (await page.locator("#prgo").isVisible()) await page.locator("#prgo").click();
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
+  expect(await page.evaluate(() => document.getElementById("pv").getAttribute("data-lang"))).toBe("en");
+  expect(await page.evaluate(() => /Sukhkarta/.test(document.getElementById("pv").textContent))).toBe(true);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).lang)).toBe("mr");
+  await context.close();
+});
+
+// The preview under How: the first page of the first text ticked, made small; it follows the ticks. The paper: Letter
+// in the US (this locale), A4 a tap away; the choice is kept and the printout asks the browser for that paper
+test("print builder: the preview and the paper @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await stubPrint(page);
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await howStep(page);
+  await expect(page.locator("#prsheet")).toHaveAttribute("aria-label", "Preview of the first page");
+  const title = () => page.frameLocator("#prsheet iframe").locator("#pv .pvs h2").first();
+  await expect(title()).toContainText("Ganapati Atharvashirsha", { timeout: 20_000 });
+  // the first text only
+  expect(await page.frameLocator("#prsheet iframe").locator("#pv .pvs").count()).toBe(1);
+  await expect(page.locator("#prq")).toHaveText("Letter");
+  await expect(page.locator("#prpa")).toHaveText("Use A4");
+  // Letter is taller for its width than A4
+  const ratio = () => page.locator("#prsheet").evaluate((e) => e.offsetHeight / e.offsetWidth);
+  expect(await ratio()).toBeCloseTo(279.4 / 215.9, 1);
+  await page.locator("#prpa").click();
+  await expect(page.locator("#prq")).toHaveText("A4");
+  await expect(page.locator("#prpa")).toHaveText("Use Letter");
+  expect(await ratio()).toBeCloseTo(297 / 210, 1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).ppr)).toBe("a4");
+  // one aarti ticked: the preview shows it
+  await page.locator("#prbk").click();
+  await page.locator('.prcb[data-cat=""]').click();
+  await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
+  await page.locator("#prnx").click();
+  await expect(title()).toContainText("Ganapati Aarti", { timeout: 20_000 });
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
+  const rules = await page.evaluate(() => [...document.querySelectorAll("style[media=print]")].map((s) => s.textContent).join(" "));
+  expect(rules).toContain("@page { size: A4 portrait }");
+  await context.close();
+});
+
+// The iPhone Home Screen app hands the printout to Safari: the link carries the texts ticked, and Safari prints those
+test("print builder: Open in Safari carries the texts ticked @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    if (!location.search) Object.defineProperty(navigator, "standalone", { value: true });
+    window.__printed = 0;
+    window.print = () => window.__printed++;
+  });
+  await openSite(page, SETUPS.english);
+  await page.locator("#prb").click();
+  await page.locator('.prcb[data-cat=""]').click();
+  await page.locator('#prwl .tpkl li[data-id="a3"] input').check();
+  await howStep(page);
+  await page.locator("#prgp").click();
+  await expect(page.locator("#prsf")).toBeVisible();
+  await page.locator("#prsf").click().catch(() => {});
+  const to = await page.locator("#prsf").getAttribute("data-to");
+  const s = JSON.parse(decodeURIComponent(/&s=([^&]*)/.exec(to)[1]));
+  expect(s.pskip).toHaveLength(10);
+  expect(s.pskip).not.toContain("a3");
+  // Safari, opened at that address, prints just that text
+  const sf = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const sp = await sf.newPage();
+  await sp.addInitScript(() => {
+    window.__printed = 0;
+    window.print = () => {
+      window.__printed++;
+      dispatchEvent(new Event("beforeprint"));
+    };
+  });
+  await sp.goto(to.replace(/^x-safari-/, ""));
+  await sp.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 20_000 });
+  if (await sp.locator("#prgo").isVisible()) await sp.locator("#prgo").click();
+  await sp.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
+  expect(await sp.evaluate(() => [...document.querySelectorAll("#pv .pvs")].map((x) => x.dataset.sid))).toEqual(["a3"]);
+  await sf.close();
   await context.close();
 });
 
@@ -158,6 +344,7 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await stubPrint(page);
   await openSite(page, SETUPS.both);
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#prpg")).toBeHidden();
   await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
   await expect(page.locator("#prq")).toHaveText("Letter");
@@ -166,6 +353,7 @@ test("print pop-up offers the right choices and closes cleanly @chromium-only", 
   await expect(page.locator("#prm")).toBeHidden();
   await expect(page.locator("#prb")).toBeFocused();
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#prx").click();
   await expect(page.locator("#prm")).toBeHidden();
   expect(await page.evaluate(() => window.__printed)).toBe(0);
@@ -186,6 +374,7 @@ test("iPhone: an ignored print offers Print now @chromium-only", async ({ browse
   });
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#pr1").click();
   await page.locator("#prgp").click();
   await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
@@ -199,6 +388,7 @@ test("iPhone: an ignored print offers Print now @chromium-only", async ({ browse
   // the next Print shows the layout choices again
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#pr1")).toBeVisible();
   await expect(page.locator("#prgo")).toBeHidden();
   await expect(page.locator("#prw")).toBeHidden();
@@ -216,6 +406,7 @@ test("iPhone: when Print now does not print either, Share → Print and Open in 
   });
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#pr1").click();
   await page.locator("#prgp").click();
   await expect(page.locator("#prgo")).toBeVisible({ timeout: 15_000 });
@@ -230,6 +421,7 @@ test("iPhone: when Print now does not print either, Share → Print and Open in 
   // the next Print shows the layout choices again
   await page.locator("#prx").click();
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#pr1")).toBeVisible();
   await expect(page.locator("#prv")).toBeHidden();
   await context.close();
@@ -247,6 +439,7 @@ test("iPhone Home Screen app: a layout choice goes straight to Open in Safari @c
   });
   await openSite(page, SETUPS.english);
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#pr1").click();
   await page.locator("#prgp").click();
   await expect(page.locator("#prsf")).toBeVisible();
@@ -259,6 +452,7 @@ test("iPhone Home Screen app: a layout choice goes straight to Open in Safari @c
   await page.locator("#prx").click();
   await expect(page.locator("#prm")).toBeHidden();
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#pr1")).toBeVisible();
   await expect(page.locator("#prw")).toBeHidden();
   await context.close();
@@ -279,6 +473,7 @@ test("iPhone: a printout laid out ahead prints on the first tap @chromium-only",
   await openSite(page, SETUPS.english);
   await page.waitForTimeout(9000);
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#pr1").click();
   await page.locator("#prgp").click();
   await page.waitForTimeout(300);
@@ -309,6 +504,7 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   });
   await page.reload();
   await page.locator("#prb").click();
+  await howStep(page);
   await page.locator("#pr2").click();
   await page.locator("#prgp").click();
   await expect(page.locator("#prsf")).toBeVisible();
@@ -342,8 +538,8 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
 });
 
 // What the pop-up offers (CHOICE in js/features/print.js): one language, Portrait or Landscape on one line,
-// Portrait until the reader has chosen a page, and the sample in that language; both languages, Landscape (side
-// by side) only, with a few words of each language in the sample. The focus is on Print.
+// Portrait until the reader has chosen a page, and the font tiles' word in that language; both languages, Landscape (side
+// by side) only, the language row with the main language first. The focus is on Print.
 for (const [setup, words] of [
   ["marathi", "सुखकर्ता दुःखहर्ता"],
   ["english", "Sukhkarta Dukhharta"],
@@ -353,29 +549,32 @@ for (const [setup, words] of [
     await stubPrint(page);
     await openSite(page, SETUPS[setup]);
     await page.locator("#prb").click();
+    await howStep(page);
     await expect(page.locator("#pr1")).toHaveText("Portrait");
     await expect(page.locator("#pr2")).toHaveText("Landscape");
     await expect(page.locator("#pr1")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("#prpv")).toBeHidden();
-    await expect(page.locator("#prfs")).toContainText(words);
-    await expect(page.locator("#prfs")).not.toContainText("·");
+    // each font's tile (the three of Settings → Text font) shows the text's first word in that font, in the language printed
+    await expect(page.locator("#prfn .prfx")).toHaveText(Array(3).fill(words.split(" ")[0]));
     await expect(page.locator("#prgp")).toBeFocused();
   });
 }
-for (const [setup, a, b] of [
-  ["both", "सुखकर्ता", "Sukhkarta"],
-  ["kannada-both", "ಸುಖಕರ್ತಾ", "Sukhkarta"],
-  ["english-main-both", "Sukhkarta", "सुखकर्ता"],
+for (const [setup, a] of [
+  ["both", "सुखकर्ता"],
+  ["kannada-both", "ಸುಖಕರ್ತಾ"],
+  ["english-main-both", "Sukhkarta"],
 ]) {
   test(`print pop-up offers only Landscape side by side: ${setup} @chromium-only`, async ({ page }) => {
     await stubPrint(page);
     await openSite(page, { ...SETUPS[setup], por: "up" });
     await page.locator("#prb").click();
+    await howStep(page);
     await expect(page.locator("#prpg")).toBeHidden();
     await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
-    const t = await page.locator("#prfs").textContent();
-    expect(t.indexOf(a)).toBeGreaterThanOrEqual(0);
-    expect(t.indexOf(b)).toBeGreaterThan(t.indexOf(a));
+    // the language row: the main language first, then the other, then Both (chosen); the tiles show the main language
+    await expect(page.locator("#prlg [aria-pressed=true]")).toHaveAttribute("data-v", "both");
+    expect(await page.locator("#prlg button").evaluateAll((l) => l.map((x) => x.dataset.v))).toEqual(setup === "english-main-both" ? ["en", "mr", "both"] : ["mr", "en", "both"]);
+    await expect(page.locator("#prfn .prfx").first()).toHaveText(a);
     await expect(page.locator("#prgp")).toBeFocused();
   });
 }
@@ -411,6 +610,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await stubPrint(page);
     await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
+    await howStep(page);
     await expect(page.locator("#prl")).toBeHidden();
     const sizes = () =>
       page.evaluate(() => {
@@ -425,6 +625,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).por)).toBe("land");
     await page.evaluate(() => dispatchEvent(new Event("afterprint")));
     await page.locator("#prb").click();
+    await howStep(page);
     await expect(page.locator("#pr2")).toHaveAttribute("aria-pressed", "true");
     await context.close();
   }
@@ -441,6 +642,7 @@ test("print pop-up: a saved Landscape choice is kept @chromium-only", async ({ p
   });
   await page.reload();
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#pr2")).toHaveAttribute("aria-pressed", "true");
 });
 
@@ -451,6 +653,7 @@ test("print pop-up scrolls when taller than the screen @chromium-only", async ({
   await stubPrint(page);
   await openSite(page, SETUPS.marathi);
   await page.locator("#prb").click();
+  await howStep(page);
   await page.evaluate(() => ["prw", "prsf", "prcp"].forEach((i) => (document.getElementById(i).hidden = false)));
   expect(await page.locator("#prm .qrc").evaluate((e) => e.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
   await page.locator("#prx").scrollIntoViewIfNeeded();
@@ -463,18 +666,23 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
   await stubPrint(page);
   await openSite(page, { ...SETUPS.marathi, fnt: "classic" });
   await page.locator("#prb").click();
+  await howStep(page);
   await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Once", { useInnerText: true });
-  await expect(page.locator("#prfs")).toHaveCSS("text-align", "center");
-  await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Classic", { useInnerText: true });
-  await expect(page.locator("#prfs")).toContainText("सुखकर्ता");
-  expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Classic");
-  // a font picked here is the printout's only: the sample line follows it, the reading page keeps its own,
+  // the same three fonts as Settings, in the same order, each a tile with the text's first word in that font; the
+  // printout's starts as the text font (Classic here)
+  await expect(page.locator("#prfn .prfm")).toHaveText(["Standard", "Classic", "Handwritten"], { useInnerText: true });
+  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Classic", { useInnerText: true });
+  await expect(page.locator('#prfn [data-v="classic"] .prfx')).toHaveText("सुखकर्ता");
+  const font = (v) => page.locator(`#prfn [data-v="${v}"] .prfx`).evaluate((e) => getComputedStyle(e).fontFamily);
+  expect(await font("classic")).toContain("SC Classic");
+  expect(await font("hand")).toContain("SC Hand");
+  expect(await font("std")).not.toContain("SC ");
+  // a font picked here is the printout's only: the reading page keeps its own,
   // and the page takes it just while it prints
   await page.locator('#prfn [data-v="hand"]').click();
-  await expect(page.locator("#prfn [aria-pressed=true]")).toHaveText("Handwritten", { useInnerText: true });
+  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Handwritten", { useInnerText: true });
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
   expect([prefs.pfn, prefs.fnt]).toEqual(["hand", "classic"]);
-  expect(await page.locator("#prfs").evaluate((e) => getComputedStyle(e).fontFamily)).toContain("SC Hand");
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-font"))).toBe("classic");
   expect(
     await page.evaluate(() => {

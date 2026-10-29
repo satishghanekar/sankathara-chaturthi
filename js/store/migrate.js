@@ -40,6 +40,8 @@ export function defaults(env) {
     fnt: "std", // text font: std | classic | hand (Settings → Text font; a saved "bold", a font since dropped, reads as std)
     pref: "", // dhrupad in the printout, picked in the Print pop-up: "" as on the page (ref) | 0 after every verse | 1 once
     pfn: "", // font of the printout, picked in the Print pop-up: "" the text font above | std | classic | hand
+    plang: "", // language of the printout: "" as the page shows it | mr (the original) | en | both
+    ppr: "", // paper of the printout: "" as the device's region suggests (Letter in the US and Canada) | letter | a4
     pskip: [], // texts left out of the printout (their piece ids: a1, p1 …), unticked under What to print; a new text prints
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
@@ -122,6 +124,8 @@ export function tidy(P) {
   // three text fonts since 2026-10-25: Bold (Sura) was dropped, and a saved "bold" reads as Standard
   if (["std", "classic", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
   if (["std", "classic", "hand"].indexOf(P.pfn) < 0) P.pfn = "";
+  if (["mr", "en", "both"].indexOf(P.plang) < 0) P.plang = "";
+  if (["letter", "a4"].indexOf(P.ppr) < 0) P.ppr = "";
   if (P.tr !== "iast") P.tr = "simple";
   if (P.ui !== "mr") P.ui = "en";
   return P;
