@@ -42,7 +42,10 @@ describe("CONTENT from the text files", () => {
   // out the categories with no texts, Stotra and Ashtak)
   test("the sections: Vedic Chant, then Aarti", () => {
     const shown = C.categories.filter((c) => c.pieces.length);
-    expect(shown.map((c) => [c.id, c.name.en, c.pieces.length])).toEqual([["vedic-chant", "Vedic Chant", 1], ["aarti", "Aarti", 10]]);
+    expect(shown.map((c) => [c.id, c.name.en, c.pieces.length])).toEqual([
+      ["vedic-chant", "Vedic Chant", 1],
+      ["aarti", "Aarti", 10],
+    ]);
     expect(shown.map((c) => c.pieces.map((p) => p.id))).toEqual(OLD.groups.map((g) => g.pieces.map((p) => p.id)));
   });
   // (60 <br>: the Vitthal Aarti's dhrupad breaks after its first half in English and at the top too, Satish 2026-10-23)
@@ -65,7 +68,10 @@ describe("CONTENT from the text files", () => {
     const head = "id: x\ntitle: क\ntitle-en: K\ncategory: aarti\nlanguage: mr\nrefrain: every-verse\n---\n";
     const t = parseText(head + "[once]\nक\nK\n\n[note: अ | a]\n\n[dhrupad]\nख\nKh\n\n[1]\nग\nG\n\n[once]\nघ\nGh\n");
     const p = toPiece(t, 1, lib);
-    expect(p.lead).toEqual([{ kind: "dh", lines: [{ l: "x.1", mr: "क", en: "K" }] }, { rmk: { mr: "अ", en: "a" }, nt: true }]);
+    expect(p.lead).toEqual([
+      { kind: "dh", lines: [{ l: "x.1", mr: "क", en: "K" }] },
+      { rmk: { mr: "अ", en: "a" }, nt: true },
+    ]);
     expect(p.refrain.lines).toEqual([{ mr: "ख", en: "Kh" }]);
     expect(p.items.map((i) => i.kind || (i.rmk ? "rmk" : "stanza"))).toEqual(["stanza", "rmk", "rf", "dh"]);
     expect(p.items.flatMap((i) => (i.lines || []).map((l) => l.l))).toEqual(["x.2", "x.3", "x.4"]);

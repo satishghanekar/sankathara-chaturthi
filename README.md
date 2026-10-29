@@ -60,6 +60,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `.github/workflows/` | The test run GitHub does on every pull request and every push to `main`, and the job that refreshes its screenshots. |
 | `_headers` | How long phones may keep each kind of file before asking again (Cloudflare Pages reads it). |
 | `ARCHITECTURE.md` | How the page, styles and scripts fit together, for anyone changing the code. |
+| `CLAUDE.md`, `.cursorrules` | The short list of rules for changing the site, for people and AI assistants (`.cursorrules` points Cursor to `CLAUDE.md`). |
 | `fonts/` | The site's fonts (the default ones, the optional text fonts and the Kannada ones), served from the site itself so nothing is fetched from Google and they work offline (see `fonts/README.md`). |
 
 There is no build step. The files in this repository are exactly what the site serves.
@@ -113,7 +114,7 @@ The version is what Settings → More → About shows (v1.2). It appears in **tw
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v1.2';
+   const V = "aarti-v1.2";
    ```
 2. `index.html`, near the top:
    ```html

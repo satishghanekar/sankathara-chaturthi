@@ -25,13 +25,13 @@ export const BASE_PREFS = { sv: 6, wake: 0 };
 
 /** Named reader set-ups used across suites. Each is merged over BASE_PREFS. */
 export const SETUPS = {
-  "marathi": { lang: "mr", lead: "mr", l2: "en" },
-  "english": { lang: "en", lead: "mr", l2: "en" },
-  "both": { lang: "both", lead: "mr", l2: "en" },
+  marathi: { lang: "mr", lead: "mr", l2: "en" },
+  english: { lang: "en", lead: "mr", l2: "en" },
+  both: { lang: "both", lead: "mr", l2: "en" },
   "english-iast": { lang: "en", lead: "mr", l2: "en", tr: "iast" },
   "both-iast": { lang: "both", lead: "mr", l2: "en", tr: "iast" },
   "english-main-both": { lang: "both", lead: "en", l2: "mr" },
-  "kannada": { lang: "mr", lead: "mr", l2: "en", ind: "kn" },
+  kannada: { lang: "mr", lead: "mr", l2: "en", ind: "kn" },
   "kannada-both": { lang: "both", lead: "mr", l2: "en", ind: "kn" },
   "marathi-every-verse": { lang: "mr", lead: "mr", l2: "en", ref: 0 },
   "marathi-menus": { lang: "mr", lead: "mr", l2: "en", ui: "mr" },
@@ -100,7 +100,14 @@ export async function pieceText(page) {
       .map((s) => {
         const was = s.classList.contains("solo");
         s.classList.add("solo");
-        const x = "### " + s.id + "\n" + s.innerText.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+        const x =
+          "### " +
+          s.id +
+          "\n" +
+          s.innerText
+            .replace(/[ \t]+\n/g, "\n")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
         if (!was) s.classList.remove("solo");
         return x;
       })

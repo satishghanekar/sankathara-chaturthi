@@ -210,7 +210,10 @@ test("print builder: a group's Select all and Clear, and one text alone @chromiu
   await expect(page.locator("#prsum span").first()).toHaveText("सुखकर्ता दुःखहर्ता");
   await page.locator("#prgp").click();
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
-  const pv = await page.evaluate(() => ({ pieces: [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid), toc: !!document.querySelector("#pv .pvcov") }));
+  const pv = await page.evaluate(() => ({
+    pieces: [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid),
+    toc: !!document.querySelector("#pv .pvcov"),
+  }));
   expect(pv).toEqual({ pieces: ["a1"], toc: false });
 });
 
@@ -315,7 +318,10 @@ test("print builder: Open in Safari carries the texts ticked @chromium-only", as
   await howStep(page);
   await page.locator("#prgp").click();
   await expect(page.locator("#prsf")).toBeVisible();
-  await page.locator("#prsf").click().catch(() => {});
+  await page
+    .locator("#prsf")
+    .click()
+    .catch(() => {});
   const to = await page.locator("#prsf").getAttribute("data-to");
   const s = JSON.parse(decodeURIComponent(/&s=([^&]*)/.exec(to)[1]));
   expect(s.pskip).toHaveLength(10);
@@ -573,7 +579,9 @@ for (const [setup, a] of [
     await expect(page.locator("#prpv")).toHaveText("Landscape, side by side");
     // the language row: the main language first, then the other, then Both (chosen); the tiles show the main language
     await expect(page.locator("#prlg [aria-pressed=true]")).toHaveAttribute("data-v", "both");
-    expect(await page.locator("#prlg button").evaluateAll((l) => l.map((x) => x.dataset.v))).toEqual(setup === "english-main-both" ? ["en", "mr", "both"] : ["mr", "en", "both"]);
+    expect(await page.locator("#prlg button").evaluateAll((l) => l.map((x) => x.dataset.v))).toEqual(
+      setup === "english-main-both" ? ["en", "mr", "both"] : ["mr", "en", "both"],
+    );
     await expect(page.locator("#prfn .prfx").first()).toHaveText(a);
     await expect(page.locator("#prgp")).toBeFocused();
   });
@@ -615,7 +623,10 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));
-        return [...document.styleSheets].flatMap((s) => all(s.cssRules)).filter((r) => r.type === 6 && r.style.size).map((r) => r.style.size);
+        return [...document.styleSheets]
+          .flatMap((s) => all(s.cssRules))
+          .filter((r) => r.type === 6 && r.style.size)
+          .map((r) => r.style.size);
       });
     await page.locator("#pr2").click();
     await expect(page.locator("#prl")).toBeVisible({ visible: !!ua });

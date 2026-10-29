@@ -65,7 +65,10 @@ test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobi
   await expect(page.locator("#upd")).toBeVisible();
   // under the top bar, which stays in view
   const top = await page.locator("#panel").evaluate((e) => e.getBoundingClientRect().top);
-  const bar = await page.locator("body > .bar").first().evaluate((e) => e.getBoundingClientRect().bottom);
+  const bar = await page
+    .locator("body > .bar")
+    .first()
+    .evaluate((e) => e.getBoundingClientRect().bottom);
   expect(Math.abs(top - bar)).toBeLessThan(2);
   await page.locator("#xc").click();
   await page.locator("#aa").click();
@@ -113,7 +116,9 @@ test("home lists the evening's texts; a title opens that text and Next goes on @
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#tsh")).toHaveText("संध्याकाळ · Evening");
   await expect(page.locator("#tsn")).toHaveText("11 texts", { useInnerText: true });
-  expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.getAttribute("href")))).toEqual(["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"].map((x) => "./#" + x));
+  expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.getAttribute("href")))).toEqual(
+    ["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"].map((x) => "./#" + x),
+  );
   await expect(page.locator("#tsl li").first()).toContainText("Ganapati Atharvashirsha");
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("Sanskrit", { useInnerText: true });
   await page.locator('#tsl a[href="./#a3"]').click();
@@ -457,33 +462,39 @@ test.describe("pinch @chromium-only", () => {
   test.use({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
   // fires a two-finger touchstart on the element and reports whether the site stopped the browser's zoom
   const pinchStart = (page, selector) =>
-    page.locator(selector).first().evaluate((el) => {
-      const r = el.getBoundingClientRect();
-      const t = (id, dx) => new Touch({ identifier: id, target: el, clientX: r.left + 20 + dx, clientY: r.top + 10 });
-      const touches = [t(1, 0), t(2, 60)];
-      const ev = new TouchEvent("touchstart", { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true });
-      el.dispatchEvent(ev);
-      const end = new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: touches, bubbles: true, cancelable: true });
-      el.dispatchEvent(end);
-      return ev.defaultPrevented;
-    });
+    page
+      .locator(selector)
+      .first()
+      .evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const t = (id, dx) => new Touch({ identifier: id, target: el, clientX: r.left + 20 + dx, clientY: r.top + 10 });
+        const touches = [t(1, 0), t(2, 60)];
+        const ev = new TouchEvent("touchstart", { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true });
+        el.dispatchEvent(ev);
+        const end = new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: touches, bubbles: true, cancelable: true });
+        el.dispatchEvent(end);
+        return ev.defaultPrevented;
+      });
 
   // spreads two fingers apart on the element and returns the text size before and after
   const pinchOut = (page, selector) =>
-    page.locator(selector).first().evaluate(async (el) => {
-      const fs = () => document.documentElement.style.getPropertyValue("--fs");
-      const before = fs();
-      const r = el.getBoundingClientRect();
-      const t = (id, x) => new Touch({ identifier: id, target: el, clientX: r.left + x, clientY: r.top + 10 });
-      const fire = (type, touches) =>
-        el.dispatchEvent(new TouchEvent(type, { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true }));
-      fire("touchstart", [t(1, 20), t(2, 80)]);
-      fire("touchmove", [t(1, 10), t(2, 200)]);
-      await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
-      const after = fs();
-      el.dispatchEvent(new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: [t(1, 10), t(2, 200)], bubbles: true }));
-      return { before, after };
-    });
+    page
+      .locator(selector)
+      .first()
+      .evaluate(async (el) => {
+        const fs = () => document.documentElement.style.getPropertyValue("--fs");
+        const before = fs();
+        const r = el.getBoundingClientRect();
+        const t = (id, x) => new Touch({ identifier: id, target: el, clientX: r.left + x, clientY: r.top + 10 });
+        const fire = (type, touches) =>
+          el.dispatchEvent(new TouchEvent(type, { touches, targetTouches: touches, changedTouches: touches, bubbles: true, cancelable: true }));
+        fire("touchstart", [t(1, 20), t(2, 80)]);
+        fire("touchmove", [t(1, 10), t(2, 200)]);
+        await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+        const after = fs();
+        el.dispatchEvent(new TouchEvent("touchend", { touches: [], targetTouches: [], changedTouches: [t(1, 10), t(2, 200)], bubbles: true }));
+        return { before, after };
+      });
 
   test("on the home card a pinch does nothing", async ({ page }) => {
     await openSite(page, SETUPS.marathi);

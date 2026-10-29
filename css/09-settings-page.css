@@ -73,8 +73,10 @@ html[data-sp] {
   color: var(--accent);
   cursor: pointer;
 }
-#xc:hover {
-  background: var(--hdrl);
+@media (hover: hover) {
+  #xc:hover {
+    background: var(--hdrl);
+  }
 }
 #xc:focus-visible {
   outline: 2px solid var(--ink);
@@ -297,16 +299,12 @@ html[data-sp] {
   width: 46px;
   height: 28px;
   border-radius: 14px;
-  background:
-    radial-gradient(circle at 14px 50%, #fff 11px, transparent 12px),
-    color-mix(in srgb, var(--ink) 20%, var(--surface));
+  background: radial-gradient(circle at 14px 50%, #fff 11px, transparent 12px), color-mix(in srgb, var(--ink) 20%, var(--surface));
   box-shadow: inset 0 0 0 1px #0001;
   transition: background 0.2s;
 }
 .sp .sp-sw[aria-pressed="true"]::after {
-  background:
-    radial-gradient(circle at 32px 50%, #fff 11px, transparent 12px),
-    var(--accent);
+  background: radial-gradient(circle at 32px 50%, #fff 11px, transparent 12px), var(--accent);
 }
 
 /* About: the version line (version · offline state) in plain weight; a tap on it checks for updates, so the
@@ -353,11 +351,6 @@ html[data-sp] {
 @media (prefers-reduced-motion: reduce) {
   .sp .sp-sw::after {
     transition: none;
-  }
-}
-@media print {
-  .sp {
-    display: none !important;
   }
 }
 
@@ -493,11 +486,11 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
   align-items: center;
   height: 180px;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
-    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent), linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
-    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-image:
+    linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent), linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
   mask-composite: intersect;
 }
 .sp-pw > div {
@@ -553,19 +546,19 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
    hints (the preview shows large and small); Show and Text font beside their labels; Verses' heading for screen
    readers only (Dhrupad says what it is); rows and headings closer */
 @media screen and (max-width: 759.98px) {
-/* one height for every language and Dhrupad choice, so the cards below never jump: tall enough for the tallest at
+  /* one height for every language and Dhrupad choice, so the cards below never jump: tall enough for the tallest at
      100% (both languages, the dhrupad once: four lines and ↻ Refrain); narrow fades, so the lines show whole */
-.sp-prev {
+  .sp-prev {
     padding: 4px 12px;
   }
-.sp-pw {
+  .sp-pw {
     height: 168px;
     /* centred while the lines fit (one language leaves room), from the top once A+ makes them taller */
     justify-content: safe center;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent),
-      linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
-    mask-image: linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent),
-      linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent), linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
+    mask-image:
+      linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent), linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
   }
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"] {

@@ -111,11 +111,6 @@ html[data-ready] #spl {
     transform: scale(0.8);
   }
 }
-@media print {
-  #spl {
-    display: none;
-  }
-}
 body {
   /* no gap above the top bar, so it stays in one place when the page scrolls under it */
   margin-top: 0;
@@ -641,11 +636,6 @@ body {
 #szr .mr {
   font-family: var(--body);
 }
-@media print {
-  #szr {
-    display: none !important;
-  }
-}
 [hidden] {
   display: none !important;
 }
@@ -723,7 +713,6 @@ body {
   .gh {
     margin-top: 14pt;
   }
-
 }
 
 /* ==== Atharvashirsha: Vedic text in Tiro Devanagari Sanskrit ==== */

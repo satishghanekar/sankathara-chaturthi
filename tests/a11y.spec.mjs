@@ -11,7 +11,13 @@ async function axe(page) {
   // and joins the date chip's stacked lines without a space ("28Oct"); the "label in name" test below
   // checks WCAG 2.5.3 on the text people actually see.
   const r = await new AxeBuilder({ page }).withTags(TAGS).disableRules(["label-content-name-mismatch"]).analyze();
-  return r.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.map((n) => n.target.join(" ")).slice(0, 5).join(", ")}`);
+  return r.violations.map(
+    (v) =>
+      `${v.id} (${v.impact}): ${v.nodes
+        .map((n) => n.target.join(" "))
+        .slice(0, 5)
+        .join(", ")}`,
+  );
 }
 
 const STATES = [
@@ -28,10 +34,14 @@ const STATES = [
   ["Settings open, dark", { ...SETUPS.marathi, th: "dark" }, (p) => p.locator("#aa").click()],
   ["Settings open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#aa").click()],
   ["Print open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#prb").click()],
-  ["search open", SETUPS.marathi, async (p) => {
-    await p.locator("#asq").click();
-    await p.locator("#q").fill("deva");
-  }],
+  [
+    "search open",
+    SETUPS.marathi,
+    async (p) => {
+      await p.locator("#asq").click();
+      await p.locator("#q").fill("deva");
+    },
+  ],
   ["Help open", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
   ["QR open", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
   ["More menu open", SETUPS.marathi, (p) => openMore(p)],
@@ -67,11 +77,13 @@ for (const [name, opener, dialog] of DIALOGS) {
     await page.locator(opener).focus();
     await page.keyboard.press("Enter");
     await page.waitForTimeout(200);
-    const expected = await page.locator(dialog).evaluate((d) =>
-      [...d.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])")]
-        .filter((x) => !x.disabled && x.getClientRects().length && getComputedStyle(x).visibility !== "hidden")
-        .map((x) => x.id || x.textContent.trim().slice(0, 30)),
-    );
+    const expected = await page
+      .locator(dialog)
+      .evaluate((d) =>
+        [...d.querySelectorAll("button, a[href], input, select, textarea, [tabindex]:not([tabindex='-1'])")]
+          .filter((x) => !x.disabled && x.getClientRects().length && getComputedStyle(x).visibility !== "hidden")
+          .map((x) => x.id || x.textContent.trim().slice(0, 30)),
+      );
     const seen = [];
     for (let i = 0; i < expected.length + 3; i++) {
       await page.keyboard.press("Tab");
@@ -115,7 +127,8 @@ test("label in name: every labelled control's name contains its visible text", a
       .map((b) => {
         // the visible words, from shown text nodes only (icons and hidden language spans excluded)
         const w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
-        let t = "", n;
+        let t = "",
+          n;
         while ((n = w.nextNode())) if (n.parentElement.getClientRects().length && !n.parentElement.closest("svg")) t += n.data;
         t = t.replace(/\s+/g, " ").trim();
         const name = b.getAttribute("aria-label");
@@ -135,12 +148,14 @@ test("reduced motion: no transitions longer than 0.01s when the reader asks for 
   const context = await browser.newContext({ reducedMotion: "reduce", serviceWorkers: "block" });
   const page = await context.newPage();
   await openSite(page, SETUPS.marathi);
-  const long = await page.evaluate(() =>
-    [...document.querySelectorAll("body *")]
-      .filter((e) => e.getClientRects().length)
-      .map((e) => getComputedStyle(e))
-      .filter((s) => s.transitionDuration.split(",").some((d) => parseFloat(d) > 0.01) || (s.animationName !== "none" && parseFloat(s.animationDuration) > 0.01))
-      .length,
+  const long = await page.evaluate(
+    () =>
+      [...document.querySelectorAll("body *")]
+        .filter((e) => e.getClientRects().length)
+        .map((e) => getComputedStyle(e))
+        .filter(
+          (s) => s.transitionDuration.split(",").some((d) => parseFloat(d) > 0.01) || (s.animationName !== "none" && parseFloat(s.animationDuration) > 0.01),
+        ).length,
   );
   expect(long).toBe(0);
   await context.close();

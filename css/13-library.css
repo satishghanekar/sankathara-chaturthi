@@ -65,8 +65,7 @@
 }
 #qbar {
   flex: none;
-  padding: 10px max(16px, calc((100% - var(--lw, 34rem)) / 2))
-    max(10px, calc(env(safe-area-inset-bottom, 0px) - var(--kb, 0px)));
+  padding: 10px max(16px, calc((100% - var(--lw, 34rem)) / 2)) max(10px, calc(env(safe-area-inset-bottom, 0px) - var(--kb, 0px)));
   border-top: 1px solid var(--rule);
   background: var(--bg);
 }
@@ -174,8 +173,10 @@
   font: 400 22px/1 var(--lat);
   cursor: pointer;
 }
-#rcl .rcx:hover {
-  color: var(--accent);
+@media (hover: hover) {
+  #rcl .rcx:hover {
+    color: var(--accent);
+  }
 }
 /* ==== Tablets held upright: the categories in two columns ==== */
 @media screen and (min-width: 600px) and (max-width: 1023px) and (orientation: portrait) {
