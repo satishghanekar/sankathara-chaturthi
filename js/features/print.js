@@ -56,7 +56,7 @@ export function init() {
       });
       return d;
     }
-    // A prose piece (content/pieces.js) printed in one language reads as running paragraphs, as in a printed
+    // A prose piece (layout: prose in its text file, content/texts/) printed in one language reads as running paragraphs, as in a printed
     // booklet: its stanzas run on, each line after the last, and a paragraph starts at a stanza marked para
     // or a dh stanza (said once: a paragraph of its own; one of a single line, the closing peace chant, is
     // centred). Each paragraph is one item; its lines keep their data-l.
@@ -203,15 +203,13 @@ export function init() {
         // the Pooja and Aarti headings are on the contents page only, not above a piece (Satish, 2026-10)
         var pre = [];
         pre.push(hd);
-        var units = [],
-          rt = sec.querySelector(".rftop");
-        if (rt && shown(rt)) {
-          var r = cl(rt);
-          r.classList.add("pvref");
-          units.push(r);
-        }
-        [].forEach.call(sec.querySelectorAll(".items > .item, .items > .rmk"), function (u) {
-          if (shown(u)) units.push(cl(u));
+        var units = [];
+        // in the page's order: [once] lines and [note]s before the dhrupad at the top (.items.lead) come first
+        [].forEach.call(sec.querySelectorAll(".rftop, .items > .item, .items > .rmk"), function (u) {
+          if (!shown(u)) return;
+          var c = cl(u);
+          if (u.classList.contains("rftop")) c.classList.add("pvref");
+          units.push(c);
         });
         if (mode === "side") {
           var first = true,

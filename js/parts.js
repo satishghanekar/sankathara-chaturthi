@@ -21,11 +21,14 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "css/" + f + ".css";
   });
-  // The plain scripts, in load order: this list, the text of the pieces, the code that builds them
-  var scripts = ["js/parts.js", "content/pieces.js", "js/render.js"];
+  // The plain scripts, in load order: this list, the code that builds the pieces
+  var scripts = ["js/parts.js", "js/render.js"];
   // The site script: js/main.js (loaded with <script type="module">) and the parts it imports
   var modules = [
     "main",
+    "text/load",
+    "text/content",
+    "text/format",
     "core/page",
     "core/state",
     "core/features",
@@ -63,6 +66,26 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "js/" + f + ".js";
   });
+  // The texts: the list of texts, the categories and the reading page's groups, then one file per text, as listed in content/library.json
+  // (js/text/load.js reads them; tests/site-files.spec.mjs checks this list against library.json)
+  var content = [
+    "library.json",
+    "categories.json",
+    "groups.json",
+    "texts/vedic-chant-atharvashirsha.txt",
+    "texts/aarti-sukhkarta.txt",
+    "texts/aarti-shendur-lal-chadhayo.txt",
+    "texts/aarti-durge-durghat-bhari.txt",
+    "texts/aarti-lavathavati-vikrala.txt",
+    "texts/aarti-trigunatmak-traimurti.txt",
+    "texts/aarti-dnyanaraja.txt",
+    "texts/aarti-yei-o-vitthale.txt",
+    "texts/aarti-ghalin-lotangan.txt",
+    "texts/aarti-jai-ganesh-deva.txt",
+    "texts/aarti-jai-jagdish-hare.txt",
+  ].map(function (f) {
+    return "content/" + f;
+  });
   // Font files kept for offline use: all of them, including the optional text fonts (Classic, Handwritten,
   // in Marathi and Kannada), so a font picked in Settings shows at once, even with a weak signal or none
   var fonts = [
@@ -93,5 +116,5 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "fonts/" + f + ".woff2";
   });
-  return { css: css, scripts: scripts, modules: modules, fonts: fonts, all: css.concat(scripts, modules) };
+  return { css: css, scripts: scripts, modules: modules, content: content, fonts: fonts, all: css.concat(scripts, modules, content) };
 })();
