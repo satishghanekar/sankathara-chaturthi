@@ -291,7 +291,7 @@ test("print builder: the preview and the paper @chromium-only", async ({ browser
   await page.locator('.prcb[data-cat=""]').click();
   await page.locator('#prwl .tpkl li[data-id="a1"] input').check();
   await page.locator("#prnx").click();
-  await expect(title()).toContainText("Ganapati Aarti", { timeout: 20_000 });
+  await expect(title()).toContainText("Sukhkarta Dukhharta", { timeout: 20_000 });
   await page.locator("#prgp").click();
   await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
   const rules = await page.evaluate(() => [...document.querySelectorAll("style[media=print]")].map((s) => s.textContent).join(" "));
