@@ -17,7 +17,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 |---|---|
 | `00-fonts.css` | `@font-face` rules for `fonts/`. `unicode-range` makes the browser download only the parts a page uses. |
 | `01-theme.css` | Colour and font variables on `:root` for the light, sepia and dark themes and high contrast. |
-| `02-core.css` | The first full set of rules for the reading page: page, top bar, contents, pieces, language switching, search, phones held sideways, section headings. Also the first print rules. |
+| `02-core.css` | The first full set of rules for the reading page: page, top bar, contents, pieces, language switching, search, phones held sideways, section headings, and the splash shown while the page starts (`#spl`). Also the first print rules. |
 | `03-menus-print-view.css` | Top-bar title, the ⋯ More menu (App, Share, QR, Help), the Print pop-up (`#prm`), Add to Home Screen, the piece header card, and the dhrupad at the top of a piece. |
 | `04-columns-rail.css` | Wide screens: two stanza columns, piece and stanza numbers, both languages side by side, and the left contents menu (`#rail`). |
 | `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament, fade-in, and the dhrupad markers. |
