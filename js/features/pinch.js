@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { root } from "../core/page.js";
-import { shared, P, dfs, save } from "../core/state.js";
+import { shared, P, dfs, change } from "../core/state.js";
 import { pn } from "../core/apply.js";
 import { apply } from "./bars.js";
 import { fsTap, szSet } from "./settings-panel.js";
@@ -21,10 +21,7 @@ export function init() {
   szr = document.getElementById("szr");
   szr.onclick = function () {
     szr.hidden = true;
-    P.fsu = 0;
-    P.fs = dfs();
-    apply();
-    save();
+    change({ fsu: 0, fs: dfs() }, apply);
     showSz();
   };
   // Pinch changes the text size, never the page zoom. The two-finger touch is cancelled as soon as it
@@ -82,7 +79,8 @@ export function init() {
       if (pz && e.touches.length < 2) {
         pz = null;
         spot = null;
-        save();
+        // the size the pinch set as it went, kept now the fingers have lifted
+        change({ fs: P.fs, fsu: P.fsu });
         szSet();
         // Offer a one-tap way back to the default size for a few seconds (Settings has its own reset)
         if (P.fs !== (shared.FSA || dfs()) && pn.hidden) {
@@ -246,17 +244,13 @@ function unzoom() {
 function deskSz(v, fsu, x, y) {
   v = Math.max(14, Math.min(52, v));
   if (!pn.hidden) return fsTap(v, fsu);
-  P.fsu = fsu;
   if (!pzF) spot = spotAt(x == null ? innerWidth / 2 : x, y == null ? innerHeight / 2 : y);
-  if (fsu) {
-    P.fs = v;
-    resize();
-  } else {
-    P.fs = dfs();
-    apply();
-    keepSpot(spot);
-  }
-  save();
+  if (fsu) change({ fsu: fsu, fs: v }, resize);
+  else
+    change({ fsu: fsu, fs: dfs() }, function () {
+      apply();
+      keepSpot(spot);
+    });
   szSet();
   showSz();
 }

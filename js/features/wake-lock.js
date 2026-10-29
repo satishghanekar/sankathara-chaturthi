@@ -1,16 +1,14 @@
 // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { shared, P, save } from "../core/state.js";
+import { shared, P, change } from "../core/state.js";
 import { apply } from "./bars.js";
 
 export function init() {
   shared.wl = null;
   if (!("wakeLock" in navigator)) document.getElementById("tw").hidden = true;
   document.getElementById("tw").onclick = function () {
-    P.wake = P.wake ? 0 : 1;
-    apply();
-    save();
+    change({ wake: P.wake ? 0 : 1 }, apply);
     wake(!!P.wake);
   };
   document.addEventListener("visibilitychange", function () {

@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { bt, flash } from "../core/page.js";
-import { P, save } from "../core/state.js";
+import { P, change } from "../core/state.js";
 import { LANGS, LK, aa, cur, hb, jp, pjOpen, pn } from "../core/apply.js";
 import { TK, apply, goHome, tuckHold } from "./bars.js";
 import { setJ, setP } from "./overlays.js";
@@ -148,9 +148,7 @@ export function init() {
     }
     var c = cur(),
       o = [P.lead, P.l2, "both"];
-    P.lang = o[(o.indexOf(P.lang) + 1) % 3];
-    apply();
-    save();
+    change({ lang: o[(o.indexOf(P.lang) + 1) % 3] }, apply);
     if (c) c.scrollIntoView();
     function nm(l) {
       return l === "both" ? LANGS[LK(P.lead)].n + " + " + LANGS[LK(P.l2)].n : LANGS[LK(l)].n;

@@ -32,6 +32,7 @@ var SITE_PARTS = (function () {
     "text/format",
     "core/page",
     "core/state",
+    "store/migrate",
     "core/features",
     "text/iast",
     "text/layout",
