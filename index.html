@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.7.7">
+<meta name="version" content="aarti-v1.8.0">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -38,6 +38,7 @@
 <link rel="stylesheet" href="css/07-bottom-bar-folds.css">
 <link rel="stylesheet" href="css/08-contents-book.css">
 <link rel="stylesheet" href="css/09-settings-page.css">
+<link rel="stylesheet" href="css/10-today.css">
 <link rel="stylesheet" href="css/13-library.css">
 <link rel="stylesheet" href="css/15-print.css">
 <link rel="stylesheet" href="css/99-fallbacks.css">
@@ -461,9 +462,9 @@
 <div id="asc" hidden role="navigation" aria-label="Previous, home, library, reading, next">
   <div id="asi">
     <button type="button" id="asv" class="asx"></button>
-    <button type="button" id="ash" class="asi" aria-label="Home"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></button>
-    <button type="button" id="asq" class="asi" aria-label="Library" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5.5C5.6 4.6 8.9 4.9 12 7c3.1-2.1 6.4-2.4 9.5-1.5v13.3c-3.1-.9-6.4-.6-9.5 1.5-3.1-2.1-6.4-2.4-9.5-1.5z"/><path d="M12 7v13.3"/></svg></button>
-    <button type="button" id="rsb" class="asi" aria-label="Reading: language, text size, dhrupad" aria-expanded="false" aria-controls="rsh"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 19l3.6-9 3.6 9M3.9 15.6h4.4"/><path d="M11.5 19l5-13 5 13M13.4 14h6.2"/></svg></button>
+    <button type="button" id="ash" class="asi"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg><span class="asil"><span class="mr">मुख्यपृष्ठ</span><span class="en" lang="en">Home</span></span></button>
+    <button type="button" id="asq" class="asi" aria-expanded="false" aria-controls="jump"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5.5C5.6 4.6 8.9 4.9 12 7c3.1-2.1 6.4-2.4 9.5-1.5v13.3c-3.1-.9-6.4-.6-9.5 1.5-3.1-2.1-6.4-2.4-9.5-1.5z"/><path d="M12 7v13.3"/></svg><span class="asil"><span class="mr">संग्रह</span><span class="en" lang="en">Library</span></span></button>
+    <button type="button" id="rsb" class="asi" aria-expanded="false" aria-controls="rsh"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 19l3.6-9 3.6 9M3.9 15.6h4.4"/><path d="M11.5 19l5-13 5 13M13.4 14h6.2"/></svg><span class="asil"><span class="mr">वाचन</span><span class="en" lang="en">Reading</span></span></button>
     <button type="button" id="asn" class="asx"></button>
   </div>
 </div>

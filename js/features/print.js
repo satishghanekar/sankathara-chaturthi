@@ -13,7 +13,7 @@
 // Nothing is measured, so every browser prints the same way, at once, from the tap that asked for it. The contents
 // list the texts without page numbers, and no page has a border (Satish, 2026-10-28, as in Nitya Upasana).
 
-import { flash, root } from "../core/page.js";
+import { flash, pieceEl, root } from "../core/page.js";
 import { LEAD, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
@@ -692,7 +692,8 @@ export function init() {
     }
     /** @param {string} k */
     function words(k) {
-      var p = document.querySelector("#a1 .item:not(.dh) .verse ." + k + " p"),
+      var a1 = pieceEl("a1"), // (built if not opened yet: js/core/page.js)
+        p = a1 && a1.querySelector(".item:not(.dh) .verse ." + k + " p"),
         t = p ? (p.textContent || "").replace(/\s+/g, " ").trim() : "";
       t = t.split(/[,|।]/)[0].trim();
       return t.length > 26 ? t.slice(0, 26).replace(/\s+\S*$/, "") + "…" : t;

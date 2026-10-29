@@ -7,8 +7,8 @@ import { P } from "./state.js";
 export var root;
 /** @type {HTMLElement | null} */
 export var bt;
-// The pieces built so far (pieceEl), in reading order. As in Nitya Upasana, where a piece is built the first time it
-// is opened; here the reading page is the whole evening in one scroll, so init() builds them all.
+// The pieces built so far (pieceEl), in reading order. Only the text being read is shown (.solo, css/10-today.css),
+// so a piece is built the first time it is opened, not all of them at start-up.
 /** @type {HTMLElement[]} */
 export var secs = [];
 /** @type {((sec: HTMLElement) => void)[]} */
@@ -39,10 +39,6 @@ export function init() {
         order.push(p);
       });
     });
-  // Every piece now, in reading order
-  order.forEach(function (/** @type {any} */ p) {
-    pieceEl(p.id);
-  });
 }
 
 /**

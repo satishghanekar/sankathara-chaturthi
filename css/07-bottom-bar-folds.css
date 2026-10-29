@@ -1,5 +1,5 @@
 /* 07-bottom-bar-folds.css: Bottom bar, bars tucking away, folding contents and pieces, bigger tap areas
-   Part 8 of 12 of the site styles. index.html loads the parts in number order, and the order
+   Part 8 of 13 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Sections:
    - Bottom bar (footer menu on every page; replaced the Previous / Next cards at the end of each piece)
@@ -74,9 +74,38 @@
   display: grid;
   place-items: center;
 }
-@media (max-width: 359px) {
-  #asc .asx {
-    padding: 0 9px;
+/* Home, Library and Reading: the icon with its word under it, in the menu language (the word is the button's name).
+   The button keeps the bar's 44px height. */
+#ash,
+#asq,
+#rsb {
+  align-content: center;
+  row-gap: 3px;
+  min-width: 58px;
+  padding: 0 6px;
+}
+.asil {
+  font: 600 11px/1.1 var(--lat);
+  white-space: nowrap;
+}
+.asil .mr {
+  font-family: var(--body);
+  font-size: 11.5px;
+}
+/* a phone on its side: the bar stays as low as it was; the words are kept for screen readers only */
+@media (orientation: landscape) and (max-height: 520px) {
+  .asil {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  #ash,
+  #asq,
+  #rsb {
+    min-width: 44px;
   }
 }
 /* ==== Bars tuck away while reading (phones and tablets without the side menu) ====
@@ -131,6 +160,14 @@
 [data-tuck="1"] #asc {
   visibility: hidden;
 }
+/* never on Home: back on Home with the bars tucked, they show again (js/features/bars.js tuck(), as in Nitya Upasana) */
+[data-home="1"][data-tuck="1"] #tuck {
+  visibility: hidden;
+}
+[data-home="1"][data-tuck="1"] body > .bar,
+[data-home="1"][data-tuck="1"] #asc {
+  visibility: visible;
+}
 @media print {
   #tuck {
     display: none !important;
@@ -184,11 +221,11 @@
      the Marathi on the same line, small and muted, like the section rows; long names wrap. */
   .ash header {
     box-sizing: border-box;
-    justify-content: flex-start;
+    justify-content: center;
     flex-wrap: nowrap;
-    text-align: left;
+    text-align: center;
     min-height: 52px;
-    padding: 8px 56px 8px 16px;
+    padding: 8px 56px;
     margin: 10px 0 14px;
     /* plain like the old section rows; the accent bar marks the sections (Contents, पूजा, आरती) instead */
     background: var(--surface);
@@ -476,6 +513,9 @@
 .bar .t.site {
   padding-block: 9px;
   margin-block: -9px;
+  /* a tap target at least 44px high (the title alone is 42px on some phones) */
+  min-height: 44px;
+  box-sizing: border-box;
 }
 .skc .skl {
   position: relative;
@@ -599,17 +639,23 @@ html[data-asb="1"] {
   color: var(--bg);
   border-color: var(--accent);
 }
-/* With Aa the bar holds five buttons: narrow phones close the gaps, and the smallest show
-   only the arrows of Prev and Next (their names stay for screen readers and voice control) */
-@media (max-width: 379px) {
+/* Phones: the five buttons close their gaps; up to 399px only the arrows of Prev and Next show (their names stay for
+   screen readers and voice control), as in Nitya Upasana */
+@media (max-width: 439px) {
   #asi {
-    gap: 4px;
+    gap: 2px;
+  }
+  #ash,
+  #asq,
+  #rsb {
+    min-width: 52px;
+    padding: 0 2px;
   }
   #asc .asx {
-    padding: 0 9px;
+    padding: 0 8px;
   }
 }
-@media (max-width: 359px) {
+@media (max-width: 399px) {
   #asc .asx {
     padding: 0;
   }
@@ -789,4 +835,14 @@ html[data-asb="1"] {
   #rsh {
     display: none;
   }
+}
+
+/* ==== The Library page (#jump), as in Nitya Upasana's same file ==== */
+/* and the home page's Table of Contents: piece names, numbers and languages */
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .m,
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .lt {
+  font-family: var(--tf), var(--head);
+}
+:root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .en {
+  font-family: var(--tf), var(--lat);
 }

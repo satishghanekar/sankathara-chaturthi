@@ -18,6 +18,9 @@ export const FIXED_NOW = new Date("2026-10-15T10:00:00-04:00");
 
 // Settings that make a run repeatable: current settings version (so no migration runs), screen
 // wake off, no saved reading position (the reading position lives under its own key and is cleared).
+// How many texts the site can build (one section.ash each, when it is opened): every text in content/library.json
+export const TEXT_COUNT = JSON.parse(readFileSync(new URL("../content/library.json", import.meta.url), "utf8")).texts.length;
+
 export const BASE_PREFS = { sv: 6, wake: 0 };
 
 /** Named reader set-ups used across suites. Each is merged over BASE_PREFS. */
@@ -74,14 +77,33 @@ export async function settle(page) {
 }
 
 /** The text a reader sees in every piece, piece by piece (hidden parts excluded). */
+/**
+ * Build every piece on the page, as opening each one would (js/core/page.js builds a piece the first time it is
+ * opened). The page's own module is imported again, which gives the same copy the site runs on.
+ */
+export async function buildAll(page) {
+  await page.evaluate(async () => {
+    const m = await import(new URL("js/core/page.js", document.baseURI).href);
+    window.CONTENT.categories.forEach((c) => c.pieces.forEach((p) => m.pieceEl(p.id)));
+  });
+}
+
 export async function pieceText(page) {
-  // Home on its own (data-hv) hides the reading page: it is shown for the read, as opening a text would
+  await buildAll(page);
+  // Home on its own (data-hv) hides the reading page, and the page shows one text at a time (.solo): each piece is
+  // shown for the read, as opening it would
   return page.evaluate(() => {
     const r = document.documentElement,
       hv = r.getAttribute("data-hv");
     r.removeAttribute("data-hv");
     const t = [...document.querySelectorAll("section.ash")]
-      .map((s) => "### " + s.id + "\n" + s.innerText.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim())
+      .map((s) => {
+        const was = s.classList.contains("solo");
+        s.classList.add("solo");
+        const x = "### " + s.id + "\n" + s.innerText.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+        if (!was) s.classList.remove("solo");
+        return x;
+      })
       .join("\n\n");
     if (hv !== null) r.setAttribute("data-hv", hv);
     return t;
@@ -107,4 +129,11 @@ export async function openMore(page) {
 export async function tapMore(page, id) {
   await openMore(page);
   await page.locator(id).click();
+}
+
+/** A text is read by opening it, here from the Library (as a reader would), as in Nitya Upasana's tests */
+export async function readText(page, sec) {
+  await page.locator("#asq").click();
+  await page.locator(`#jl a[data-go="${sec}"]`).click();
+  await page.locator(`#${sec}`).waitFor({ state: "visible" });
 }
