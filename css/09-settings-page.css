@@ -458,8 +458,7 @@ html[data-scr="kn"] #bt[data-tl="mr"] #btt,
   --kf: "SC Kn Hand";
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr *,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #prfs[lang="kn"] {
+html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr * {
   font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr,

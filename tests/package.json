@@ -10,7 +10,8 @@
     "lhci": "lhci autorun",
     "lint": "stylelint --config stylelint.config.mjs \"../css/**/*.css\" && cd .. && eslint -c tests/eslint.config.mjs js sw.js",
     "unit": "vitest run",
-    "types": "tsc -p tsconfig.json"
+    "types": "tsc -p tsconfig.json",
+    "sister": "node tools/sister-check.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
