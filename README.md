@@ -114,7 +114,7 @@ The version is what Settings → More → About shows (v1.2). It appears in **tw
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v1.2';
+   const V = "aarti-v1.2";
    ```
 2. `index.html`, near the top:
    ```html
