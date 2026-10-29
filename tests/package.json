@@ -5,10 +5,12 @@
   "scripts": {
     "serve": "node serve.mjs",
     "test": "playwright test",
+    "full": "npm run lint && npm run types && npm run unit && playwright test",
     "test:update": "playwright test --update-snapshots",
     "lhci": "lhci autorun",
     "lint": "stylelint --config stylelint.config.mjs \"../css/**/*.css\" && cd .. && eslint -c tests/eslint.config.mjs js sw.js",
-    "unit": "vitest run"
+    "unit": "vitest run",
+    "types": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -20,6 +22,7 @@
     "pdfjs-dist": "^4.10.38",
     "stylelint": "^16.26.1",
     "stylelint-no-unsupported-browser-features": "^8.1.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.7"
   }
 }
