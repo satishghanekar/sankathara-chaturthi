@@ -298,13 +298,6 @@
   }
 }
 /* ==== Folding the home contents list and each piece (the Contents button's look is in "Fold headings" below) ==== */
-#tfb {
-  cursor: pointer;
-}
-#tfb svg {
-  flex: none;
-  transition: transform 0.2s;
-}
 .ash header {
   position: relative;
   padding-inline: 56px;
@@ -335,10 +328,6 @@
   transition: transform 0.2s;
 }
 @media screen {
-  [data-tf="1"] #home .tocg {
-    display: none !important;
-  }
-  [data-tf="1"] #tfb svg,
   .ash.af .afb svg {
     transform: rotate(180deg);
   }
@@ -403,8 +392,7 @@
   }
 }
 @media print {
-  .afb,
-  #tfr {
+  .afb {
     display: none !important;
   }
   .ash header {
@@ -413,7 +401,6 @@
 }
 /* ==== Fold headings (Contents, Pooja, Aarti): one look, full-width rows lined up with the folded pieces ==== */
 @media screen {
-  #tfr,
   .grp,
   #home + .grp {
     display: block;
@@ -425,10 +412,6 @@
     padding: 0;
     border: 0;
   }
-  [data-tf="1"] #home {
-    padding-bottom: 0;
-  }
-  #tfb,
   #pfb,
   #xfb {
     display: flex;
@@ -447,25 +430,21 @@
     color: var(--accent);
     text-align: left;
   }
-  #tfb .mr,
   #pfb .mr,
   #xfb .mr {
     font: 600 20px/1.2 var(--head);
     color: var(--accent);
   }
-  #tfb .en,
   #pfb .en,
   #xfb .en {
     font: 600 14px/1.2 var(--lat);
     color: var(--muted);
   }
   #g-pooja[data-lang="en"] #pfb .en,
-  #g-aarti[data-lang="en"] #xfb .en,
-  #tfr[data-lang="en"] #tfb .en {
+  #g-aarti[data-lang="en"] #xfb .en {
     font: 700 17px/1.2 var(--lat);
     color: var(--accent);
   }
-  #tfb svg,
   #pfb svg,
   #xfb svg {
     margin-left: auto;
@@ -484,7 +463,6 @@
 
 @media screen and (min-width: 1100px) {
   [data-rail="1"] #home,
-  [data-rail="1"] #tfr,
   [data-rail="1"] .grp,
   [data-rail="1"] #home + .grp,
   [data-rail="1"] .ash header,
@@ -707,14 +685,6 @@
   --body: var(--tf), "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, sans-serif;
   --lat: var(--tfl), "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
-/* and the home page's Table of Contents: piece names, numbers and languages */
-:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .m,
-:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .lt {
-  font-family: var(--tf), var(--head);
-}
-:root[data-font]:not([data-font="std"]) #home .tocg ol.toc .en {
-  font-family: var(--tfl), var(--lat);
-}
 /* the font row: label on top, the four choices across the full width */
 
 /* English style choices: example on top, a small caption (Simple / Standard (IAST)) under it, same row height */
@@ -822,8 +792,7 @@ html[data-asb="1"] {
 }
 #home.skn:not(.pmore) .skc .sks,
 #home.skn:not(.pmore) .skc #skb,
-#home.skn:not(.pmore) .skc #skall,
-#home.pday:not(.pmore) #shr {
+#home.skn:not(.pmore) .skc #skall {
   display: none;
 }
 /* the days before: the date a little larger, the moonrise time in bold */
@@ -872,12 +841,6 @@ html[data-asb="1"] {
 #home.pday .skc.today .skcd {
   margin-top: 8px;
   font-size: 15px;
-}
-@media screen {
-  #home.pday .tocg ol.toc a {
-    font-size: 1.2em;
-    padding-block: 13px;
-  }
 }
 
 /* ==== Reading sheet (Aa in the bottom bar): language, text size and dhrupad within thumb reach ====

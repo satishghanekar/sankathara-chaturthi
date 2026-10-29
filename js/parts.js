@@ -65,6 +65,7 @@ var SITE_PARTS = (function () {
     "print/what",
     "features/print",
     "features/share",
+    "features/more-menu",
     "features/offline",
   ].map(function (f) {
     return "js/" + f + ".js";
