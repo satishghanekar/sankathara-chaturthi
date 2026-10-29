@@ -246,15 +246,17 @@ test("piece fold is remembered across a reload @mobile", async ({ page }) => {
   await expect(page.locator("#a2 .items")).toBeVisible();
 });
 
-test("Vedic Chant and Aarti section folds @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.marathi, { hash: "#a1" });
-  await page.locator("#pfb").click();
-  expect(await rootAttr(page, "data-pf")).toBe("1");
-  await expect(page.locator("#p1")).toBeHidden();
-  await page.locator("#xfb").click();
-  expect(await rootAttr(page, "data-xf")).toBe("1");
-  await page.locator("#pfb").click();
+// The section rows (वैदिक मंत्र, आरती) are gone from the reading page, as in Nitya Upasana; a section folded before then
+// keeps none of its texts hidden
+test("no section rows while reading, and an old section fold hides nothing @mobile", async ({ page }) => {
+  await openSite(page, { ...SETUPS.marathi, pf: 1, xf: 1 }, { hash: "#a1" });
+  await expect(page.locator(".grp")).toHaveCount(2);
+  for (const g of await page.locator(".grp").all()) await expect(g).toBeHidden();
   expect(await rootAttr(page, "data-pf")).toBeNull();
+  expect(await rootAttr(page, "data-xf")).toBeNull();
+  await expect(page.locator("#a1 .items")).toBeVisible();
+  await page.evaluate(() => document.getElementById("p1").scrollIntoView());
+  await expect(page.locator("#p1 .items")).toBeVisible();
 });
 
 test("home card folds to one line and opens again @mobile", async ({ page }) => {
