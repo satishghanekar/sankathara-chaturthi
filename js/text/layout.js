@@ -1,6 +1,8 @@
 // Layout helpers that run once
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
+import { libraryGroups } from "../features/contents-list.js";
+
 export function init() {
   [].forEach.call(document.querySelectorAll(".items"), function (b) {
     var row = 1,
@@ -64,30 +66,16 @@ export function init() {
         });
     });
   });
-  // Contents rail (wide screens), built from the home contents
+  // Contents rail (wide screens), built from the texts (as the Library is: js/features/contents-list.js)
   (function () {
     var r = document.getElementById("rail");
     if (!r) return;
     var h = "";
-    [].forEach.call(document.querySelectorAll(".tocg"), function (g) {
-      var as = g.querySelectorAll("ol.toc li a");
-      if (!as.length) return;
+    libraryGroups().forEach(function (g) {
       // the group name is a link to its section row (पूजा → Pooja, आरती → Aarti)
-      var gh = g.querySelector(".gh"),
-        gid = /पूजा/.test(gh.textContent) ? "g-pooja" : /आरती/.test(gh.textContent) ? "g-aarti" : "";
-      h += gid
-        ? '<a class="rg" href="#' + gid + '" data-go="' + gid + '">' + gh.innerHTML + "</a><ul>"
-        : '<div class="rg">' + gh.innerHTML + "</div><ul>";
-      [].forEach.call(as, function (a) {
-        var m = a.querySelector(".m");
-        h +=
-          '<li><a href="' +
-          a.getAttribute("href") +
-          '" data-go="' +
-          a.getAttribute("data-go") +
-          '">' +
-          (m ? m.innerHTML : a.innerHTML) +
-          "</a></li>";
+      h += '<a class="rg" href="#' + g.id + '" data-go="' + g.id + '">' + g.name + "</a><ul>";
+      g.items.forEach(function (x) {
+        h += '<li><a href="#' + x.id + '" data-go="' + x.id + '">' + x.html + "</a></li>";
       });
       h += "</ul>";
     });

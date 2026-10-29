@@ -5,14 +5,13 @@ import { root, secs } from "./page.js";
 import { P, change } from "./state.js";
 import { apply, mark } from "../features/bars.js";
 
-export var pn, aa, jp, hb, LANGS;
+export var pn, aa, jp, LANGS;
 var allB;
 
 export function init() {
   pn = document.getElementById("panel");
   aa = document.getElementById("aa");
   jp = document.getElementById("jump");
-  hb = document.getElementById("home-btn");
   // The languages a piece can be read in: n is the name in its own script
   LANGS = {
     mr: { n: "मराठी" },
@@ -86,9 +85,6 @@ export function init() {
       b.onclick();
     });
   });
-  document.getElementById("tfb").onclick = function () {
-    change({ tf: P.tf ? 0 : 1 }, pfSet);
-  };
   [["pfb", "g-pooja", "pf"], ["xfb", "g-aarti", "xf"]].forEach(function (a) {
     document.getElementById(a[0]).onclick = function () {
       var g = document.getElementById(a[1]),
@@ -133,13 +129,9 @@ function allSet() {
 }
 
 export function pfSet() {
-  var mr = P.ui === "mr",
-    tb = document.getElementById("tfb");
-  if (P.tf) root.setAttribute("data-tf", "1");
-  else root.removeAttribute("data-tf");
-  // The Contents, पूजा and आरती rows are named by their visible words, with aria-expanded giving the state,
+  var mr = P.ui === "mr";
+  // The पूजा and आरती rows are named by their visible words, with aria-expanded giving the state,
   // so voice control users can say what they see (WCAG 2.5.3)
-  if (tb) tb.setAttribute("aria-expanded", String(!P.tf));
   secs.forEach(function (x) {
     var f = P.af.indexOf(x.id) >= 0,
       ab = x.querySelector(".afb");

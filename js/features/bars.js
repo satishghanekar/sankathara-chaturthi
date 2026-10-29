@@ -1,11 +1,11 @@
 // Bars tuck away while reading (CSS: "Bars tuck away while reading")
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { LI, RB_LOOP, RB_ONCE, root } from "../core/page.js";
+import { root } from "../core/page.js";
 import { shared, P } from "../core/state.js";
 import { foldSet, skDot, skRender } from "./date-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
-import { cur, hb, pfSet, pjOpen } from "../core/apply.js";
+import { cur, pfSet, pjOpen } from "../core/apply.js";
 import { asLabel, asShow, asb, asc } from "./bottom-bar.js";
 import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
@@ -183,7 +183,7 @@ function leadSet() {
   else root.removeAttribute("data-lead");
   shared.LEAD = L;
   // (checked every time: the contents lists are built after the first call)
-  [].forEach.call(document.querySelectorAll(".wrap .verse, .wrap .ash header h2, #home ol.toc .m, #rail ul a, #jl li > a"), function (v) {
+  [].forEach.call(document.querySelectorAll(".wrap .verse, .wrap .ash header h2, #rail ul a, #jl li > a"), function (v) {
     var m = v.querySelector(":scope > .mr"),
       e = v.querySelector(":scope > .en");
     if (!m || !e) return;
@@ -206,11 +206,10 @@ export function apply() {
   if (P.th === "auto") root.removeAttribute("data-pref");
   else root.setAttribute("data-pref", P.th);
   // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
-  // (the Contents fold row #tfr follows the text language, like the पूजा and आरती rows below it)
-  [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#home .tocg,#tfr,#jl,#rail"), function (e) {
+  [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#jl,#rail"), function (e) {
     e.setAttribute("data-lang", P.lang);
   });
-  [].forEach.call(document.querySelectorAll(".bar,#none,#panel,#home > :not(.tocg):not(#tfr),#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
+  [].forEach.call(document.querySelectorAll(".bar,#shr,#spv,#none,#panel,#home > *,#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
     e.setAttribute("data-lang", P.ui);
   });
   root.lang = SCR.k || "mr"; // the page is Marathi (or Kannada); English parts carry lang="en" themselves (screen readers pick the voice from this)
@@ -238,30 +237,8 @@ export function apply() {
   [].forEach.call(document.querySelectorAll("#sc button"), function (b) {
     b.setAttribute("aria-pressed", String(b.dataset.v === (two ? "2" : "1")));
   });
-  // Dhrupad button: icon and label show the current setting
-  var rbb = document.getElementById("rb");
-  var rOn = !P.ref;
-  if (rbb.getAttribute("data-s") !== String(rOn)) {
-    rbb.innerHTML = rOn ? RB_LOOP : RB_ONCE;
-    rbb.setAttribute("data-s", String(rOn));
-  }
-  rbb.setAttribute("aria-pressed", String(rOn));
-  rbb.setAttribute(
-    "aria-label",
-    rOn
-      ? "Refrain (dhrupad) after every verse. Tap to show it once"
-      : "Refrain (dhrupad) shown once. Tap to repeat after every verse",
-  );
   leadSet();
   spSet();
-  var IN = P.ind === "kn" ? "Kannada" : "Marathi",
-    LB = { mr: [LI.mr, IN], en: [LI.en, "English"], both: shared.LEAD === "en" ? [LI.bothEn, "English and " + IN] : [LI.both, IN + " and English"] }[P.lang],
-    lk = P.lang + shared.LEAD + SCR.k;
-  if (hb.getAttribute("data-l") !== lk) {
-    hb.innerHTML = LB[0];
-    hb.setAttribute("data-l", lk);
-  }
-  hb.setAttribute("aria-label", "Language: " + LB[1] + ". Tap to change");
   pfSet();
   autoFs();
   root.style.setProperty("--fs", P.fs + "px");
