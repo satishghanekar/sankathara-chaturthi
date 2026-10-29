@@ -135,7 +135,7 @@ export function trSet(st, fin) {
     [].forEach.call(
       document.querySelectorAll("#" + t.id + ' header h2 > .en, a[data-go="' + t.id + '"] .en'),
       function (e) {
-        if (!e.closest("small, .lt")) e.textContent = v; // not the language tag in the home list
+        if (!e.closest("small")) e.textContent = v;
       },
     );
   });

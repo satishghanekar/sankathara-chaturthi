@@ -4,7 +4,7 @@
 // Help, the dialogs, every theme and every language arrangement.
 // Recorded in Chromium; the site's fonts are its own files, so shots are the same on any Linux machine.
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS } from "./helpers.mjs";
+import { openSite, settle, SETUPS, openMore, tapMore } from "./helpers.mjs";
 import { printFromButton } from "./print-helpers.mjs";
 
 const SIZES = {
@@ -77,12 +77,17 @@ const CASES = [
   ["settings-desktop", "desktop", SETUPS.marathi, (p) => p.locator("#aa").click()],
   ["settings-dark", "phone", { ...SETUPS.marathi, th: "dark" }, (p) => p.locator("#aa").click()],
   ["search-phone", "phone", SETUPS.marathi, async (p) => {
-    await p.locator("#hm").click();
+    await p.locator("#asq").click();
     await p.locator("#q").fill("sukh");
   }],
-  ["contents-phone", "phone", SETUPS.marathi, (p) => p.locator("#hm").click()],
-  ["help-phone", "phone", SETUPS.marathi, (p) => p.locator("#hlpb").click()],
-  ["qr-phone", "phone", SETUPS.marathi, (p) => p.locator("#qrb").click()],
+  ["library-phone", "phone", SETUPS.marathi, (p) => p.locator("#asq").click()],
+  ["more-menu-phone", "phone", SETUPS.marathi, (p) => openMore(p)],
+  ["settings-screen-phone", "phone", SETUPS.marathi, async (p) => {
+    await p.locator("#aa").click();
+    await p.locator('#spv [data-v="screen"]').click();
+  }],
+  ["help-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
+  ["qr-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
   ["print-dialog", "phone", SETUPS.marathi, (p) => p.locator("#prb").click()],
 ];
 

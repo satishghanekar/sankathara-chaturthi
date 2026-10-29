@@ -93,3 +93,12 @@ export function siteParts() {
   vm.runInNewContext(readFileSync(new URL("../js/parts.js", import.meta.url), "utf8"), ctx);
   return ctx.SITE_PARTS;
 }
+
+/** The ⋯ More menu in the top bar (App, Share, QR, Help), as in Nitya Upasana: open it, or tap one of its items */
+export async function openMore(page) {
+  if (!(await page.locator("#shr").isVisible())) await page.locator("#tmb").click();
+}
+export async function tapMore(page, id) {
+  await openMore(page);
+  await page.locator(id).click();
+}

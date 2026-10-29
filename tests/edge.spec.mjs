@@ -4,7 +4,7 @@
 // keyboard alone. Each test names the audit item it guards (H1–H4, M1–M6, T4–T8).
 import { test, expect } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
-import { openSite, settle, SETUPS } from "./helpers.mjs";
+import { openSite, settle, SETUPS, openMore, tapMore } from "./helpers.mjs";
 import { stubPrint } from "./print-helpers.mjs";
 
 // ---- Notched iPhones (H2, H4) -------------------------------------------------------------------------
@@ -57,7 +57,7 @@ test.describe("notched iPhone @chromium-only", () => {
     };
     await clear("body > .bar button");
     await clear("#asc button");
-    await page.locator("#hlpb").click();
+    await tapMore(page, "#hlpb");
     await clear("#hlpx");
     await page.keyboard.press("Escape");
     await page.locator("#aa").click();
@@ -164,7 +164,8 @@ for (const width of [390, 1280]) {
       seen.add(r.key);
       if (r.frac < 0.5) hidden.push(`${r.key} ${Math.round(r.frac * 100)}% visible`);
     }
-    expect(seen.size).toBeGreaterThan(20);
+    // (the home page has no contents list now, the Library holds it: fewer stops than the 20 it had)
+    expect(seen.size).toBeGreaterThan(10);
     expect(hidden).toEqual([]);
   });
 }
@@ -189,7 +190,7 @@ for (const [w, h] of [
     await openSite(page, SETUPS.marathi);
     await page.waitForTimeout(2500);
     // open and close Help, fold the first piece: nothing should move on its own afterwards
-    await page.locator("#hlpb").click();
+    await tapMore(page, "#hlpb");
     await page.keyboard.press("Escape");
     await page.waitForTimeout(800);
     const sum = await page.evaluate(() => window.__cls.reduce((a, b) => a + b, 0));
@@ -271,7 +272,7 @@ test("screen readers: the size bubble is silent while pinching, the final size i
 test("screen readers: search announces how many lines matched, or that nothing did (M2)", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#srs")).toHaveAttribute("role", "status");
-  await page.locator("#hm").click();
+  await page.locator("#asq").click();
   await page.locator("#q").fill("deva");
   await expect(page.locator("#srs")).toHaveText(/^(\d+|40 or more) results?$/);
   await page.locator("#q").fill("zzqxw");
@@ -366,6 +367,7 @@ for (const size of [{ width: 667, height: 375 }, { width: 320, height: 256 }]) {
     await page.setViewportSize(size);
     await openSite(page, SETUPS.marathi);
     for (const [open, close] of [["#qrb", "#qrx"], ["#inb", "#inx"]]) {
+      await openMore(page);
       if (!(await page.locator(open).isVisible())) continue;
       await page.locator(open).click();
       const x = page.locator(close);
@@ -381,12 +383,14 @@ for (const size of [{ width: 667, height: 375 }, { width: 320, height: 256 }]) {
 test("the phone's Back closes QR, Print and the picture and returns focus to their button (WCAG 2.4.3) @chromium-only", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   for (const [open, dlg] of [["#qrb", "#qrm"], ["#prb", "#prm"], ["#iconb", "#pzv"]]) {
+    if (open === "#qrb") await openMore(page);
     await page.locator(open).focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(dlg)).toBeVisible();
     await page.goBack();
     await expect(page.locator(dlg)).toBeHidden();
-    expect(await page.evaluate(() => "#" + document.activeElement.id), `focus after Back from ${dlg}`).toBe(open);
+    // QR is in the ⋯ menu, closed by then: focus comes back to ⋯
+    expect(await page.evaluate(() => "#" + document.activeElement.id), `focus after Back from ${dlg}`).toBe(open === "#qrb" ? "#tmb" : open);
     expect(await page.evaluate(() => document.documentElement.style.overflow), "page scrolls again").toBe("");
   }
 });
@@ -403,19 +407,24 @@ test("the ↻ ध्रुपद bubble stays open until the next tap (WCAG 2.2.
   await expect(m).toHaveAttribute("aria-expanded", "false");
 });
 
-test("a 320px phone: the home buttons show their words, and a note sits under the top bar, on screen @chromium-only", async ({ page }) => {
+test("a 320px phone: the ⋯ menu's buttons show their words, and a note sits under the top bar, on screen @chromium-only", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await openSite(page, SETUPS.both);
-  for (const id of ["#shb", "#qrb", "#prb"]) {
+  await openMore(page);
+  for (const id of ["#shb", "#qrb", "#hlpb"]) {
     const w = page.locator(id + " > span.en");
     await expect(w).toBeVisible();
     const b = await page.locator(id).boundingBox(), t = await w.boundingBox();
     expect(t.x >= b.x - 0.5 && t.x + t.width <= b.x + b.width + 0.5, `${id} word inside its button`).toBe(true);
   }
-  await page.locator("#home-btn").click();
+  // a long note
+  await page.keyboard.press("Escape");
+  await page.evaluate(() =>
+    import("./js/core/page.js").then((m) => m.flash("ध्रुपद प्रत्येक कडव्यानंतर", "Dhrupad after every verse · English and Marathi together", 3500)),
+  );
   const fl = page.locator("#fl");
   await expect(fl).toHaveClass(/\bon\b/);
-  await expect(fl).toContainText("Next tap:");
+  await expect(fl).toContainText("Dhrupad after every verse");
   const f = await fl.boundingBox(), bar = await page.locator("body > .bar").first().boundingBox();
   expect(f.x).toBeGreaterThanOrEqual(0);
   expect(f.x + f.width).toBeLessThanOrEqual(320);
