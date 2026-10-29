@@ -153,20 +153,16 @@ export function pfSet() {
   b.setAttribute("aria-expanded", String(!P.pf));
 }
 
-// Going to a piece (or a line in it) opens it if it is folded, and the Vedic Chant section if that is folded
-export function pjOpen(el, onlyPooja) {
-  // a section row (side menu वैदिक मंत्र / आरती): open that section if it is folded
-  if (el && el.id === "g-vedic-chant" && P.pf) change({ pf: 0 }, pfSet);
-  if (el && el.id === "g-aarti" && P.xf) change({ xf: 0 }, pfSet);
+// Going to a piece (or a line in it) opens it if it is folded
+export function unfold(el) {
   var sec = el && el.closest && el.closest(".ash");
-  if (!sec) return;
-  /** @type {Record<string, any>} */
-  var ch = {};
-  if (P.pf && sec.classList.contains("pj")) ch.pf = 0;
-  if (P.xf && sec.classList.contains("ar")) ch.xf = 0;
-  if (!onlyPooja && P.af.indexOf(sec.id) >= 0)
-    ch.af = P.af.filter(function (x) {
-      return x !== sec.id;
-    });
-  if (Object.keys(ch).length) change(ch, pfSet);
+  if (sec && P.af.indexOf(sec.id) >= 0)
+    change(
+      {
+        af: P.af.filter(function (x) {
+          return x !== sec.id;
+        }),
+      },
+      pfSet,
+    );
 }

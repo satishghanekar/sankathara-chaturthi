@@ -49,6 +49,7 @@ export function defaults(env) {
     xf: 0, // Aarti section folded
     tf: 0, // home contents list folded
     af: [], // ids of folded pieces
+    rc: [], // Recent in the Library, newest first: a text's section, or its section and a line's ("a3|s3l5"), at most 8
     as: 3, // autoscroll speed for an aarti not yet adjusted, 1 (slow) to 10 (fast)
     ason: 0, // show the autoscroll button in the bottom bar (Settings switch)
     asp: {}, // autoscroll speed per piece (each has its own tempo): { a1: 3, p1: 4, … }

@@ -39,6 +39,7 @@ On GitHub every pull request and every push to `main` runs everything (`.github/
 | `edge.spec.mjs` | The Phase 3 audit's edge cases: an iPhone 16 Pro notch upright and sideways; pressed and hovered text readable in all 5 themes; keyboard focus never hidden behind the bars; layout shift after the page appears; 360 to 7680 px wide; what screen readers are told (size, search results, notes); Windows High Contrast focus rings; WCAG text spacing; printing with the keyboard alone; limits on `!important` and breakpoints. |
 | `compat.spec.mjs` | The oldest supported browsers (iOS 15.4): fallbacks for `color-mix()` and what a linter can't check. |
 | `site-files.spec.mjs` | `js/parts.js` matches the page's own `<link>` and `<script>` tags, and every listed file exists, so the offline copy is never missing a file. |
+| `library.spec.mjs` | The Library, as in Nitya Upasana (its tests): the search box at the foot of the screen on phones and tablets with no scroll between them (at the top on wide screens), each search's best results at the top and above the keyboard, and Recent (a text, then a line, × and Clear, kept after a reload). |
 | `perf.spec.mjs` | How many times the page is laid out during load, for each language-button tap and when Settings closes (4× slowed CPU). Layout counts are the same on every machine, so this never fails because a computer was busy; the milliseconds and the tap response time are attached to the result for comparison. |
 
 ### Print tests

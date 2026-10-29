@@ -3,7 +3,7 @@
 
 import { shared, P } from "./state.js";
 import { fontsN } from "../text/autofit.js";
-import { cur, pjOpen } from "./apply.js";
+import { cur } from "./apply.js";
 import { apply, mark } from "../features/bars.js";
 import { wake } from "../features/wake-lock.js";
 
@@ -63,7 +63,6 @@ export function init() {
   if (h) {
     el = document.getElementById(h);
     // (a folded piece stays folded here: the address follows the piece you read, so a reload would open it)
-    if (el && el.classList.contains("ash")) pjOpen(el, true);
     if (el && el.classList.contains("ash"))
       setTimeout(function () {
         el.scrollIntoView();

@@ -274,7 +274,7 @@ test("screen readers: search announces how many lines matched, or that nothing d
   await expect(page.locator("#srs")).toHaveAttribute("role", "status");
   await page.locator("#asq").click();
   await page.locator("#q").fill("deva");
-  await expect(page.locator("#srs")).toHaveText(/^(\d+|40 or more) results?$/);
+  await expect(page.locator("#srs")).toHaveText(/^(\d+ texts? and )?(\d+|40 or more) (results?|lines?)$/);
   await page.locator("#q").fill("zzqxw");
   await expect(page.locator("#srs")).toHaveText("Nothing found");
   // Enter straight after typing opens the first result, even before the pause
