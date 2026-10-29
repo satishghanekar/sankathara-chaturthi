@@ -4,7 +4,7 @@
 import { root, secs } from "../core/page.js";
 import { shared, P, change } from "../core/state.js";
 import { FEAT_AS } from "../core/features.js";
-import { rmkClose, rmkOpen } from "../text/dhrupad-markers.js";
+import { rmkClose, rmkOpen, rmkPop } from "../text/dhrupad-markers.js";
 import { cur } from "../core/apply.js";
 import { TL, tlLabel, tlStop } from "./tilt.js";
 import { apply } from "./bars.js";
@@ -261,15 +261,15 @@ function asStep(now) {
   }
   if (a.hold && !a.shown) {
     a.shown = 1;
-    if (!shared.rmkPop || shared.rmkPop.m !== a.el) rmkOpen(a.el);
-    if (shared.rmkPop) {
+    if (!rmkPop || rmkPop.m !== a.el) rmkOpen(a.el);
+    if (rmkPop) {
       clearTimeout(rmkClose.t);
       rmkClose.t = setTimeout(rmkClose, T * 1000 + 600);
       var h = document.createElement("div");
       h.className = "ash-h";
       h.lang = P.ui === "mr" ? "mr" : "en";
       h.textContent = P.ui === "mr" ? "ध्रुपद म्हणा, मग पुढे" : "Sing the dhrupad, then on";
-      shared.rmkPop.el.appendChild(h);
+      rmkPop.el.appendChild(h);
     }
   }
   // a hold keeps the page still while the dhrupad is sung, then moves on

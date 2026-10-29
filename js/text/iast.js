@@ -1,6 +1,7 @@
 // IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
+import { onPiece } from "../core/page.js";
 import { P } from "../core/state.js";
 import { enCut, glue, zsplit } from "./line-breaks.js";
 
@@ -92,19 +93,20 @@ export function init() {
   ENS = {};
   TRL = [];
   TRT = [];
-  [].forEach.call(document.querySelectorAll(".verse"), function (v) {
-    // Marathi and English lines pair up by position (refrain boxes have no data-l)
-    var ms = v.querySelectorAll(":scope>.mr>p");
-    [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
-      var id = p.getAttribute("data-l"),
-        m = ms[i];
-      if (!m) return;
-      if (id) ENS[id] = p.textContent;
-      TRL.push({ p: p, s: p.innerHTML, m: m.innerHTML, i: null });
+  // Each piece as it is built (js/core/page.js): its lines, and its title for the headings, contents, Previous/Next,
+  // and the left menu and search list (copies of the contents)
+  onPiece(function (sec) {
+    [].forEach.call(sec.querySelectorAll(".verse"), function (v) {
+      // Marathi and English lines pair up by position (refrain boxes have no data-l)
+      var ms = v.querySelectorAll(":scope>.mr>p");
+      [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
+        var id = p.getAttribute("data-l"),
+          m = ms[i];
+        if (!m) return;
+        if (id) ENS[id] = p.textContent;
+        TRL.push({ p: p, s: p.innerHTML, m: m.innerHTML, i: null });
+      });
     });
-  });
-  // Piece titles: headings, contents, Previous/Next, and the left menu and search list (copies of the contents)
-  [].forEach.call(document.querySelectorAll(".ash"), function (sec) {
     var h = sec.querySelector("header h2"),
       m = h && h.querySelector(":scope > .mr"),
       e = h && h.querySelector(":scope > .en");
