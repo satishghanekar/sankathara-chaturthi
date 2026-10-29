@@ -1,6 +1,5 @@
-// Builds the HTML of every piece from CONTENT (made from the text files in content/texts/ by js/text/content.js).
-// js/text/load.js calls it before the site script starts, at the place the pieces belong, so the page
-// the rest of the script sees is the same as when the pieces were written into index.html.
+// Builds the HTML of a piece from CONTENT (made from the text files in content/texts/ by js/text/content.js), for the
+// reading page (js/core/page.js), as in Nitya Upasana.
 // Each line keeps its two languages side by side in the data; this file decides how they are shown.
 (function () {
   "use strict";
@@ -41,7 +40,8 @@
   function navLink(cls, p, label, iconFirst) {
     if (!p) return "      <span></span>\n";
     var small = iconFirst ? ICON_PREV + two(label) : two(label) + ICON_NEXT;
-    return '      <a class="' + cls + '" href="#' + p.id + '" data-go="' + p.id + '"><small>' + small + "</small>" + two(p.title) + "</a>\n";
+    // ("./#a3", not "#a3": the piece may not be built yet, js/core/page.js, and a bare "#a3" would point at nothing)
+    return '      <a class="' + cls + '" href="./#' + p.id + '" data-go="' + p.id + '"><small>' + small + "</small>" + two(p.title) + "</a>\n";
   }
   function piece(p, prev, next, ui) {
     var h =
@@ -129,39 +129,50 @@
       if (!S) return;
       document.documentElement.setAttribute("data-scr", ind);
       [].forEach.call(document.querySelectorAll(ROOTS), function (r) {
-        var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
-        while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) {
-          OLD.push([n, "", n.data]);
-          n.data = SCR.to(n.data);
-        }
-        [].forEach.call(r.querySelectorAll("[title], [aria-label]"), function (e) {
-          ["title", "aria-label"].forEach(function (a) {
-            var v = e.getAttribute(a);
-            if (v && /[ऀ-ॿ]/.test(v)) {
-              OLD.push([e, a, v]);
-              e.setAttribute(a, SCR.to(v));
-            }
-          });
+        SCR.el(r, OLD);
+      });
+    },
+    // A piece just built on the reading page (js/core/page.js): in the chosen script, put back by SCR.set like the rest
+    add: function (r) {
+      SCR.el(r, OLD);
+    },
+    // Rewrite one element (a piece, a heading) in the chosen script. old: where to note what was there, so
+    // SCR.set can put it back (the page's own copy); a printout's copy (js/print/compose.js) passes none.
+    el: function (r, old) {
+      if (!S) return;
+      var OLD = old || [];
+      var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT), n;
+      while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) {
+        OLD.push([n, "", n.data]);
+        n.data = SCR.to(n.data);
+      }
+      [].forEach.call(r.querySelectorAll("[title], [aria-label]"), function (e) {
+        ["title", "aria-label"].forEach(function (a) {
+          var v = e.getAttribute(a);
+          if (v && /[ऀ-ॿ]/.test(v)) {
+            OLD.push([e, a, v]);
+            e.setAttribute(a, SCR.to(v));
+          }
         });
-        // the language of the text, for screen readers (the English parts keep lang="en")
-        [].forEach.call((r.matches(".ash[lang]") ? [r] : []).concat([].slice.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"))), function (e) {
-          OLD.push([e, "lang", e.getAttribute("lang")]);
-          e.lang = ind;
-        });
-        // Poet links: the Kannada Wikipedia page when there is one, else the English page beside it
-        [].forEach.call(r.querySelectorAll(".cr"), function (c) {
-          var en = c.querySelectorAll(".en a[href]"), W = (window.CONTENT && CONTENT.wiki && CONTENT.wiki[ind]) || {};
-          [].forEach.call(c.querySelectorAll(".mr a[href]"), function (a, i) {
-            var h = decodeURI(a.getAttribute("href")), to = W[h] || (en[i] && en[i].getAttribute("href"));
-            if (!to) return;
-            ["href", "hreflang", "aria-label"].forEach(function (x) {
-              OLD.push([a, x, a.getAttribute(x)]);
-            });
-            a.href = to;
-            a.hreflang = W[h] ? ind : "en";
-            var l = a.getAttribute("aria-label") || "";
-            a.setAttribute("aria-label", l.replace(/ — .*$/, "") + (W[h] ? " — ವಿಕಿಪೀಡಿಯ" : " — Wikipedia (English)") + " ↗");
+      });
+      // the language of the text, for screen readers (the English parts keep lang="en")
+      [].forEach.call((r.matches(".ash[lang]") ? [r] : []).concat([].slice.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"))), function (e) {
+        OLD.push([e, "lang", e.getAttribute("lang")]);
+        e.lang = ind;
+      });
+      // Poet links: the Kannada Wikipedia page when there is one, else the English page beside it
+      [].forEach.call(r.querySelectorAll(".cr"), function (c) {
+        var en = c.querySelectorAll(".en a[href]"), W = (window.CONTENT && CONTENT.wiki && CONTENT.wiki[ind]) || {};
+        [].forEach.call(c.querySelectorAll(".mr a[href]"), function (a, i) {
+          var h = decodeURI(a.getAttribute("href")), to = W[h] || (en[i] && en[i].getAttribute("href"));
+          if (!to) return;
+          ["href", "hreflang", "aria-label"].forEach(function (x) {
+            OLD.push([a, x, a.getAttribute(x)]);
           });
+          a.href = to;
+          a.hreflang = W[h] ? ind : "en";
+          var l = a.getAttribute("aria-label") || "";
+          a.setAttribute("aria-label", l.replace(/ — .*$/, "") + (W[h] ? " — ವಿಕಿಪೀಡಿಯ" : " — Wikipedia (English)") + " ↗");
         });
       });
     },
@@ -194,20 +205,14 @@
     },
   };
 
-  // The whole run of sections and pieces, in reading order (the order of the evening routine)
-  window.renderPieces = function (C) {
-    var all = [];
-    C.categories.forEach(function (c) {
-      c.pieces.forEach(function (p) { all.push(p); });
-    });
-    var h = "", i = 0;
-    C.categories.forEach(function (c) {
-      h += group(c);
-      c.pieces.forEach(function (p) {
-        h += piece(p, all[i - 1], all[i + 1], C.ui);
-        i++;
-      });
-    });
-    return h;
+  // One piece: for the reading page (js/core/page.js), with the pieces before and after it in reading order for its
+  // Previous / Next
+  window.renderPiece = function (p, C, prev, next) {
+    return piece(p, prev || null, next || null, C.ui);
+  };
+  // A section's row (वैदिक मंत्र, आरती), before its pieces (js/core/page.js): hidden on screen, it heads the section in
+  // a printout
+  window.renderGroup = function (c) {
+    return group(c);
   };
 })();
