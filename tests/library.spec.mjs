@@ -79,6 +79,21 @@ test("each search shows its best results at the top, above the box and the keybo
   expect(Math.abs(r.j - r.h)).toBeLessThan(1);
   expect(Math.abs(r.b - (r.h - 300))).toBeLessThan(1);
   expect(r.pb).toBe("10px");
+  // an iPhone also slides the screen up as its keyboard opens (here 100px of a 400px keyboard): the Library goes down by
+  // as much (--vvt), so on screen its top is still under the top bar, and the box still just above the keyboard
+  const top0 = await page.evaluate(() => document.getElementById("jump").getBoundingClientRect().top);
+  await page.locator("#jump").evaluate((j) => {
+    j.style.setProperty("--kb", "400px");
+    j.style.setProperty("--vvt", "100px");
+  });
+  const s = await page.evaluate(() => ({
+    t: document.getElementById("jump").getBoundingClientRect().top,
+    b: document.getElementById("qbar").getBoundingClientRect().bottom,
+    h: innerHeight,
+  }));
+  expect(Math.abs(s.t - (top0 + 100))).toBeLessThan(1);
+  // (seen from the slid screen, 100px up: the box ends at the keyboard's top, h - 400)
+  expect(Math.abs(s.b - 100 - (s.h - 400))).toBeLessThan(1);
 });
 
 test("Recent: the places gone to from search, newest first; × takes one away, Clear all; kept after a reload @mobile", async ({ page }) => {
