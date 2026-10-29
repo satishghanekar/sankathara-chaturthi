@@ -132,8 +132,9 @@ export function trSet(st, fin) {
         return a + c.toUpperCase();
       });
     var v = ia ? t.i : t.s;
+    // the heading and the titles in the Library and the left menu (not the language tag in the home page's list)
     [].forEach.call(
-      document.querySelectorAll("#" + t.id + ' header h2 > .en, a[data-go="' + t.id + '"] .en'),
+      document.querySelectorAll("#" + t.id + ' header h2 > .en, a[data-go="' + t.id + '"] > .en'),
       function (e) {
         if (!e.closest("small")) e.textContent = v;
       },

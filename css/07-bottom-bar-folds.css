@@ -440,7 +440,7 @@
     font: 600 14px/1.2 var(--lat);
     color: var(--muted);
   }
-  #g-pooja[data-lang="en"] #pfb .en,
+  #g-vedic-chant[data-lang="en"] #pfb .en,
   #g-aarti[data-lang="en"] #xfb .en {
     font: 700 17px/1.2 var(--lat);
     color: var(--accent);

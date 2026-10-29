@@ -303,14 +303,14 @@ export function init() {
     function build(mode, ids, into) {
       write(into || pv, mode, source(ids));
     }
-    // the pieces to print and the groups (पूजा, आरती) the contents list them under, with each group's name
+    // the pieces to print and the sections (वैदिक मंत्र, आरती) the contents list them under, with each one's name
     /** @param {string[] | null} sel */
     function source(sel) {
       /** @type {any} */
       var C = window.CONTENT,
         all = [],
-        groups = (C ? C.groups : []).map(function (/** @type {any} */ g) {
-          var head = /** @type {HTMLElement | null} */ (document.querySelector("#" + g.id + " button")),
+        groups = (C ? C.categories : []).map(function (/** @type {any} */ g) {
+          var head = /** @type {HTMLElement | null} */ (document.querySelector("#g-" + g.id + " button")),
             gs = g.pieces
               .filter(function (/** @type {any} */ p) {
                 return !sel || sel.indexOf(p.id) >= 0;
@@ -343,7 +343,7 @@ export function init() {
       var h = /** @type {HTMLElement} */ (sec.querySelector("header h2"));
       return title(tag, cls, part(h, "mr"), part(h, "en"), (h.querySelector(".nm") || {}).textContent || "", (h.querySelector(".ne") || {}).textContent || "");
     }
-    // The contents: the printout's title, then each group (पूजा, आरती) and its texts, as a plain list (no page numbers)
+    // The contents: the printout's title, then each section (वैदिक मंत्र, आरती) and its texts, as a plain list (no page numbers)
     /** @param {HTMLElement} into @param {any} src */
     function contents(into, src) {
       var cov = mk("section", "pvcov");
@@ -504,11 +504,11 @@ export function init() {
     // ---- The print builder (as in Nitya Upasana): What (js/print/what.js), then How (the rows below) ----
     // On a phone one step at a time (data-step on #prm: Next, and ‹ What to print back); from 760px side by side
     // (css/03-menus-print-view.css). The bottom bar keeps the running total and Next or Print.
-    // The shelves: the reading page's groups (पूजा, आरती) and their texts, in reading order
+    // The shelves: the reading page's sections (वैदिक मंत्र, आरती) and their texts, in reading order
     function shelves() {
       /** @type {any} */
       var C = window.CONTENT;
-      return (C ? C.groups : []).map(function (/** @type {any} */ g) {
+      return (C ? C.categories : []).map(function (/** @type {any} */ g) {
         return {
           category: { id: g.id, name: g.name },
           texts: g.pieces.map(function (/** @type {any} */ p) {

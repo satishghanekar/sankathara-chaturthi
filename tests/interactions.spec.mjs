@@ -103,6 +103,36 @@ test("the Library lists every text and jumps to one", async ({ page }) => {
   expect(page.url()).toContain("#a5");
 });
 
+// Home lists the evening (content/routines.json), as Nitya Upasana's Today card lists a session; a title goes to that
+// text in the one scroll, and Next goes on to the next text of the evening
+test("home lists the evening's texts; a title opens that text and Next goes on @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await expect(page.locator("#tsh")).toHaveText("संध्याकाळ · Evening");
+  await expect(page.locator("#tsn")).toHaveText("11 texts", { useInnerText: true });
+  expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.dataset.go))).toEqual(["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"]);
+  await expect(page.locator("#tsl li").first()).toContainText("Ganapati Atharvashirsha");
+  await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("Sanskrit", { useInnerText: true });
+  await page.locator('#tsl a[data-go="a3"]').click();
+  await page.waitForTimeout(400);
+  const top = await page.locator("#a3").evaluate((e) => e.getBoundingClientRect().top);
+  expect(Math.abs(top)).toBeLessThan(200);
+  await page.locator("#asn").click();
+  await page.waitForTimeout(500);
+  expect(page.url()).toContain("#a4");
+});
+
+test("the evening's list follows the menu language @mobile", async ({ page }) => {
+  await openSite(page, { ...SETUPS.marathi, ui: "mr" });
+  await expect(page.locator("#tsn")).toHaveText("११ रचना", { useInnerText: true });
+  await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("संस्कृत", { useInnerText: true });
+});
+
+test("the evening's list is in Kannada letters when they are chosen @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.kannada);
+  await expect(page.locator("#tsh span").first()).toHaveText("ಸಂಧ್ಯಾಕಾಳ");
+  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("ಗಣಪತೀಚೀ ಆರತೀ");
+});
+
 test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await page.locator("#asq").click();
@@ -190,7 +220,7 @@ test("piece fold is remembered across a reload @mobile", async ({ page }) => {
   await expect(page.locator("#a2 .items")).toBeVisible();
 });
 
-test("Pooja and Aarti section folds @mobile", async ({ page }) => {
+test("Vedic Chant and Aarti section folds @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await page.locator("#pfb").click();
   expect(await rootAttr(page, "data-pf")).toBe("1");

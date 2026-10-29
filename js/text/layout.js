@@ -72,7 +72,7 @@ export function init() {
     if (!r) return;
     var h = "";
     libraryGroups().forEach(function (g) {
-      // the group name is a link to its section row (पूजा → Pooja, आरती → Aarti)
+      // the group name is a link to its section row (वैदिक मंत्र → Vedic Chant, आरती → Aarti)
       h += '<a class="rg" href="#' + g.id + '" data-go="' + g.id + '">' + g.name + "</a><ul>";
       g.items.forEach(function (x) {
         h += '<li><a href="#' + x.id + '" data-go="' + x.id + '">' + x.html + "</a></li>";

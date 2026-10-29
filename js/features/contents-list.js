@@ -1,4 +1,4 @@
-// The Library: every text by group (पूजा, आरती) inside the Library + search overlay, built from the texts themselves
+// The Library: every text by section (वैदिक मंत्र, आरती) inside the Library + search overlay, built from the texts themselves
 // (CONTENT, js/text/load.js), as Nitya Upasana's Library is
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
@@ -39,7 +39,7 @@ export function init() {
 }
 
 /**
- * The groups and their texts, for the Library and the left menu (js/text/layout.js): each group's name and each text's
+ * The sections and their texts, for the Library and the left menu (js/text/layout.js): each group's name and each text's
  * number and title, in both languages (the page shows the one chosen), already in the chosen script
  * @returns {{ id: string, name: string, items: { id: string, html: string }[] }[]}
  */
@@ -48,11 +48,11 @@ export function libraryGroups() {
   function two(x) {
     return '<span class="mr">' + esc(SCR.to(x.mr)) + '</span><span class="en" lang="en">' + esc(x.en) + "</span>";
   }
-  return (window.CONTENT ? window.CONTENT.groups : []).map(function (g) {
+  return (window.CONTENT ? window.CONTENT.categories : []).map(function (c) {
     return {
-      id: g.id,
-      name: two(g.name),
-      items: g.pieces.map(function (p) {
+      id: "g-" + c.id,
+      name: two(c.name),
+      items: c.pieces.map(function (p) {
         return { id: p.id, html: '<span class="no"><span class="nm">' + esc(SCR.to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title) };
       }),
     };

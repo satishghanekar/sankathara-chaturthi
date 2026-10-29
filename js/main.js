@@ -39,6 +39,7 @@ import { init as startReadingSheet } from "./features/reading-sheet.js";
 import { init as startWakeLock } from "./features/wake-lock.js";
 import { init as startHistory } from "./features/history.js";
 import { init as startLanguages } from "./features/languages.js";
+import { init as startSessionCard } from "./features/session-card.js";
 import { init as startContentsList } from "./features/contents-list.js";
 import { init as startClicks } from "./features/clicks.js";
 import { init as startPinch } from "./features/pinch.js";
@@ -73,6 +74,7 @@ function start() {
     startWakeLock(); // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
     startHistory(); // Back button
     startLanguages(); // Settings page: languages
+    startSessionCard(); // Home: the evening's texts (content/routines.json), as Nitya Upasana's Today card
     startContentsList(); // Contents list inside the contents + search overlay (built from the home page contents)
     startClicks(); // Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it
     startPinch(); // Pinch with two fingers to change the text size (the page itself never zooms)

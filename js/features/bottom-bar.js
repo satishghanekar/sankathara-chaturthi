@@ -20,7 +20,7 @@ export function init() {
   // Its parts share the "as" prefix (asc, asv, ash, asq, asb, asn) because it began as the autoscroll bar.
   // ▶ appears only when autoscroll is released (FEAT_AS) and switched on in Settings (P.ason; root data-ason).
   //
-  // Autoscroll (held back for a later release, see FEAT_AS): runs through every open section (Pooja, aartis,
+  // Autoscroll (held back for a later release, see FEAT_AS): runs through every open section (Vedic Chant, aartis,
   // and any added later). Turning it on folds the home card and the contents, opens every piece, and scrolls
   // line by line: each sung line gets the same time (a little more for long lines), whatever its height.
   // With the dhrupad shown once, each ↻ ध्रुपद marker holds the page while the dhrupad is sung and shows it
@@ -297,7 +297,7 @@ function asStart() {
   // keep the piece in view where it is while the rest folds away
   var c0 = cur(),
     t0 = c0 && c0.getBoundingClientRect().top;
-  // fold the home card, open every piece; a folded section (Pooja / Aarti) stays folded and is skipped,
+  // fold the home card, open every piece; a folded section (Vedic Chant / Aarti) stays folded and is skipped,
   // unless every section is folded, then all open again
   /** @type {Record<string, any>} */
   var ch = { fold: 1, af: [] };
@@ -406,7 +406,7 @@ function asGo(sel) {
     a = c && c.querySelector(".pn " + sel);
   if (a) a.click();
   else if (!c && sel === ".next") {
-    // from the home page: the first piece (the Pooja, or Aarti 1 when the Pooja is folded)
+    // from the home page: the first piece (the Atharvashirsha, or Aarti 1 when Vedic Chant is folded): the evening's list
     var f = document.querySelector('#home a[data-go="' + (P.pf ? "a1" : "p1") + '"]');
     if (f) f.click();
   }

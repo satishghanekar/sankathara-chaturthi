@@ -45,7 +45,7 @@ export function defaults(env) {
     pskip: [], // texts left out of the printout (their piece ids: a1, p1 …), unticked under What to print; a new text prints
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
-    pf: 0, // Pooja section folded (for those who come only for the aartis)
+    pf: 0, // Vedic Chant section folded (for those who come only for the aartis)
     xf: 0, // Aarti section folded
     tf: 0, // home contents list folded
     af: [], // ids of folded pieces

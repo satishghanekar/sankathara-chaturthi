@@ -4,6 +4,7 @@
    The home card and the decorations at the ends of the pieces.
    Sections:
    - The top of the home page sits on a raised "paper sheet"
+   - The evening's texts (#tsc, js/features/session-card.js), as Nitya Upasana's Today card lists a session
    - Offline: a small muted cloud in the top bar (#ofb) while there is no internet; the saved copy is in use. …
    - Lotus ornament at the end of each piece
    - Home page saffron band with ॐ
@@ -65,6 +66,114 @@
     background: none;
     border: 0;
     box-shadow: none;
+  }
+}
+
+/* ==== The evening's texts (#tsc, js/features/session-card.js), as Nitya Upasana's Today card lists a session
+   (css/10-today.css there): the heading and how many texts, then each text numbered, its two titles and its
+   language. Framed like the card above it. ==== */
+#tsc {
+  background: var(--hdr);
+  border: 1px solid var(--hdrl);
+  border-top: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 6px 12px 2px;
+  margin-bottom: 8px;
+  font: 400 15px/1.4 var(--lat);
+}
+#tsc[hidden] {
+  display: none;
+}
+#tsc[data-lang="mr"] {
+  font-family: var(--body);
+}
+.tshd {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 2px;
+}
+#tsh {
+  margin: 0;
+  font: 400 22px/29px var(--head);
+  color: var(--accent);
+}
+#tsh [lang="en"] {
+  font-family: var(--head);
+}
+#tsn {
+  flex: none;
+  color: var(--muted);
+  font-size: 14px;
+}
+#tsl {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#tsl li {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  border-bottom: 1px solid var(--rule);
+}
+#tsl li:last-child {
+  border-bottom: 0;
+}
+#tsl .tgo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 4px 2px;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: 8px;
+}
+#tsl .tno {
+  flex: none;
+  min-width: 1.6em;
+  color: var(--muted);
+  font: 400 14px/1 var(--body);
+  text-align: right;
+}
+#tsl .tt {
+  flex: 1;
+  min-width: 0;
+}
+#tsl .tt .t1 {
+  display: block;
+  font: 400 19px/26px var(--head);
+  overflow-wrap: anywhere;
+}
+#tsl .tt .t2 {
+  display: block;
+  color: var(--muted);
+  font: 400 12.5px/17px var(--lat);
+}
+#tsl .ttg {
+  flex: none;
+  padding: 1px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+#tsc[data-lang="mr"] .ttg {
+  font-family: var(--body);
+}
+#tsl a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+@media print {
+  #tsc {
+    display: none;
   }
 }
 

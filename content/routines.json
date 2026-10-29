@@ -1,23 +1,8 @@
-[
- {
-  "id": "g-pooja",
-  "btn": "pfb",
-  "name": {
-   "mr": "पूजा",
-   "en": "Pooja"
-  },
+{
+ "evening": {
+  "mode": "fixed",
   "texts": [
-   "vedic-chant-atharvashirsha"
-  ]
- },
- {
-  "id": "g-aarti",
-  "btn": "xfb",
-  "name": {
-   "mr": "आरती",
-   "en": "Aarti"
-  },
-  "texts": [
+   "vedic-chant-atharvashirsha",
    "aarti-sukhkarta",
    "aarti-shendur-lal-chadhayo",
    "aarti-durge-durghat-bhari",
@@ -30,4 +15,4 @@
    "aarti-jai-jagdish-hare"
   ]
  }
-]
+}

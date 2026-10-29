@@ -44,7 +44,7 @@ const EXTRAS = [
   { name: "kannada-single-column", prefs: SETUPS.kannada, choice: "pr1", mode: "one" },
   { name: "dhrupad-every-verse-single", prefs: SETUPS["marathi-every-verse"], choice: "pr1", mode: "one" },
   { name: "marathi-menus-single-column", prefs: SETUPS["marathi-menus"], choice: "pr1", mode: "one" },
-  // Folded on screen: the Pooja section, the Aarti section and two pieces. All must still print.
+  // Folded on screen: the Vedic Chant section, the Aarti section and two pieces. All must still print.
   { name: "everything-folded", prefs: { ...SETUPS.marathi, pf: 1, xf: 1, af: ["a3", "a7"], tf: 1, fold: 1 }, choice: "pr1", mode: "one" },
   { name: "a4-kannada-single-column", prefs: SETUPS.kannada, choice: "pr1", mode: "one", paper: "A4", locale: "en-GB" },
 ];
@@ -132,7 +132,7 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await expect(page.locator("#prsum")).toContainText("11 texts");
   // the groups of the reading page, in its order
   await expect(page.locator("#prwl .prgr")).toHaveCount(2);
-  expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["g-pooja", "g-aarti"]);
+  expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["vedic-chant", "aarti"]);
   // Clear everything: nothing to print, so Next waits
   await page.locator('.prcb[data-cat=""]').click();
   await expect(page.locator("#prsum")).toContainText("Pick at least one text");
@@ -194,8 +194,8 @@ test("print builder: a group's Select all and Clear, and one text alone @chromiu
   await expect(page.locator("#prhw")).toBeVisible();
   await expect(page.locator("#prnx")).toBeHidden();
   await expect(page.locator("#prgp")).toBeFocused();
-  const first = page.locator('#prwl .prgr[data-cat="g-pooja"]'),
-    second = page.locator('#prwl .prgr[data-cat="g-aarti"]');
+  const first = page.locator('#prwl .prgr[data-cat="vedic-chant"]'),
+    second = page.locator('#prwl .prgr[data-cat="aarti"]');
   await first.locator(".prcb").click();
   expect(await first.locator("input").evaluateAll((l) => l.every((x) => !x.checked))).toBe(true);
   expect(await second.locator("input").evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
