@@ -7,11 +7,12 @@ The site is one page, `index.html`, plus plain CSS and JavaScript files. **There
 ## What happens when the page opens
 
 1. **`<head>`** loads the 11 style files in `css/` in number order, then `js/parts.js`, the one list of the site's files. `modulepreload` links fetch the script parts in parallel.
-2. **`<body>`** has the top bar, Settings, the home page and the dialogs, written in HTML. Help's text sits in a `<template>` and is only laid out when Help is first opened.
-3. **At the end of `<main>`**, `#pieces` marks where the pieces go, and the plain script `js/render.js` defines `renderPieces` (the pieces' HTML) and `SCR` (Kannada letters).
-4. **`js/main.js`** (`<script type="module">`) starts the site script. First `js/text/load.js` fetches `content/library.json`, `content/categories.json` (the sections, वैदिक मंत्र and आरती, as in Nitya Upasana) and `content/routines.json` (the evening the home page lists) and the text files in `content/texts/`, `js/text/content.js` builds `CONTENT` from them (reading each file with `js/text/format.js`), and `renderPieces` puts the pieces in place of `#pieces` (rewritten in Kannada letters when chosen). Only then does it call each part's `init()` in a fixed order (listed in `js/README.md`), and set `data-ready` on `<html>`. So every part finds the pieces in the page, as if they had been written in the HTML. If the texts can't be loaded, the parts start anyway.
-5. **Until `data-ready` is set, the page is hidden.** The reader's theme, languages and folds, the fitted text size and the date card all arrive in step 4. Showing the page before that made the home page jump down by about 90px on a phone (layout shift 0.13). If the script never runs, the page shows after 1.5 s anyway.
-6. **After the page is shown:**
+2. **The splash** (`#spl`, the first thing in `<body>`, set up by the plain script `js/splash.js`) shows from the first paint: the app's picture, as on Home, the name, and the eight lamps around Ganesha lighting up in turn (as in Nitya Upasana, whose splash lights its seven stars). `js/splash.js` also puts the reader's theme from the boot copy of the settings on `<html>`, so the splash matches it. It fades out once `data-ready` is set (styles in `css/02-core.css`, "Splash"), or after 10 s if the site script never starts.
+3. **`<body>`** has the top bar, Settings, the home page and the dialogs, written in HTML. Help's text sits in a `<template>` and is only laid out when Help is first opened.
+4. **At the end of `<main>`**, `#pieces` marks where the pieces go, and the plain script `js/render.js` defines `renderPieces` (the pieces' HTML) and `SCR` (Kannada letters).
+5. **`js/main.js`** (`<script type="module">`) starts the site script. First `js/text/load.js` fetches `content/library.json`, `content/categories.json` (the sections, वैदिक मंत्र and आरती, as in Nitya Upasana) and `content/routines.json` (the evening the home page lists) and the text files in `content/texts/`, `js/text/content.js` builds `CONTENT` from them (reading each file with `js/text/format.js`), and `renderPieces` puts the pieces in place of `#pieces` (rewritten in Kannada letters when chosen). Only then does it call each part's `init()` in a fixed order (listed in `js/README.md`), and set `data-ready` on `<html>`. So every part finds the pieces in the page, as if they had been written in the HTML. If the texts can't be loaded, the parts start anyway.
+6. **Until `data-ready` is set, the page is hidden** (the splash covers it meanwhile). The reader's theme, languages and folds, the fitted text size and the date card all arrive in step 5. Showing the page before that made the home page jump down by about 90px on a phone (layout shift 0.13). If the script never runs, the page shows after 1.5 s anyway.
+7. **After the page is shown:**
    - The service worker (`sw.js`) saves the site for offline use.
    - Fonts that arrive late trigger one refit of the text size.
    - The print view is warmed up in an idle moment.
@@ -60,14 +61,16 @@ These hold for every text, so a new text prints correctly as soon as its file ex
 
 ## Offline use and updates
 
-- `sw.js` keeps the page, every file in `js/parts.js` and every font file in a cache named after the version (`aarti-v1.2`).
-  - The page and its parts are always fetched fresh when possible, with a 3 s limit before the saved copy is used, so the page never mixes old and new parts.
-  - Everything else comes from the saved copy and is refreshed in the background.
+- `sw.js` keeps the page, every file in `js/parts.js` (styles, scripts, texts, the fonts, the picture and icons) in a cache named after the version (`aarti-v1.2`).
+  - Every file comes from the saved copy of this version whenever it has it, at once and without asking the network, so start-up takes the same time with a weak connection or none. A file not saved yet (a first visit still saving) is fetched and then kept.
+  - Nothing is downloaded again until a new version is published. Opening the site online lets the browser notice the changed `sw.js`; the new worker saves a whole fresh copy in a new cache (the font files are copied from the old one), takes over, and deletes the old copy. The page already open keeps running; the next launch opens the new version. If a file can't be fetched, that install fails and the old version stays until the next launch tries again, so the saved copy is never a mix of two versions (a first visit, with nothing to fall back on, goes on without the file and `js/features/offline.js` saves it later; "Offline ready" shows only once every file is saved).
+  - Requests made with `cache: 'no-store'` or `'reload'` (Check for updates, the page saving missing files) go straight to the network.
   - If the saved copy cannot be read within 2 s, the request goes to the network. Safari's storage can stall, and a Mac once sat on a blank page because of it.
 - **The version is written twice on purpose:** in `sw.js` (`V`) and in `<meta name="version">` in `index.html`.
   - Browsers install a new service worker when `sw.js` itself changes. Not every browser re-checks the files it imports, so the version must sit in `sw.js`.
   - The page needs the version at start-up too.
   - `tests/offline.spec.mjs` fails if the two differ.
+- **Check for updates** (the version line in Settings → More → About, `js/features/offline.js`) fetches the page and each file in `js/parts.js` fresh. If any changed, it saves them over the saved copy and asks for the new `sw.js` (waiting until a new version is in charge, 20 s at most), then reloads, so it finds changes even when the version stays the same.
 - **`_headers`** lets phones keep font files for a year and pictures for a week without asking again. The page, styles and scripts are always re-checked (`no-cache`), so an update reaches readers on their next visit.
 
 ## Oldest supported browsers, and the fallbacks they need
@@ -81,7 +84,7 @@ The floor is **iOS 15.4** (iPhone 6s / 7, iPad Air 2 / mini 4 run up to iOS 15.8
 | `setTimeout` when there is no `requestIdleCallback` | Safari has no `requestIdleCallback`, so the print warm-up just waits a moment. |
 | Class `wk` on `<html>` | WebKit's print layout (see Printing). |
 | `meta[name="version"]` read with a default | The page still runs if the tag is missing. |
-| 1.5 s reveal | The page shows even if the site script fails to start. It also works when the phone asks for reduced motion, which turns off every other animation. |
+| 1.5 s reveal, 10 s splash limit | The page shows, and the splash goes, even if the site script fails to start. It also works when the phone asks for reduced motion, which turns off every other animation. |
 
 ## Things tried and rejected
 

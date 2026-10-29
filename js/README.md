@@ -2,7 +2,7 @@
 
 There is no build step: the browser loads these files as they are.
 
-- `parts.js` and `render.js` are plain scripts. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
+- `parts.js`, `splash.js` and `render.js` are plain scripts. `splash.js` sets up the splash shown until the page is ready (`#spl`: the app's picture with its lamps lit in turn) and puts the reader's theme on `<html>` early. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
 - The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json`, `../content/categories.json` (the reading page's sections) and `../content/routines.json` (the evening, into `loaded`), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
 - `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (and `store/`, the settings as data) (`features/overlays.js` is imported by the parts that use it).
 
