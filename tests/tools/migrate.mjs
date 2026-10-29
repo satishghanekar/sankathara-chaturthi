@@ -7,6 +7,8 @@
 //
 // Kept for the record. The text files are now the source: edit them, not pieces.js, and don't run this again
 // (it would overwrite the files with the old texts).
+// It writes the site as it was then: content/groups.json has since become content/routines.json and the sections
+// come from content/categories.json, as in Nitya Upasana (v1.6, 2026-10-29).
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { isDeepStrictEqual } from "node:util";
 import vm from "node:vm";

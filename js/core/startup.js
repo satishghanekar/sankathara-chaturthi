@@ -86,7 +86,7 @@ export function init() {
       goPos = function () {
           if (moved) return;
           var el = sp.id && document.getElementById(sp.id);
-          if (el && el.offsetParent === null) return; // a folded Pooja piece: stay at the top
+          if (el && el.offsetParent === null) return; // a folded Vedic Chant piece: stay at the top
           scrollTo(0, el ? el.getBoundingClientRect().top + scrollY + sp.y : sp.y);
         };
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";

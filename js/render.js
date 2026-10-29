@@ -60,8 +60,10 @@
     h += '    <nav class="pn">\n' + navLink("prev", prev, ui.prev, true) + "      " + PNQ + "\n" + navLink("next", next, ui.next, false) + "    </nav>\n";
     return h + "  </section>\n";
   }
-  function group(g) {
-    return '  <div class="grp" id="' + g.id + '"><button type="button" id="' + g.btn + '" aria-expanded="true">' + two(g.name) + ICON_FOLD + "</button></div>\n";
+  // A section's heading row (g-vedic-chant, g-aarti), with the button that folds it (js/core/apply.js)
+  var FOLD_BTN = { "vedic-chant": "pfb", aarti: "xfb" };
+  function group(c) {
+    return '  <div class="grp" id="g-' + c.id + '"><button type="button" id="' + FOLD_BTN[c.id] + '" aria-expanded="true">' + two(c.name) + ICON_FOLD + "</button></div>\n";
   }
 
   // ---- The same words in another Indian script (Settings → Main language → ಕನ್ನಡ) ----
@@ -102,7 +104,7 @@
   var S = SCRIPTS[ind],
     OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed
     ROOTS = ".grp, .ash, #home .hl1, #home h1, #btt",
-    LATER = "#rail, #jl"; // built by the site script (js/text/layout.js, js/features/contents-list.js) from the texts, already in the chosen script
+    LATER = "#rail, #jl, #tsc"; // built by the site script (js/text/layout.js, js/features/contents-list.js, js/features/session-card.js) from the texts, already in the chosen script
   window.SCR = {
     k: S ? ind : "", // "" while the text is shown as written
     // Devanagari → the chosen script
@@ -192,16 +194,16 @@
     },
   };
 
-  // The whole run of groups and pieces, in reading order
+  // The whole run of sections and pieces, in reading order (the order of the evening routine)
   window.renderPieces = function (C) {
     var all = [];
-    C.groups.forEach(function (g) {
-      g.pieces.forEach(function (p) { all.push(p); });
+    C.categories.forEach(function (c) {
+      c.pieces.forEach(function (p) { all.push(p); });
     });
     var h = "", i = 0;
-    C.groups.forEach(function (g) {
-      h += group(g);
-      g.pieces.forEach(function (p) {
+    C.categories.forEach(function (c) {
+      h += group(c);
+      c.pieces.forEach(function (p) {
         h += piece(p, all[i - 1], all[i + 1], C.ui);
         i++;
       });
