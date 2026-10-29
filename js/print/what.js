@@ -1,8 +1,8 @@
 // @ts-check
-// The print builder, step 1, What (as in Nitya Upasana's js/print/what.js, its Library tab): the reading page's groups
-// (पूजा, आरती), a checkbox for each text, search, Select all or Clear for each group and for everything. (No page
-// counts: the browser lays the pages out as it prints, js/features/print.js.) This site has no routines, so Nitya
-// Upasana's Today and Routine tabs are not here.
+// The print builder, step 1, What (as in Nitya Upasana's js/print/what.js, its Library tab): the reading page's sections
+// (वैदिक मंत्र, आरती), a checkbox for each text, search, Select all or Clear for each section and for everything. (No page
+// counts: the browser lays the pages out as it prints, js/features/print.js.) This site's one routine is the whole
+// page, so Nitya Upasana's Today and Routine tabs are not here.
 // Ticking changes nothing on the reading page; js/features/print.js reads pick() when Print is tapped, and keeps the
 // texts left out (P.pskip) so the next printout starts with the same choice.
 // The words follow the menu language (P.ui); the titles follow the reading languages: the first language large, the
@@ -14,8 +14,8 @@ import { esc, lead, num, scr, scrKey, second, ui } from "../core/words.js";
 /**
  * @typedef {{ id: string, sec: string, title: string, titleEn: string, language: string }} WhatText  id: the piece's
  *   id (a1, p1), as P.pskip keeps it; sec: the same, its section on the reading page
- * @typedef {{ category: { id: string, name: { mr: string, en: string } }, texts: WhatText[] }} WhatShelf  a group of
- *   the reading page and its texts
+ * @typedef {{ category: { id: string, name: { mr: string, en: string } }, texts: WhatText[] }} WhatShelf  a section of
+ *   the reading page (a category: vedic-chant, aarti) and its texts
  * @typedef {{ shelves: () => WhatShelf[], onChange: () => void }} WhatOptions
  */
 

@@ -174,7 +174,7 @@ export async function printOnce(browser, { prefs, choice, mode, paper, locale, s
   // upright pages unless the test says otherwise (por: "land" sideways, "" each layout on its best page)
   await openSite(page, { por: "up", ...prefs }, { errors });
   // Every text, in reading order, for the completeness check
-  const onScreen = await page.evaluate(() => window.CONTENT.groups.flatMap((g) => g.pieces.map((p) => p.id)));
+  const onScreen = await page.evaluate(() => window.CONTENT.categories.flatMap((g) => g.pieces.map((p) => p.id)));
   const source = await sourceLines(page);
   await printFromButton(page, choice);
   const pv = await readPrintView(page);
@@ -272,7 +272,7 @@ export const squash = (s) =>
 export function sourceLines(page) {
   return page.evaluate(() =>
     Object.fromEntries(
-      window.CONTENT.groups.flatMap((c) =>
+      window.CONTENT.categories.flatMap((c) =>
         c.pieces.map((p) => [
           p.id,
           // (a dhrupad line typed into a verse, rf, prints only with the dhrupad after every verse)

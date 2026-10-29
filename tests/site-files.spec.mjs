@@ -40,6 +40,6 @@ test("every file in js/parts.js exists", () => {
 
 test("js/parts.js lists the texts in content/library.json, so every text is kept for offline use", () => {
   const lib = JSON.parse(readFileSync(new URL("../content/library.json", import.meta.url), "utf8"));
-  expect(parts.content).toEqual(["content/library.json", "content/categories.json", "content/groups.json", ...lib.texts.map((t) => "content/" + t.file)]);
+  expect(parts.content).toEqual(["content/library.json", "content/categories.json", "content/routines.json", ...lib.texts.map((t) => "content/" + t.file)]);
   for (const f of parts.content) expect(parts.all).toContain(f);
 });
