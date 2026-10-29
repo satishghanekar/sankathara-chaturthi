@@ -1,7 +1,7 @@
 // Current piece, menus and apply()
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { root, secs } from "./page.js";
+import { onPiece, root, secs } from "./page.js";
 import { P, change } from "./state.js";
 import { apply, mark } from "../features/bars.js";
 
@@ -62,7 +62,7 @@ export function init() {
   });
   // Each piece has a ⌃ button in its heading that folds it down to the heading
   if (!Array.isArray(P.af)) P.af = [];
-  secs.forEach(function (x) {
+  onPiece(function (x) {
     var h = x.querySelector("header");
     if (!h) return;
     var b = document.createElement("button");

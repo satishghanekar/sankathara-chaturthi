@@ -2,6 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { P, dfs } from "../core/state.js";
+import { onPiece } from "../core/page.js";
 
 export var ZW;
 
@@ -12,7 +13,13 @@ export function init() {
   // Browsers fill a row greedily and may break at any later space instead, so each part is wrapped in an
   // inline-block span (.zs): the row then breaks between parts. The text itself is not changed.
   ZW = "\u200b";
-  [].forEach.call(document.querySelectorAll(".verse .mr p"), function (p) {
+  onPiece(breakLines);
+  if (!P.fsu) P.fs = dfs();
+}
+
+// The preferred breaks in every line inside r (the page, or a printout's copy: js/print/compose.js)
+export function breakLines(/** @type {ParentNode} */ r) {
+  [].forEach.call(r.querySelectorAll(".verse .mr p"), function (p) {
     if (p.textContent.indexOf(ZW) >= 0)
       zsplit(
         p,
@@ -22,11 +29,10 @@ export function init() {
         ZW
       );
   });
-  [].forEach.call(document.querySelectorAll(".verse .en p"), function (p) {
+  [].forEach.call(r.querySelectorAll(".verse .en p"), function (p) {
     zsplit(p, enCut, "");
   });
-  [].forEach.call(document.querySelectorAll(".ash.prose .verse p"), glue);
-  if (!P.fsu) P.fs = dfs();
+  [].forEach.call(r.querySelectorAll(".ash.prose .verse p"), glue);
 }
 
 export function enCut(t) {

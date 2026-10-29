@@ -1,7 +1,7 @@
 // Offline use: home-screen app details and the service worker (sw.js)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { flash } from "../core/page.js";
+import { flash, onPiece } from "../core/page.js";
 
 var FONTS, IMAGES, hd, l1, m1, m2, ofb, offv, OFV, CACHE, me, upd, updv, UPD, PARTS, ofSaved, fill;
 // whether every file is in the saved copy: null until known, false while one is missing
@@ -79,6 +79,10 @@ export function init() {
       });
     }
     crNet();
+    // (a piece built later: js/core/page.js)
+    onPiece(function () {
+      crNet();
+    });
     addEventListener("online", crNet);
     addEventListener("offline", crNet);
     ofSet(navigator.onLine === false ? "off" : "idle");

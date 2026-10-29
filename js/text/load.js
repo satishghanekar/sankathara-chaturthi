@@ -1,9 +1,9 @@
 // @ts-check
 // Loading the texts: fetches content/library.json and every text file it lists (content/texts/), and
 // content/categories.json (the sections, वैदिक मंत्र and आरती, their order and so the piece numbers), builds CONTENT from
-// them (js/text/content.js, as in Nitya Upasana), then has js/render.js write the pieces into the page where index.html
-// keeps their place (#pieces), in Kannada letters when that is the chosen language. js/main.js waits for this before it
-// starts the other parts, so they find the page as it was when the pieces were written into index.html.
+// them (js/text/content.js, as in Nitya Upasana) and turns the page into Kannada letters when that is the chosen
+// language. js/main.js waits for this before it starts the other parts; js/core/page.js then builds the pieces where
+// index.html keeps their place (#pieces).
 // It also fetches content/routines.json, the evening routine the home page lists (js/features/session-card.js), at the
 // same time; without it the texts still load and the list is empty.
 // The files are on the offline list (js/parts.js), so this works without internet too.
@@ -75,9 +75,8 @@ export function load() {
         w.CONTENT.categories = w.CONTENT.categories.filter(function (/** @type {{ pieces: unknown[] }} */ c) {
           return c.pieces.length;
         });
-        var at = /** @type {HTMLElement} */ (document.getElementById("pieces"));
-        at.insertAdjacentHTML("beforebegin", w.renderPieces(w.CONTENT));
-        at.parentNode && at.parentNode.removeChild(at);
+        // the pieces are built by js/core/page.js (pieceEl), each in the chosen script; the rest of the page is turned
+        // into it now
         w.SCR.page();
       });
     });
