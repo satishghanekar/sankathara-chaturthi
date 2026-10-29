@@ -2,13 +2,13 @@
 // (js/text/content.js) rebuilds, from content/library.json and content/texts/*.txt, an object identical to the
 // old window.CONTENT, frozen as it was in tests/unit/fixtures/pieces.js (the old content/pieces.js, unchanged).
 // Then the checks every text file must pass (the same list, ids, categories, no Unicode normalisation), and the
-// evening routine (content/routines.json), which lists every text in the reading page's order.
+// routine (content/routines.json), which names only texts of the Library.
 import { describe, expect, test } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import vm from "node:vm";
 import { parseText } from "../../js/text/format.js";
 import { buildContent, toPiece } from "../../js/text/content.js";
-import { textsFor } from "../../js/core/routine.js";
+import { SESSIONS, textsFor } from "../../js/core/routine.js";
 
 const read = (p) => readFileSync(new URL("../../" + p, import.meta.url), "utf8");
 const lib = JSON.parse(read("content/library.json"));
@@ -99,13 +99,18 @@ describe("content checks", () => {
     expect(lib.texts.map((t) => t.file).sort()).toEqual(names.map((f) => "texts/" + f).sort());
     expect(new Set(lib.texts.map((t) => t.id)).size).toBe(lib.texts.length);
   });
-  // the reading page is the evening, one text after another: the routine lists every text once, in the page's order
-  // (by category, as content/categories.json orders them, then as library.json lists them)
-  test("the evening routine is every text, in the reading page's order, the same every day", () => {
-    expect(Object.keys(routines)).toEqual(["evening"]);
-    expect(routines.evening.mode).toBe("fixed");
-    const page = pieces(buildContent(lib, files, categories)).map((p) => p.text);
-    for (let d = 0; d < 7; d++) expect(textsFor(routines, d, "evening")).toEqual(page);
+  // the routine, as Nitya Upasana's: its sessions (Morning, Afternoon, Evening; a session not in it is not shown) list
+  // texts of the Library, in the order they are read (js/features/session-card.js), which need not be the Library's
+  test("the routine's sessions name only texts in library.json, each once", () => {
+    for (const s of Object.keys(routines)) expect(SESSIONS).toContain(s);
+    const ids = new Set(lib.texts.map((t) => t.id));
+    for (const s of SESSIONS)
+      for (let d = 0; d < 7; d++) {
+        const got = textsFor(routines, d, s);
+        for (const id of got) expect(ids.has(id), s + ": " + id).toBe(true);
+        const raw = routines[s] && routines[s].mode === "fixed" ? routines[s].texts : [];
+        expect(raw.length, s).toBe(got.length);
+      }
   });
   test.each(lib.texts.map((t) => [t.id, t]))("%s: library.json agrees with the file", (id, entry) => {
     const t = parseText(files[id], entry.file);
