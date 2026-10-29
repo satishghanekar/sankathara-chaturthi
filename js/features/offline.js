@@ -3,12 +3,15 @@
 
 import { flash } from "../core/page.js";
 
-var FONTS, hd, l1, m1, m2, ofb, offv, OFV, CACHE, me, upd, updv, UPD, PARTS, ofSaved;
+var FONTS, IMAGES, hd, l1, m1, m2, ofb, offv, OFV, CACHE, me, upd, updv, UPD, PARTS, ofSaved, fill;
+// whether every file is in the saved copy: null until known, false while one is missing
+var whole = null;
 
 export function init() {
   // The cache name below must match the one in sw.js; change both on every deploy.
-  // Font files kept for offline use (the list is in js/parts.js, shared with sw.js)
+  // Font files and pictures kept for offline use (the lists are in js/parts.js, shared with sw.js)
   FONTS = SITE_PARTS.fonts;
+  IMAGES = SITE_PARTS.images;
   if (/^https?:$/.test(location.protocol)) {
     try {
       hd = document.head;
@@ -25,7 +28,7 @@ export function init() {
       m2.content = "Sankathara Chaturthi";
       hd.appendChild(m2);
     } catch (e) {}
-    // Offline: a small cloud in the top bar while there is no internet (#ofb), and in Settings → About whether the
+    // Offline: a small cloud in the top bar while there is no internet (#ofb), and in Settings → More → About whether the
     // site is saved for offline use (#offv). A short note says so once, when the first visit has saved it.
     ofb = document.getElementById("ofb");
     offv = document.getElementById("offv");
@@ -47,7 +50,7 @@ export function init() {
       offv.innerHTML = two(OFV[st]);
       ofb.hidden = st !== "off";
     }
-    // Check for updates (Settings → About, a tap on the version line): what it says on the right, in the menu language
+    // Check for updates (Settings → More → About, a tap on the version line): what it says on the right, in the menu language
     upd = document.getElementById("upd");
     updv = document.getElementById("updv");
     UPD = {
@@ -80,7 +83,7 @@ export function init() {
     addEventListener("offline", crNet);
     ofSet(navigator.onLine === false ? "off" : "idle");
     addEventListener("online", function () {
-      if (offv.getAttribute("data-s") === "off") ofSet("idle");
+      if (offv.getAttribute("data-s") === "off") ofSet(whole === false ? "save" : "idle");
       if (upd.getAttribute("data-s") === "off") updSet("");
     });
     updSet("");
@@ -123,6 +126,43 @@ export function init() {
         });
       });
     }
+    // The page opens from the saved copy (sw.js), so before reloading, the new files must be in it: a new version
+    // installs its own copy (sw.js changed), and files changed under the same version are saved over the old ones.
+    // Resolves once that is done, or after 20 s at most.
+    function newCopy() {
+      var fresh = Promise.resolve();
+      if ("caches" in window)
+        fresh = caches
+          .open(CACHE)
+          .then(function (c) {
+            return c.addAll(
+              ["./"].concat(PARTS).map(function (u) {
+                return new Request(u, { cache: "reload" });
+              }),
+            );
+          })
+          .catch(function () {});
+      var next = Promise.resolve();
+      if ("serviceWorker" in navigator)
+        next = navigator.serviceWorker
+          .getRegistration()
+          .then(function (g) {
+            return g && g.update().then(function () {
+              // a new version is installing: wait until it is in charge
+              if (!g.installing && !g.waiting) return;
+              return new Promise(function (res) {
+                navigator.serviceWorker.addEventListener("controllerchange", res);
+              });
+            });
+          })
+          .catch(function () {});
+      return Promise.race([
+        Promise.all([fresh, next]),
+        new Promise(function (res) {
+          setTimeout(res, 20000);
+        }),
+      ]);
+    }
     upd.onclick = function () {
       if (upd.getAttribute("data-s") === "busy") return;
       if (navigator.onLine === false) {
@@ -139,14 +179,9 @@ export function init() {
           setTimeout(function () {
             if (changed) {
               flash("नवीन आवृत्ती, उघडत आहे…", "New version, loading…");
-              try {
-                navigator.serviceWorker.getRegistration().then(function (g) {
-                  if (g) g.update();
-                });
-              } catch (e) {}
-              setTimeout(function () {
+              newCopy().then(function () {
                 location.reload();
-              }, 700);
+              });
               return;
             }
             updSet("ok");
@@ -160,40 +195,57 @@ export function init() {
     };
     if ("serviceWorker" in navigator) {
       // The badge shows straight away. On a first visit (no service worker in charge yet) it says "Saving for offline…"
-      // while the files are saved; it never waits more than 8 s, because some phones are slow to report back.
+      // while the files are saved. "Offline ready" only once every file is in the saved copy: a file that could not be
+      // saved (a weak connection) is tried again when the internet is back or the page is shown again, and until then
+      // the badge keeps saying "Saving for offline…" (sw.js saves the same files, but goes on without one that fails).
       ofSaved = function () {
+        whole = true;
         if (offv.getAttribute("data-s") !== "save") return;
         ofSet("idle");
         flash("ऑफलाइन वापरासाठी तयार", "Ready to use offline");
       };
-      if (!navigator.serviceWorker.controller && navigator.onLine !== false) {
-        ofSet("save");
-        setTimeout(ofSaved, 8000);
-      }
+      if (!navigator.serviceWorker.controller && navigator.onLine !== false) ofSet("save");
+      var files = PARTS.concat(FONTS, IMAGES),
+        filling = false;
+      // Keep the page, its parts, every font file and the pictures (each one not saved yet), then say so
+      fill = function () {
+        if (filling || whole || !("caches" in window) || navigator.onLine === false) return;
+        filling = true;
+        caches
+          .open(CACHE)
+          .then(function (c) {
+            // the page too, only when the saved copy lacks it: it is downloaded again only with a new version (sw.js)
+            c.match("./")
+              .then(function (h) {
+                return h || c.add(new Request("./", { cache: "reload" }));
+              })
+              .catch(function () {});
+            return Promise.all(
+              files.map(function (u) {
+                return c.match(u).then(function (h) {
+                  return h || c.add(u);
+                });
+              }),
+            );
+          })
+          .then(ofSaved, function () {
+            whole = false;
+            if (offv.getAttribute("data-s") !== "off") ofSet("save");
+          })
+          .then(function () {
+            filling = false;
+          });
+      };
+      addEventListener("online", fill);
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") fill();
+      });
       navigator.serviceWorker
         .register("sw.js")
         .then(function () {
           return navigator.serviceWorker.ready;
         })
-        .then(function () {
-          if (!("caches" in window)) return;
-          caches.open(CACHE).then(function (c) {
-            // Keep the page, its parts and every font file, then show the offline badge (sw.js caches the same files)
-            var done = ofSaved;
-            c.add(new Request("./", { cache: "reload" })).catch(function () {});
-            Promise.all(
-              PARTS.concat(FONTS).map(function (u) {
-                return c.match(u).then(function (h) {
-                  return h || c.add(u);
-                });
-              }),
-            )
-              .then(done)
-              .catch(function () {
-                done();
-              });
-          });
-        })
+        .then(fill)
         .catch(function () {});
     }
   }

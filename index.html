@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.6.1">
+<meta name="version" content="aarti-v1.7.0">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -91,6 +91,10 @@
 </head>
 
 <body>
+<!-- The splash: the app's picture and name, from the first paint until the page is ready (js/splash.js sets it up;
+     css/02-core.css, "Splash") -->
+<div id="spl" aria-hidden="true"><div class="splm"><img alt="" width="152" height="152"></div><div class="spln">संकटहर चतुर्थी</div></div>
+<script src="js/splash.js"></script>
 <!-- Keyboard users: the first Tab shows this link, which skips the top bar and the contents menu -->
 <a class="skip" id="skip" href="#home" lang="en">Skip to the texts</a>
 <!-- ==== Top bar, as in Nitya Upasana: home link, then Print, ⋯ (More) and Settings ==== -->
@@ -412,8 +416,8 @@
 
       <h3>Good to know</h3>
       <ul>
-        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and a short “Ready to use offline” note shows. Settings → About shows “Offline ready” beside the version once it is saved. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
-        <li><b>Getting updates:</b> new changes load by themselves whenever you are online. To look straight away, open Settings and tap <b>Check for updates</b> under About: it shows “Checking…”, then “Up to date” (or “No internet”), or reloads with the new version.</li>
+        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and a short “Ready to use offline” note shows. Settings → More → About shows “Offline ready” beside the version once it is saved. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
+        <li><b>Getting updates:</b> the site opens straight from the copy saved on your phone, so it starts quickly even with a weak connection. When a new version is published it is saved in the background while you are online, and the next time you open the site you get it. To look straight away, open Settings → More and tap the version line under About: it shows “Checking…”, then “Up to date” (or “No internet”), or reloads with the new version.</li>
         <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
         <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
       </ul>

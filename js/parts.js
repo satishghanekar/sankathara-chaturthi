@@ -22,8 +22,8 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "css/" + f + ".css";
   });
-  // The plain scripts, in load order: this list, the code that builds the pieces
-  var scripts = ["js/parts.js", "js/render.js"];
+  // The plain scripts, in load order: this list, the splash shown while the page starts, the code that builds the pieces
+  var scripts = ["js/parts.js", "js/splash.js", "js/render.js"];
   // The site script: js/main.js (loaded with <script type="module">) and the parts it imports
   var modules = [
     "main",
@@ -122,5 +122,8 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "fonts/" + f + ".woff2";
   });
-  return { css: css, scripts: scripts, modules: modules, content: content, fonts: fonts, all: css.concat(scripts, modules, content) };
+  // The pictures and icons kept for offline use: the app's picture, small (home card, splash) and full size
+  // (full-screen view), the tab icon and the installed app icons. Not in "all": "Check for updates" compares text files only.
+  var images = ["picture-360.webp", "picture.webp", "icon-32.png", "icon-180.png", "icon-192.png", "icon-maskable-192.png"];
+  return { css: css, scripts: scripts, modules: modules, content: content, fonts: fonts, images: images, all: css.concat(scripts, modules, content) };
 })();
