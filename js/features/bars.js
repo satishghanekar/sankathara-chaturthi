@@ -111,7 +111,7 @@ export function tuckHold() {
 // Highlight the current piece in the menus; update the progress line
 export function mark() {
   var c = cur();
-  // On the home page (no piece at the top yet): the bottom bar keeps only the Library and Reading (css/05-home-card.css),
+  // On the home page (no piece at the top yet): the bottom bar keeps only the Library and Reading (css/10-today.css),
   // as in Nitya Upasana
   if (c) root.removeAttribute("data-home");
   else if (!root.hasAttribute("data-home")) root.setAttribute("data-home", "1");
