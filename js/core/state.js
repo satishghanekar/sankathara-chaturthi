@@ -3,8 +3,9 @@
 
 import { migratePrefs } from "../store/migrate.js";
 
-// Values that more than one part changes (an imported variable can only be changed by its own module)
-export const shared = {};
+// The language that leads, "en" or "mr": English only with both languages shown and English first. Set by apply()
+// (js/features/bars.js, setLead()), read by the auto-fit and print.
+export var LEAD = "mr";
 
 export var P;
 var K, DESK;
@@ -58,4 +59,9 @@ export function change(changes, then) {
   for (var k in changes) P[k] = changes[k];
   if (then) then();
   save();
+}
+
+/** @param {"mr" | "en"} l */
+export function setLead(l) {
+  LEAD = l;
 }

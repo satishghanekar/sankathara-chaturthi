@@ -18,7 +18,7 @@ export default [
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: "script",
-      globals: { ...globals.browser, ...globals.serviceworker, CONTENT: "writable", SCR: "writable", renderPiece: "writable", renderGroup: "writable", SITE_PARTS: "writable" },
+      globals: { ...globals.browser, ...globals.serviceworker, CONTENT: "writable", SCR: "writable", renderPiece: "writable", SITE_PARTS: "writable" },
     },
     settings: { browsers, polyfills: [] },
     rules: {

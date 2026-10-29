@@ -2,10 +2,13 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { flash } from "../core/page.js";
-import { shared, P, change } from "../core/state.js";
+import { P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
 var SKTZ, SKCITY, SKWM, SKMM, SKMS, skToday, foldTouched, pdMore;
+// The next Sankathara Chaturthi, worked out once (js/features/share.js reads it for the Share message)
+/** @type {any} */
+export var skCache = null;
 
 export function init() {
   // Default place for each time zone: [latitude, longitude, Marathi name, English name]
@@ -192,11 +195,10 @@ export function init() {
     [25.32, 82.97, "वाराणसी", "Varanasi, Uttar Pradesh"],
     [22.57, 88.36, "कोलकाता", "Kolkata, West Bengal"]
   ];
-  shared.skCache = null;
+  skCache = null;
   SKWM = ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
   SKMM = ["जानेवारी", "फेब्रुवारी", "मार्च", "एप्रिल", "मे", "जून", "जुलै", "ऑगस्ट", "सप्टेंबर", "ऑक्टोबर", "नोव्हेंबर", "डिसेंबर"];
   SKMS = ["जाने.", "फेब्रु.", "मार्च", "एप्रि.", "मे", "जून", "जुलै", "ऑग.", "सप्टें.", "ऑक्टो.", "नोव्हें.", "डिसें."];
-  shared.skKey = "";
   addEventListener("resize", skDot);
   if (document.fonts) document.fonts.ready.then(skDot);
   // Folded card: one slim line with Ganesha, the next Sankathara Chaturthi and moonrise (always the next one,
@@ -205,7 +207,7 @@ export function init() {
   foldTouched = false;
   document.getElementById("cvb").onclick = function () {
     foldTouched = true;
-    change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, foldSet);
+    change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, cardFoldSet);
     // a fold is remembered, so say how to get the card back (it can fold by a tap on Ganesha or Home)
     if (P.fold) flash("कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा", "Card folded · tap its line to open it", 3000);
   };
@@ -226,7 +228,7 @@ export function init() {
     pdMore = !pdMore;
     pdSet();
     // the strip was hidden, so put the chosen date back in the middle of it
-    if (pdMore && shared.skCache) skShow(shared.skCache.sel);
+    if (pdMore && skCache) skShow(skCache.sel);
   });
   setInterval(skCd, 60000);
   document.addEventListener("click", function (e) {
@@ -237,18 +239,18 @@ export function init() {
   // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankathara Chaturthi" returns
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skc .skch, #skb");
-    if (!b || !shared.skCache) return;
+    if (!b || !skCache) return;
     if (b.id === "skb") {
-      skShow(shared.skCache.ni);
+      skShow(skCache.ni);
       var on = document.querySelector("#skc .skch.on");
       if (on) on.focus({ preventScroll: true });
     } else skShow(+b.dataset.k);
   });
   document.addEventListener("keydown", function (e) {
     var b = e.target.closest && e.target.closest("#skc .skch");
-    if (!b || !shared.skCache) return;
-    var k = shared.skCache.sel,
-      n = { ArrowLeft: k - 1, ArrowRight: k + 1, Home: 0, End: shared.skCache.list.length - 1 }[e.key];
+    if (!b || !skCache) return;
+    var k = skCache.sel,
+      n = { ArrowLeft: k - 1, ArrowRight: k + 1, Home: 0, End: skCache.list.length - 1 }[e.key];
     if (n === undefined) return;
     e.preventDefault();
     skShow(n, true);
@@ -264,7 +266,7 @@ export function init() {
     navigator.geolocation.getCurrentPosition(
       function (p) {
         change({ loc: { lat: Math.round(p.coords.latitude * 100) / 100, lon: Math.round(p.coords.longitude * 100) / 100 } });
-        shared.skCache = null;
+        skCache = null;
         skRender();
       },
       function () {
@@ -369,7 +371,7 @@ export function skRender() {
   // The next Sankathara Chaturthi first (fast); then, a moment later, every Sankashti from 1 January last year
   // to the end of next year for the date strip under the card (a few hundred ms on a slow phone)
   var key = L.lat + "," + L.lon + "," + new Date().toDateString();
-  if (!shared.skCache || shared.skCache.key !== key) {
+  if (!skCache || skCache.key !== key) {
     try {
       var first = SK.upcoming(Date.now(), L.lat, L.lon, 1);
     } catch (e) {
@@ -380,9 +382,9 @@ export function skRender() {
       box.hidden = true;
       return;
     }
-    shared.skCache = { key: key, list: first, ni: 0, sel: 0, part: 1 };
+    skCache = { key: key, list: first, ni: 0, sel: 0, part: 1 };
     setTimeout(function () {
-      if (!shared.skCache || shared.skCache.key !== key) return;
+      if (!skCache || skCache.key !== key) return;
       try {
         var y = new Date().getFullYear(),
           list = SK.upcoming(new Date(y - 1, 0, 1).getTime(), L.lat, L.lon, 40).filter(function (o) {
@@ -391,7 +393,7 @@ export function skRender() {
           today = skMid();
         for (var k = 0; k < list.length; k++)
           if (list[k].day >= today) {
-            shared.skCache = { key: key, list: list, ni: k, sel: k };
+            skCache = { key: key, list: list, ni: k, sel: k };
             skRender();
             return;
           }
@@ -402,13 +404,13 @@ export function skRender() {
     now = new Date(),
     chips = "",
     lastY = 0;
-  shared.skCache.list.forEach(function (o, k) {
+  skCache.list.forEach(function (o, k) {
     var f = skFmt(o),
       d = f.d,
       Y = d.getFullYear();
     chips +=
       '<button type="button" role="option" class="skch' +
-      (k < shared.skCache.ni ? " past" : "") +
+      (k < skCache.ni ? " past" : "") +
       (f.ang ? " ang" : "") +
       '" data-k="' +
       k +
@@ -430,7 +432,7 @@ export function skRender() {
       "</button>";
     lastY = Y;
   });
-  var ph = shared.skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
+  var ph = skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
   box.hidden = false;
   box.innerHTML =
     '<div class="sktd"><span class="mr">आज: ' +
@@ -462,7 +464,7 @@ export function skRender() {
     '<button type="button" class="skl" id="skall"' +
     ph +
     '><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>';
-  skShow(shared.skCache.sel);
+  skShow(skCache.sel);
   pdSet();
 }
 
@@ -477,7 +479,7 @@ function skAng(t, a, b, w) {
 function pdSet() {
   var h = document.getElementById("home"),
     b = document.getElementById("skmore"),
-    C = shared.skCache,
+    C = skCache,
     has = !!(C && skLoc() && C.list[C.ni]),
     on = has && Math.round((C.list[C.ni].day - skMid()) / 86400000) === 0;
   if (!h) return;
@@ -505,12 +507,12 @@ export function skDot() {
 function skSlim() {
   var t = document.getElementById("slimt");
   if (!t) return;
-  var C = shared.skCache,
+  var C = skCache,
     o = C && skLoc() && C.list[C.ni];
   if (!o) {
     skToday = false;
     t.innerHTML = '<b><span class="mr">॥ श्री गणेशाय नमः ॥</span><span class="en">॥ श्री गणेशाय नमः ॥</span></b>';
-    foldSet();
+    cardFoldSet();
     return;
   }
   var f = skFmt(o),
@@ -526,10 +528,10 @@ function skSlim() {
     '<b><span class="mr">' + hm + '</span><span class="en" lang="en">' + he + "</span></b>" +
     '<span class="sld"><span class="mr">' + f.dmr + '</span><span class="en" lang="en">' + f.den + "</span></span>" +
     '<span class="slm"><span class="mr">चंद्रोदय ' + f.tmr + '</span><span class="en" lang="en">Moonrise ' + f.ten + "</span></span>";
-  foldSet();
+  cardFoldSet();
 }
 
-export function foldSet() {
+export function cardFoldSet() {
   var top = document.querySelector("#home .top"),
     b = document.getElementById("cvb");
   if (!top || !b) return;
@@ -544,7 +546,7 @@ export function foldSet() {
 function skShow(k, focus) {
   var box = document.getElementById("skc"),
     L = skLoc(),
-    C = shared.skCache;
+    C = skCache;
   if (!box || !L || !C) return;
   k = Math.max(0, Math.min(C.list.length - 1, k));
   C.sel = k;
@@ -631,7 +633,7 @@ export function skTemple(L) {
 // On the day: "Pooja today at 7:00 pm" (central Ohio) and "Moonrise in 2 h 10 min"; refreshed every minute
 function skCd() {
   var x = document.querySelector("#skc .skcd"),
-    C = shared.skCache,
+    C = skCache,
     L = skLoc();
   if (!x || !C || !L) return;
   var o = C.list[C.sel],
@@ -668,7 +670,7 @@ function skCd() {
 // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.
 // all = every upcoming Sankashti in the strip; otherwise the one shown in the card
 function skIcs(all) {
-  var C = shared.skCache,
+  var C = skCache,
     L = skLoc();
   if (!C || !L) return;
   var p2 = function (n) {

@@ -1,12 +1,11 @@
 // Current piece, menus and apply()
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { onPiece, root, secs } from "./page.js";
+import { onPiece, secs } from "./page.js";
 import { P, change } from "./state.js";
-import { apply, mark } from "../features/bars.js";
+import { mark } from "../features/bars.js";
 
 export var pn, aa, jp, LANGS;
-var allB;
 
 export function init() {
   pn = document.getElementById("panel");
@@ -18,48 +17,6 @@ export function init() {
     en: { n: "English" },
     kn: { n: "ಕನ್ನಡ" },
   };
-  // Vedic Chant section fold: the pieces between the Vedic Chant and Aarti headings get class "pj"; folding hides them.
-  // Going to a Vedic Chant piece (the Library, search, Previous, a link) opens the section again.
-  (function () {
-    var e = document.getElementById("g-vedic-chant");
-    while (e && (e = e.nextElementSibling) && !e.classList.contains("grp")) {
-      if (e.classList.contains("ash")) e.classList.add("pj");
-    }
-    // The same for the Aarti section: its pieces get class "ar"
-    e = document.getElementById("g-aarti");
-    while (e && (e = e.nextElementSibling) && !e.classList.contains("grp")) {
-      if (e.classList.contains("ash")) e.classList.add("ar");
-    }
-  })();
-  // Open all / Fold all: a pill in a section row (beside its arrow) folds or opens every piece in that section.
-  // Shown only for sections with two or more pieces (Aarti today; Vedic Chant has one), and not while the section
-  // itself is folded. It reads "Fold all" while any piece is open, "Open all" when all are folded.
-  allB = [];
-  [["g-vedic-chant", "pj", "pf"], ["g-aarti", "ar", "xf"]].forEach(function (a) {
-    var g = document.getElementById(a[0]),
-      ps = secs.filter(function (x) {
-        return x.classList.contains(a[1]);
-      });
-    if (!g || ps.length < 2) return;
-    var b = document.createElement("button");
-    b.type = "button";
-    b.className = "allb";
-    b.onclick = function () {
-      var y = g.getBoundingClientRect().top,
-        open = b.dataset.open === "1";
-      var af = P.af.slice();
-      ps.forEach(function (x) {
-        var i = af.indexOf(x.id);
-        if (open && i >= 0) af.splice(i, 1);
-        if (!open && i < 0) af.push(x.id);
-      });
-      change({ af: af }, pfSet);
-      scrollBy(0, g.getBoundingClientRect().top - y);
-      mark();
-    };
-    g.appendChild(b);
-    allB.push({ b: b, ps: ps, k: a[2] });
-  });
   // Each piece has a ⌃ button in its heading that folds it down to the heading
   if (!Array.isArray(P.af)) P.af = [];
   onPiece(function (x) {
@@ -71,8 +28,11 @@ export function init() {
     b.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
     b.onclick = function () {
       var y = h.getBoundingClientRect().top,
-        i = P.af.indexOf(x.id);
-      change({ af: i >= 0 ? P.af.filter(function (id) { return id !== x.id; }) : P.af.concat([x.id]) }, pfSet);
+        af = P.af.slice(),
+        i = af.indexOf(x.id);
+      if (i >= 0) af.splice(i, 1);
+      else af.push(x.id);
+      change({ af: af }, foldSet);
       // keep the heading where it was on screen
       scrollBy(0, h.getBoundingClientRect().top - y);
       mark();
@@ -84,18 +44,7 @@ export function init() {
       if (e.target.closest("a,button,input") || String(getSelection()).trim()) return;
       b.onclick();
     });
-  });
-  [["pfb", "g-vedic-chant", "pf"], ["xfb", "g-aarti", "xf"]].forEach(function (a) {
-    document.getElementById(a[0]).onclick = function () {
-      var g = document.getElementById(a[1]),
-        y = g.getBoundingClientRect().top;
-      /** @type {Record<string, any>} */
-      var ch = {};
-      ch[a[2]] = P[a[2]] ? 0 : 1;
-      change(ch, apply);
-      // keep the heading where it was on screen
-      scrollBy(0, g.getBoundingClientRect().top - y);
-    };
+    foldOne(x);
   });
 }
 
@@ -105,52 +54,60 @@ export function LK(slot) {
   return slot === "mr" ? P.ind : slot;
 }
 
+// The piece just gone to (Next, a title on Home, the Library) and where the page then stood: until the reader
+// scrolls, that piece is the one being read, even when it is too short to reach the top bar (the last text of a
+// session on an iPad or a computer, where the page ends below it)
+/** @type {HTMLElement | null} */
+var aimEl = null,
+  aimY = 0;
+/** @param {HTMLElement | null} el */
+export function aimAt(el) {
+  aimEl = el;
+  aimY = scrollY;
+}
+
 // The piece being read: the last one whose top has passed just under the top bar
 export function cur() {
   var c = null,
-    y = 90;
+    y = 90,
+    best = -Infinity;
+  if (aimEl) {
+    // (the page may get shorter just after, pulling the scroll up with it at its end: still where it was left)
+    var end = scrollY >= document.documentElement.scrollHeight - innerHeight - 2 && aimY >= scrollY;
+    if ((Math.abs(scrollY - aimY) < 2 || end) && aimEl.offsetParent !== null) return aimEl;
+    aimEl = null;
+  }
+  // the lowest piece whose top has reached the top bar (a session shows its texts in session order, which may not be
+  // the page's: css/10-today.css)
   secs.forEach(function (x) {
-    if (x.offsetParent !== null && x.getBoundingClientRect().top <= y) c = x;
+    var top = x.offsetParent !== null ? x.getBoundingClientRect().top : Infinity;
+    if (top <= y && top > best) {
+      best = top;
+      c = x;
+    }
   });
+  // a short text read on its own on a wide screen (.solo, css/10-today.css) may never reach the top: it is still the one
+  var s = !c && document.querySelector(".ash.solo"),
+    h = document.getElementById("home");
+  if (s && s.offsetParent !== null && h && h.offsetParent === null) c = s;
   return c;
 }
 
-function allSet() {
-  var mr = P.ui === "mr";
-  allB.forEach(function (o) {
-    var open = o.ps.every(function (x) {
-      return P.af.indexOf(x.id) >= 0;
-    });
-    o.b.dataset.open = open ? "1" : "0";
-    o.b.hidden = !!P[o.k];
-    o.b.lang = mr ? "mr" : "en";
-    o.b.textContent = open ? (mr ? "सर्व उघडा" : "Open all") : mr ? "सर्व मिटवा" : "Fold all";
-  });
+export function foldSet() {
+  // each piece's ⌃ is named by what it does, with aria-expanded giving the state
+  secs.forEach(foldOne);
 }
 
-export function pfSet() {
-  var mr = P.ui === "mr";
-  // The वैदिक मंत्र and आरती rows are named by their visible words, with aria-expanded giving the state,
-  // so voice control users can say what they see (WCAG 2.5.3)
-  secs.forEach(function (x) {
-    var f = P.af.indexOf(x.id) >= 0,
-      ab = x.querySelector(".afb");
-    x.classList.toggle("af", f);
-    if (ab) {
-      ab.setAttribute("aria-expanded", String(!f));
-      ab.setAttribute("aria-label", f ? (mr ? "उघडा" : "Show this piece") : mr ? "मिटवा" : "Fold this piece");
-    }
-  });
-  var xb = document.getElementById("xfb");
-  if (P.xf) root.setAttribute("data-xf", "1");
-  else root.removeAttribute("data-xf");
-  if (xb) xb.setAttribute("aria-expanded", String(!P.xf));
-  allSet();
-  var b = document.getElementById("pfb");
-  if (P.pf) root.setAttribute("data-pf", "1");
-  else root.removeAttribute("data-pf");
-  if (!b) return;
-  b.setAttribute("aria-expanded", String(!P.pf));
+/** @param {HTMLElement} x */
+function foldOne(x) {
+  var mr = P.ui === "mr",
+    f = P.af.indexOf(x.id) >= 0,
+    ab = x.querySelector(".afb");
+  x.classList.toggle("af", f);
+  if (ab) {
+    ab.setAttribute("aria-expanded", String(!f));
+    ab.setAttribute("aria-label", f ? (mr ? "उघडा" : "Show this piece") : mr ? "मिटवा" : "Fold this piece");
+  }
 }
 
 // Going to a piece (or a line in it) opens it if it is folded
@@ -163,6 +120,6 @@ export function unfold(el) {
           return x !== sec.id;
         }),
       },
-      pfSet,
+      foldSet,
     );
 }

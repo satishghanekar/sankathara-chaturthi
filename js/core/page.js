@@ -39,19 +39,10 @@ export function init() {
         order.push(p);
       });
     });
-  // Every piece now, in reading order, each section's row (वैदिक मंत्र, आरती: hidden on screen, it heads the section in
-  // a printout) before its first piece
-  /** @type {any} */
-  var w = window,
-    end = document.getElementById("pieces");
-  if (C && end)
-    C.categories.forEach(function (/** @type {any} */ c) {
-      end.insertAdjacentHTML("beforebegin", w.renderGroup(c));
-      w.SCR.add(/** @type {HTMLElement} */ (end.previousElementSibling));
-      c.pieces.forEach(function (/** @type {any} */ p) {
-        pieceEl(p.id);
-      });
-    });
+  // Every piece now, in reading order
+  order.forEach(function (/** @type {any} */ p) {
+    pieceEl(p.id);
+  });
 }
 
 /**

@@ -31,8 +31,7 @@
   .sp-seg,
   .prrow .prseg,
   #prfn button[aria-pressed="true"],
-  .sp-prev,
-  .sp-pw .sp-rf {
+  .sp-prev {
     background: var(--surface);
   }
   .top .hero {
