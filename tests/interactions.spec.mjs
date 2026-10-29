@@ -501,3 +501,36 @@ test.describe("pinch @chromium-only", () => {
     expect(await pinchStart(page, "#help .hlpin")).toBe(true);
   });
 });
+
+// Morning | Afternoon | Evening, as in Nitya Upasana: a session with no texts is left out, and the switch shows only once
+// two or more sessions have texts (js/features/session-card.js). Today only the evening has texts: no switch
+test("Home's session: the evening alone has no switch; with a morning too, the switch shows the sessions with texts @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  await expect(page.locator("#tss")).toBeHidden();
+  await expect(page.locator("#tsh")).toContainText("Evening");
+  await expect(page.locator("#tsl li")).toHaveCount(11);
+  // a routine with a morning as well, opened at 9 in the morning
+  await page.route("**/content/routines.json", (r) =>
+    r.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        morning: { mode: "fixed", texts: ["vedic-chant-atharvashirsha", "aarti-sukhkarta"] },
+        evening: { mode: "fixed", texts: ["aarti-sukhkarta", "aarti-ghalin-lotangan", "aarti-jai-jagdish-hare"] },
+      }),
+    }),
+  );
+  await page.clock.setFixedTime(new Date("2026-10-15T09:00:00-04:00"));
+  await page.reload();
+  await page.waitForSelector("html[data-ready]");
+  await expect(page.locator("#tss")).toBeVisible();
+  await expect(page.locator('#tss [role="tab"]:visible')).toHaveCount(2);
+  await expect(page.locator("#tss-afternoon")).toBeHidden();
+  await expect(page.locator("#tss-morning")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsh")).toContainText("Morning");
+  await expect(page.locator("#tsl li")).toHaveCount(2);
+  await page.locator("#tss-evening").click();
+  await expect(page.locator("#tss-evening")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsh")).toContainText("Evening");
+  await expect(page.locator("#tsl li")).toHaveCount(3);
+  await expect(page.locator("#tsl li .t2").first()).toHaveText("Sukhkarta Dukhharta");
+});
