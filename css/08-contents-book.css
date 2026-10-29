@@ -7,11 +7,6 @@
 */
 
 @media screen {
-  #home + .grp {
-    margin-top: 28px;
-  }
-}
-@media screen {
   /* Marathi + English piece headings: the English line starts under the Marathi title, past the number */
   .ash[data-lang="both"] header h2 {
     display: grid;

@@ -2,8 +2,10 @@
 // (each .sp-grp says its tab, data-tab); Settings opens on Reading each time.
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
+import { fitPreview } from "./languages.js";
+import { FSA } from "../text/autofit.js";
 import { flash } from "../core/page.js";
-import { shared, P, dfs, change } from "../core/state.js";
+import { P, dfs, change } from "../core/state.js";
 import { trSet } from "../text/iast.js";
 import { refit } from "../text/autofit.js";
 import { cur, pn } from "../core/apply.js";
@@ -90,6 +92,7 @@ export function init() {
 export function fsTap(fs, fsu) {
   change({ fs: fs, fsu: fsu });
   pn.style.setProperty("--fs", P.fs + "px");
+  fitPreview();
   szSet();
   clearTimeout(fsT);
   fsT = setTimeout(fsFlush, 700);
@@ -97,7 +100,7 @@ export function fsTap(fs, fsu) {
 
 // The size shown between A− and A+: a share of the size Reset gives (the fitted size), as the pinch shows it
 export function szSet() {
-  document.getElementById("szv").textContent = Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  document.getElementById("szv").textContent = Math.round((P.fs / (FSA || dfs())) * 100) + "%";
 }
 
 export function fsFlush() {

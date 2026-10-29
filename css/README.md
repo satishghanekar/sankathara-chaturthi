@@ -43,7 +43,6 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-font`: the text font.
   - `data-tuck`: the bars are tucked away.
   - `data-lead="en"`: English is the main language; `data-scr`: Kannada letters.
-  - `data-pf`, `data-xf`: the Vedic Chant and Aarti folds.
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
 ## Breakpoints

@@ -2,17 +2,17 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { root } from "../core/page.js";
-import { shared, P } from "../core/state.js";
-import { foldSet, skDot, skRender } from "./date-card.js";
+import { P, setLead } from "../core/state.js";
+import { cardFoldSet, skDot, skRender } from "./date-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
-import { cur, pfSet, unfold } from "../core/apply.js";
+import { cur, foldSet, unfold } from "../core/apply.js";
 import { asLabel, asShow, asc } from "./bottom-bar.js";
 import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 import { spSet } from "./languages.js";
 
 export var TK;
-var tkStrip, MQ900, MQ1000, MQ1100, tailF;
+var tkStrip, MQ900, MQ1000, MQ1100, tailF, skKey;
 
 export function init() {
   // Phones and tablets without the side menu. Scrolling down past the top of the page tucks the top and
@@ -66,7 +66,6 @@ export function init() {
   // title's English part are moved in front of the Marathi, so the page, screen readers, the dhrupad bubble and
   // the printout all read English first; data-lead="en" on the page gives English the reading size (CSS below).
   // Outside Both, or with Marathi first, everything is in its original order.
-  shared.LEAD = "mr";
   // Apply every setting in P to the page
   MQ900 = matchMedia("(min-width: 900px)");
   MQ1000 = matchMedia("(min-width: 1000px)");
@@ -104,16 +103,7 @@ export function tuckHold() {
 
 // Highlight the current piece in the menus; update the progress line
 export function mark() {
-  var c = cur(),
-    ct = c ? c.getBoundingClientRect().top : -1e9;
-  // a section row (वैदिक मंत्र / आरती) at the top, below the last piece passed: that section is current, not the piece above it
-  [].forEach.call(document.querySelectorAll(".grp"), function (g) {
-    var t = g.getBoundingClientRect().top;
-    if (g.offsetParent !== null && t <= 90 && t > ct) {
-      c = g;
-      ct = t;
-    }
-  });
+  var c = cur();
   // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
   var en = P.lang === "en",
     tt = en ? "Sankathara Chaturthi" : SCR.to("संकटहर चतुर्थी"),
@@ -186,13 +176,24 @@ export function goLine(id, flash) {
   }
 }
 
+// The language read first: English first only when both are shown and English leads
+function leadOf() {
+  return P.lang === "both" && P.lead === "en" ? "en" : "mr";
+}
+
 function leadSet() {
-  var L = P.lang === "both" && P.lead === "en" ? "en" : "mr";
+  var L = leadOf();
   if (L === "en") root.setAttribute("data-lead", "en");
   else root.removeAttribute("data-lead");
-  shared.LEAD = L;
-  // (checked every time: the contents lists are built after the first call)
-  [].forEach.call(document.querySelectorAll(".wrap .verse, .wrap .ash header h2, #rail ul a, #jl li > a"), function (v) {
+  setLead(L);
+  // (checked every time: the contents lists are built after the first call; here also the left menu, #rail)
+  leadOrder(document.querySelectorAll(".wrap .verse, .wrap .ash header h2, #rail ul a, #jl ol.toc .m, #jl .gh"), L);
+}
+
+// Each of els with its two languages in the order L ("en": English first): the page, or a printout's copy of the
+// pieces (js/print/compose.js)
+export function leadOrder(/** @type {ArrayLike<Element>} */ els, /** @type {string} */ L) {
+  [].forEach.call(els, function (/** @type {Element} */ v) {
     var m = v.querySelector(":scope > .mr"),
       e = v.querySelector(":scope > .en");
     if (!m || !e) return;
@@ -210,12 +211,20 @@ function applyTail() {
   mark();
 }
 
+// A size the reader chose (P.fsu): data-fsu on the page, so the styles keep it (a prose text read on its own is not
+// fitted to the screen then: css/02-core.css)
+export function fsuMark() {
+  if (P.fsu) root.setAttribute("data-fsu", "1");
+  else root.removeAttribute("data-fsu");
+}
+
 export function apply() {
   root.style.setProperty("--fs", P.fs + "px");
+  fsuMark();
   if (P.th === "auto") root.removeAttribute("data-pref");
   else root.setAttribute("data-pref", P.th);
   // Text language on the pieces and the printout; menu language on the bar, menus, home page and dialogs
-  [].forEach.call(document.querySelectorAll(".grp,.wrap > .ash,#pv,#jl,#rail"), function (e) {
+  [].forEach.call(document.querySelectorAll(".wrap > .ash,#pv,#jl,#rail"), function (e) {
     e.setAttribute("data-lang", P.lang);
   });
   [].forEach.call(document.querySelectorAll(".bar,#shr,#spv,#none,#panel,#home > *,#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
@@ -248,7 +257,7 @@ export function apply() {
   });
   leadSet();
   spSet();
-  pfSet();
+  foldSet();
   autoFs();
   root.style.setProperty("--fs", P.fs + "px");
   pullSoon();
@@ -256,12 +265,12 @@ export function apply() {
   // every language switch cost a second page layout on slow phones); otherwise just re-check its wrap
   var sk = P.ui + new Date().toDateString();
   try {
-    if (sk !== shared.skKey) {
-      shared.skKey = sk;
+    if (sk !== skKey) {
+      skKey = sk;
       skRender();
     } else skDot();
   } catch (e) {}
-  foldSet();
+  cardFoldSet();
   [].forEach.call(document.querySelectorAll("#st button"), function (b) {
     b.setAttribute("aria-pressed", b.dataset.v === P.th);
   });

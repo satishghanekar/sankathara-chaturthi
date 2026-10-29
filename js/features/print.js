@@ -2,20 +2,22 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 //
 // How a printout is made (as in Nitya Upasana; ARCHITECTURE.md, "Printing"):
-//   1. The print view (#pv) is written from the page's pieces (all of them are in the page, folded or not) in markup of
-//      its own, pv… classes only, so nothing of the reading page's look reaches the paper: its whole look is
-//      css/15-print.css. What prints is decided here, by what each part of a text is (a stanza, the dhrupad, a note, a
-//      Vedic paragraph), never by what the screen shows.
-//   2. The browser lays the pages out, by four rules in css/15-print.css: every text starts on a new page; a stanza
+//   1. The texts chosen are built afresh from the text files (js/print/compose.js), as the reading page builds them
+//      (the script, the English style, the stanza numbers), whatever the reading page has folded or hidden.
+//   2. From them the print view (#pv) is written in markup of its own, pv… classes only, so nothing of the reading
+//      page's look reaches the paper: its whole look is css/15-print.css. What prints is decided here, by what each
+//      part of a text is (a stanza, the dhrupad, a note, a Vedic paragraph), never by what the screen shows.
+//   3. The browser lays the pages out, by four rules in css/15-print.css: every text starts on a new page; a stanza
 //      (with its dhrupad, marker or note) is never split; a Vedic paragraph splits only between lines and never leaves
 //      one line alone at the foot or top of a page; side by side, a row is never split.
 // Nothing is measured, so every browser prints the same way, at once, from the tap that asked for it. The contents
 // list the texts without page numbers, and no page has a border (Satish, 2026-10-28, as in Nitya Upasana).
 
 import { flash, root } from "../core/page.js";
-import { shared, P, change } from "../core/state.js";
+import { LEAD, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
+import { compose } from "../print/compose.js";
 import { createWhat, whatWords } from "../print/what.js";
 
 // The page each printout is made for: one language upright, both languages side by side on a sideways page
@@ -254,7 +256,7 @@ export function init() {
     /** @param {HTMLElement[]} us @param {boolean} flow  a Vedic paragraph (its rows may run on to the next page) */
     function sideBlock(us, flow) {
       var t = mk("table", "pvt"),
-        order = shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"],
+        order = LEAD === "en" ? ["en", "mr"] : ["mr", "en"],
         cg = mk("colgroup");
       order.forEach(function (k) {
         cg.appendChild(mk("col", k === "en" ? "pvce" : "pvco"));
@@ -296,33 +298,31 @@ export function init() {
       return mk("div", flow ? "pvk pvflow" : "pvk pvst").appendChild(t).parentNode;
     }
 
-    // Build the print view (#pv): contents (when more than one text prints), then the texts chosen (sel), in reading order.
-    // mode: "one" (one language) or "side" (both, side by side). The texts are read from the page's own pieces, which
-    // are all there, folded or not (each part by what it is, never by what the screen shows)
+    // Build the print view (#pv): contents (when more than one text prints), then the texts chosen, in reading order.
+    // mode: "one" (one language) or "side" (both, side by side). The texts are built afresh from the text files
+    // (js/print/compose.js), as in Nitya Upasana, whatever the reading page has folded or hidden; each part is written
+    // by what it is, never by what the screen shows
     /** @param {string} mode @param {string[] | null} ids  the texts (piece ids), or null for every text @param {HTMLElement} [into] */
     function build(mode, ids, into) {
-      write(into || pv, mode, source(ids));
+      var src = compose(ids ? ids.map(textOf) : null, plang());
+      try {
+        write(into || pv, mode, src);
+      } finally {
+        src.el.remove();
+      }
     }
-    // the pieces to print and the sections (वैदिक मंत्र, आरती) the contents list them under, with each one's name
-    /** @param {string[] | null} sel */
-    function source(sel) {
+    // a piece's text (its id in the Library), which compose() takes: a1 → aarti-sukhkarta
+    /** @param {string} id */
+    function textOf(id) {
       /** @type {any} */
       var C = window.CONTENT,
-        all = [],
-        groups = (C ? C.categories : []).map(function (/** @type {any} */ g) {
-          var head = /** @type {HTMLElement | null} */ (document.querySelector("#g-" + g.id + " button")),
-            gs = g.pieces
-              .filter(function (/** @type {any} */ p) {
-                return !sel || sel.indexOf(p.id) >= 0;
-              })
-              .map(function (/** @type {any} */ p) {
-                return document.getElementById(p.id);
-              })
-              .filter(Boolean);
-          all = all.concat(gs);
-          return { name: head ? [head.cloneNode(true)] : [], secs: gs };
+        t = id;
+      (C ? C.categories : []).forEach(function (/** @type {any} */ g) {
+        g.pieces.forEach(function (/** @type {any} */ p) {
+          if (p.id === id) t = p.text;
         });
-      return { secs: all, groups: groups };
+      });
+      return t;
     }
     // A title (a text's, the printout's, a group's) in the language printed: with both, the original's, the English
     // under it, smaller
@@ -331,7 +331,7 @@ export function init() {
       var L = plang(),
         h = mk(tag, cls),
         k = L === "en" ? "en" : "mr",
-        lead = L === "both" && shared.LEAD === "en" ? "en" : k;
+        lead = L === "both" && LEAD === "en" ? "en" : k;
       var n = lead === "en" ? numEn : numMr;
       if (n) h.appendChild(inLang("span", "pvnum", lead, n));
       h.appendChild(inLang("span", "pvtt", lead, lead === "en" ? enHtml : mrHtml));
@@ -415,7 +415,7 @@ export function init() {
           // for the screen. Inside the last block, so it never lands alone at the top of a page (in one language,
           // after the column, kept with it: inside a stanza it would widen it)
           var c = /** @type {HTMLElement} */ (cr.cloneNode(true)),
-            cl = plang() === "both" ? (shared.LEAD === "en" ? "en" : "mr") : k,
+            cl = plang() === "both" ? (LEAD === "en" ? "en" : "mr") : k,
             other = c.querySelectorAll(cl === "en" ? ".mr" : ".en");
           [].forEach.call(c.querySelectorAll(".crx"), function (/** @type {Element} */ x) {
             x.remove();
@@ -571,7 +571,7 @@ export function init() {
       var M = P.ui === "mr",
         ids = first(),
         m = dm(),
-        k = ids ? [m, ids[0], plang(), shared.LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter()].join("|") : "",
+        k = ids ? [m, ids[0], plang(), LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter()].join("|") : "",
         sh = sheet(m),
         w = 120; // its width (css/03-menus-print-view.css .prsheet)
       shv.setAttribute("aria-label", M ? "पहिल्या पानाची झलक" : "Preview of the first page");
@@ -699,7 +699,7 @@ export function init() {
     }
     function rows() {
       var or = P.ind === "kn" ? "kn" : "mr",
-        ks = plang() === "both" ? (shared.LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [plang() === "en" ? "en" : "mr"];
+        ks = plang() === "both" ? (LEAD === "en" ? ["en", "mr"] : ["mr", "en"]) : [plang() === "en" ? "en" : "mr"];
       [].forEach.call(dh.children, function (/** @type {HTMLElement} */ b) {
         b.setAttribute("aria-pressed", b.dataset.v === String(pref()) ? "true" : "false");
       });
@@ -907,8 +907,8 @@ export function init() {
       var M = P.ui === "mr",
         en = M ? "इंग्रजी" : "English",
         or = (NAMES[P.ind] || NAMES.mr)[M ? 0 : 1],
-        l1 = shared.LEAD === "en" ? en : or,
-        l2 = shared.LEAD === "en" ? or : en;
+        l1 = LEAD === "en" ? en : or,
+        l2 = LEAD === "en" ? or : en;
       // the page: Portrait or Landscape (one language), a tap picks it; both languages: Landscape, side by side
       /** @param {HTMLElement} b @param {string} page */
       function opt(b, page) {
@@ -925,7 +925,7 @@ export function init() {
       // the language: the main one, the other, or both (the main one first, as on the page). Both prints side by side
       // on Landscape, so the page row then says so instead of offering a choice
       var lg = /** @type {HTMLElement} */ (document.getElementById("prlg")),
-        LV = shared.LEAD === "en" ? ["en", "mr", "both"] : ["mr", "en", "both"];
+        LV = LEAD === "en" ? ["en", "mr", "both"] : ["mr", "en", "both"];
       lg.textContent = "";
       LV.forEach(function (v) {
         var b = document.createElement("button");

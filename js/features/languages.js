@@ -8,9 +8,9 @@ import { apply } from "./bars.js";
 import { trPick } from "./settings-panel.js";
 import { buildIX } from "../text/search.js";
 import { refToggle } from "./dhrupad-button.js";
+import { pieceEl } from "../core/page.js";
 
-var PICK,
-  spH; // the preview as last built
+var PICK;
 
 export function init() {
   // The language lists: each language once, English twice (one per spelling), and None for the second language.
@@ -72,43 +72,62 @@ export function spSet() {
     b.setAttribute("aria-pressed", String(b.dataset.v === String(P.ref)));
   });
   if (pn.hidden) return; // the rest is the preview, made when Settings is open
-  // Preview: the Ganapati aarti as the page shows it, main language large and second small under each line: the
-  // first line of verses 1 and 2, with the dhrupad (tinted) where Settings → Dhrupad puts it. Once: on top, with
-  // ↻ ध्रुपद under each verse; Every verse: after each verse. Both layouts are always here and the CSS shows one
-  // (data-ref on the root), sliding the dhrupad in and out, so a tap on Once / Every verse changes it at once.
-  // Size, font and line spacing come from the CSS (.sp-p1 / .sp-p2 in css/09-settings-page.css, which follow the
-  // same text size and font as the pieces), so A−, A+, reset and the font buttons change it at once too.
-  var line = function (l, cls, el) {
-    var p = el && el.querySelector("." + l + " p");
-    if (!p) return "";
-    // a danda never starts a line
-    return '<div class="' + cls + '" lang="' + LK(l) + '"><p>' + p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1") + "</p></div>";
-  };
-  var unit = function (el, cls) {
-    return '<div class="sp-u' + (cls || "") + '">' + line(P.lead, "sp-p1", el) + (P.l2 ? line(P.l2, "sp-p2", el) : "") + "</div>";
-  };
-  // a part that comes and goes with the setting (sp-once: shown with Once; sp-every: with Every verse)
-  var tg = function (when, html) {
-    return '<div class="sp-tg ' + when + '"><div>' + html + "</div></div>";
-  };
-  var rf = document.querySelector("#a1 .rftop .verse"),
-    vs = document.querySelectorAll("#a1 .items .item:not(.rf) .verse"),
-    mk = document.querySelector("#a1 .rmk ." + P.lead),
-    lab = document.querySelector("#a1 .rftop .lab ." + P.lead),
-    mark = mk ? '<div class="sp-rmk" lang="' + LK(P.lead) + '">' + mk.textContent + "</div>" : "",
-    refrain = unit(rf, " sp-rf");
-  var h =
-    '<div class="sp-pw' + (P.l2 ? "" : " sp-one") + '">' +
-    tg("sp-once", (lab ? '<div class="sp-lab" lang="' + LK(P.lead) + '">' + lab.textContent.replace(/\s*\(.*\)\s*$/, "") + "</div>" : "") + refrain) +
-    unit(vs[0]) +
-    tg("sp-once", mark) +
-    tg("sp-every", refrain) +
-    unit(vs[1]) +
-    tg("sp-once", mark) +
-    tg("sp-every", refrain) +
-    "</div>";
-  // rebuilt only when it differs, so a tap on Once / Every verse leaves it in place and the dhrupad can slide
-  if (h !== spH) document.getElementById("sprev").innerHTML = spH = h;
+  // Preview: the Ganapati aarti as the pieces will show it, main language large and second small under each line,
+  // with the Dhrupad choice: "once" has the dhrupad at the top and the ↻ ध्रुपद note after the verse, "every verse"
+  // has the dhrupad after it (Satish, 2026-10-26). Its size, font and line spacing come from the CSS (.sp-p1 / .sp-p2
+  // in css/09-settings-page.css, which follow the same text size and font as the pieces), so A−, A+, reset and the
+  // font buttons change it at once.
+  var a1 = pieceEl("a1"); // (built if not opened yet: js/core/page.js)
+  if (!a1) return;
+  var both = P.lang === "both",
+    ls = both ? [P.lead, P.l2] : [P.lang],
+    // the lines of one block (the dhrupad at the top, or the first verse) in each language shown
+    lines = function (sel, n) {
+      return ls.map(function (l) {
+        return [].slice.call(a1.querySelectorAll(sel + " .verse > ." + l + " p"), 0, n).map(function (p) {
+          return p.innerHTML.replace(/ ([।॥|])/g, "\u00a0$1"); // a danda never starts a line
+        });
+      });
+    },
+    // one line: the main language, and the second under it
+    row = function (b, k, cls) {
+      return b
+        .map(function (ps, w) {
+          return ps[k] === undefined ? "" : '<div class="' + (w ? "sp-p2" : "sp-p1") + (cls ? " " + cls : "") + '" lang="' + LK(ls[w]) + '"><p>' + ps[k] + "</p></div>";
+        })
+        .join("");
+    },
+    dh = lines(".rftop", 1),
+    vs = lines(".items > .item:not(.rf)", 1), // one line of the verse: the dhrupad, above or below it, stays in view
+    h = P.ref ? row(dh, 0, "sp-pd") : "";
+  for (var k = 0; k < vs[0].length; k++) h += row(vs, k);
+  h += P.ref
+    ? '<div class="sp-pn">' + (P.ui === "mr" ? "↻ ध्रुपद" : "↻ Refrain") + "</div>"
+    : row(dh, 0, "sp-pd");
+  // (its heading, Preview, is the group's, in index.html)
+  document.getElementById("sprev").innerHTML = '<div class="sp-pw">' + h + "</div>";
+  fitPreview();
+}
+
+/**
+ * The preview at the size the pieces will have. The pieces fit their size to the open text (js/text/autofit.js: the
+ * largest size, up to the default, at which every line fits the screen, never under 18px), but on Home no text is
+ * open to measure, so the preview fits its own lines to its window by the same rule, and so shows them whole at 100%.
+ * A size the reader chose (A− / A+, a pinch) is shown as it is, A+ running past the window's edges as on the page.
+ */
+export function fitPreview() {
+  var pw = /** @type {HTMLElement | null} */ (document.querySelector("#sprev .sp-pw"));
+  if (!pw) return;
+  pw.style.removeProperty("--fs");
+  if (P.fsu || !pw.clientWidth) return;
+  var avail = pw.clientWidth - 12, // (inside its faded edges)
+    widest = 0;
+  [].forEach.call(pw.querySelectorAll("p"), function (/** @type {HTMLElement} */ p) {
+    widest = Math.max(widest, p.getBoundingClientRect().width);
+  });
+  if (widest <= avail) return;
+  var fs = parseFloat(getComputedStyle(pw).getPropertyValue("--fs")) || 24;
+  pw.style.setProperty("--fs", Math.max(18, Math.floor((fs * avail) / widest)) + "px");
 }
 
 function spKey(slot) {
