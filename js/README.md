@@ -4,7 +4,7 @@ There is no build step: the browser loads these files as they are.
 
 - `parts.js` and `render.js` are plain scripts. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
 - The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json` and `../content/groups.json` (the reading page's groups), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
-- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (`features/overlays.js` and the `print/` files are imported by the parts that use them). `print/` holds the print layout, used by `features/print.js`.
+- `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (`features/overlays.js` is imported by the parts that use it).
 
 ## How the parts fit together
 
@@ -47,9 +47,7 @@ There is no build step: the browser loads these files as they are.
 | `core/startup.js` | Start-up |
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |
-| `print/profiles.js` | Print typography: per script, how far print may adjust a line's size; the side-by-side column range; the pop-up's default page (`CHOICE`) (no `init()`: read by `print/fit.js`) |
-| `print/fit.js` | Print layout: sets each stanza's size (and side by side, the column widths) so lines stay whole and in step (no `init()`: called by `features/print.js`) |
-| `features/print.js` | Print |
+| `features/print.js` | Print: the pop-up (What to print, dhrupad, page, font) and the print view (`#pv`) it writes, laid out by `../css/15-print.css` (see *Printing* in `../ARCHITECTURE.md`) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
 | `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js) |
 

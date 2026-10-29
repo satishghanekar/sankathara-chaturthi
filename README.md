@@ -4,7 +4,7 @@ The texts our group recites at Sankathara (Sankashti) Chaturthi puja: Pooja, Bha
 
 **Live site:** https://sankathara-chaturthi.pages.dev (the earlier site, https://sankashti-chaturthi.pages.dev, stays as it was)
 
-**Version:** 1.1 (shown as *v1.1* in Settings → About, on the line that checks for updates)
+**Version:** 1.2 (shown as *v1.2* in Settings → About, on the line that checks for updates)
 
 ## What the site does
 
@@ -25,7 +25,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 - **App icon and share image** come from Satish's square picture: `icon-32/192/512.png` keep its rounded gold-bordered shape (white corners removed), `icon-180.png` and the `apple-touch-icon` files are the full-bleed inside of the border (iPhone rounds them itself), the maskable icons keep everything inside Android's safe circle, and `share.jpg` (1024 px) is the link-preview picture (`og:image`).
 - **Originals:** the pictures exactly as Satish supplied them are kept untouched in `originals/` (the Sankathara square and round ones from 2026-10-15 are `sankathara-*.jpg`; the current SANKATAHARA CHATURTHI ones from 2026-10-27, which the icons and pictures are made from, are `sankatahara-*.jpg`) (not loaded by the site). The cleaned versions are made from them by trimming the white background.
 - **Next Sankathara Chaturthi card** (home page): a round button, or a tap beside the picture, folds it to one line (Ganesha, next date, moonrise), hiding the buttons until it is opened (tap the line or ⌄ to open); on the home page the Home buttons (top-bar title, bottom-bar Ganesha, the rail's Home) toggle it too (from a piece they just go home); the phone remembers it, and on Sankashti day it opens by itself. today's date, the next Sankashti and its moonrise for the reader's location (worked out from a built-in list of cities and Columbus suburbs), a strip of past and future dates, an on-the-day countdown, and calendar buttons. The calendar event is the group's 7:00–8:30 pm program at Bharatiya Hindu Temple, Powell (within 120 km of it), with moonrise in the notes and a 2-hour reminder; "Add all upcoming dates to calendar" adds every coming date.
-- **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF in the chosen language and English style. The Print pop-up has one row for the page: Portrait or Landscape for one language (one column; the Atharvashirsha as running paragraphs), and with both languages side by side, on Landscape only. It also picks the font and the dhrupad for the printout only, shows a line of the text in that font, and has one Print button. On an iPhone, if the print window does not open, the pop-up offers *Print now*, then Share → Print or *Open in Safari* (with *Copy link*), carrying the choices across; the Home Screen app goes straight to *Open in Safari*. The printed contents page lists the page each piece starts on, worked out for Letter paper in the US, Canada, Mexico and the Philippines and A4 elsewhere, for the page as turned.
+- **Share / QR / Print:** a ready reminder message for WhatsApp, a QR code of the site, and a printout or PDF in the chosen language and English style, printed as Nitya Upasana prints (see *Printing* in `ARCHITECTURE.md`). The Print pop-up has **What to print** (a tick for each text under पूजा and आरती, Select all and Clear; remembered), the dhrupad and the font for the printout only (with a sample line), and the page: Portrait or Landscape for one language (one column; the Atharvashirsha as running paragraphs), and with both languages side by side, on Landscape only. Every text starts on a new page and no stanza is split; the contents list the texts chosen, without page numbers, and no page has a border. On an iPhone, if the print window does not open, the pop-up offers *Print now*, then Share → Print or *Open in Safari* (with *Copy link*), carrying the choices across; the Home Screen app goes straight to *Open in Safari*. Paper: Letter in the US, Canada, Mexico and the Philippines, A4 elsewhere.
 - **Wide screens (iPad landscape, desktop):** in the side menu the पूजा and आरती headings are links to their sections (opening a folded one). stanzas sit in pairs across two columns; a stanza much longer or shorter than its neighbour (Atharvashirsha verse 1 beside verse 2) spans both columns on its own instead. The page sits right beside the side menu and uses its whole width (up to 60rem): the home card, section rows and piece headings all span it. The home card frames itself the same as on phones, and pieces are separated by their boxed heading rows and end ornament (no extra rule line).
 - **Offline:** a small cloud with a line through it shows in the top bar (`#ofb`) only while there is no internet; it is not coloured, because everything still works from the saved copy. A short "Ready to use offline" note shows once, when the first visit has saved the site. Settings → About has one line with the version and the offline state (Offline ready / Saving for offline… / Saved copy in use); a tap on it checks for updates, loading a newer version or saying "Up to date".
 - **Settings:** a page of its own over the reading page (`#panel.sp`; ‹ Back or the phone's Back closes it), in groups like phone settings: Languages (main, second, menus, a preview of the Ganapati aarti in your text size, font and spelling, with two verses and the dhrupad (tinted) where the Dhrupad setting puts it: on top with ↻ ध्रुपद under each verse for Once, after each verse for Every verse; it slides in and out when the setting changes), Reading (text size, font, dhrupad, layout on wide screens), Screen (theme, high contrast, keep screen on) and About (Help, Add to Home Screen, one version line that checks for updates when tapped, and who made the site). Centred at most 640px wide on large screens. Its styles are the "Settings page" block in `css/09-settings-page.css`.
@@ -45,7 +45,7 @@ Everything runs on the phone or computer. Nothing is sent anywhere, and the site
 | `index.html` | The page: top bar, Settings, home page and Help. |
 | `css/` | All the styles, in numbered parts loaded in order (see `css/README.md`). |
 | `js/parts.js` | The list of the site's style, script and font files, shared by the page and the service worker. |
-| `js/main.js` and `js/core/`, `js/text/`, `js/features/`, `js/print/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
+| `js/main.js` and `js/core/`, `js/text/`, `js/features/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
 | `content/texts/` | The texts, one plain-text file each (`aarti-sukhkarta.txt`, …): each line in Marathi/Hindi/Sanskrit with its everyday English line under it, the title and the author line. **Edit the texts here** (see *How to add a text*). |
 | `content/library.json`, `content/categories.json` | The list of texts, with the few words the app adds (language tags, the dhrupad label); the categories (Vedic Chant, Aarti, Stotra, Ashtak). Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
 | `content/groups.json` | This site's own: which texts the reading page shows under पूजा and आरती, in order (the piece numbers and Previous / Next follow it). |
@@ -107,15 +107,15 @@ Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in pla
 
 Phones keep a saved copy of the site, but the page and its style, script and text files are always fetched fresh when there is internet, so a published change reaches phones the next time the site is opened online. **Check for updates** (a tap on the version line in Settings → About) compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
 
-The version is what Settings → About shows (v1.1). It appears in **two** places, and both must always be the **same**:
+The version is what Settings → About shows (v1.2). It appears in **two** places, and both must always be the **same**:
 
 1. `sw.js`, near the top:
    ```js
-   const V='aarti-v1.1';
+   const V='aarti-v1.2';
    ```
 2. `index.html`, near the top:
    ```html
-   <meta name="version" content="aarti-v1.1">
+   <meta name="version" content="aarti-v1.2">
    ```
 
 Change it only for a new release, and change both together, using digits and dots only: `1.0` → `1.0.1` for fixes, `1.1` for new features, `2.0` for a redesign. Changing it also makes phones refresh the saved icons and fonts.

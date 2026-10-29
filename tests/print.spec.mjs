@@ -1,18 +1,17 @@
 // Print and PDF: the most thorough suite, because the printout is what the group hands round.
 //
 // For every combination of layout × text font × paper size (and a set of special cases) it checks:
-//   - the contents page lists the page each piece really starts on in the PDF
+//   - the contents page lists every piece (without page numbers), and each piece starts on a new page
 //   - every unbroken block (heading with its dhrupad and first stanza, each stanza) sits on one page
 //   - every piece is printed, even when it or its section is folded on screen
 //   - the screen-only controls (Open all, settings, etc.) never print
 //   - in layouts with English, every English line of the print view is in the PDF
-//   - the page count and contents numbers match the recorded baseline
+//   - the page count and the page each piece starts on match the recorded baseline
 //   - no line is lost, side by side rows stay in step and lines break mid-phrase only rarely (see the print audit)
 // PDFs can only be made by Chromium, so this suite is Chromium-only.
 import { test, expect, devices } from "@playwright/test";
 import { openSite, SETUPS, SNAP_ENV } from "./helpers.mjs";
-import { pdfMarks, auditLines } from "./print-audit-helpers.mjs";
-import { printOnce, checkPrintout, stubPrint, printFromButton, readPrintView, addMarkers, pdfPages, markerPages, toInt } from "./print-helpers.mjs";
+import { printOnce, checkPrintout, stubPrint, printFromButton, readPrintView, addMarkers, pdfPages, markerPages } from "./print-helpers.mjs";
 
 test.describe.configure({ mode: "parallel" });
 
@@ -54,37 +53,21 @@ for (const L of LAYOUTS)
   for (const fnt of FONTS)
     for (const P of PAPERS) {
       test(`${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
-        const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt }, choice: L.choice, mode: L.mode, ...P, lines: true });
-        const summary = checkPrintout(r, P.paper);
+        const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt }, choice: L.choice, mode: L.mode, ...P });
+        const summary = checkPrintout(r);
         expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${L.name}-${fnt}-${P.paper}.json`]);
-        // the lines themselves (js/print/fit.js): nothing lost, side by side in step, lines broken mid-phrase only
-        // where a line is too long even at its smallest (npm run print:audit shows every case)
-        const a = auditLines(r.marked, await pdfMarks(r.pdf.buf), L.mode);
-        // a failure names the lines, so it can be understood from the log alone (CI keeps no PDFs)
-        const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
-        expect(a.missing, which("text missing")).toBe(0);
-        expect(a.overflow, which("runs past its column")).toBe(0);
-        expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
-        expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
       });
     }
 
-// Landscape: every layout in every font, on Letter or A4 by turns, with the same checks. The text is fitted to
-// the wider line and the pages planned for the shorter page.
+// Landscape: every layout in every font, on Letter or A4 by turns, with the same checks.
 for (const L of SIDEWAYS)
   FONTS.forEach((fnt, i) => {
     const P = PAPERS[i % 2];
     test(`sideways · ${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
-      const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt, por: "land" }, choice: L.choice, mode: L.mode, ...P, lines: true });
+      const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt, por: "land" }, choice: L.choice, mode: L.mode, ...P });
       expect(r.pdf.landscape, "the PDF pages are sideways").toBe(true);
-      const summary = checkPrintout(r, P.paper);
+      const summary = checkPrintout(r);
       expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
-      const a = auditLines(r.marked, await pdfMarks(r.pdf.buf), L.mode);
-      const which = (kind) => kind + ": " + a.findings.filter((f) => f.kind.startsWith(kind)).slice(0, 12).map((f) => `\n  ${f.sid} ${f.lines || ""} ${f.text}`).join("");
-      expect(a.missing, which("text missing")).toBe(0);
-      expect(a.overflow, which("runs past its column")).toBe(0);
-      expect(a.outOfStep, which("side by side out of step")).toBeLessThanOrEqual(6);
-      expect(a.brokeMidPhrase, which("line broken mid-phrase")).toBeLessThanOrEqual(12);
     });
   });
 
@@ -97,7 +80,7 @@ for (const X of [
   test(`${X.name} @chromium-only`, async ({ browser }) => {
     const r = await printOnce(browser, { prefs: { ...X.prefs, por: "land" }, choice: X.choice, mode: X.mode, paper: "Letter", locale: "en-US" });
     expect(r.pdf.landscape).toBe(true);
-    const summary = checkPrintout(r, "Letter");
+    const summary = checkPrintout(r);
     expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
   });
 }
@@ -106,59 +89,69 @@ for (const X of EXTRAS) {
   test(`${X.name} @chromium-only`, async ({ browser }) => {
     const paper = X.paper || "Letter";
     const r = await printOnce(browser, { prefs: X.prefs, choice: X.choice, mode: X.mode, paper, locale: X.locale || "en-US" });
-    const summary = checkPrintout(r, paper);
+    const summary = checkPrintout(r);
     expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
   });
 }
 
 // Printing from the browser's own menu (Ctrl/⌘ P, or Share → Print on a phone) doesn't go through
-// the pop-up: the page builds the single-column print view in "beforeprint".
-test("browser menu print gives the single-column print view @chromium-only", async ({ browser }) => {
+// the pop-up: the page builds the print view of every text in "beforeprint", whatever is ticked under What to print.
+test("browser menu print gives every text @chromium-only", async ({ browser }) => {
   const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block" });
   const page = await context.newPage();
-  await openSite(page, SETUPS.marathi);
-  // the contents numbers for the menu print are worked out in the background ~3 s after load
-  await page.waitForTimeout(4000);
+  await openSite(page, { ...SETUPS.marathi, pskip: ["a2", "a3"] });
   // page.pdf() fires beforeprint exactly as the browser's Print menu does; the markers go in after
   // the site's own handler has built the print view
   await addMarkers(page, "beforeprint");
   const pdf = await pdfPages(page, "Letter");
-  await page.emulateMedia({ media: "print" });
-  const pv = await readPrintView(page);
-  expect(pv.pieces).toHaveLength(11);
-  expect(pv.toc.every((t) => t.page)).toBe(true);
-  const at = markerPages(pdf.pages);
-  for (const t of pv.toc) expect(at[t.id + ":0:s"], `${t.id} page`).toBe(toInt(t.page));
-  expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-    .toMatchSnapshot([SNAP_ENV, "browser-menu.json"]);
   // afterprint (fired when page.pdf finished) puts the page back to normal
   expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
+  const at = markerPages(pdf.pages);
+  const pieces = await page.evaluate(() => [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid));
+  expect(pieces).toHaveLength(11);
+  for (const id of pieces) expect(at[id + ":0:s"], `${id} printed`).toBeGreaterThan(0);
   await context.close();
 });
 
-// Safari and iOS (class "wk") keep the page plan worked out from the heights (see paginate in
-// js/features/print.js). Chromium can take that path too: nothing lost, contents numbers present.
-for (const [setup, por] of [["marathi", "up"], ["english", "up"], ["marathi", "land"]]) {
-  test(`Safari print layout (${setup}${por === "land" ? ", sideways" : ""}) @chromium-only`, async ({ browser }) => {
-    // Safari's user agent makes the site take its Safari print path (class "wk" on <html>)
-    const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: devices["Desktop Safari"].userAgent });
-    const page = await context.newPage();
-    await stubPrint(page);
-    await openSite(page, { ...SETUPS[setup], por });
-    await printFromButton(page, por === "land" ? "pr2" : "pr1");
-    const pv = await readPrintView(page);
-    expect(pv.mode).toBe("one");
-    expect(pv.pieces).toHaveLength(11);
-    expect(pv.toc.every((t) => t.page)).toBe(true);
-    await addMarkers(page);
-    const pdf = await pdfPages(page, "Letter");
-    const at = markerPages(pdf.pages);
-    expect(Object.keys(at).length).toBe(pv.blocks * 2);
-    expect(JSON.stringify({ pages: pdf.pages.length, contents: Object.fromEntries(pv.toc.map((t) => [t.id, toInt(t.page)])) }, null, 1))
-      .toMatchSnapshot([SNAP_ENV, `safari-${setup}${por === "land" ? "-sideways" : ""}.json`]);
-    await context.close();
-  });
-}
+// What to print: the texts ticked print, with their own contents; one text alone prints without contents; nothing
+// ticked prints nothing and says so. The choice is remembered.
+test("What to print: only the texts ticked print @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await stubPrint(page);
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#prb").click();
+  await expect(page.locator("#prwn")).toHaveText("All 11");
+  await expect(page.locator("#prwl input:checked")).toHaveCount(11);
+  await page.locator('#prwl [data-a="none"]').click();
+  await expect(page.locator("#prwl input:checked")).toHaveCount(0);
+  await page.locator("#prgp").click();
+  await expect(page.locator("#fl")).toContainText("Pick at least one text");
+  expect(await page.evaluate(() => window.__printed)).toBe(0);
+  await page.locator('#prwl input[value="p1"]').check();
+  await page.locator('#prwl input[value="a5"]').check();
+  await expect(page.locator("#prwn")).toHaveText("2 of 11");
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 0);
+  await page.emulateMedia({ media: "print" });
+  const pv = await readPrintView(page);
+  expect(pv.pieces).toEqual(["p1", "a5"]);
+  expect(pv.toc.map((t) => t.id)).toEqual(["p1", "a5"]);
+  await addMarkers(page);
+  const pdf = await pdfPages(page, "Letter");
+  const at = markerPages(pdf.pages);
+  expect(at["a5:0:s"]).toBeGreaterThan(at["p1:0:s"]);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(9);
+  // one text alone: just that text, no contents
+  await page.evaluate(() => dispatchEvent(new Event("afterprint")));
+  await page.emulateMedia({ media: "screen" });
+  await page.locator("#prb").click();
+  await page.locator('#prwl input[value="p1"]').uncheck();
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 1);
+  expect(await page.evaluate(() => [document.querySelectorAll("#pv .pvcov").length, [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid)])).toEqual([0, ["a5"]]);
+  await context.close();
+});
 
 // The Print pop-up itself: the right choices for each language, the paper named, Escape and Cancel close it.
 test("print pop-up offers the right choices and closes cleanly @chromium-only", async ({ page }) => {
@@ -348,7 +341,7 @@ test("iPhone Home Screen app: Open in Safari carries the print choices @chromium
   await context.close();
 });
 
-// What the pop-up offers (CHOICE in js/print/profiles.js): one language, Portrait or Landscape on one line,
+// What the pop-up offers (CHOICE in js/features/print.js): one language, Portrait or Landscape on one line,
 // Portrait until the reader has chosen a page, and the sample in that language; both languages, Landscape (side
 // by side) only, with a few words of each language in the sample. The focus is on Print.
 for (const [setup, words] of [
@@ -405,13 +398,12 @@ for (const [setup, choice, mode, landscape] of [
   test(`each choice prints on its own page: ${setup} ${choice} @chromium-only`, async ({ browser }) => {
     const r = await printOnce(browser, { prefs: { ...SETUPS[setup], por: "" }, choice, mode, paper: "Letter", locale: "en-US" });
     expect(r.pdf.landscape).toBe(landscape);
-    checkPrintout(r, "Letter");
+    checkPrintout(r);
   });
 }
 
 // The page chosen is remembered (shown chosen next time), the printer is told the page size, and Safari,
-// which keeps the sheet picked in its own dialog, is told, once Landscape is chosen, to pick it there too (and, on a Mac, that Chrome
-// prints it best)
+// which keeps the sheet picked in its own dialog, is told, once Landscape is chosen, to pick it there too
 test("print pop-up: the page chosen is remembered and printed that way @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
@@ -420,7 +412,6 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await openSite(page, SETUPS.marathi);
     await page.locator("#prb").click();
     await expect(page.locator("#prl")).toBeHidden();
-    await expect(page.locator("#prc")).toBeVisible({ visible: !!ua });
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));

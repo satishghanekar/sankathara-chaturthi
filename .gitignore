@@ -4,3 +4,7 @@ tests/pdfs/
 tests/playwright-report/
 tests/.lighthouseci/
 test-results/
+
+# copies iCloud Drive makes of a file it syncs while it changes ("library 2.json"): never part of the site
+* [0-9].*
+* [0-9]
