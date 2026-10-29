@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { flash } from "../core/page.js";
-import { shared, P, save } from "../core/state.js";
+import { shared, P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
 var SKTZ, SKCITY, SKWM, SKMM, SKMS, skToday, foldTouched, pdMore;
@@ -204,10 +204,8 @@ export function init() {
   skToday = false;
   foldTouched = false;
   document.getElementById("cvb").onclick = function () {
-    P.fold = document.querySelector("#home .top").classList.contains("fold") ? 0 : 1;
     foldTouched = true;
-    save();
-    foldSet();
+    change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, foldSet);
     // a fold is remembered, so say how to get the card back (it can fold by a tap on Ganesha or Home)
     if (P.fold) flash("कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा", "Card folded · tap its line to open it", 3000);
   };
@@ -265,8 +263,7 @@ export function init() {
     }
     navigator.geolocation.getCurrentPosition(
       function (p) {
-        P.loc = { lat: Math.round(p.coords.latitude * 100) / 100, lon: Math.round(p.coords.longitude * 100) / 100 };
-        save();
+        change({ loc: { lat: Math.round(p.coords.latitude * 100) / 100, lon: Math.round(p.coords.longitude * 100) / 100 } });
         shared.skCache = null;
         skRender();
       },

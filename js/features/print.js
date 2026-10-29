@@ -13,7 +13,7 @@
 // list the texts without page numbers, and no page has a border (Satish, 2026-10-28, as in Nitya Upasana).
 
 import { flash, root } from "../core/page.js";
-import { shared, P, save } from "../core/state.js";
+import { shared, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
 import { DV } from "../text/line-breaks.js";
@@ -503,19 +503,16 @@ export function init() {
     wl.addEventListener("change", function (e) {
       var cb = /** @type {HTMLInputElement} */ (e.target);
       if (!cb || cb.type !== "checkbox") return;
-      P.pskip = P.pskip.filter(function (id) {
+      var skip = P.pskip.filter(function (id) {
         return id !== cb.value;
       });
-      if (!cb.checked) P.pskip.push(cb.value);
-      save();
-      whatShow();
+      if (!cb.checked) skip.push(cb.value);
+      change({ pskip: skip }, whatShow);
     });
     wl.addEventListener("click", function (e) {
       var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest("[data-a]"));
       if (!b) return;
-      P.pskip = b.getAttribute("data-a") === "none" ? allIds() : [];
-      save();
-      whatShow();
+      change({ pskip: b.getAttribute("data-a") === "none" ? allIds() : [] }, whatShow);
     });
 
     // ---- The page: Letter in the US, Canada, Mexico and the Philippines, A4 elsewhere; upright or sideways ----
@@ -585,9 +582,7 @@ export function init() {
     fn.onclick = function (e) {
       var b = e.target.closest("button");
       if (!b) return;
-      P.pfn = b.dataset.v;
-      save();
-      rows();
+      change({ pfn: b.dataset.v }, rows);
     };
     // the sample line in the printout's font (set here: the page's own font rules follow the text font)
     var FAM = { classic: "SC Classic", hand: "SC Hand" };
@@ -637,9 +632,7 @@ export function init() {
     dh.onclick = function (e) {
       var b = e.target.closest("button");
       if (!b) return;
-      P.pref = +b.dataset.v;
-      save();
-      rows();
+      change({ pref: +b.dataset.v }, rows);
     };
     // the layout last chosen in the pop-up
     var wm = "one";
@@ -791,8 +784,7 @@ export function init() {
         b.textContent = page === "land" ? (M ? "आडवे" : "Landscape") : M ? "उभे" : "Portrait";
         b.setAttribute("data-page", page);
         b.onclick = function () {
-          P.por = page;
-          save();
+          change({ por: page });
           wm = dm();
           pages1();
         };
