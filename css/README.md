@@ -25,7 +25,8 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the Sankashti-day home card and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
 | `09-settings-page.css` | The Settings page and Kannada letters. |
-| `13-library.css` | The Library page, as in Nitya Upasana: Back and the title, Recent, the search results, every text by section in the book-index look, and the search box at the foot on phones (at the top on wide screens). Taken from Nitya's styles in its load order. |
+| `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
+| `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
 | `99-fallbacks.css` | Plain colours for browsers without `color-mix()` (iOS 15). **Keep it last**, because it replaces colours set in every file above. |
 
