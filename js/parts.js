@@ -64,6 +64,7 @@ var SITE_PARTS = (function () {
     "core/startup",
     "features/picture-viewer",
     "features/help",
+    "print/compose",
     "print/what",
     "features/print",
     "features/share",

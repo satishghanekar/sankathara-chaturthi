@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.7.6">
+<meta name="version" content="aarti-v1.7.7">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -41,8 +41,7 @@
 <link rel="stylesheet" href="css/13-library.css">
 <link rel="stylesheet" href="css/15-print.css">
 <link rel="stylesheet" href="css/99-fallbacks.css">
-<!-- The list of the site's files, for Check for updates and the offline copy. In the head: in the body it would
-     sit between elements that the styles expect to be neighbours (#home + .grp) -->
+<!-- The list of the site's files, for Check for updates and the offline copy. In the head, before the site script -->
 <script src="js/parts.js"></script>
 <!-- The site script (js/main.js) and its parts, fetched now in parallel instead of one after another
      when main.js asks for them. Same list as "modules" in js/parts.js. -->
@@ -83,6 +82,7 @@
 <link rel="modulepreload" href="js/core/startup.js">
 <link rel="modulepreload" href="js/features/picture-viewer.js">
 <link rel="modulepreload" href="js/features/help.js">
+<link rel="modulepreload" href="js/print/compose.js">
 <link rel="modulepreload" href="js/print/what.js">
 <link rel="modulepreload" href="js/features/print.js">
 <link rel="modulepreload" href="js/features/share.js">

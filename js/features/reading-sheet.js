@@ -1,7 +1,8 @@
 // Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { shared, P, dfs, change } from "../core/state.js";
+import { FSA } from "../text/autofit.js";
+import { P, dfs, change } from "../core/state.js";
 import { LANGS, LK, cur } from "../core/apply.js";
 import { apply } from "./bars.js";
 import { spTab, szSet } from "./settings-panel.js";
@@ -116,7 +117,7 @@ function rsSet() {
 }
 
 function rsPct() {
-  document.getElementById("rsv").textContent = Math.round((P.fs / (shared.FSA || dfs())) * 100) + "%";
+  document.getElementById("rsv").textContent = Math.round((P.fs / (FSA || dfs())) * 100) + "%";
 }
 
 function rsSize(fs, fsu) {

@@ -5,7 +5,6 @@
   "use strict";
   var ICON_PREV = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
   var ICON_NEXT = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-  var ICON_FOLD = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
   var LOTUS = '<div class="fin" aria-hidden="true"><svg viewBox="0 0 160 28" width="160" height="28" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20H56"/><path d="M104 20H152"/><circle cx="62" cy="20" r="1.4" fill="currentColor" stroke="none"/><circle cx="98" cy="20" r="1.4" fill="currentColor" stroke="none"/><path d="M80 4C75 9 74.5 15 80 21C85.5 15 85 9 80 4Z"/><path d="M80 21C73 20 68.5 15.5 67.5 10.5C73 11.5 77.5 15 80 21Z"/><path d="M80 21C87 20 91.5 15.5 92.5 10.5C87 11.5 82.5 15 80 21Z"/><path d="M70 22.5C74 24.5 86 24.5 90 22.5"/></svg></div>';
   var PNQ = '<div class="pnq"><a class="pnh" href="./" aria-label="Home"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></a><button type="button" class="pns" aria-label="Library" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5.5C5.6 4.6 8.9 4.9 12 7c3.1-2.1 6.4-2.4 9.5-1.5v13.3c-3.1-.9-6.4-.6-9.5 1.5-3.1-2.1-6.4-2.4-9.5-1.5z"/><path d="M12 7v13.3"/></svg></button></div>';
 
@@ -60,11 +59,6 @@
     h += '    <nav class="pn">\n' + navLink("prev", prev, ui.prev, true) + "      " + PNQ + "\n" + navLink("next", next, ui.next, false) + "    </nav>\n";
     return h + "  </section>\n";
   }
-  // A section's heading row (g-vedic-chant, g-aarti), with the button that folds it (js/core/apply.js)
-  var FOLD_BTN = { "vedic-chant": "pfb", aarti: "xfb" };
-  function group(c) {
-    return '  <div class="grp" id="g-' + c.id + '"><button type="button" id="' + FOLD_BTN[c.id] + '" aria-expanded="true">' + two(c.name) + ICON_FOLD + "</button></div>\n";
-  }
 
   // ---- The same words in another Indian script (Settings → Main language → ಕನ್ನಡ) ----
   // The text is written once, in Devanagari. Kannada letters sit at the same place in their Unicode block, 0x380
@@ -103,7 +97,7 @@
   } catch (e) {}
   var S = SCRIPTS[ind],
     OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed
-    ROOTS = ".grp, .ash, #home .hl1, #home h1, #btt",
+    ROOTS = ".ash, #home .hl1, #home h1, #btt",
     LATER = "#rail, #jl, #tsc"; // built by the site script (js/text/layout.js, js/features/contents-list.js, js/features/session-card.js) from the texts, already in the chosen script
   window.SCR = {
     k: S ? ind : "", // "" while the text is shown as written
@@ -123,7 +117,7 @@
         return n >= lo && n <= hi ? String.fromCharCode(n - S.off) : c;
       });
     },
-    // Rewrite the text (and its tooltips) in the pieces, their group rows, the home contents, the site's name and the
+    // Rewrite the text (and its tooltips) in the pieces, the home contents, the site's name and the
     // contents lists. What was there is kept (OLD), so switching back to Devanagari puts it back exactly.
     page: function () {
       if (!S) return;
@@ -209,10 +203,5 @@
   // Previous / Next
   window.renderPiece = function (p, C, prev, next) {
     return piece(p, prev || null, next || null, C.ui);
-  };
-  // A section's row (वैदिक मंत्र, आरती), before its pieces (js/core/page.js): hidden on screen, it heads the section in
-  // a printout
-  window.renderGroup = function (c) {
-    return group(c);
   };
 })();

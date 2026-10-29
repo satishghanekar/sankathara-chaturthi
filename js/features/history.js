@@ -200,7 +200,7 @@ export function jumpTo(go, url) {
   } catch (e) {}
   setP(false);
   setJ(false);
-  // a piece (#a3, a section row, a line from search) shows the reading page; the bare address, Home on its own
+  // a piece (#a3, a line from search) shows the reading page; the bare address, Home on its own
   homeView(!(url && url.charAt(0) === "#" && url !== "#home"));
   go();
   try {

@@ -1,8 +1,8 @@
 // Start-up
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { shared, P } from "./state.js";
-import { fontsN } from "../text/autofit.js";
+import { P } from "./state.js";
+import { fontsNow } from "../text/autofit.js";
 import { cur } from "./apply.js";
 import { apply, mark } from "../features/bars.js";
 import { wake } from "../features/wake-lock.js";
@@ -44,12 +44,12 @@ export function init() {
     was = JSON.parse(localStorage.getItem("aarti2-pos") || "null");
   } catch (e) {}
   var to = document.getElementById(at || (was && Date.now() - was.t < 12 * 3600000 && was.id) || ""),
-    reading = !!to && to.id !== "home" && (!!at || !((P.pf && to.classList.contains("pj")) || (P.xf && to.classList.contains("ar"))));
+    reading = !!to && to.id !== "home";
   if (reading) document.documentElement.removeAttribute("data-hv");
   else document.documentElement.setAttribute("data-hv", "1");
   apply();
   // fonts already in place (a repeat visit) need no second fit; fontsIn() above handles any that arrive later
-  shared.fontN = fontsN();
+  fontsNow();
   rzT = 0;
   window.addEventListener("resize", function () {
     setVw();

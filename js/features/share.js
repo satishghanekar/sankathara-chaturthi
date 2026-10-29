@@ -2,8 +2,8 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { flash } from "../core/page.js";
-import { shared, P } from "../core/state.js";
-import { skFmt, skLoc, skMid, skTemple } from "./date-card.js";
+import { P } from "../core/state.js";
+import { skCache, skFmt, skLoc, skMid, skTemple } from "./date-card.js";
 import { ovDone, ovPush } from "./history.js";
 import { focusBack } from "./more-menu.js";
 
@@ -37,7 +37,7 @@ export function init() {
     // Share: a ready reminder for the group chat (next Sankathara Chaturthi, pooja time near the temple, moonrise) plus the link
     // sep = true: leave the link out, because the share sheet is given it separately (it lands at the end)
     function shareText(sep) {
-      var C = shared.skCache,
+      var C = skCache,
         L = skLoc(),
         mr = P.ui === "mr";
       var tip = mr

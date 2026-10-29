@@ -12,8 +12,9 @@ export function init() {
     if (!r) return;
     var h = "";
     libraryGroups().forEach(function (g) {
-      // the group name is a link to its section row (वैदिक मंत्र → Vedic Chant, आरती → Aarti)
-      h += '<a class="rg" href="#' + g.id + '" data-go="' + g.id + '">' + g.name + "</a><ul>";
+      // the group name goes to the section's first text (वैदिक मंत्र → the Atharvashirsha, आरती → the first aarti)
+      var first = g.items[0] ? g.items[0].id : "";
+      h += '<a class="rg" href="./#' + first + '" data-go="' + first + '">' + g.name + "</a><ul>";
       g.items.forEach(function (x) {
         h += '<li><a href="#' + x.id + '" data-go="' + x.id + '">' + x.html + "</a></li>";
       });

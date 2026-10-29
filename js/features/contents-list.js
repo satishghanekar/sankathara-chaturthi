@@ -75,6 +75,23 @@ function listHtml() {
 }
 
 /**
+ * The sections and their texts as the Library lists them, for a printout's copy of the pieces (js/print/compose.js), as
+ * Nitya Upasana's Library gives them (its own categories there)
+ * @returns {{ category: { id: string, name: { mr: string, en: string } }, texts: { id: string }[] }[]}
+ */
+export function shelvesNow() {
+  var C = content();
+  return (C ? C.categories : []).map(function (/** @type {any} */ c) {
+    return {
+      category: { id: c.id, name: c.name },
+      texts: c.pieces.map(function (/** @type {any} */ p) {
+        return { id: p.text };
+      }),
+    };
+  });
+}
+
+/**
  * Every text for search (js/text/search-core.js): its id, the name its id gives it, its section, its titles and its
  * section's names
  * @returns {import("../text/search-core.js").TextIn[]}
