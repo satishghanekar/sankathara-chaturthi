@@ -57,6 +57,7 @@ var SITE_PARTS = (function () {
     "features/contents-list",
     "features/clicks",
     "features/pinch",
+    "text/search-core",
     "text/search",
     "core/startup",
     "features/picture-viewer",
