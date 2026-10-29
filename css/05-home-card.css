@@ -172,11 +172,6 @@
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
-@media print {
-  #tsc {
-    display: none;
-  }
-}
 
 /* ==== Home on its own (data-hv, js/features/history.js), as in Nitya Upasana: the page ends after Home (the card
    and the evening's list); the texts below it show once one is opened, and then Home is not above them. Screen
@@ -223,11 +218,6 @@
 }
 #ofb[hidden] {
   display: none;
-}
-@media print {
-  #ofb {
-    display: none !important;
-  }
 }
 
 /* ==== Lotus ornament at the end of each piece ==== */
@@ -619,11 +609,6 @@
 @media (prefers-reduced-motion: reduce) {
   .rmkpop {
     animation: none;
-  }
-}
-@media print {
-  .rmkpop {
-    display: none !important;
   }
 }
 

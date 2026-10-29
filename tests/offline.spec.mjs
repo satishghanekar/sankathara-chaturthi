@@ -11,8 +11,7 @@ test("works offline after the first visit @chromium-only", async ({ page, contex
   // wait until the service worker controls the page and has saved the site
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
-    if (!navigator.serviceWorker.controller)
-      await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
+    if (!navigator.serviceWorker.controller) await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
     const v = document.querySelector('meta[name="version"]').content;
     for (let i = 0; i < 50; i++) {
       const c = await caches.open(v);
@@ -51,7 +50,9 @@ test("offline ready only once every file is saved @chromium-only", async ({ page
   await page.locator('#spv button[data-v="more"]').click();
   // the other files are saved, the picture is not: still saving
   await expect
-    .poll(() => page.evaluate(async () => (await caches.open(document.querySelector('meta[name="version"]').content)).keys().then((k) => k.length)), { timeout: 20_000 })
+    .poll(() => page.evaluate(async () => (await caches.open(document.querySelector('meta[name="version"]').content)).keys().then((k) => k.length)), {
+      timeout: 20_000,
+    })
     .toBeGreaterThan(10);
   await page.waitForTimeout(1000);
   await expect(page.locator("#offv")).toHaveAttribute("data-s", "save");
@@ -69,8 +70,7 @@ test("a weak connection: the saved copy opens the page without asking the networ
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
-    if (!navigator.serviceWorker.controller)
-      await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
+    if (!navigator.serviceWorker.controller) await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
     const v = document.querySelector('meta[name="version"]').content;
     // every file in js/parts.js, and the page
     const all = SITE_PARTS.all.length + SITE_PARTS.fonts.length + SITE_PARTS.images.length + 1;
@@ -101,8 +101,7 @@ test("Check for updates saves a changed file and reloads with it @chromium-only"
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
-    if (!navigator.serviceWorker.controller)
-      await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
+    if (!navigator.serviceWorker.controller) await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
   });
   await page.reload();
   await page.waitForFunction(() => document.documentElement.hasAttribute("data-ready"));
@@ -157,8 +156,7 @@ test("Check for updates finds a new version installed while the old one is on sc
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
-    if (!navigator.serviceWorker.controller)
-      await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
+    if (!navigator.serviceWorker.controller) await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
   });
   await page.reload();
   await page.waitForFunction(() => document.documentElement.hasAttribute("data-ready"));
@@ -181,7 +179,7 @@ test("version in index.html and sw.js match", async ({ request }) => {
   const html = await (await request.get("./")).text();
   const sw = await (await request.get("sw.js")).text();
   const a = /<meta name="version" content="(aarti-v[\d.]+)">/.exec(html)?.[1];
-  const b = /const V\s*=\s*'(aarti-v[\d.]+)'/.exec(sw)?.[1];
-  expect(a, "<meta name=\"version\"> in index.html").toBeTruthy();
+  const b = /const V\s*=\s*["'](aarti-v[\d.]+)["']/.exec(sw)?.[1];
+  expect(a, '<meta name="version"> in index.html').toBeTruthy();
   expect(b, "sw.js").toBe(a);
 });

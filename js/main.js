@@ -51,39 +51,50 @@ import { init as startShare } from "./features/share.js";
 import { init as startMoreMenu } from "./features/more-menu.js";
 import { init as startOffline } from "./features/offline.js";
 
+// One part that fails to start is reported and passed over, so the parts after it still start (a part that needs
+// it may then fail too, but no more than that)
+/** @param {() => void} init */
+function run(init) {
+  try {
+    init();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 function start() {
   try {
-    startPage(); // Page basics: the <html> element, the language button icons, the short message (flash)
-    startState(); // Settings (P), loaded from this device
-    startFeatures(); // Features held back for a later release
-    startIast(); // IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks)
-    startLayout(); // Layout helpers that run once
-    startAstronomy(); // Astronomy for the Next Sankathara Chaturthi card
-    startDateCard(); // Next Sankathara Chaturthi card (computed on this device; works offline)
-    startDhrupadMarkers(); // Tappable dhrupad markers (every text with refrain: every-verse)
-    startStanzaNumbers(); // Stanza numbers
-    startLineBreaks(); // Preferred line breaks
-    startAutofit(); // Auto-fit text size
-    startApply(); // Current piece, menus and apply()
-    startBottomBar(); // Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›
-    startBars(); // Bars tuck away while reading (CSS: "Bars tuck away while reading")
-    startSettingsPanel(); // Settings panel
-    startReadingSheet(); // Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad
-    startWakeLock(); // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
-    startHistory(); // Back button
-    startLanguages(); // Settings page: languages
-    startSessionCard(); // Home: the evening's texts (content/routines.json), as Nitya Upasana's Today card
-    startContentsList(); // Contents list inside the contents + search overlay (built from the home page contents)
-    startClicks(); // Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it
-    startPinch(); // Pinch with two fingers to change the text size (the page itself never zooms)
-    startSearch(); // Search: every Marathi line with its English line; matches ignore svara marks and punctuation
-    startStartup(); // Start-up
-    startPictureViewer(); // Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move
-    startHelp(); // Help: opens over the page; the phone's Back button closes it
-    startPrint(); // Print
-    startShare(); // Share, QR code and the Add to Home Screen buttons
-    startMoreMenu(); // More (⋯ in the top bar): App, Share, QR and Help in a small menu
-    startOffline(); // Offline use: home-screen app details and the service worker (sw.js)
+    run(startPage); // Page basics: the <html> element, the language button icons, the short message (flash)
+    run(startState); // Settings (P), loaded from this device
+    run(startFeatures); // Features held back for a later release
+    run(startIast); // IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks)
+    run(startLayout); // Layout helpers that run once
+    run(startAstronomy); // Astronomy for the Next Sankathara Chaturthi card
+    run(startDateCard); // Next Sankathara Chaturthi card (computed on this device; works offline)
+    run(startDhrupadMarkers); // Tappable dhrupad markers (every text with refrain: every-verse)
+    run(startStanzaNumbers); // Stanza numbers
+    run(startLineBreaks); // Preferred line breaks
+    run(startAutofit); // Auto-fit text size
+    run(startApply); // Current piece, menus and apply()
+    run(startBottomBar); // Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›
+    run(startBars); // Bars tuck away while reading (CSS: "Bars tuck away while reading")
+    run(startSettingsPanel); // Settings panel
+    run(startReadingSheet); // Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad
+    run(startWakeLock); // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
+    run(startHistory); // Back button
+    run(startLanguages); // Settings page: languages
+    run(startSessionCard); // Home: the evening's texts (content/routines.json), as Nitya Upasana's Today card
+    run(startContentsList); // Contents list inside the contents + search overlay (built from the home page contents)
+    run(startClicks); // Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it
+    run(startPinch); // Pinch with two fingers to change the text size (the page itself never zooms)
+    run(startSearch); // Search: every Marathi line with its English line; matches ignore svara marks and punctuation
+    run(startStartup); // Start-up
+    run(startPictureViewer); // Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move
+    run(startHelp); // Help: opens over the page; the phone's Back button closes it
+    run(startPrint); // Print
+    run(startShare); // Share, QR code and the Add to Home Screen buttons
+    run(startMoreMenu); // More (⋯ in the top bar): App, Share, QR and Help in a small menu
+    run(startOffline); // Offline use: home-screen app details and the service worker (sw.js)
   } finally {
     // Show the page (see "data-ready" in css/02-core.css), even if a part failed to start
     document.documentElement.setAttribute("data-ready", "");

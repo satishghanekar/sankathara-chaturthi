@@ -123,7 +123,13 @@ var RC_MAX = 8;
 function remember(sec, id) {
   var k = id ? sec + "|" + id : sec;
   change({
-    rc: [k].concat((P.rc || []).filter(function (/** @type {string} */ x) { return x !== k; })).slice(0, RC_MAX),
+    rc: [k]
+      .concat(
+        (P.rc || []).filter(function (/** @type {string} */ x) {
+          return x !== k;
+        }),
+      )
+      .slice(0, RC_MAX),
   });
 }
 
@@ -145,7 +151,7 @@ export function rcShow() {
     if (!el) return; // a text no longer in the Library
     /** @param {string} l */
     var line = function (l) {
-      var x = el && el.querySelector('.verse > .' + l + ' > p[data-l="' + id + '"]');
+      var x = el && el.querySelector(".verse > ." + l + ' > p[data-l="' + id + '"]');
       return x ? txt(x) : "";
     };
     if (id && !line("mr")) return; // a line no longer in the text
@@ -175,7 +181,11 @@ export function rcShow() {
     x.textContent = "×";
     x.setAttribute("aria-label", (mrUi ? "काढा: " : "Remove: ") + (b.textContent || ""));
     x.onclick = function () {
-      change({ rc: (P.rc || []).filter(function (/** @type {string} */ y) { return y !== k; }) });
+      change({
+        rc: (P.rc || []).filter(function (/** @type {string} */ y) {
+          return y !== k;
+        }),
+      });
       rcShow();
     };
     li.appendChild(b);
@@ -213,10 +223,7 @@ function say(n, t, more) {
   else if (n >= 0) {
     var ln = more || n >= 40 ? (en ? "40 or more" : "४० किंवा अधिक") : num(n);
     m = ln + (en ? (n === 1 ? " result" : " results") : " ओळी सापडल्या");
-    if (t)
-      m = en
-        ? t + (t === 1 ? " text" : " texts") + " and " + ln + (n === 1 ? " line" : " lines")
-        : num(t) + " रचना आणि " + ln + " ओळी सापडल्या";
+    if (t) m = en ? t + (t === 1 ? " text" : " texts") + " and " + ln + (n === 1 ? " line" : " lines") : num(t) + " रचना आणि " + ln + " ओळी सापडल्या";
   }
   clearTimeout(srsT);
   srsT = setTimeout(function () {
