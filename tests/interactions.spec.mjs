@@ -565,3 +565,28 @@ test("reading the evening: Next › after the last text goes Home and ends it @m
   await expect(page.locator("#fl")).toHaveText("End of the session");
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-run"))).toBeNull();
 });
+
+// A session is read in the routine's order (content/routines.json), which need not be the Library's: Home lists it so,
+// and Next › follows it, as in Nitya Upasana
+test("a session in another order than the Library's: Home lists it so, and Next › follows it @mobile", async ({ page }) => {
+  await page.route("**/content/routines.json", (r) =>
+    r.fulfill({ json: { evening: { mode: "fixed", texts: ["aarti-jai-jagdish-hare", "vedic-chant-atharvashirsha", "aarti-sukhkarta"] } } }),
+  );
+  await openSite(page, SETUPS.english);
+  await expect(page.locator("#tsl a.tgo")).toHaveCount(3);
+  expect(await page.locator("#tsl a.tgo").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["./#a10", "./#p1", "./#a1"]);
+  await page.locator('#tsl a[href="./#a10"]').click();
+  await expect(page.locator("#a10")).toBeVisible();
+  for (const next of ["#p1", "#a1"]) {
+    await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+    await page.locator("#asn").click();
+    await expect.poll(() => page.url()).toContain(next);
+    await expect(page.locator(next)).toBeVisible();
+  }
+  // on the page too, the session's texts are one after another in its order
+  const tops = await page.evaluate(() => ["a10", "p1", "a1"].map((id) => document.getElementById(id).getBoundingClientRect().top));
+  expect(tops[0]).toBeLessThan(tops[1]);
+  expect(tops[1]).toBeLessThan(tops[2]);
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#asn")).toHaveAttribute("aria-label", "Next: Home");
+});
