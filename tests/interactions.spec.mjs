@@ -32,7 +32,8 @@ test("Settings → Show switches main → second → both and is remembered @mob
 });
 
 test("Settings → Dhrupad switches between once and after every verse @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck")); // opened at a text, the bars may start tucked away
   expect(await rootAttr(page, "data-ref")).toBe("1");
   await page.locator("#aa").click();
   await page.locator('#srf [data-v="0"]').click();
@@ -121,6 +122,31 @@ test("home lists the evening's texts; a title opens that text and Next goes on @
   expect(page.url()).toContain("#a4");
 });
 
+// Home on its own, as in Nitya Upasana: the page ends after the evening's list; while reading, Home is not above the texts
+test("Home is on its own; a text shows the reading page, Home and Back bring Home back @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await expect(page.locator("#tsc")).toBeVisible();
+  await expect(page.locator("#p1")).toBeHidden();
+  await expect(page.locator("#g-aarti")).toBeHidden();
+  await page.locator('#tsl a[data-go="a2"]').click();
+  await expect(page.locator("#a2")).toBeVisible();
+  await expect(page.locator("#a1")).toBeVisible();
+  await expect(page.locator("#home")).toBeHidden();
+  await page.goBack();
+  await expect(page.locator("#tsc")).toBeVisible();
+  await expect(page.locator("#a2")).toBeHidden();
+  await page.goForward();
+  await expect(page.locator("#a2")).toBeVisible();
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await page.locator("#ash").click();
+  await expect(page.locator("#tsc")).toBeVisible();
+  await expect(page.locator("#a2")).toBeHidden();
+  // a link to a text opens the reading page
+  await openSite(page, SETUPS.marathi, { hash: "#a5" });
+  await expect(page.locator("#a5")).toBeVisible();
+  await expect(page.locator("#home")).toBeHidden();
+});
+
 test("the evening's list follows the menu language @mobile", async ({ page }) => {
   await openSite(page, { ...SETUPS.marathi, ui: "mr" });
   await expect(page.locator("#tsn")).toHaveText("११ रचना", { useInnerText: true });
@@ -205,7 +231,7 @@ test("main and second language from the Settings dropdowns", async ({ page }) =>
 });
 
 test("piece fold is remembered across a reload @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
   await page.locator("#a2 header").click();
   await page.waitForTimeout(200);
   expect((await prefs(page)).af).toContain("a2");
@@ -221,7 +247,7 @@ test("piece fold is remembered across a reload @mobile", async ({ page }) => {
 });
 
 test("Vedic Chant and Aarti section folds @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
   await page.locator("#pfb").click();
   expect(await rootAttr(page, "data-pf")).toBe("1");
   await expect(page.locator("#p1")).toBeHidden();
@@ -317,7 +343,7 @@ test("reading sheet: a tap outside closes it, and All settings opens Settings @m
 });
 
 test("tapping a line highlights it and is remembered @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
   const line = page.locator("#a1 .items .verse .mr p[data-l]").first();
   await line.scrollIntoViewIfNeeded();
   await line.click();
@@ -326,6 +352,27 @@ test("tapping a line highlights it and is remembered @mobile", async ({ page }) 
   expect((await prefs(page)).hl).toBe(id);
   await line.click();
   await expect(line).not.toHaveClass(/hl/);
+});
+
+// On an iPhone a fixed bar made visible while the page still scrolls can be drawn in the middle of the page: scrolling
+// up brings the bars back only once the page stops moving; scrolling down hides them at once
+test("scrolling up brings the bars back once the page stops, not mid-scroll @mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await page.waitForTimeout(800);
+  const tucked = () => page.evaluate(() => document.documentElement.hasAttribute("data-tuck"));
+  const steps = (dy) =>
+    page.evaluate(async (dy) => {
+      for (let i = 0; i < 6; i++) {
+        scrollBy(0, dy);
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+    }, dy);
+  await steps(60);
+  await expect.poll(tucked).toBe(true);
+  await steps(-30);
+  expect(await tucked()).toBe(true);
+  await expect.poll(tucked).toBe(false);
 });
 
 test("bottom bar Next goes to the next piece", async ({ page }) => {
@@ -431,7 +478,7 @@ test.describe("pinch @chromium-only", () => {
     await expect(page.locator("#szt")).not.toHaveClass(/\bon\b/);
   });
   test("on a verse it resizes the text, with the size shown on screen", async ({ page }) => {
-    await openSite(page, SETUPS.marathi);
+    await openSite(page, SETUPS.marathi, { hash: "#a1" });
     await page.locator("#a1 .items .verse p").first().scrollIntoViewIfNeeded();
     const r = await pinchOut(page, "#a1 .items .verse p");
     expect(parseFloat(r.after)).toBeGreaterThan(parseFloat(r.before));

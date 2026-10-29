@@ -254,7 +254,7 @@ test("the page width used for centring leaves out a classic scrollbar (M3) @chro
 // ---- What screen readers are told (M1, M2, M6) --------------------------------------------------------
 test("screen readers: the size bubble is silent while pinching, the final size is announced once (M1) @chromium-only", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
   await expect(page.locator("#szt")).toHaveAttribute("aria-hidden", "true");
   await expect(page.locator("#sza")).toHaveAttribute("role", "status");
   await page.locator("#a1 .items .verse p").first().scrollIntoViewIfNeeded();
@@ -396,7 +396,7 @@ test("the phone's Back closes QR, Print and the picture and returns focus to the
 });
 
 test("the ↻ ध्रुपद bubble stays open until the next tap (WCAG 2.2.1)", async ({ page }) => {
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
   const m = page.locator(".rmkt").first();
   await m.scrollIntoViewIfNeeded();
   await m.click();

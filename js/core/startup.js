@@ -36,6 +36,17 @@ export function init() {
     { passive: true },
   );
   if (P.hl) hlMark(P.hl);
+  // Home on its own (data-hv, js/features/history.js), unless the page opens at a piece: a link such as …/#a3, or the
+  // reading position kept below (a piece read in the last 12 hours, not in a folded section)
+  var at = (location.hash || "").slice(1),
+    was = null;
+  try {
+    was = JSON.parse(localStorage.getItem("aarti2-pos") || "null");
+  } catch (e) {}
+  var to = document.getElementById(at || (was && Date.now() - was.t < 12 * 3600000 && was.id) || ""),
+    reading = !!to && to.id !== "home" && (!!at || !((P.pf && to.classList.contains("pj")) || (P.xf && to.classList.contains("ar"))));
+  if (reading) document.documentElement.removeAttribute("data-hv");
+  else document.documentElement.setAttribute("data-hv", "1");
   apply();
   // fonts already in place (a repeat visit) need no second fit; fontsIn() above handles any that arrive later
   shared.fontN = fontsN();
