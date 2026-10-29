@@ -182,9 +182,21 @@ function draw() {
       return (
         "<li>" +
         // (not data-go: a title starts the session, above)
-        '<a class="tgo" href="./#' + sec[id] + '" data-t="' + id + '">' +
-        '<span class="tno" aria-hidden="true">' + esc(scr(dv(i + 1))) + ".</span>" +
-        '<span class="tt"><span class="t1" lang="' + (scrKey() || x.language) + '">' + esc(scr(x.title)) + '</span><span class="t2" lang="en">' + esc(x.titleEn) + "</span></span>" +
+        '<a class="tgo" href="./#' +
+        sec[id] +
+        '" data-t="' +
+        id +
+        '">' +
+        '<span class="tno" aria-hidden="true">' +
+        esc(scr(dv(i + 1))) +
+        ".</span>" +
+        '<span class="tt"><span class="t1" lang="' +
+        (scrKey() || x.language) +
+        '">' +
+        esc(scr(x.title)) +
+        '</span><span class="t2" lang="en">' +
+        esc(x.titleEn) +
+        "</span></span>" +
         (l ? '<span class="ttg">' + two(l.mr, l.en) + "</span>" : "") +
         "</a></li>"
       );

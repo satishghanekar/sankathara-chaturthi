@@ -78,16 +78,26 @@ const CASES = [
   ["settings-phone", "phone", SETUPS.marathi, (p) => p.locator("#aa").click()],
   ["settings-desktop", "desktop", SETUPS.marathi, (p) => p.locator("#aa").click()],
   ["settings-dark", "phone", { ...SETUPS.marathi, th: "dark" }, (p) => p.locator("#aa").click()],
-  ["search-phone", "phone", SETUPS.marathi, async (p) => {
-    await p.locator("#asq").click();
-    await p.locator("#q").fill("sukh");
-  }],
+  [
+    "search-phone",
+    "phone",
+    SETUPS.marathi,
+    async (p) => {
+      await p.locator("#asq").click();
+      await p.locator("#q").fill("sukh");
+    },
+  ],
   ["library-phone", "phone", SETUPS.marathi, (p) => p.locator("#asq").click()],
   ["more-menu-phone", "phone", SETUPS.marathi, (p) => openMore(p)],
-  ["settings-screen-phone", "phone", SETUPS.marathi, async (p) => {
-    await p.locator("#aa").click();
-    await p.locator('#spv [data-v="screen"]').click();
-  }],
+  [
+    "settings-screen-phone",
+    "phone",
+    SETUPS.marathi,
+    async (p) => {
+      await p.locator("#aa").click();
+      await p.locator('#spv [data-v="screen"]').click();
+    },
+  ],
   ["help-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
   ["qr-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
   ["print-dialog", "phone", SETUPS.marathi, (p) => p.locator("#prb").click()],
