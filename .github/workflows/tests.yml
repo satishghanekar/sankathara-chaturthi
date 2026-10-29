@@ -29,7 +29,9 @@ jobs:
           cache-dependency-path: tests/package-lock.json
       - run: npm ci
       - run: npm run lint
-      # the text files: format, library.json and the proof that the page is unchanged (Vitest, tests/unit)
+      # Type checks (files marked // @ts-check), then the logic tests in tests/unit (Vitest): the text files,
+      # library.json, settings from older versions and the proof that the page is unchanged
+      - run: npm run types
       - run: npm run unit
   playwright:
     runs-on: ubuntu-24.04

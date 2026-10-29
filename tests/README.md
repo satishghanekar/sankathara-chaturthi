@@ -8,8 +8,11 @@ Automated checks for the site. The site itself has no build step; everything her
 cd tests
 npm ci                               # once
 npx playwright install chromium      # once (add firefox webkit for the other engines)
+npm run full                         # the full run, before every merge: lint, types, logic tests and every browser suite
 npm test                             # Chromium only, the default on a computer
 npm run lint                         # stylelint and eslint, as CI runs it
+npm run unit                         # Vitest: the logic tests in unit/ (no browser, a second or two)
+npm run types                        # TypeScript checks the JavaScript files that start with // @ts-check (nothing is compiled)
 PW_PROJECTS=chromium,firefox,webkit,iphone,ipad,pixel npm test   # every engine, as CI runs it
 npx playwright test print.spec.mjs   # one suite
 npx playwright test -g "kannada"     # tests whose name matches
