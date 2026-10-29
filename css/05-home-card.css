@@ -272,6 +272,36 @@
     display: none;
   }
 }
+/* ==== A session being read (data-run, js/features/session-card.js; as in Nitya Upasana): only its texts (.inrun) are on the reading page,
+   not the rest of the Library, one after another in one scroll, in session order (each piece's CSS order, set by
+   runOne(); the page itself keeps the Library's order). Screen only, and only the page's own pieces (#main > .ash): Print builds its own from
+   the texts (js/print/compose.js), and it reads what is shown of them, so a broader rule printed every text empty,
+   title only (Satish, 2026-10-22) ==== */
+@media screen {
+  :root[data-run="1"] #main > .ash:not(.inrun) {
+    display: none !important;
+  }
+  :root[data-run="1"]:not([data-hv]) #main {
+    display: flex;
+    flex-direction: column;
+  }
+  /* no scroll anchoring while a session runs: the browser picks its anchor in the page's order, not the session's, and
+     when a text above grows (fonts, line breaks) it could throw the reader thousands of pixels back, onto another
+     text (a phone, the morning's last title tapped: the Shri Sukta shown instead of the Mantra Pushpanjali) */
+  :root[data-run="1"] {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- Safari has no scroll anchoring to turn off */
+    overflow-anchor: none;
+  }
+}
+/* One text at a time: only the text being read (.solo, js/features/history.js) is shown, on every screen, from the Library
+   or search (a session runs on instead: above), as in Nitya Upasana. The next text never runs on below it (‹ Prev /
+   Next › in the bottom bar change it), and Home is not above it (above: Home on its own). Only the page's own pieces
+   (#main > .ash): Print builds its own from the texts (js/print/compose.js) */
+@media screen {
+  :root:not([data-hv]):not([data-run]) #main > .ash:not(.solo) {
+    display: none !important;
+  }
+}
 
 /* ==== Offline: a small muted cloud in the top bar (#ofb) while there is no internet; the saved copy is in use.
    Not a warning, so no colour. Settings → About says whether the site is saved for offline use. ==== */

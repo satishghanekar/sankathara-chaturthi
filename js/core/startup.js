@@ -2,10 +2,12 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { P } from "./state.js";
+import { onPiece, pieceEl } from "./page.js";
 import { fontsNow } from "../text/autofit.js";
 import { cur } from "./apply.js";
 import { apply, mark } from "../features/bars.js";
 import { wake } from "../features/wake-lock.js";
+import { homeAlone, homeInView, homeView, solo } from "../features/history.js";
 
 var tk, rzT, h, el, PK, posT, sp, moved, goPos;
 
@@ -35,16 +37,23 @@ export function init() {
     },
     { passive: true },
   );
-  if (P.hl) hlMark(P.hl);
-  // Home on its own (data-hv, js/features/history.js), unless the page opens at a piece: a link such as …/#a3, or the
-  // reading position kept below (a piece read in the last 12 hours, not in a folded section)
-  var at = (location.hash || "").slice(1),
-    was = null;
+  // the highlighted line, in its piece when that is built (js/core/page.js)
+  onPiece(function (sec) {
+    if (P.hl) hlMark(P.hl, sec);
+  });
+  // Home on its own (data-hv, js/features/history.js), unless the page opens at a piece: a link such as …/#a3, or
+  // the reading position kept below (a piece read in the last 12 hours)
+  h = (location.hash || "").slice(1);
+  sp = null;
   try {
-    was = JSON.parse(localStorage.getItem("aarti2-pos") || "null");
+    sp = JSON.parse(localStorage.getItem("aarti2-pos") || "null");
   } catch (e) {}
-  var to = document.getElementById(at || (was && Date.now() - was.t < 12 * 3600000 && was.id) || ""),
-    reading = !!to && to.id !== "home";
+  el = h && pieceEl(h);
+  var reading =
+    el && el.id !== "home"
+      ? true
+      : !h && !!(sp && sp.id && Date.now() - sp.t < 12 * 3600000 && pieceEl(sp.id));
+  solo(el && el.id !== "home" ? el.id : !h && reading && sp ? sp.id : "");
   if (reading) document.documentElement.removeAttribute("data-hv");
   else document.documentElement.setAttribute("data-hv", "1");
   apply();
@@ -61,7 +70,7 @@ export function init() {
   // Opened with a link such as …/#a3: go to that piece
   h = (location.hash || "").slice(1);
   if (h) {
-    el = document.getElementById(h);
+    el = pieceEl(h);
     // (a folded piece stays folded here: the address follows the piece you read, so a reload would open it)
     if (el && el.classList.contains("ash"))
       setTimeout(function () {
@@ -95,8 +104,9 @@ export function init() {
       moved = false;
       goPos = function () {
           if (moved) return;
-          var el = sp.id && document.getElementById(sp.id);
-          if (el && el.offsetParent === null) return; // a folded Vedic Chant piece: stay at the top
+          var el = sp.id && pieceEl(sp.id);
+          // a piece not shown: stay at the top, on Home on its own
+          if (el && el.offsetParent === null) return homeView(true);
           scrollTo(0, el ? el.getBoundingClientRect().top + scrollY + sp.y : sp.y);
         };
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
@@ -112,6 +122,8 @@ export function init() {
           ev,
           function () {
             moved = true;
+            // touched before the page got back to the piece: it stays on Home, on its own
+            if (homeInView()) homeAlone();
           },
           { once: true, passive: true },
         );
@@ -120,9 +132,10 @@ export function init() {
   }
 }
 
-// highlight a tapped line (each copy of it: Marathi, English, a repeated dhrupad) and the stanza around it
-export function hlMark(id) {
-  [].forEach.call(document.querySelectorAll('[data-l="' + id + '"]'), function (x) {
+// highlight a tapped line (each copy of it: Marathi, English, a repeated dhrupad) and the stanza around it, in the
+// page or in one piece (r)
+export function hlMark(id, r) {
+  [].forEach.call((r || document).querySelectorAll('[data-l="' + id + '"]'), function (x) {
     x.classList.add("hl");
     var st = x.closest(".items > .item, .rftop");
     if (st) st.classList.add("hli");

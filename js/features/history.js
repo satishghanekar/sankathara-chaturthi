@@ -1,13 +1,12 @@
 // Back button
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { bt, onPiece } from "../core/page.js";
-import { aa, cur, jp, pn, unfold } from "../core/apply.js";
-import { TK, apply, goHome, tuckHold } from "./bars.js";
-import { refit } from "../text/autofit.js";
+import { bt, onPiece, pieceEl } from "../core/page.js";
+import { aa, aimAt, cur, jp, unfold, pn } from "../core/apply.js";
+import { TK, apply, goHome, mark, tuckHold } from "./bars.js";
 import { anyOpen, closeForBack, pageEls, setJ, setP, trapped } from "./overlays.js";
 
-var NAV, popSkip, adT, ovFrom, keep;
+var NAV, popSkip, adT, hmb, ovFrom, sub, subSkip, keep;
 
 export function init() {
   // Opening a panel or dialog adds a Back step, so the phone's Back closes it instead of leaving the site.
@@ -15,9 +14,21 @@ export function init() {
   // follows the piece on screen (#a5) without adding steps. Each step remembers its scroll position (y).
   NAV = !!(history.pushState && history.replaceState);
   popSkip = 0;
+  homeOnScroll();
   // The script puts the page back in place itself (the browser's own guess can land at the top)
   if (NAV && "scrollRestoration" in history) history.scrollRestoration = "manual";
   addEventListener("popstate", function (e) {
+    // a sheet over a page (Add texts in the routine builder, on a phone) has its own Back step: Back closes only it
+    if (subSkip) {
+      subSkip = 0;
+      return;
+    }
+    if (sub) {
+      var f = sub;
+      sub = null;
+      f();
+      return;
+    }
     var was = ovOpen();
     setP(false);
     setJ(false);
@@ -52,15 +63,17 @@ export function init() {
     }
     if (was) return;
     var st = e.state,
-      el = location.hash && document.getElementById(location.hash.slice(1));
-    unfold(el);
+      el = location.hash && pieceEl(location.hash.slice(1));
+    // back on the bare address: Home on its own; on a piece's address: the reading page
     homeView(!el || el.id === "home");
+    solo(el ? el.id : "");
+    unfold(el);
     if (st && typeof st.y === "number") scrollTo(0, st.y);
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
   });
-  // Keyboard: Tab stays inside an open dialog (those marked trap in LAYERS, js/features/overlays.js: Help, QR, Print,
-  // Add to Home Screen, the picture, the reading sheet, Settings)
+  // Keyboard: Tab stays inside an open dialog (those marked trap in LAYERS, js/features/overlays.js: Restore, the
+  // profile sheet, the categories sheet, Help, QR, Print, Add to Home Screen, the picture, the reading sheet, Settings)
   document.addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
     var d = trapped();
@@ -68,6 +81,7 @@ export function init() {
     // Everything Tab can land on, dropdowns included: leaving <select> out made Tab from the language dropdowns
     // jump back to the top of Settings, so the rest of the page could not be reached by keyboard (WCAG 2.1.1).
     // Visibility is tested with getClientRects, which (unlike offsetParent) also works inside fixed layers.
+    // (a tab list's other tabs, tabindex -1, are reached with the arrow keys, not Tab)
     var f = [].filter.call(d.querySelectorAll("button,a[href],input,select,textarea,summary,[tabindex]:not([tabindex='-1'])"), function (x) {
       return !x.disabled && x.tabIndex >= 0 && x.getClientRects().length > 0 && getComputedStyle(x).visibility !== "hidden";
     });
@@ -75,7 +89,7 @@ export function init() {
     var a = document.activeElement,
       i = f.indexOf(a);
     // Firefox also stops on a box that scrolls (the print builder's list): that is still inside, so Tab goes on from
-    // it as usual rather than back to the top (as in Nitya Upasana)
+    // it as usual rather than back to the top
     if (i < 0 && a && d.contains(a)) return;
     if (e.shiftKey ? i <= 0 : i === f.length - 1 || i < 0) {
       e.preventDefault();
@@ -101,7 +115,15 @@ export function init() {
     e.preventDefault();
     goHomeNav();
   });
-  // Home and Library at the end of each piece do exactly what the bottom bar's buttons do
+  // (the Library button, #asq here, #hm in Nitya Upasana)
+  hmb = document.getElementById("asq");
+  hmb.onclick = function () {
+    setJ(jp.hidden);
+    // With a mouse and keyboard, the cursor goes straight into the search box (on phones it doesn't,
+    // so the keyboard doesn't pop up over the list)
+    if (!jp.hidden && matchMedia("(hover: hover) and (pointer: fine)").matches) document.getElementById("q").focus();
+  };
+  // Home and Search at the end of each piece do exactly what the bottom bar's Home and Library do
   onPiece(function (sec) {
     [].forEach.call(sec.querySelectorAll(".pnh"), function (h) {
       h.addEventListener("click", function (e) {
@@ -110,7 +132,7 @@ export function init() {
       });
     });
     [].forEach.call(sec.querySelectorAll(".pns"), function (b) {
-      b.onclick = openLibrary;
+      b.onclick = hmb.onclick;
     });
   });
   // Skip link: focus goes to the first text on screen (a piece, or the page), without changing the address
@@ -128,7 +150,10 @@ export function init() {
   pageEls().forEach(function (el) {
     el.addEventListener("focusout", function (e) {
       var t = e.relatedTarget;
-      if (el.hidden || !t || el.contains(t) || t.closest(".bar,#help")) return;
+      // (not into the categories sheet, which opens over the Library, nor the profile sheet, over the routine builder)
+      // (nor into Home's calendar card or This week, which open the calendar at another view: closing it first would
+      // let its Back step close the calendar they open)
+      if (el.hidden || !t || el.contains(t) || t.closest(".bar,#help,#lbm,#pfm,#pan,#tdd,#upw")) return;
       el._ret = null;
       if (el === pn) setP(false);
       else setJ(false);
@@ -140,14 +165,6 @@ export function init() {
   aa.onclick = function () {
     setP(pn.hidden);
   };
-}
-
-// The Library (contents and search): opened and closed by the bottom bar's button and the one at the end of each
-// piece. With a mouse and keyboard, the cursor goes straight into the search box (on phones it doesn't, so the
-// keyboard doesn't pop up over the list)
-export function openLibrary() {
-  setJ(jp.hidden);
-  if (!jp.hidden && matchMedia("(hover: hover) and (pointer: fine)").matches) /** @type {HTMLElement} */ (document.getElementById("q")).focus();
 }
 
 function hs() {
@@ -166,6 +183,25 @@ export function ovPush() {
     history.replaceState({ y: scrollY }, "", location.href);
     history.pushState({ ov: 1, y: scrollY }, "", location.href);
   } catch (e) {}
+}
+
+// A sheet opened over a page that is open already (the routine builder's Add texts on a phone): a Back step of its
+// own, so the phone's Back closes the sheet (close is called) and leaves the page open
+export function ovSub(close) {
+  if (!NAV || !hs().ov) return;
+  sub = close;
+  try {
+    history.pushState({ ov: 1, sub: 1, y: scrollY }, "", location.href);
+  } catch (e) {}
+}
+
+// The sheet was closed another way (Done, Escape, a tap outside): take its Back step off again
+export function ovSubDone() {
+  if (!sub) return;
+  sub = null;
+  if (!NAV || !hs().sub) return;
+  subSkip = 1;
+  history.back();
 }
 
 // Closed with ✕, Escape or a tap outside: take the panel's Back step off again. Only once: history.back()
@@ -200,14 +236,19 @@ export function jumpTo(go, url) {
   } catch (e) {}
   setP(false);
   setJ(false);
-  // a piece (#a3, a line from search) shows the reading page; the bare address, Home on its own
+  // a piece (#a3): the reading page with every piece; the bare address: Home on its own
+  solo(url && url.charAt(0) === "#" ? url.slice(1) : "");
   homeView(!(url && url.charAt(0) === "#" && url !== "#home"));
   go();
+  // the piece gone to is the one being read until the reader scrolls, even if it is too short to reach the top
+  aimAt(url && url.charAt(0) === "#" && url !== "#home" ? pieceEl(url.slice(1)) : null);
+  // the page may not have scrolled (a short text read on its own, css/10-today.css): the bars follow anyway
+  mark();
   try {
     if (NAV) history[ov ? "replaceState" : "pushState"]({ y: scrollY }, "", url);
   } catch (e) {}
   // Focus follows to the piece's heading, so the next Tab or screen reader line starts there
-  var el = url && url.charAt(0) === "#" && document.getElementById(url.slice(1)),
+  var el = url && url.charAt(0) === "#" && pieceEl(url.slice(1)),
     h = el && el.querySelector("h2");
   if (h) {
     h.tabIndex = -1;
@@ -217,30 +258,91 @@ export function jumpTo(go, url) {
   }
 }
 
-// Home on its own, as in Nitya Upasana: while data-hv is on <html>, the page ends after Home (the card and the
-// evening's list) and the reading page below it is not shown; while reading, Home is not shown above the texts
-// (css/05-home-card.css, screen only: print builds its own copy of the pieces). Set by going home (the top-bar title,
-// Home in the bottom bar or the side menu, Back to the bare address) and at start-up with no piece to open
-// (js/core/startup.js); taken off before the page goes to a piece (jumpTo(), Back to a piece's address, a link such as
-// #a3, the reading position), so the evening is still one scroll from the first text to the last.
-// Coming back to the texts, they are fitted to the screen again, since they could not be measured while hidden.
+// Home on its own: while data-hv is on <html>, the page ends after Home (More and the
+// Library line) and the pieces below it are not shown (css/10-today.css, screen only). It is set by going home (the top-bar
+// title, Home in the side menu or the bottom bar, the end of a session, Back to the bare address) and at start-up
+// with no piece to open (js/core/startup.js), and taken off before the page goes to a piece (jumpTo(), Back to a
+// piece's address, a link such as #a3, the reading position), so reading a text, ‹ Prev and Next ›, and scrolling
+// between pieces work as before. Scrolling up from a piece back to Home, or picking a session there, sets it again
+// (homeOnScroll(), js/features/today-card.js).
+// Coming back to the pieces, the text is fitted to the screen again (apply()), since it could not be measured
+// while hidden.
 /** @param {boolean} on */
 export function homeView(on) {
   var r = document.documentElement;
   if (on === r.hasAttribute("data-hv")) return;
-  if (on) r.setAttribute("data-hv", "1");
-  else {
+  if (on) {
+    r.setAttribute("data-hv", "1");
+    mark();
+  } else {
     r.removeAttribute("data-hv");
-    refit();
     apply();
   }
 }
 
-// Home buttons (top-bar title, Ganesha in the bottom bar, the rail's Home): from a piece they go home;
-// on the home page, with the card in view, they open or close the card like its own round button
+// The text being read (.solo on its piece): the page shows only that one text, on every screen (css/10-today.css);
+// ‹ Prev / Next › in the bottom bar or the side menu change it. Set
+// wherever the page goes to a piece: jumpTo(), Back, and start-up (js/core/startup.js). Another address (Home)
+// leaves it where it was.
+/** @param {string} id  the piece's id (a3) */
+export function solo(id) {
+  var el = id && pieceEl(id);
+  if (!el || !el.classList.contains("ash")) return;
+  [].forEach.call(document.querySelectorAll(".ash.solo"), function (/** @type {HTMLElement} */ x) {
+    if (x !== el) x.classList.remove("solo");
+  });
+  if (el.classList.contains("solo")) return;
+  el.classList.add("solo");
+  // another text is being read: the bottom bar names where ‹ Prev / Next › go from it now, even when the page did not
+  // scroll (js/features/bottom-bar.js)
+  document.dispatchEvent(new CustomEvent("nitya-solo"));
+}
+
+// Scrolling up from a piece back to Home: once the Morning / Afternoon / Evening switch is on screen, Home is on its
+// own again (data-hv), so the page ends after the session's texts, More and the Library line instead of showing every
+// piece below them, even when Home is short (a session with nothing planned). Only on the way up, so scrolling down
+// from Home never hides a piece you are reading, nor does the reading position going down to a piece at start-up.
+function homeOnScroll() {
+  var y0 = scrollY,
+    hT = 0;
+  addEventListener(
+    "scroll",
+    function () {
+      var up = scrollY < y0;
+      y0 = scrollY;
+      if (!up || hT || document.documentElement.hasAttribute("data-hv")) return;
+      hT = requestAnimationFrame(function () {
+        hT = 0;
+        if (homeInView()) homeAlone();
+      });
+    },
+    { passive: true },
+  );
+}
+
+// The Morning / Afternoon / Evening switch is on screen: the reader is on Home
+export function homeInView() {
+  // on wide screens Home's column stays beside the text being read (css/10-today.css): always on screen, never a
+  // reason to leave the text
+  var h = document.documentElement;
+  if (h.hasAttribute("data-rail") && !h.hasAttribute("data-hv")) return false;
+  // (here the switch shows only with two or more sessions: else the session's heading)
+  var t = document.querySelector("#tss:not([hidden])") || document.getElementById("tsh"),
+    r = t && t.getBoundingClientRect();
+  return !!r && r.bottom > 0 && r.top < innerHeight;
+}
+
+// Home on its own, the address back to the bare one (so a reload stays on Home too); the page keeps its place
+export function homeAlone() {
+  homeView(true);
+  try {
+    if (NAV && location.hash) history.replaceState({ y: scrollY }, "", location.pathname);
+  } catch (e) {}
+}
+
+// Home buttons (top-bar title, Home in the bottom bar): back to the top of the home page
 export function goHomeNav() {
-  var top = document.querySelector("#home .top"),
-    r = top && top.getBoundingClientRect();
-  if (!cur() && r && r.bottom > 60 && r.top < innerHeight / 2) document.getElementById("cvb").onclick();
-  else jumpTo(goHome, location.pathname);
+  // going Home leaves the session being read (js/features/today-card.js)
+  document.dispatchEvent(new Event("nitya-home"));
+  jumpTo(goHome, location.pathname);
 }

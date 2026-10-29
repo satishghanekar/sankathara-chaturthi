@@ -1,7 +1,7 @@
 // Bars tuck away while reading (CSS: "Bars tuck away while reading")
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { root } from "../core/page.js";
+import { onPiece, root } from "../core/page.js";
 import { P, setLead } from "../core/state.js";
 import { cardFoldSet, skDot, skRender } from "./date-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
@@ -23,6 +23,11 @@ export function init() {
   // h: the page height, kept up to date as the page grows or shrinks (folds, fonts, a resize), so the
   // scroll handler below never asks the browser for it, which could make it lay the page out mid-scroll
   TK = { y: 0, acc: 0, hold: 0, h: 0, show: 0 };
+  // A piece just built (js/core/page.js) takes the text language and the order of its two languages, as apply() sets
+  onPiece(function (sec) {
+    sec.setAttribute("data-lang", P.lang);
+    leadOrder(sec.querySelectorAll(".verse, header h2"), leadOf());
+  });
   if (window.ResizeObserver)
     new ResizeObserver(function () {
       TK.h = document.documentElement.scrollHeight;
