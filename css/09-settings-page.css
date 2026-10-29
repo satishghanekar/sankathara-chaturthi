@@ -357,6 +357,7 @@ html[data-sp] {
   display: grid;
   grid-template-rows: 1fr;
   opacity: 1;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- where grid rows don't animate (iOS 15) the part just opens or shuts, and fades */
   transition:
     grid-template-rows 0.3s ease,
     opacity 0.3s ease;
@@ -379,6 +380,10 @@ html[data-sp] {
 }
 .sp-pw .sp-rf p {
   font-weight: 600;
+}
+/* the dhrupad's English line in the full text colour: muted on the gold tint it fell below 4.5:1 */
+.sp-pw .sp-rf .sp-p2 {
+  color: var(--ink);
 }
 [data-hc="1"] .sp-pw .sp-rf {
   background: none;
@@ -484,8 +489,6 @@ html[data-scr="kn"] #bt[data-tl="mr"] #btt,
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr *,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .mr *,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #home .tocg .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #home .tocg .nm,
 html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"],
@@ -493,8 +496,6 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #prfs[lang="kn"] {
   font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr *,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .pvs[data-sid="p1"] .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #pv .pvs[data-sid="p1"] .mr * {
+html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
   font-family: var(--kv, "Noto Sans Kannada"), "Noto Sans Kannada", var(--body) !important;
 }

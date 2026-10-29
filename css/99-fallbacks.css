@@ -31,7 +31,8 @@
   .sp .sp-go:active,
   .sp-seg,
   .prrow .prseg,
-  .sp-prev {
+  .sp-prev,
+  .sp-pw .sp-rf {
     background: var(--surface);
   }
   .top .hero {

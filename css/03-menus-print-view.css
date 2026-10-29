@@ -160,7 +160,6 @@ a.t {
   margin: auto;
 }
 
-
 /* ==== Share / QR / Print buttons, QR pop-up ==== */
 #shr {
   margin: 22px 0 0;
@@ -289,7 +288,6 @@ a.t {
   font-family: var(--body);
 }
 
-
 /* ==== Top-bar title with Ganesha (home) icon; Home button in the contents overlay ==== */
 .bar .t.site {
   display: flex;
@@ -356,7 +354,6 @@ h2[tabindex="-1"]:focus {
   outline: none;
 }
 
-
 /* ==== Contents headings (refined) ==== */
 .tocg .gh {
   font: 600 1.02em/1.3 var(--head);
@@ -403,7 +400,6 @@ h2[tabindex="-1"]:focus {
     break-before: avoid;
   }
 }
-
 
 /* ==== Share / QR / Print row; print pop-up (#prm); print view (#pv, built by the script just before printing) ==== */
 #shr {
@@ -587,20 +583,9 @@ h2[tabindex="-1"]:focus {
 #prm[hidden] {
   display: none;
 }
-#pv {
-  display: none;
-}
+
 @media print {
-  @page {
-    margin: 9mm 9mm 14mm;
-    @bottom-center {
-      content: counter(page) " / " counter(pages);
-      font: 9pt sans-serif;
-      color: #555;
-      vertical-align: top;
-      padding-top: 3mm;
-    }
-  }
+
   #prm {
     display: none !important;
   }
@@ -608,282 +593,9 @@ h2[tabindex="-1"]:focus {
   :root[data-print] .bar {
     display: none !important;
   }
-  :root[data-print] #pv {
-    display: block !important;
-    font-size: 13pt;
-    line-height: 1.45;
-    color: #000;
-    /* no font hinting: the paper then takes the same letter widths on every computer, the ones the fitting
-       measures (js/print/fit.js); hinted, Linux printed words up to 3% wider or narrower, by its font settings */
-    text-rendering: geometricPrecision;
-  }
-  #pv .pvh {
-    font: 400 22pt/1.2 var(--head);
-    color: var(--accent);
-    text-align: center;
-    margin: 0 0 6pt;
-  }
-  #pv .pvs {
-    margin: 0 0 10pt;
-  }
-  #pv .pvs h2 {
-    font: 400 16pt/1.25 var(--head);
-    color: var(--accent);
-    text-align: center;
-    /* padding rather than margin above, so the tops of the letters stay on the heading's own page */
-    margin: 9pt 0 6pt;
-    padding-top: 3pt;
-    break-after: avoid;
-  }
-  #pv .pvs h2 .en {
-    display: none;
-  }
-  #pv[data-lang="en"] .pvs h2 .en {
-    display: inline;
-  }
-  #pv[data-lang="en"] .pvs h2 .mr {
-    display: none;
-  }
-  #pv .pvt {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
-    margin: 0 0 4pt;
-  }
-  #pv .pvt td {
-    vertical-align: top;
-    padding: 0 8pt;
-  }
-  #pv .pvt tr {
-    break-inside: avoid;
-  }
-  #pv .verse {
-    margin: 0 0 0.7em;
-    break-inside: avoid;
-  }
-  #pv .verse p {
-    padding: 0;
-    cursor: auto;
-  }
-  #pv .rmk {
-    display: block;
-    text-align: center;
-    font-size: 0.75em;
-    margin: -0.3em 0 0.5em;
-    color: #555;
-  }
-  #pv .pvref {
-    margin: 0 auto 8pt;
-    background: none;
-    display: table;
-  }
-  #pv .pvk {
-    display: block;
-    font-size: 13pt;
-    line-height: 1.45;
-    break-inside: avoid;
-    page-break-inside: avoid;
-  } /* Safari splits table rows across pages and ignores keep-together on them; an inline-block cannot be split */
-  .wk #pv .pvs {
-    font-size: 0;
-    line-height: 0;
-  }
-  .wk #pv .pvk {
-    display: inline-block;
-    width: 100%;
-    vertical-align: top;
-  }
-  :root[data-print="one"] #pv .pvk {
-    font-size: 14pt;
-  }
-  /* a block taller than a page (js/features/print.js marks it; it happens on a sideways page) breaks between
-     its lines rather than running off the page */
-  #pv .pvk.pvtall,
-  .wk #pv .pvk.pvtall,
-  #pv .pvtall .verse {
-    display: block;
-    break-inside: auto;
-    page-break-inside: auto;
-  }
-  #pv .pvtall p,
-  #pv .pvtall tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  /* Prose (the Atharvashirsha in one language: js/features/print.js): running paragraphs as in a printed
-     booklet, each indented, with room between the lines for the accent marks above and below them. A paragraph
-     breaks across pages like a book's, never leaving one line alone at the foot or the top of a page. */
-  #pv .pvpara {
-    margin: 0 0 0.5em;
-  }
-  #pv .pvpr {
-    font-size: 15pt;
-    line-height: 2.1;
-    text-align: start;
-    text-indent: 2em;
-    /* stylelint-disable plugin/no-unsupported-browser-features -- Firefox ignores them: a page may then start or end on one line of a paragraph */
-    orphans: 2;
-    widows: 2;
-    /* stylelint-enable plugin/no-unsupported-browser-features */
-  }
-  #pv .pvtall p.pvpr {
-    break-inside: auto;
-    page-break-inside: auto;
-  }
-  #pv .pvpara .en .pvpr {
-    font-size: 13pt;
-    line-height: 1.9;
-  }
-  #pv .pvnb {
-    white-space: nowrap;
-  }
-  #pv .pvcen .pvpr {
-    text-align: center;
-    text-indent: 0;
-  }
-  /* Contents on page 1 (it gets a page to itself: see the final print rules) */
-  #pv .pvtoc {
-    margin: 10pt 0 14pt;
-  }
-  #pv .pvtoc h3 {
-    font: 600 13pt/1.3 var(--head);
-    color: var(--accent);
-    margin: 16pt 0 4pt;
-    padding: 0 0 3pt;
-    border-bottom: 1pt solid var(--accent);
-  }
-  #pv .pvtoc ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  #pv .pvtoc li {
-    font: 400 13pt/1.35 var(--head);
-    padding: 4pt 2pt;
-    border-bottom: 0.5pt solid #ccc;
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  #pv[data-lang="both"] .pvtoc .en {
-    display: block;
-    font: 400 10pt/1.3 var(--lat);
-    color: #555;
-  }
-  #pv[data-lang="both"] .pvtoc h3 .en {
-    display: inline;
-    margin-left: 0.5em;
-  }
-  #pv[data-lang="en"] .pvtoc li,
-  #pv[data-lang="en"] .pvtoc h3 {
-    font-family: var(--lat);
-  }
-  :root[data-print="one"] #pv .verse {
-    text-align: center;
-  }
-  #pv .pvk > table {
-    margin-bottom: 0;
-  }
-  #pv .pvside {
-    margin: 0;
-  }
-  #pv .pvside .pvm {
-    border-right: 0.5pt solid #bbb;
-  }
 
-  #pv .pvside .mr,
-  #pv .pvside .en {
-    display: block !important;
-    text-align: left;
-  }
-  #pv .pvside tr:not(.rfl) .en {
-    color: #000 !important;
-  }
-  #pv .pvside .en {
-    line-height: 1.45;
-  }
-  /* the English lines themselves (td.pve) are sized below */
-  #pv .pvside .en:not(td) {
-    font-size: 0.92em !important;
-  }
-  #pv .pvside tr.pvrefrow td {
-    border-left: 0;
-  }
-  #pv .pvside .rmk .mr,
-  #pv .pvside .rmk .en,
-  #pv .pvside .lab .mr,
-  #pv .pvside .lab .en {
-    display: inline !important;
-    margin-right: 0.7em;
-  }
-  #pv .pvside .lab {
-    font-size: 0.7em;
-    color: #555;
-  }
-
-  #pv .pvs[data-sid="p1"] .mr p {
-    font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", var(--body);
-    line-height: 1.9;
-  }
 }
 
-@media print {
-  #pv .pvh .en {
-    display: none;
-  }
-  #pv[data-lang="en"] .pvh .en {
-    display: inline;
-  }
-  #pv[data-lang="en"] .pvh .mr {
-    display: none;
-  }
-  #pv .pvside td {
-    padding: 1pt 10pt;
-    vertical-align: baseline;
-  }
-  /* English 10.5pt beside 13pt Marathi, in a wider column: the English line is longer than its original.
-     These are the starting sizes: js/print/fit.js then chooses the column widths for the printout, and sets a
-     stanza a little smaller where that keeps its lines whole and the two columns in step. */
-  #pv .pvside td.pve {
-    font-family: var(--lat);
-    font-size: 0.81em;
-    color: #000;
-  }
-  #pv .pvside col.pvcm {
-    width: 46%;
-  }
-  #pv .pvside tr.pvend td {
-    padding-bottom: 9pt;
-  }
-  #pv .pvside tr.pvb td {
-    font-weight: 700;
-  }
-  [data-ref="1"] #pv .pvside tr.rfl {
-    display: none;
-  }
-  /* the dhrupad repeated after each stanza: lighter and a little smaller than the stanza, as on screen
-     (css/05-home-card.css), so the stanza stays the focus; the dhrupad at the top stays bold */
-  #pv .verse p.rf,
-  #pv .item.rf p,
-  #pv .pvside tr.rfl td {
-    font-weight: 400;
-    color: #555;
-  }
-  #pv .verse p.rf,
-  #pv .item.rf p,
-  #pv .pvside tr.rfl td.pvm {
-    font-size: 0.9em;
-  }
-  #pv .pvside tr.rfl td.pve {
-    font-size: 0.73em;
-  }
-  #pv .pvs[data-sid="p1"] td.pvm {
-    font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", var(--body);
-  }
-  #pv .pvside td.mr,
-  #pv .pvside td.en {
-    display: table-cell !important;
-  }
-}
 @media print {
   #p1 .mr p {
     line-height: 1.75;
@@ -896,16 +608,6 @@ h2[tabindex="-1"]:focus {
   margin-left: 0;
   margin-right: 0;
 }
-@media print {
-  #pv .pvh {
-    break-after: avoid;
-  }
-  #pv .pvs h2,
-  #pv .pvref {
-    break-after: avoid;
-  }
-}
-
 
 /* ==== Piece header card (saffron, maroon top edge) ==== */
 :root {
@@ -1081,9 +783,7 @@ h2[tabindex="-1"]:focus {
   .rftop .verse {
     border-left: 1pt solid #999;
   }
-  #pv .pvref {
-    border-left: 1pt solid #999 !important;
-  }
+
 }
 .rftop {
   margin: 6px 10px 1.3em;

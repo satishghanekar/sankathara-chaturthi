@@ -28,10 +28,11 @@ export function init() {
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
-    por: "", // the page last chosen in the Print pop-up: "" not yet (CHOICE in js/print/profiles.js) | "up" Portrait | "land" Landscape
+    por: "", // the page last chosen in the Print pop-up: "" not yet (CHOICE in js/features/print.js) | "up" Portrait | "land" Landscape
     fnt: "std", // text font: std | classic | hand (Settings → Text font; a saved "bold", a font since dropped, reads as std)
     pref: "", // dhrupad in the printout, picked in the Print pop-up: "" as on the page (ref) | 0 after every verse | 1 once
     pfn: "", // font of the printout, picked in the Print pop-up: "" the text font above | std | classic | hand
+    pskip: [], // texts left out of the printout (their piece ids: a1, p1 …), unticked under What to print; a new text prints
     tr: "simple", // English text style: simple ("Sukhkarta") | iast ("sukhakartā", with Vedic accent marks)
     fold: 0, // home card folded to one slim line
     pf: 0, // Pooja section folded (for those who come only for the aartis)
@@ -72,6 +73,7 @@ export function init() {
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
   if (P.ind !== "kn") P.ind = "mr";
   if (P.por !== "land" && P.por !== "up") P.por = "";
+  if (!Array.isArray(P.pskip)) P.pskip = [];
   if (P.lead === "en" || P.ind !== "mr") P.ui = "en";
   if (!P.l2 || [P.lead, P.l2, "both"].indexOf(P.lang) < 0) P.lang = P.lead;
 }
