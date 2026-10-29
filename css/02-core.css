@@ -1,5 +1,5 @@
 /* 02-core.css: Page, bars, contents, pieces, language switching, search
-   Part 3 of 11 of the site styles. index.html loads the parts in number order, and the order
+   Part 3 of 12 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    The first full set of rules for the reading page, plus the first print rules.
    Sections:
@@ -381,48 +381,6 @@ button[aria-pressed="true"] {
 .ash header .en {
   overflow-wrap: anywhere;
 }
-#jump {
-  top: 61px;
-  margin-inline: -16px;
-  padding: 10px 16px 14px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--rule);
-}
-#jump[hidden] {
-  display: none;
-}
-#jump ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-#jump a {
-  display: flex;
-  flex-direction: column;
-  min-height: 48px;
-  padding: 6px 12px;
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: var(--surface);
-  color: var(--ink);
-  text-decoration: none;
-  font: 500 15px/1.3 var(--body);
-}
-#jump a.on {
-  background: var(--accent);
-  color: var(--bg);
-  border-color: var(--accent);
-}
-#jl .en {
-  font-size: 0.8em;
-}
-#jl[data-lang="both"] .en {
-  display: block;
-  opacity: 0.8;
-}
 
 /* ==== Reduced motion; print (first set of print rules, more further down) ==== */
 /* Readers who ask their phone for less motion get none: no transitions or animations anywhere.
@@ -461,8 +419,7 @@ button[aria-pressed="true"] {
     padding: 0 !important;
     line-height: 1.55;
   }
-  .bar,
-#jump {
+  .bar {
     display: none !important;
   }
   .wrap {
@@ -633,67 +590,6 @@ p.fl {
 
 /* ==== Search box and results, status message (#szt), settings panel details ==== */
 
-#q {
-  width: 100%;
-  box-sizing: border-box;
-  height: 46px;
-  /* the edge is what shows this is a box to type in, so it needs 3:1 against the page (WCAG 1.4.11);
-     --rule is a decorative hairline at about 1.4:1 */
-  border: 1px solid var(--muted);
-  border-radius: 10px;
-  padding: 0 14px;
-  font: 16px var(--body);
-  background: var(--surface);
-  color: var(--ink);
-}
-#res {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 52vh;
-  overflow: auto;
-}
-#res li {
-  border-bottom: 1px solid var(--rule);
-}
-#res button {
-  display: block;
-  width: 100%;
-  height: auto;
-  text-align: start;
-  border: 0;
-  background: none;
-  border-radius: 0;
-  padding: 10px 4px;
-  font: 400 16px/1.45 var(--body);
-}
-#res .rs {
-  display: block;
-  /* Inter for English names, the site's Devanagari font for Marathi ones (not the system's) */
-  font: 600 12px "Inter", var(--body);
-  color: var(--muted);
-}
-#res .rl {
-  display: block;
-}
-#res mark {
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
-  color: inherit;
-  font-weight: 700;
-  border-radius: 3px;
-  padding: 0 1px;
-}
-#res .rl2 {
-  display: block;
-  font: 14px var(--lat);
-  color: var(--muted);
-}
-#none {
-  padding: 10px 4px;
-  color: var(--muted);
-  font-size: 15px;
-}
-
 /* Print, in the top bar */
 #prb {
   font-size: 22px;
@@ -820,18 +716,7 @@ body {
 [data-lang="en"] .gh {
   font-family: var(--lat);
 }
-#jump li.jh {
-  grid-column: 1/-1;
-  color: var(--accent);
-}
-#jump li.jh:first-child {
-  padding-top: 0;
-}
-#jl[data-lang="both"] li.jh .en {
-  display: inline;
-  margin-left: 0.5em;
-  opacity: 0.8;
-}
+
 .grp {
   margin: 48px 0 -18px;
   text-align: center;

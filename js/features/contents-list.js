@@ -1,59 +1,135 @@
-// The Library: every text by section (वैदिक मंत्र, आरती) inside the Library + search overlay, built from the texts themselves
-// (CONTENT, js/text/load.js), as Nitya Upasana's Library is
+// @ts-check
+// Library (#jump): every text by section (वैदिक मंत्र, आरती), with search (js/text/search.js: the box at the foot of
+// the page on phones, and Recent), as in Nitya Upasana. Opened by the book button in the bottom bar (#asq) and at the
+// end of each piece; a title opens its text (js/features/clicks.js), and Back (the button here, the phone's Back, or
+// Escape) returns. Built from the texts themselves (CONTENT, js/text/load.js); Nitya Upasana's Library also has its
+// Books tab and the family's own categories, which this site has not.
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { goHomeNav } from "./history.js";
-import { esc } from "../core/words.js";
+import { setJ } from "./overlays.js";
+import { loaded } from "../text/load.js";
+import { dv, esc, scr as to } from "../core/words.js";
 
+/** The list of texts; search hides it while results are shown */
+/** @type {HTMLElement} */
 export var ul;
 
+/** @returns {any} the texts by section (js/text/content.js) */
+function content() {
+  return /** @type {any} */ (window).CONTENT;
+}
+
+/** The search starts empty again, with the whole list */
+export function clearSearch() {
+  var qq = /** @type {HTMLInputElement | null} */ (document.getElementById("q"));
+  if (qq && qq.value) {
+    qq.value = "";
+    /** @type {HTMLElement} */ (document.getElementById("res")).innerHTML = "";
+    /** @type {HTMLElement} */ (document.getElementById("none")).hidden = true;
+    /** @type {HTMLElement} */ (document.getElementById("jl")).hidden = false;
+  }
+  if (qq) qq.blur();
+}
+
 export function init() {
-  ul = document.getElementById("jl");
-  (function () {
-    var li = document.createElement("li");
-    li.className = "jhome";
-    var b = document.createElement("button");
-    b.type = "button";
-    b.id = "jhb";
-    b.innerHTML =
-      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg><span class="mr">' + SCR.to("मुखपृष्ठ") + '</span><span class="en" lang="en">Home</span>';
-    b.onclick = goHomeNav;
-    li.appendChild(b);
-    ul.appendChild(li);
-  })();
-  libraryGroups().forEach(function (g) {
-    var h = document.createElement("li");
-    h.className = "jh";
-    h.innerHTML = g.name;
-    ul.appendChild(h);
-    g.items.forEach(function (x) {
-      var li = document.createElement("li"),
-        b = document.createElement("a");
-      b.href = "#" + x.id;
-      b.setAttribute("data-go", x.id);
-      b.innerHTML = x.html;
-      li.appendChild(b);
-      ul.appendChild(li);
-    });
+  ul = /** @type {HTMLElement} */ (document.getElementById("jl"));
+  var bk = document.getElementById("jbk");
+  if (bk)
+    bk.onclick = function () {
+      setJ(false);
+    };
+  ul.innerHTML = listHtml();
+}
+
+// ---- the Library's list (#jl): one .tocg per section, the markup the styles read (as Nitya Upasana's) ----
+function listHtml() {
+  var C = content(),
+    lib = /** @type {any} */ (loaded.library),
+    langs = (lib && lib.languages) || {},
+    /** @type {Record<string, string>} */
+    langOf = {};
+  if (!C) return "";
+  ((lib && lib.texts) || []).forEach(function (/** @type {any} */ t) {
+    langOf[t.id] = t.language;
   });
+  return C.categories
+    .map(function (/** @type {any} */ c) {
+      // numbered from 1 in each section, as in Nitya Upasana
+      var items = c.pieces
+        .map(function (/** @type {any} */ p, /** @type {number} */ i) {
+          var lt = langs[langOf[p.text] || ""];
+          return (
+            '<li><a href="./#' + p.id + '" data-go="' + p.id + '"><span class="m"><span class="no"><span class="nm">' + to(dv(i + 1)) + '.</span><span class="ne">' + (i + 1) + ".</span></span> " +
+            '<span class="mr">' + esc(to(p.title.mr)) + '</span><span class="en" lang="en">' + esc(p.title.en) + "</span></span>" +
+            (lt ? '<span class="lt"><span class="mr">' + esc(to(lt.mr)) + '</span><span class="en" lang="en">' + esc(lt.en) + "</span></span>" : "") +
+            "</a></li>"
+          );
+        })
+        .join("");
+      return (
+        '<div class="tocg" data-cat="' + esc(c.id) + '"><h2 class="gh"><span class="mr">' + esc(to(c.name.mr)) + '</span><span class="en" lang="en">' + esc(c.name.en) + "</span></h2>" +
+        '<ol class="toc">' + items + "</ol></div>"
+      );
+    })
+    .join("");
 }
 
 /**
- * The sections and their texts, for the Library and the left menu (js/text/layout.js): each group's name and each text's
- * number and title, in both languages (the page shows the one chosen), already in the chosen script
+ * Every text for search (js/text/search-core.js): its id, the name its id gives it, its section, its titles and its
+ * section's names
+ * @returns {import("../text/search-core.js").TextIn[]}
+ */
+export function textsForSearch() {
+  var C = content(),
+    out = /** @type {import("../text/search-core.js").TextIn[]} */ ([]);
+  if (C)
+    C.categories.forEach(function (/** @type {any} */ c) {
+      c.pieces.forEach(function (/** @type {any} */ p) {
+        var id = p.text || p.id,
+          name = id.indexOf(c.id + "-") === 0 ? id.slice(c.id.length + 1) : "";
+        out.push({ id: id, name: name, sec: p.id, title: p.title.mr, titleEn: p.title.en, categories: [c.name.mr, c.name.en] });
+      });
+    });
+  return out;
+}
+
+/**
+ * The section a piece is in (for search results)
+ * @param {string} sec
+ * @returns {{ id: string, name: { mr: string, en: string } } | null}
+ */
+export function categoryOfSection(sec) {
+  var C = content(),
+    found = null;
+  if (C)
+    C.categories.forEach(function (/** @type {any} */ c) {
+      if (
+        c.pieces.some(function (/** @type {any} */ p) {
+          return p.id === sec;
+        })
+      )
+        found = c;
+    });
+  return found;
+}
+
+/**
+ * The sections and their texts, for the left menu on wide screens (js/text/layout.js): each group's name and each
+ * text's number and title, in both languages (the page shows the one chosen), already in the chosen script
  * @returns {{ id: string, name: string, items: { id: string, html: string }[] }[]}
  */
 export function libraryGroups() {
   /** @param {{ mr: string, en: string }} x */
   function two(x) {
-    return '<span class="mr">' + esc(SCR.to(x.mr)) + '</span><span class="en" lang="en">' + esc(x.en) + "</span>";
+    return '<span class="mr">' + esc(to(x.mr)) + '</span><span class="en" lang="en">' + esc(x.en) + "</span>";
   }
-  return (window.CONTENT ? window.CONTENT.categories : []).map(function (c) {
+  var C = content();
+  return (C ? C.categories : []).map(function (/** @type {any} */ c) {
     return {
       id: "g-" + c.id,
       name: two(c.name),
-      items: c.pieces.map(function (p) {
-        return { id: p.id, html: '<span class="no"><span class="nm">' + esc(SCR.to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title) };
+      items: c.pieces.map(function (/** @type {any} */ p) {
+        return { id: p.id, html: '<span class="no"><span class="nm">' + esc(to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title) };
       }),
     };
   });

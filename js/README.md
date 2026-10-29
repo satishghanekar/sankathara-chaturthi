@@ -24,7 +24,7 @@ There is no build step: the browser loads these files as they are.
 | `core/routine.js` | Which texts a session has (`textsFor`), as in Nitya Upasana's (the part this site uses: no routine builder); pure, unit-tested in `tests/unit/content.test.mjs`; no `init()` |
 | `store/migrate.js` | The settings as plain data: defaults, the upgrade of settings saved by older versions, the tidy-up (pure, unit-tested in `tests/unit/migrate.test.mjs`; no `init()`) |
 | `core/features.js` | Features held back for a later release |
-| `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) |
+| `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks), Nitya Upasana's file: each piece's English lines and titles in the chosen style as it is built (`onPiece`), `trSet()` to switch, `englishStyle()` for a copy out of the page, `titleText()` for a title as its heading shows it |
 | `text/layout.js` | Layout helpers that run once |
 | `features/astronomy.js` | Astronomy for the Next Sankathara Chaturthi card |
 | `features/date-card.js` | Next Sankathara Chaturthi card (computed on this device; works offline) |
@@ -43,12 +43,12 @@ There is no build step: the browser loads these files as they are.
 | `features/history.js` | Back button |
 | `features/languages.js` | Settings page: languages |
 | `features/session-card.js` | Home: the evening's texts (`content/routines.json`), as Nitya Upasana's Today card lists a session; a title goes to that text (data-go) |
-| `features/contents-list.js` | The Library's list: every text under वैदिक मंत्र and आरती, built from the texts (`CONTENT.categories`); `libraryGroups()` also builds the left menu (`text/layout.js`) |
+| `features/contents-list.js` | The Library (`#jump`), as in Nitya Upasana: its Back button, and its list, every text under वैदिक मंत्र and आरती in the book-index look (`.tocg`, numbered from 1 in each section, with the language), built from the texts (`CONTENT.categories`). `clearSearch()` empties the search when it closes; `textsForSearch()` and `categoryOfSection()` give search the texts and their sections (Nitya's `features/library.js` does this there); `libraryGroups()` builds the left menu (`text/layout.js`) |
 | `features/more-menu.js` | ⋯ in the top bar (as in Nitya Upasana): App, Share, QR and Help in a small menu; `focusBack()` sends focus to ⋯ when a pop-up opened from it closes |
 | `features/clicks.js` | Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it |
 | `features/pinch.js` | Pinch with two fingers to change the text size (the page itself never zooms) |
 | `text/search-core.js` | Search rules and ranking, without the page (the same file as in Nitya Upasana; tests/unit/search.test.mjs): svara marks and punctuation ignored, forgiving spellings, a typo forgiven, Devanagari typed matched through its English letters |
-| `text/search.js` | Search: builds the index from every Marathi line with its English line, and shows the results (rules in `search-core.js`) |
+| `text/search.js` | Search, Nitya Upasana's file: texts by title, id and section first (Texts), then every line (Lines); the index is built the first time something is searched, from a copy of every piece out of the page (rules in `search-core.js`). Recent (`#rcn`, `P.rc`): the last places gone to from search, × takes one away, Clear all. The box is at the foot of the Library on phones, kept above the keyboard (`--kb`) |
 | `core/startup.js` | Start-up |
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |

@@ -1,5 +1,5 @@
 /* 07-bottom-bar-folds.css: Bottom bar, bars tucking away, folding contents and pieces, bigger tap areas
-   Part 8 of 11 of the site styles. index.html loads the parts in number order, and the order
+   Part 8 of 12 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Sections:
    - Bottom bar (footer menu on every page; replaced the Previous / Next cards at the end of each piece)
@@ -37,7 +37,7 @@
 }
 /* out of the way while Settings or Contents is open (data-menu is set by the script; a CSS :has() rule
    here made every style change on the page several times slower) */
-[data-menu="1"] #asc {
+[data-menu] #asc {
   display: none;
 }
 [data-asb="1"] body {

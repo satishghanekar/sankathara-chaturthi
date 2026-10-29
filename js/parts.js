@@ -17,6 +17,7 @@ var SITE_PARTS = (function () {
     "07-bottom-bar-folds",
     "08-contents-book",
     "09-settings-page",
+    "13-library",
     "15-print",
     "99-fallbacks",
   ].map(function (f) {
