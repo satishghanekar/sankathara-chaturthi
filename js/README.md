@@ -18,7 +18,7 @@ There is no build step: the browser loads these files as they are.
 
 | File | What it does |
 |---|---|
-| `core/page.js` | Page basics: the <html> element, the short message (flash), and the pieces on the reading page, as in Nitya Upasana: `pieceEl(id)` builds a piece (all of them at start-up here: the reading page is the whole evening), `onPiece(fn)` is how a part adds its step for each piece built, `secs` the pieces built so far |
+| `core/page.js` | Page basics: the <html> element, the short message (flash), and the pieces on the reading page, as in Nitya Upasana: Nitya Upasana's file: `pieceEl(id)` builds a piece the first time it is opened, `onPiece(fn)` is how a part adds its step for each piece built, `secs` the pieces built so far |
 | `core/state.js` | Settings (P), loaded from this device; `change()`, the one way the parts write them; `LEAD`, the language read first (set by `apply()` through `setLead()`) |
 | `core/words.js` | Helpers for writing words on the page, shared by the parts that build their own HTML: `esc`, Devanagari digits (`dv`, `num`), the menu language (`ui`), the reading languages (`lead`, `second`), Marathi in the chosen script (`scr`, `scrKey`, `mrLang`) and the month and weekday names (`MONTHS`, `DAYS`). Pure, unit-tested in `tests/unit/words.test.mjs`; no `init()`. Use these rather than writing a copy in a part (as in Nitya Upasana; `text/content.js` keeps its own `esc`, so the text parser does not depend on the settings) |
 | `core/routine.js` | Which texts a session has (`textsFor`), as in Nitya Upasana's (the part this site uses: no routine builder); pure, unit-tested in `tests/unit/content.test.mjs`; no `init()` |
@@ -40,9 +40,9 @@ There is no build step: the browser loads these files as they are.
 | `features/reading-sheet.js` | Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach |
 | `features/wake-lock.js` | Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested. |
 | `features/overlays.js` | Everything that opens over the page, listed once, as in Nitya Upasana (no `init()`): `LAYERS` (which keep Tab inside, which the phone's Back closes), and the two pages, Settings (`setP`) and the Library (`setJ`), opened and closed one way; read by `history.js` and `bottom-bar.js` |
-| `features/history.js` | Back button |
+| `features/history.js` | Back button, and where the page is, as in Nitya Upasana: `jumpTo()`, Home on its own (`homeView()`), and one text at a time (`solo()`) |
 | `features/languages.js` | Settings page: languages |
-| `features/session-card.js` | Home: the evening's texts (`content/routines.json`), as Nitya Upasana's Today card lists a session; a title goes to that text (data-go) |
+| `features/session-card.js` | Home: the session's texts (`content/routines.json`; Morning \| Afternoon \| Evening once two or more have texts), as Nitya Upasana's Today card lists a session; a title reads the session from there (`data-run`, `sessionStep()` for ‹ Prev / Next ›) |
 | `features/contents-list.js` | The Library (`#jump`), as in Nitya Upasana: its Back button, and its list, every text under वैदिक मंत्र and आरती in the book-index look (`.tocg`, numbered from 1 in each section, with the language), built from the texts (`CONTENT.categories`). `clearSearch()` empties the search when it closes; `textsForSearch()` and `categoryOfSection()` give search the texts and their sections (Nitya's `features/library.js` does this there); `libraryGroups()` builds the left menu (`text/layout.js`) |
 | `features/more-menu.js` | ⋯ in the top bar (as in Nitya Upasana): App, Share, QR and Help in a small menu; `focusBack()` sends focus to ⋯ when a pop-up opened from it closes |
 | `features/clicks.js` | Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it |

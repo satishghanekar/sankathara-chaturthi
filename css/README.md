@@ -25,7 +25,8 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the Sankashti-day home card and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
 | `09-settings-page.css` | The Settings page and Kannada letters. |
-| `13-library.css` | The Library page, as in Nitya Upasana: Back and the title, Recent, the search results, every text by section in the book-index look, and the search box at the foot on phones (at the top on wide screens). Taken from Nitya's styles in its load order. |
+| `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
+| `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
 | `99-fallbacks.css` | Plain colours for browsers without `color-mix()` (iOS 15). **Keep it last**, because it replaces colours set in every file above. |
 
@@ -42,6 +43,9 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-print`: `one` or `side`, only while printing; then `data-font` and `data-ref` take the Print pop-up's font and dhrupad.
   - `data-font`: the text font.
   - `data-tuck`: the bars are tucked away.
+  - `data-hv`: Home on its own (no text open); the texts below it are not shown.
+  - `data-home`: Home is on screen: the bottom bar keeps only the Library and Aa, and the bars never tuck away.
+  - `data-run`: a session from Home is being read: only its texts (`.inrun`), in session order, in one scroll. Otherwise one text at a time (`.solo`), as in Nitya Upasana.
   - `data-lead="en"`: English is the main language; `data-scr`: Kannada letters.
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
@@ -51,8 +55,9 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 
 | Query | What changes |
 |---|---|
-| `(max-width: 359px)` | The smallest phones: the bottom bar drops the words of Prev and Next; Settings tightens |
-| `(max-width: 379px)` | Narrow phones: the home buttons put their word under the icon; the bottom bar closes its gaps |
+| `(max-width: 359px)` | The smallest phones: Settings tightens |
+| `(max-width: 399px)` | Phones up to 399px: the bottom bar shows only the arrows of Prev and Next (as in Nitya Upasana) |
+| `(max-width: 439px)` | Phones: the bottom bar's five buttons (Prev, Home, Library, Reading, Next) close their gaps and slim the icon buttons (as in Nitya Upasana) |
 | `(max-width: 420px)` | Phones: Prev / Next at the end of a piece take a narrower middle column |
 | `(min-width: 600px)` | Large phones and tablets: a larger home-page text limit |
 | `(min-width: 760px)`, `(max-width: 759.98px)` | The print builder (as in Nitya Upasana): below, What and How one step at a time (Next and back); from 760px (iPads upright too) side by side, the list scrolling on its own. Settings: below, the Reading tab tightened to fit one phone screen; from 760px a tab's groups in two columns, the preview beside the reading choices |

@@ -1,5 +1,5 @@
 /* 99-fallbacks.css: Fallbacks for browsers without color-mix()
-   Part 12 of 12 of the site styles. index.html loads the parts in number order, and the order
+   Part 13 of 13 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Must stay last: it replaces colours set anywhere above on older iPhones and iPads (iOS 15).
    Sections:
@@ -58,5 +58,18 @@
       radial-gradient(circle at 14px 50%, #fff 11px, transparent 12px),
       var(--rule);
     box-shadow: inset 0 0 0 1px var(--muted);
+  }
+}
+
+/* ==== The Library page (#jump), as in Nitya Upasana's same file ==== */
+/* ==== Fallbacks for browsers without color-mix() ====
+   color-mix() needs Safari 16.2 (iOS 16.2). iPhone 6s/7 and iPad Air 2/mini 4 stop at iOS 15.8, and there a
+   declaration that uses it is dropped whole: the Settings switches lost their track and knob, and the home
+   sheet, date box and search highlights lost their colour. These rules give those browsers the nearest plain
+   theme colour instead. They sit inside @supports not (...), so browsers that have color-mix() never see them
+   and nothing changes there. Selectors repeat the originals exactly so they win by coming later. ==== */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  #res mark {
+    background: var(--surface);
   }
 }
