@@ -39,7 +39,7 @@ html[data-sp] {
   position: sticky;
   top: 0;
   z-index: 1;
-  /* Back (a square, #xc) and the tabs (#spv) in one row, as in Nitya Upasana */
+  /* Back (a square, #xc) and the tabs (#spv), as the Library's #jbk and #jtb (10-today.css, 13-library.css) */
   display: flex;
   gap: 8px;
   padding: 12px max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px));
@@ -326,7 +326,7 @@ html[data-sp] {
 
 /* the maker's name and email, quiet, under About */
 .sp-by {
-  margin: 18px 6px 8px;
+  margin: 18px 22px 8px;
   font: 400 13px/1.6 var(--lat);
   text-align: center;
   color: var(--muted);

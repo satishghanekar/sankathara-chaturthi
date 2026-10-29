@@ -221,11 +221,11 @@
      the Marathi on the same line, small and muted, like the section rows; long names wrap. */
   .ash header {
     box-sizing: border-box;
-    justify-content: flex-start;
+    justify-content: center;
     flex-wrap: nowrap;
-    text-align: left;
+    text-align: center;
     min-height: 52px;
-    padding: 8px 56px 8px 16px;
+    padding: 8px 56px;
     margin: 10px 0 14px;
     /* plain like the old section rows; the accent bar marks the sections (Contents, पूजा, आरती) instead */
     background: var(--surface);
@@ -513,6 +513,9 @@
 .bar .t.site {
   padding-block: 9px;
   margin-block: -9px;
+  /* a tap target at least 44px high (the title alone is 42px on some phones) */
+  min-height: 44px;
+  box-sizing: border-box;
 }
 .skc .skl {
   position: relative;
