@@ -3,7 +3,7 @@
 There is no build step: the browser loads these files as they are.
 
 - `parts.js` and `render.js` are plain scripts. `render.js` turns the pieces' data into HTML (`renderPieces`) and holds the Kannada-letters switch (`SCR`).
-- The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json` and `../content/groups.json` (the reading page's groups), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
+- The texts are files (`../content/texts/`). `text/load.js` fetches them with `../content/library.json`, `../content/categories.json` (the reading page's sections) and `../content/routines.json` (the evening, into `loaded`), `text/content.js` turns them into the pieces' data (`CONTENT`, read with `text/format.js`), and `render.js` puts the pieces into the page. `main.js` waits for this before it starts the parts, so they find the page as if the pieces were written into it. These three are plain functions with no start-up work of their own; `text/format.js` and `text/content.js` touch no page at all, so the unit tests run them in Node.
 - `main.js` is the site script. It is an ES module (`<script type="module">`), and it imports one part per topic from `core/`, `text/` and `features/` (and `store/`, the settings as data) (`features/overlays.js` is imported by the parts that use it).
 
 ## How the parts fit together
@@ -21,6 +21,7 @@ There is no build step: the browser loads these files as they are.
 | `core/page.js` | Page basics: the <html> element, the short message (flash) |
 | `core/state.js` | Settings (P), loaded from this device; `change()`, the one way the parts write them |
 | `core/words.js` | Helpers for writing words on the page, shared by the parts that build their own HTML: `esc`, Devanagari digits (`dv`, `num`), the menu language (`ui`), the reading languages (`lead`, `second`), Marathi in the chosen script (`scr`, `scrKey`, `mrLang`) and the month and weekday names (`MONTHS`, `DAYS`). Pure, unit-tested in `tests/unit/words.test.mjs`; no `init()`. Use these rather than writing a copy in a part (as in Nitya Upasana; `text/content.js` keeps its own `esc`, so the text parser does not depend on the settings) |
+| `core/routine.js` | Which texts a session has (`textsFor`), as in Nitya Upasana's (the part this site uses: no routine builder); pure, unit-tested in `tests/unit/content.test.mjs`; no `init()` |
 | `store/migrate.js` | The settings as plain data: defaults, the upgrade of settings saved by older versions, the tidy-up (pure, unit-tested in `tests/unit/migrate.test.mjs`; no `init()`) |
 | `core/features.js` | Features held back for a later release |
 | `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) |
@@ -42,7 +43,8 @@ There is no build step: the browser loads these files as they are.
 | `features/overlays.js` | Overlays: settings panel (setP, under the top bar) and the Library (setJ); opening one closes the other (no `init()`: used by bars, clicks, pinch, help and history) |
 | `features/history.js` | Back button |
 | `features/languages.js` | Settings page: languages |
-| `features/contents-list.js` | The Library's list: every text under पूजा and आरती, built from the texts (`CONTENT.groups`); `libraryGroups()` also builds the left menu (`text/layout.js`) |
+| `features/session-card.js` | Home: the evening's texts (`content/routines.json`), as Nitya Upasana's Today card lists a session; a title goes to that text (data-go) |
+| `features/contents-list.js` | The Library's list: every text under वैदिक मंत्र and आरती, built from the texts (`CONTENT.categories`); `libraryGroups()` also builds the left menu (`text/layout.js`) |
 | `features/more-menu.js` | ⋯ in the top bar (as in Nitya Upasana): App, Share, QR and Help in a small menu; `focusBack()` sends focus to ⋯ when a pop-up opened from it closes |
 | `features/clicks.js` | Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it |
 | `features/pinch.js` | Pinch with two fingers to change the text size (the page itself never zooms) |
@@ -52,7 +54,7 @@ There is no build step: the browser loads these files as they are.
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |
 | `features/print.js` | Print: the print builder (What, then How: language, dhrupad, page, font, preview, paper) and the print view (`#pv`) it writes, laid out by `../css/15-print.css` (see *Printing* in `../ARCHITECTURE.md`) |
-| `print/what.js` | The print builder's What step (as Nitya Upasana's, its Library tab): the texts under पूजा and आरती with ticks, search, Select all and Clear (no `init()`: `features/print.js` creates it) |
+| `print/what.js` | The print builder's What step (as Nitya Upasana's, its Library tab): the texts under वैदिक मंत्र and आरती with ticks, search, Select all and Clear (no `init()`: `features/print.js` creates it) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
 | `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js) |
 

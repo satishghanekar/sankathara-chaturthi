@@ -4,9 +4,8 @@
 // (tests/unit/content.test.mjs) can prove the result is exactly what the site showed before the texts became files.
 //
 // What the files leave to the app:
-// - which texts the reading page shows, in which group (पूजा, आरती) and order, and so the piece numbers (१. 1.):
-//   content/groups.json, this site's own file (library.json, categories.json and the text files are written as in
-//   Nitya Upasana, so a text can be copied from one site to the other as it is);
+// - the reading order and the piece numbers (१. 1.): the texts by category, in the order of content/categories.json,
+//   each category numbered from 1 as the Library lists them, the texts in their order in library.json;
 // - the language tag (मराठी Marathi) from library.json's "languages";
 // - with "refrain: every-verse", the dhrupad label at the top and, after every stanza, the "↻ ध्रुपद" note and
 //   the dhrupad again (library.json's "refrain"); [once] lines and [note]s before the dhrupad go above it (lead);
@@ -19,17 +18,17 @@ import { parseText, toHtml } from "./format.js";
  * @typedef {import("./format.js").Text} Text
  * @typedef {import("./format.js").Pair} Pair
  * @typedef {{ id: string, file: string, title: string, titleEn: string, category: string, language: string, lines: number }} LibraryText
- * @typedef {{ id: string, btn: string, name: Pair, texts: string[] }} LibraryGroup
+ * @typedef {{ id: string, name: Pair, order: number }} Category   one entry of content/categories.json
  * @typedef {{ texts: LibraryText[], pageLanguage: string, languages: Record<string, Pair>,
  *   refrain: { label: Pair, note: Pair }, ui: { prev: Pair, next: Pair }, wiki: Record<string, Record<string, string>> }} Library
  * @typedef {{ l: string, rf?: true, mr: string, en: string }} Line
  * @typedef {{ kind?: string, bold?: true, para?: true, lines?: Line[], rmk?: Pair, nt?: true }} Item
  *   rmk: a small line between blocks: the dhrupad's marker (↻ ध्रुपद), or, with nt, a [note] from the text file (Phalashruti,
  *   ↻ ३ वेळा), which is part of the text and always shown, whatever the dhrupad setting
- * @typedef {{ id: string, lang?: string, cls?: string, prose?: true, no: Pair, title: Pair, tag: Pair,
+ * @typedef {{ id: string, text: string, lang?: string, cls?: string, prose?: true, no: Pair, title: Pair, tag: Pair,
  *   lead?: Item[], refrain?: { label: Pair, lines: Pair[] }, items: Item[], credit: string }} Piece
  *   lead: what comes before the dhrupad at the top (refrain), [once] lines and [note]s, shown above it
- * @typedef {{ ui: Library["ui"], wiki: Library["wiki"], groups: { id: string, btn: string, name: Pair, pieces: Piece[] }[] }} Content
+ * @typedef {{ ui: Library["ui"], wiki: Library["wiki"], categories: { id: string, name: Pair, pieces: Piece[] }[] }} Content
  */
 
 const DIGITS = "०१२३४५६७८९";
@@ -75,7 +74,7 @@ function credits(mr, en) {
 /**
  * One text as a piece of CONTENT.
  * @param {Text} t
- * @param {number} n  its number in its group, from 1
+ * @param {number} n  its number in its category, from 1
  * @param {Library} lib
  * @returns {Piece}
  */
@@ -97,7 +96,8 @@ export function toPiece(t, n, lib) {
     return l;
   }
   /** @type {Piece} */
-  var p = /** @type {any} */ ({ id: t.legacyId || t.id });
+  // id: the piece's section on the page (an older text keeps its first one, a1 or p1); text: its id in library.json
+  var p = /** @type {any} */ ({ id: t.legacyId || t.id, text: t.id });
   if (t.language !== lib.pageLanguage) p.lang = t.language;
   if (t.refrain === "always") p.cls = "norf";
   // stanza-numbers: as-written: the numbers are part of the text, so js/text/stanza-numbers.js adds none
@@ -179,10 +179,11 @@ export function toPiece(t, n, lib) {
  * CONTENT from the library and the text files.
  * @param {Library} lib  content/library.json
  * @param {Record<string, string>} files  each text's file, by text id
- * @param {LibraryGroup[]} groups  content/groups.json: the reading page's groups, each with its texts in order
+ * @param {Category[] | null} [cats]  content/categories.json (without it, the categories in the order the texts name
+ *   them, each called by its id)
  * @returns {Content}
  */
-export function buildContent(lib, files, groups) {
+export function buildContent(lib, files, cats) {
   /** @type {Record<string, Text>} */
   var texts = {};
   lib.texts.forEach(function (x) {
@@ -191,19 +192,35 @@ export function buildContent(lib, files, groups) {
     if (t.id !== x.id) throw new Error(x.file + ': its id is "' + t.id + '", library.json says "' + x.id + '"');
     texts[x.id] = t;
   });
+  var list = (cats || [])
+    .slice()
+    .sort(function (a, b) {
+      return a.order - b.order;
+    })
+    .map(function (c) {
+      return { id: c.id, name: pair(c.name) };
+    });
+  lib.texts.forEach(function (x) {
+    // a category not in categories.json (tests/unit/content.test.mjs checks there is none) goes last, named by its id
+    if (!list.some(function (c) { return c.id === x.category; })) list.push({ id: x.category, name: { mr: x.category, en: x.category } });
+  });
+  // every category, those with no texts yet too (the family can move texts into them, js/features/library.js)
   return {
     ui: lib.ui,
     wiki: lib.wiki,
-    groups: groups.map(function (g) {
-      return {
-        id: g.id,
-        btn: g.btn,
-        name: pair(g.name),
-        pieces: g.texts.map(function (id, i) {
-          if (!texts[id]) throw new Error('groups.json: group "' + g.id + '" lists "' + id + '", which is not in its texts');
-          return toPiece(texts[id], i + 1, lib);
-        }),
-      };
-    }),
+    categories: list
+      .map(function (c) {
+        return {
+          id: c.id,
+          name: c.name,
+          pieces: lib.texts
+            .filter(function (x) {
+              return x.category === c.id;
+            })
+            .map(function (x, i) {
+              return toPiece(texts[x.id], i + 1, lib);
+            }),
+        };
+      }),
   };
 }

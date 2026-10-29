@@ -97,7 +97,7 @@ export function tuckHold() {
 export function mark() {
   var c = cur(),
     ct = c ? c.getBoundingClientRect().top : -1e9;
-  // a section row (पूजा / आरती) at the top, below the last piece passed: that section is current, not the piece above it
+  // a section row (वैदिक मंत्र / आरती) at the top, below the last piece passed: that section is current, not the piece above it
   [].forEach.call(document.querySelectorAll(".grp"), function (g) {
     var t = g.getBoundingClientRect().top;
     if (g.offsetParent !== null && t <= 90 && t > ct) {

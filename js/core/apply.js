@@ -18,10 +18,10 @@ export function init() {
     en: { n: "English" },
     kn: { n: "ಕನ್ನಡ" },
   };
-  // Pooja section fold: the pieces between the Pooja and Aarti headings get class "pj"; folding hides them.
-  // Going to a Pooja piece (Contents, search, Previous, a link) opens the section again.
+  // Vedic Chant section fold: the pieces between the Vedic Chant and Aarti headings get class "pj"; folding hides them.
+  // Going to a Vedic Chant piece (the Library, search, Previous, a link) opens the section again.
   (function () {
-    var e = document.getElementById("g-pooja");
+    var e = document.getElementById("g-vedic-chant");
     while (e && (e = e.nextElementSibling) && !e.classList.contains("grp")) {
       if (e.classList.contains("ash")) e.classList.add("pj");
     }
@@ -32,10 +32,10 @@ export function init() {
     }
   })();
   // Open all / Fold all: a pill in a section row (beside its arrow) folds or opens every piece in that section.
-  // Shown only for sections with two or more pieces (Aarti today; Pooja has one), and not while the section
+  // Shown only for sections with two or more pieces (Aarti today; Vedic Chant has one), and not while the section
   // itself is folded. It reads "Fold all" while any piece is open, "Open all" when all are folded.
   allB = [];
-  [["g-pooja", "pj", "pf"], ["g-aarti", "ar", "xf"]].forEach(function (a) {
+  [["g-vedic-chant", "pj", "pf"], ["g-aarti", "ar", "xf"]].forEach(function (a) {
     var g = document.getElementById(a[0]),
       ps = secs.filter(function (x) {
         return x.classList.contains(a[1]);
@@ -85,7 +85,7 @@ export function init() {
       b.onclick();
     });
   });
-  [["pfb", "g-pooja", "pf"], ["xfb", "g-aarti", "xf"]].forEach(function (a) {
+  [["pfb", "g-vedic-chant", "pf"], ["xfb", "g-aarti", "xf"]].forEach(function (a) {
     document.getElementById(a[0]).onclick = function () {
       var g = document.getElementById(a[1]),
         y = g.getBoundingClientRect().top;
@@ -130,7 +130,7 @@ function allSet() {
 
 export function pfSet() {
   var mr = P.ui === "mr";
-  // The पूजा and आरती rows are named by their visible words, with aria-expanded giving the state,
+  // The वैदिक मंत्र and आरती rows are named by their visible words, with aria-expanded giving the state,
   // so voice control users can say what they see (WCAG 2.5.3)
   secs.forEach(function (x) {
     var f = P.af.indexOf(x.id) >= 0,
@@ -153,10 +153,10 @@ export function pfSet() {
   b.setAttribute("aria-expanded", String(!P.pf));
 }
 
-// Going to a piece (or a line in it) opens it if it is folded, and the Pooja section if that is folded
+// Going to a piece (or a line in it) opens it if it is folded, and the Vedic Chant section if that is folded
 export function pjOpen(el, onlyPooja) {
-  // a section row (side menu पूजा / आरती): open that section if it is folded
-  if (el && el.id === "g-pooja" && P.pf) change({ pf: 0 }, pfSet);
+  // a section row (side menu वैदिक मंत्र / आरती): open that section if it is folded
+  if (el && el.id === "g-vedic-chant" && P.pf) change({ pf: 0 }, pfSet);
   if (el && el.id === "g-aarti" && P.xf) change({ xf: 0 }, pfSet);
   var sec = el && el.closest && el.closest(".ash");
   if (!sec) return;
