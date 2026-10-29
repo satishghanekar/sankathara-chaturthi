@@ -37,7 +37,7 @@
 }
 /* out of the way while Settings or Contents is open (data-menu is set by the script; a CSS :has() rule
    here made every style change on the page several times slower) */
-[data-menu="1"] #asc {
+[data-menu] #asc {
   display: none;
 }
 [data-asb="1"] body {
