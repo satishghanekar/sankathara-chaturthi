@@ -699,18 +699,7 @@
 :root[data-font]:not([data-font="std"]) .ash .rftop .en p {
   font-family: var(--tfl), var(--lat);
 }
-/* the chosen font also reaches the printed copy (#pv has no .ash wrapper); headings keep theirs */
-:root[data-font]:not([data-font="std"]) #pv .pvs {
-  font-family: var(--tf), var(--body);
-}
-:root[data-font]:not([data-font="std"]) #pv .pvs .en,
-:root[data-font]:not([data-font="std"]) #pv .pvs .en p,
-:root[data-font]:not([data-font="std"]) #pv .pvs td.pve {
-  font-family: var(--tfl), var(--lat);
-}
-:root[data-font]:not([data-font="std"]) #pv .pvs h2 .en {
-  font-family: inherit;
-}
+
 /* and each piece's title row: its font names point to the chosen font first. The home card, the section rows
    (पूजा, आरती, Contents), the menus and every control stay in the site's own fonts. */
 :root[data-font]:not([data-font="std"]) .ash header {
