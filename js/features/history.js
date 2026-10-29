@@ -1,13 +1,12 @@
 // Back button
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { bt, flash } from "../core/page.js";
-import { P, change } from "../core/state.js";
-import { LANGS, LK, aa, cur, hb, jp, pjOpen, pn } from "../core/apply.js";
-import { TK, apply, goHome, tuckHold } from "./bars.js";
+import { bt } from "../core/page.js";
+import { aa, cur, jp, pjOpen, pn } from "../core/apply.js";
+import { TK, goHome, tuckHold } from "./bars.js";
 import { setJ, setP } from "./overlays.js";
 
-var NAV, popSkip, adT, hmb, ovFrom;
+var NAV, popSkip, adT, ovFrom;
 
 export function init() {
   // Opening a panel or dialog adds a Back step, so the phone's Back closes it instead of leaving the site.
@@ -98,14 +97,7 @@ export function init() {
     e.preventDefault();
     goHomeNav();
   });
-  hmb = document.getElementById("hm");
-  hmb.onclick = function () {
-    setJ(jp.hidden);
-    // With a mouse and keyboard, the cursor goes straight into the search box (on phones it doesn't,
-    // so the keyboard doesn't pop up over the list)
-    if (!jp.hidden && matchMedia("(hover: hover) and (pointer: fine)").matches) document.getElementById("q").focus();
-  };
-  // Home and Search at the end of each piece do exactly what the top bar's buttons do
+  // Home and Library at the end of each piece do exactly what the bottom bar's buttons do
   [].forEach.call(document.querySelectorAll(".pnh"), function (h) {
     h.addEventListener("click", function (e) {
       e.preventDefault();
@@ -113,7 +105,7 @@ export function init() {
     });
   });
   [].forEach.call(document.querySelectorAll(".pns"), function (b) {
-    b.onclick = hmb.onclick;
+    b.onclick = openLibrary;
   });
   // Skip link: focus goes to the first text on screen (a piece, or the page), without changing the address
   document.getElementById("skip").addEventListener("click", function (e) {
@@ -142,27 +134,14 @@ export function init() {
   aa.onclick = function () {
     setP(pn.hidden);
   };
-  // Language button cycles main → second → both (only the two chosen languages ever show). With no second
-  // language chosen it opens Settings at the second language's list.
-  hb.onclick = function () {
-    if (!P.l2) {
-      setP(true);
-      document.getElementById("sl2s").focus();
-      return;
-    }
-    var c = cur(),
-      o = [P.lead, P.l2, "both"];
-    change({ lang: o[(o.indexOf(P.lang) + 1) % 3] }, apply);
-    if (c) c.scrollIntoView();
-    function nm(l) {
-      return l === "both" ? LANGS[LK(P.lead)].n + " + " + LANGS[LK(P.l2)].n : LANGS[LK(l)].n;
-    }
-    // what is shown now, and what the next tap shows, long enough to read: a tap by mistake mid-aarti is then
-    // easy to undo
-    var L = nm(P.lang),
-      N = nm(o[(o.indexOf(P.lang) + 1) % 3]);
-    flash(L + " · पुढे: " + N, L + " · Next tap: " + N, 3500);
-  };
+}
+
+// The Library (contents and search): opened and closed by the bottom bar's button and the one at the end of each
+// piece. With a mouse and keyboard, the cursor goes straight into the search box (on phones it doesn't, so the
+// keyboard doesn't pop up over the list)
+export function openLibrary() {
+  setJ(jp.hidden);
+  if (!jp.hidden && matchMedia("(hover: hover) and (pointer: fine)").matches) /** @type {HTMLElement} */ (document.getElementById("q")).focus();
 }
 
 function hs() {

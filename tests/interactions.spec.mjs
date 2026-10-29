@@ -1,41 +1,102 @@
 // Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, PREFS_KEY } from "./helpers.mjs";
+import { openSite, settle, SETUPS, PREFS_KEY, tapMore } from "./helpers.mjs";
 
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
 
-test("language button cycles main → second → both and is remembered @mobile", async ({ page }) => {
+// The top bar, as in Nitya Upasana: Print, ⋯ and Settings; the languages and the dhrupad are in the Aa sheet and in
+// Settings → Reading (Show, Dhrupad)
+test("the top bar has Print, ⋯ and Settings, and no language or dhrupad buttons @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  const btn = page.locator("#home-btn");
+  expect(await page.locator(".bar .tools button:visible").evaluateAll((l) => l.map((b) => b.id))).toEqual(["prb", "tmb", "aa"]);
+  await expect(page.locator("#home-btn, #rb, #hm")).toHaveCount(0);
+});
+
+test("Settings → Show switches main → second → both and is remembered @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
   const lang = () => page.locator("#a1").getAttribute("data-lang");
   expect(await lang()).toBe("mr");
-  await btn.click();
+  await page.locator("#aa").click();
+  await expect(page.locator("#slw button")).toHaveCount(3);
+  await page.locator('#slw [data-v="en"]').click();
   expect(await lang()).toBe("en");
-  await btn.click();
+  await page.locator('#slw [data-v="both"]').click();
   expect(await lang()).toBe("both");
-  await btn.click();
-  expect(await lang()).toBe("mr");
-  await btn.click();
+  await expect(page.locator('#slw [data-v="both"]')).toHaveAttribute("aria-pressed", "true");
+  await page.locator('#slw [data-v="en"]').click();
   expect((await prefs(page)).lang).toBe("en");
   await page.reload();
   await settle(page);
   expect(await lang()).toBe("en");
 });
 
-test("dhrupad button switches between once and after every verse @mobile", async ({ page }) => {
+test("Settings → Dhrupad switches between once and after every verse @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   expect(await rootAttr(page, "data-ref")).toBe("1");
-  await page.locator("#rb").click();
+  await page.locator("#aa").click();
+  await page.locator('#srf [data-v="0"]').click();
   expect(await rootAttr(page, "data-ref")).toBe("0");
+  await page.locator("#xc").click();
   expect(await page.locator("#a1 .item.rf").first().isVisible()).toBe(true);
-  await page.locator("#rb").click();
+  await page.locator("#aa").click();
+  await page.locator('#srf [data-v="1"]').click();
   expect(await rootAttr(page, "data-ref")).toBe("1");
 });
 
-test("contents link jumps to a piece and moves focus to its heading", async ({ page }) => {
+// Settings, as in Nitya Upasana: Reading | Screen | More, one tab at a time, opening on Reading each time
+test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  await page.locator("#aa").click();
+  await expect(page.locator("#spv button")).toHaveText(["Reading", "Screen", "More"], { useInnerText: true });
+  await expect(page.locator('#spv [data-v="read"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#sl1")).toBeVisible();
+  await expect(page.locator("#st")).toBeHidden();
+  await page.locator('#spv [data-v="screen"]').click();
+  await expect(page.locator("#st")).toBeVisible();
+  await expect(page.locator("#tw")).toBeVisible();
+  await expect(page.locator("#sl1")).toBeHidden();
+  await page.locator('#spv [data-v="more"]').click();
+  await expect(page.locator("#hlp2")).toBeVisible();
+  await expect(page.locator("#upd")).toBeVisible();
+  // under the top bar, which stays in view
+  const top = await page.locator("#panel").evaluate((e) => e.getBoundingClientRect().top);
+  const bar = await page.locator("body > .bar").first().evaluate((e) => e.getBoundingClientRect().bottom);
+  expect(Math.abs(top - bar)).toBeLessThan(2);
+  await page.locator("#xc").click();
+  await page.locator("#aa").click();
+  await expect(page.locator('#spv [data-v="read"]')).toHaveAttribute("aria-pressed", "true");
+});
+
+// ⋯ in the top bar, as in Nitya Upasana: App, Share, QR and Help; a choice closes it, Escape closes it with focus on ⋯
+test("⋯ opens App, Share, QR and Help, and closes cleanly @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  await expect(page.locator("#shr")).toBeHidden();
+  await page.locator("#tmb").click();
+  await expect(page.locator("#shr")).toBeVisible();
+  await expect(page.locator("#tmb")).toHaveAttribute("aria-expanded", "true");
+  expect(await page.locator("#shr button:visible").evaluateAll((l) => l.map((b) => b.id).filter((i) => i !== "inb"))).toEqual(["shb", "qrb", "hlpb"]);
+  await expect(page.locator("#shr span.mr:visible")).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#shr")).toBeHidden();
+  await expect(page.locator("#tmb")).toBeFocused();
+  await tapMore(page, "#qrb");
+  await expect(page.locator("#qrm")).toBeVisible();
+  await expect(page.locator("#shr")).toBeHidden();
+  await page.locator("#qrx").click();
+  await expect(page.locator("#tmb")).toBeFocused();
+  // the home card has no buttons of its own any more
+  await expect(page.locator("#home #shr, #home #prb")).toHaveCount(0);
+});
+
+// The Library (the book in the bottom bar): every text by group, built from the texts; the home page has no contents
+test("the Library lists every text and jumps to one", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  await page.locator('a[data-go="a5"]:visible').first().click();
+  await expect(page.locator("#home .tocg, #tfr")).toHaveCount(0);
+  await page.locator("#asq").click();
+  await expect(page.locator("#jump")).toBeVisible();
+  await expect(page.locator("#jl a[data-go]")).toHaveCount(11);
+  await page.locator('#jl a[data-go="a5"]').click();
   await page.waitForTimeout(400);
   const top = await page.locator("#a5").evaluate((e) => e.getBoundingClientRect().top);
   expect(Math.abs(top)).toBeLessThan(200);
@@ -44,7 +105,7 @@ test("contents link jumps to a piece and moves focus to its heading", async ({ p
 
 test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  await page.locator("#hm").click();
+  await page.locator("#asq").click();
   await expect(page.locator("#jump")).toBeVisible();
   await page.locator("#q").fill("sukhakarta");
   await expect(page.locator("#res li").first()).toBeVisible();
@@ -58,7 +119,7 @@ test("search finds a line with forgiving spelling and opens it @mobile", async (
 
 test("search in Marathi letters finds the line", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  await page.locator("#hm").click();
+  await page.locator("#asq").click();
   await page.locator("#q").fill("सुखकर्ता");
   await expect(page.locator("#res li").first()).toBeVisible();
 });
@@ -67,12 +128,15 @@ test("Settings opens, changes theme, high contrast and font, and closes with Bac
   await openSite(page, SETUPS.marathi);
   await page.locator("#aa").click();
   await expect(page.locator("#panel")).toBeVisible();
+  // the theme and contrast are on the Screen tab, the font on Reading
+  await page.locator('#spv [data-v="screen"]').click();
   await page.locator('#st button[data-v="dark"]').click();
   expect(await rootAttr(page, "data-pref")).toBe("dark");
   await page.locator('#st button[data-v="sepia"]').click();
   expect(await rootAttr(page, "data-pref")).toBe("sepia");
   await page.locator("#tc").click();
   expect(await rootAttr(page, "data-hc")).toBe("1");
+  await page.locator('#spv [data-v="read"]').click();
   await page.locator('#sfn button[data-v="classic"]').click();
   expect(await rootAttr(page, "data-font")).toBe("classic");
   await page.locator("#xc").click();
@@ -139,13 +203,13 @@ test("home card folds to one line and opens again @mobile", async ({ page }) => 
   await openSite(page, SETUPS.marathi);
   await page.locator("#cvb").click();
   await expect(page.locator("#slim")).toBeVisible();
-  await expect(page.locator("#shr")).toBeHidden();
+  await expect(page.locator("#skc")).toBeHidden();
   await page.locator("#slim").click();
-  await expect(page.locator("#shr")).toBeVisible();
+  await expect(page.locator("#skc")).toBeVisible();
 });
 
 // Sankashti day (28 Oct 2026 in Columbus): the card opens on tonight's moonrise; the date strip, the calendar
-// links and the App / Share / QR / Print / Help row wait under More dates
+// links wait under More dates
 test("on Sankashti day the card leads with moonrise, and More dates opens the rest @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi, { now: new Date("2026-10-28T17:30:00-04:00") });
   await expect(page.locator("#home")).toHaveClass(/\bpday\b/);
@@ -154,16 +218,13 @@ test("on Sankashti day the card leads with moonrise, and More dates opens the re
   await expect(more).toBeVisible();
   await expect(more).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#skc .sks")).toBeHidden();
-  await expect(page.locator("#shr")).toBeHidden();
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
   await expect(page.locator("#skall")).toBeVisible();
-  await expect(page.locator("#shr")).toBeVisible();
 });
 
-// Other days: the card leads with the next Chaturthi date and its moonrise too, with the App / Share / QR /
-// Print / Help row in view and the date strip under More dates
+// Other days: the card leads with the next Chaturthi date and its moonrise too, with the date strip under More dates
 test("on other days the card leads with the next Chaturthi date, and More dates opens the strip @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#home")).not.toHaveClass(/\bpday\b/);
@@ -173,11 +234,9 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await expect(more).toBeVisible();
   await expect(more).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator("#skc .sks")).toBeHidden();
-  await expect(page.locator("#shr")).toBeVisible();
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
-  await expect(page.locator("#shr")).toBeVisible();
 });
 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
@@ -247,11 +306,11 @@ test("bottom bar Next goes to the next piece", async ({ page }) => {
 
 test("dialogs: QR, Help and Add to Home Screen open and close with Escape", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  await page.locator("#qrb").click();
+  await tapMore(page, "#qrb");
   await expect(page.locator("#qrm")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator("#qrm")).toBeHidden();
-  await page.locator("#hlpb").click();
+  await tapMore(page, "#hlpb");
   await expect(page.locator("#help")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.locator("#help")).toBeHidden();
@@ -358,7 +417,7 @@ test.describe("pinch @chromium-only", () => {
     await page.locator("#aa").click();
     expect(await pinchStart(page, "#panel .sp-card")).toBe(true);
     await page.locator("#xc").click();
-    await page.locator("#hlpb").click();
+    await tapMore(page, "#hlpb");
     expect(await pinchStart(page, "#help .hlpin")).toBe(true);
   });
 });

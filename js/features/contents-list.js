@@ -1,7 +1,9 @@
-// Contents list inside the contents + search overlay (built from the home page contents)
+// The Library: every text by group (पूजा, आरती) inside the Library + search overlay, built from the texts themselves
+// (CONTENT, js/text/load.js), as Nitya Upasana's Library is
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { goHomeNav } from "./history.js";
+import { esc } from "../core/words.js";
 
 export var ul;
 
@@ -19,22 +21,40 @@ export function init() {
     li.appendChild(b);
     ul.appendChild(li);
   })();
-  [].forEach.call(document.querySelectorAll(".tocg"), function (g) {
-    var as = g.querySelectorAll("ol.toc li a");
-    if (!as.length) return;
+  libraryGroups().forEach(function (g) {
     var h = document.createElement("li");
     h.className = "jh";
-    h.innerHTML = g.querySelector(".gh").innerHTML;
+    h.innerHTML = g.name;
     ul.appendChild(h);
-    [].forEach.call(as, function (a) {
+    g.items.forEach(function (x) {
       var li = document.createElement("li"),
         b = document.createElement("a");
-      b.href = a.getAttribute("href");
-      b.setAttribute("data-go", a.getAttribute("data-go"));
-      var m = a.querySelector(".m");
-      b.innerHTML = m ? m.innerHTML : a.innerHTML;
+      b.href = "#" + x.id;
+      b.setAttribute("data-go", x.id);
+      b.innerHTML = x.html;
       li.appendChild(b);
       ul.appendChild(li);
     });
+  });
+}
+
+/**
+ * The groups and their texts, for the Library and the left menu (js/text/layout.js): each group's name and each text's
+ * number and title, in both languages (the page shows the one chosen), already in the chosen script
+ * @returns {{ id: string, name: string, items: { id: string, html: string }[] }[]}
+ */
+export function libraryGroups() {
+  /** @param {{ mr: string, en: string }} x */
+  function two(x) {
+    return '<span class="mr">' + esc(SCR.to(x.mr)) + '</span><span class="en" lang="en">' + esc(x.en) + "</span>";
+  }
+  return (window.CONTENT ? window.CONTENT.groups : []).map(function (g) {
+    return {
+      id: g.id,
+      name: two(g.name),
+      items: g.pieces.map(function (p) {
+        return { id: p.id, html: '<span class="no"><span class="nm">' + esc(SCR.to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title) };
+      }),
+    };
   });
 }
