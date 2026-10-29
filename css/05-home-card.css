@@ -5,6 +5,7 @@
    Sections:
    - The top of the home page sits on a raised "paper sheet"
    - The evening's texts (#tsc, js/features/session-card.js), as Nitya Upasana's Today card lists a session
+   - Home on its own (data-hv), as in Nitya Upasana
    - Offline: a small muted cloud in the top bar (#ofb) while there is no internet; the saved copy is in use. …
    - Lotus ornament at the end of each piece
    - Home page saffron band with ॐ
@@ -173,6 +174,18 @@
 }
 @media print {
   #tsc {
+    display: none;
+  }
+}
+
+/* ==== Home on its own (data-hv, js/features/history.js), as in Nitya Upasana: the page ends after Home (the card
+   and the evening's list); the texts below it show once one is opened, and then Home is not above them. Screen
+   only: print builds its own copy of the pieces ==== */
+@media screen {
+  :root[data-hv="1"] #home ~ * {
+    display: none;
+  }
+  :root:not([data-hv]) #main > #home {
     display: none;
   }
 }

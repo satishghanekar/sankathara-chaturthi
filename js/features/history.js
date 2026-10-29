@@ -3,7 +3,8 @@
 
 import { bt } from "../core/page.js";
 import { aa, cur, jp, pjOpen, pn } from "../core/apply.js";
-import { TK, goHome, tuckHold } from "./bars.js";
+import { TK, apply, goHome, tuckHold } from "./bars.js";
+import { refit } from "../text/autofit.js";
 import { setJ, setP } from "./overlays.js";
 
 var NAV, popSkip, adT, ovFrom;
@@ -46,6 +47,7 @@ export function init() {
     var st = e.state,
       el = location.hash && document.getElementById(location.hash.slice(1));
     pjOpen(el);
+    homeView(!el || el.id === "home");
     if (st && typeof st.y === "number") scrollTo(0, st.y);
     else if (el) el.scrollIntoView();
     else scrollTo(0, 0);
@@ -195,6 +197,8 @@ export function jumpTo(go, url) {
   } catch (e) {}
   setP(false);
   setJ(false);
+  // a piece (#a3, a section row, a line from search) shows the reading page; the bare address, Home on its own
+  homeView(!(url && url.charAt(0) === "#" && url !== "#home"));
   go();
   try {
     if (NAV) history[ov ? "replaceState" : "pushState"]({ y: scrollY }, "", url);
@@ -207,6 +211,25 @@ export function jumpTo(go, url) {
     try {
       h.focus({ preventScroll: true });
     } catch (e) {}
+  }
+}
+
+// Home on its own, as in Nitya Upasana: while data-hv is on <html>, the page ends after Home (the card and the
+// evening's list) and the reading page below it is not shown; while reading, Home is not shown above the texts
+// (css/05-home-card.css, screen only: print builds its own copy of the pieces). Set by going home (the top-bar title,
+// Home in the bottom bar or the side menu, Back to the bare address) and at start-up with no piece to open
+// (js/core/startup.js); taken off before the page goes to a piece (jumpTo(), Back to a piece's address, a link such as
+// #a3, the reading position), so the evening is still one scroll from the first text to the last.
+// Coming back to the texts, they are fitted to the screen again, since they could not be measured while hidden.
+/** @param {boolean} on */
+export function homeView(on) {
+  var r = document.documentElement;
+  if (on === r.hasAttribute("data-hv")) return;
+  if (on) r.setAttribute("data-hv", "1");
+  else {
+    r.removeAttribute("data-hv");
+    refit();
+    apply();
   }
 }
 
