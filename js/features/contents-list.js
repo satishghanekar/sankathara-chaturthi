@@ -43,6 +43,18 @@ export function init() {
  * number and title, in both languages (the page shows the one chosen), already in the chosen script
  * @returns {{ id: string, name: string, items: { id: string, html: string }[] }[]}
  */
+// The Library closes: the search starts empty next time, with the whole list (as in Nitya Upasana)
+export function clearSearch() {
+  var qq = /** @type {HTMLInputElement | null} */ (document.getElementById("q"));
+  if (qq && qq.value) {
+    qq.value = "";
+    /** @type {HTMLElement} */ (document.getElementById("res")).innerHTML = "";
+    /** @type {HTMLElement} */ (document.getElementById("none")).hidden = true;
+    /** @type {HTMLElement} */ (document.getElementById("jl")).hidden = false;
+  }
+  if (qq) qq.blur();
+}
+
 export function libraryGroups() {
   /** @param {{ mr: string, en: string }} x */
   function two(x) {
