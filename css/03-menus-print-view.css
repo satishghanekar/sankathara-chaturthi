@@ -205,7 +205,6 @@ a.t {
   overflow-wrap: anywhere;
 }
 
-
 /* ==== Add to Home Screen: button on the home page and in Settings, steps pop-up (#inm) ==== */
 .inb {
   display: flex;
@@ -804,7 +803,6 @@ h2[tabindex="-1"]:focus {
 }
 
 @media print {
-
   #prm {
     display: none !important;
   }
@@ -812,7 +810,6 @@ h2[tabindex="-1"]:focus {
   :root[data-print] .bar {
     display: none !important;
   }
-
 }
 
 @media print {
@@ -1000,7 +997,6 @@ h2[tabindex="-1"]:focus {
   .rftop .verse {
     border-left: 1pt solid #999;
   }
-
 }
 .rftop {
   margin: 6px 10px 1.3em;

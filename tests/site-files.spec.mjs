@@ -26,7 +26,9 @@ test("index.html loads the scripts listed in js/parts.js, in the same order", ()
 
 test("js/parts.js lists every part of the site script, and main.js imports each one", () => {
   const files = ["core", "text", "features", "print", "store"].flatMap((d) =>
-    readdirSync(new URL(`../js/${d}/`, import.meta.url)).filter((f) => f.endsWith(".js")).map((f) => `js/${d}/${f}`),
+    readdirSync(new URL(`../js/${d}/`, import.meta.url))
+      .filter((f) => f.endsWith(".js"))
+      .map((f) => `js/${d}/${f}`),
   );
   expect([...parts.modules].sort()).toEqual(["js/main.js", ...files].sort());
   const main = readFileSync(new URL("../js/main.js", import.meta.url), "utf8");
@@ -36,7 +38,9 @@ test("js/parts.js lists every part of the site script, and main.js imports each 
 });
 
 test("every file in js/parts.js exists", () => {
-  const missing = [...parts.css, ...parts.scripts, ...parts.modules, ...parts.content, ...parts.fonts, ...parts.images].filter((f) => !existsSync(new URL("../" + f, import.meta.url)));
+  const missing = [...parts.css, ...parts.scripts, ...parts.modules, ...parts.content, ...parts.fonts, ...parts.images].filter(
+    (f) => !existsSync(new URL("../" + f, import.meta.url)),
+  );
   expect(missing).toEqual([]);
 });
 

@@ -53,7 +53,6 @@ export function init() {
       return ["mr", "en", "both"].indexOf(P.plang) >= 0 ? P.plang : P.lang;
     }
 
-
     // ---- Writing the print view ----
     /** An element of the print view @param {string} tag @param {string} [cls] @param {string} [html] */
     function mk(tag, cls, html) {
@@ -593,7 +592,21 @@ export function init() {
       try {
         var d = /** @type {Document} */ (f.contentDocument);
         d.open();
-        d.write('<!doctype html><html data-print="' + m + '"' + attrs() + '><head><base href="' + location.href.replace(/"/g, "%22") + '"><style>' + pcss() + "\nhtml,body{margin:0;overflow:hidden;background:#fff}body{box-sizing:content-box;padding:17mm 19mm 0;height:" + (sh[1] - 36) + "mm}</style></head><body>" + box.outerHTML + "</body></html>");
+        d.write(
+          '<!doctype html><html data-print="' +
+            m +
+            '"' +
+            attrs() +
+            '><head><base href="' +
+            location.href.replace(/"/g, "%22") +
+            '"><style>' +
+            pcss() +
+            "\nhtml,body{margin:0;overflow:hidden;background:#fff}body{box-sizing:content-box;padding:17mm 19mm 0;height:" +
+            (sh[1] - 36) +
+            "mm}</style></head><body>" +
+            box.outerHTML +
+            "</body></html>",
+        );
         d.close();
       } catch (e) {}
     }
@@ -601,7 +614,8 @@ export function init() {
     function paperRow() {
       var M = P.ui === "mr",
         o = letter() ? "A4" : "Letter";
-      /** @type {HTMLElement} */ (document.getElementById("prp")).textContent = /** @type {HTMLElement} */ (document.getElementById("prq")).textContent = letter() ? "Letter" : "A4";
+      /** @type {HTMLElement} */ (document.getElementById("prp")).textContent = /** @type {HTMLElement} */ (document.getElementById("prq")).textContent =
+        letter() ? "Letter" : "A4";
       /** @type {HTMLElement} */ (document.getElementById("prpa")).textContent = M ? o + " वापरा" : "Use " + o;
       // Safari keeps the paper picked in its own dialog: when it is not the region's, it is told to pick it there
       [].forEach.call(document.querySelectorAll(".przp"), function (/** @type {HTMLElement} */ x) {
@@ -783,7 +797,10 @@ export function init() {
     /** @param {boolean} ready */
     function pmMode(ready) {
       bpr.hidden = pn.hidden = po.hidden = ready;
-      /** @type {HTMLElement} */ (document.getElementById("prst")).hidden = /** @type {HTMLElement} */ (document.getElementById("prsum")).hidden = bnx.hidden = ready;
+      /** @type {HTMLElement} */ (document.getElementById("prst")).hidden =
+        /** @type {HTMLElement} */ (document.getElementById("prsum")).hidden =
+        bnx.hidden =
+          ready;
       // (neither step: the title shows, without ‹ What to print)
       if (ready) pm.setAttribute("data-step", "ready");
       // both languages print side by side on Landscape only (stacked took a third more paper): no choice to

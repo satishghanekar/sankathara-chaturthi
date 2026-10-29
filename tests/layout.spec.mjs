@@ -45,11 +45,14 @@ for (const s of SCREENS)
       const size = await page.evaluate(() => parseFloat(getComputedStyle(document.querySelector("#a1 .verse p")).fontSize));
       expect(size, "verse text at least 16px").toBeGreaterThanOrEqual(16);
       // no verse line is wider than the screen
-      const wide = await page.evaluate((w) =>
-        [...document.querySelectorAll(".verse p")].filter((p) => {
-          const r = p.getBoundingClientRect();
-          return r.width && r.right > w + 1;
-        }).length, s.width);
+      const wide = await page.evaluate(
+        (w) =>
+          [...document.querySelectorAll(".verse p")].filter((p) => {
+            const r = p.getBoundingClientRect();
+            return r.width && r.right > w + 1;
+          }).length,
+        s.width,
+      );
       expect(wide, "verse lines wider than the screen").toBe(0);
       await context.close();
     });

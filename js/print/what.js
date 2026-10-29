@@ -126,22 +126,48 @@ export function createWhat(el, o) {
       s2 = second();
     el.lang = ui();
     el.innerHTML =
-      '<input type="search" class="tpkq prwq" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(w.search) + '" aria-label="' + esc(w.search) + '">' +
-      '<div class="prcg prcga"><span>' + esc(w.all) + '</span><button type="button" class="prcb" data-cat=""></button></div>' +
+      '<input type="search" class="tpkq prwq" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' +
+      esc(w.search) +
+      '" aria-label="' +
+      esc(w.search) +
+      '">' +
+      '<div class="prcg prcga"><span>' +
+      esc(w.all) +
+      '</span><button type="button" class="prcb" data-cat=""></button></div>' +
       o
         .shelves()
         .map(function (s) {
           var c = s.category;
           return (
-            '<div class="prgr" data-cat="' + esc(c.id) + '"><div class="prcg"><span lang="' + (l === "mr" ? scrKey() || "mr" : "en") + '">' + esc(l === "mr" ? scr(c.name.mr) : c.name.en) + " · " + num(s.texts.length) + "</span>" +
-            '<button type="button" class="prcb" data-cat="' + esc(c.id) + '"></button></div>' +
+            '<div class="prgr" data-cat="' +
+            esc(c.id) +
+            '"><div class="prcg"><span lang="' +
+            (l === "mr" ? scrKey() || "mr" : "en") +
+            '">' +
+            esc(l === "mr" ? scr(c.name.mr) : c.name.en) +
+            " · " +
+            num(s.texts.length) +
+            "</span>" +
+            '<button type="button" class="prcb" data-cat="' +
+            esc(c.id) +
+            '"></button></div>' +
             '<ul class="tpkl">' +
             s.texts
               .map(function (t) {
                 return (
-                  '<li data-id="' + esc(t.id) + '" data-sec="' + esc(t.sec) + '"><label class="tpkr"><input type="checkbox" value="' + esc(t.id) + '">' +
+                  '<li data-id="' +
+                  esc(t.id) +
+                  '" data-sec="' +
+                  esc(t.sec) +
+                  '"><label class="tpkr"><input type="checkbox" value="' +
+                  esc(t.id) +
+                  '">' +
                   '<span class="tpkc" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-                  '<span class="tt"><span class="t1" lang="' + langIn(t, l) + '">' + esc(titleIn(t, l)) + "</span>" +
+                  '<span class="tt"><span class="t1" lang="' +
+                  langIn(t, l) +
+                  '">' +
+                  esc(titleIn(t, l)) +
+                  "</span>" +
                   (s2 ? '<span class="t2" lang="' + langIn(t, s2) + '">' + esc(titleIn(t, s2)) + "</span>" : "") +
                   "</span></label></li>"
                 );
@@ -151,7 +177,9 @@ export function createWhat(el, o) {
           );
         })
         .join("") +
-      '<p class="tpkn" hidden>' + esc(w.none) + "</p>";
+      '<p class="tpkn" hidden>' +
+      esc(w.none) +
+      "</p>";
     /** @type {HTMLInputElement} */ (el.querySelector(".prwq")).value = q;
     filter();
     sync();

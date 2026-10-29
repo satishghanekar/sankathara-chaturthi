@@ -59,16 +59,36 @@ function listHtml() {
         .map(function (/** @type {any} */ p, /** @type {number} */ i) {
           var lt = langs[langOf[p.text] || ""];
           return (
-            '<li><a href="./#' + p.id + '" data-go="' + p.id + '"><span class="m"><span class="no"><span class="nm">' + to(dv(i + 1)) + '.</span><span class="ne">' + (i + 1) + ".</span></span> " +
-            '<span class="mr">' + esc(to(p.title.mr)) + '</span><span class="en" lang="en">' + esc(p.title.en) + "</span></span>" +
+            '<li><a href="./#' +
+            p.id +
+            '" data-go="' +
+            p.id +
+            '"><span class="m"><span class="no"><span class="nm">' +
+            to(dv(i + 1)) +
+            '.</span><span class="ne">' +
+            (i + 1) +
+            ".</span></span> " +
+            '<span class="mr">' +
+            esc(to(p.title.mr)) +
+            '</span><span class="en" lang="en">' +
+            esc(p.title.en) +
+            "</span></span>" +
             (lt ? '<span class="lt"><span class="mr">' + esc(to(lt.mr)) + '</span><span class="en" lang="en">' + esc(lt.en) + "</span></span>" : "") +
             "</a></li>"
           );
         })
         .join("");
       return (
-        '<div class="tocg" data-cat="' + esc(c.id) + '"><h2 class="gh"><span class="mr">' + esc(to(c.name.mr)) + '</span><span class="en" lang="en">' + esc(c.name.en) + "</span></h2>" +
-        '<ol class="toc">' + items + "</ol></div>"
+        '<div class="tocg" data-cat="' +
+        esc(c.id) +
+        '"><h2 class="gh"><span class="mr">' +
+        esc(to(c.name.mr)) +
+        '</span><span class="en" lang="en">' +
+        esc(c.name.en) +
+        "</span></h2>" +
+        '<ol class="toc">' +
+        items +
+        "</ol></div>"
       );
     })
     .join("");
@@ -146,7 +166,10 @@ export function libraryGroups() {
       id: "g-" + c.id,
       name: two(c.name),
       items: c.pieces.map(function (/** @type {any} */ p) {
-        return { id: p.id, html: '<span class="no"><span class="nm">' + esc(to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title) };
+        return {
+          id: p.id,
+          html: '<span class="no"><span class="nm">' + esc(to(p.no.mr)) + '</span><span class="ne">' + esc(p.no.en) + "</span></span> " + two(p.title),
+        };
       }),
     };
   });
