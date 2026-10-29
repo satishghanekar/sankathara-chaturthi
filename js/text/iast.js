@@ -1,11 +1,10 @@
 // IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { onPiece } from "../core/page.js";
 import { P } from "../core/state.js";
 import { enCut, glue, zsplit } from "./line-breaks.js";
+import { onPiece } from "../core/page.js";
 
-export var ENS;
 var TRL, TRT;
 
 // Devanagari (or Kannada letters, through SCR) → IAST. Pure: reads only its argument, so tests/unit can check it.
@@ -87,32 +86,51 @@ export var IA = (function () {
 })();
 
 export function init() {
-  // English style. Each English line keeps its everyday text and its Marathi/Sanskrit source (taken here, before
-  // anything else touches the lines), so the style switches in place without reloading (trSet). The scholarly
-  // (IAST) text is made the first time it is needed. ENS keeps the everyday text so search still finds "sukhakarta".
-  ENS = {};
+  // English style. Each English line keeps its everyday text and its Marathi/Sanskrit source (taken when its piece is
+  // built, before anything else touches the lines), so the style switches in place without reloading (trSet). The
+  // scholarly (IAST) text is made the first time it is needed.
   TRL = [];
-  TRT = [];
-  // Each piece as it is built (js/core/page.js): its lines, and its title for the headings, contents, Previous/Next,
-  // and the left menu and search list (copies of the contents)
+  // Piece titles, from the texts: headings, Previous/Next, the Library's list and the side menu
+  TRT = {};
+  /** @type {any} */
+  var C = /** @type {any} */ (window).CONTENT;
+  if (C)
+    C.categories.forEach(function (c) {
+      c.pieces.forEach(function (p) {
+        TRT[p.id] = { id: p.id, s: plain(p.title.en), m: plain(p.title.mr), i: null };
+      });
+    });
   onPiece(function (sec) {
+    var ia = P.tr === "iast";
     [].forEach.call(sec.querySelectorAll(".verse"), function (v) {
       // Marathi and English lines pair up by position (refrain boxes have no data-l)
       var ms = v.querySelectorAll(":scope>.mr>p");
       [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
-        var id = p.getAttribute("data-l"),
-          m = ms[i];
+        var m = ms[i];
         if (!m) return;
-        if (id) ENS[id] = p.textContent;
-        TRL.push({ p: p, s: p.innerHTML, m: m.innerHTML, i: null });
+        var x = { p: p, s: p.innerHTML, m: m.innerHTML, i: null };
+        TRL.push(x);
+        if (ia) line(x, true);
       });
     });
-    var h = sec.querySelector("header h2"),
-      m = h && h.querySelector(":scope > .mr"),
-      e = h && h.querySelector(":scope > .en");
-    if (m && e) TRT.push({ id: sec.id, s: e.textContent, m: m.textContent, i: null });
+    titlesIn(sec, ia);
   });
-  if (P.tr === "iast") trSet("iast", false);
+  // the titles already on the page (the Library's list, built before this) in the chosen style
+  titlesSet();
+}
+
+// A title's text (the texts write them as HTML)
+function plain(h) {
+  var d = document.createElement("div");
+  d.innerHTML = h;
+  return d.textContent;
+}
+
+// One English line in the chosen style
+function line(x, ia) {
+  if (ia && x.i === null) x.i = x.m.split(/<br\s*\/?>/).map(IA).join("<br>");
+  x.p.innerHTML = ia ? x.i : x.s;
+  x.p.classList.toggle("ia", ia);
 }
 
 // fin: the stanza numbers and line-break parts are already in place, so carry them over
@@ -121,25 +139,67 @@ export function trSet(st, fin) {
   TRL.forEach(function (x) {
     var p = x.p,
       sn = fin && p.querySelector(".sn");
-    if (ia && x.i === null) x.i = x.m.split(/<br\s*\/?>/).map(IA).join("<br>");
-    p.innerHTML = ia ? x.i : x.s;
-    p.classList.toggle("ia", ia);
+    line(x, ia);
     if (sn) p.appendChild(sn);
     if (fin) zsplit(p, enCut, "");
     if (fin && p.closest(".ash.prose")) glue(p);
   });
-  TRT.forEach(function (t) {
-    if (ia && t.i === null)
-      t.i = IA(t.m).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
+  titlesSet(ia);
+}
+
+// A printout's copy of the pieces (js/print/compose.js), built after the page, in the English style chosen: the
+// same as init() and trSet() do to the page's own lines and headings (before stanza numbers and line breaks)
+export function englishStyle(/** @type {ParentNode} */ r) {
+  if (P.tr !== "iast") return;
+  [].forEach.call(r.querySelectorAll(".verse"), function (v) {
+    var ms = v.querySelectorAll(":scope>.mr>p");
+    [].forEach.call(v.querySelectorAll(":scope>.en>p"), function (p, i) {
+      var m = ms[i];
+      if (!m) return;
+      p.innerHTML = m.innerHTML.split(/<br\s*\/?>/).map(IA).join("<br>");
+      p.classList.add("ia");
+    });
+  });
+  [].forEach.call(r.querySelectorAll(".ash"), function (sec) {
+    var h = sec.querySelector("header h2"),
+      m = h && h.querySelector(":scope > .mr"),
+      e = h && h.querySelector(":scope > .en");
+    if (m && e)
+      e.textContent = IA(m.textContent).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
         return a + c.toUpperCase();
       });
-    var v = ia ? t.i : t.s;
-    // the heading and the titles in the Library and the left menu (not the language tag in the home page's list)
-    [].forEach.call(
-      document.querySelectorAll("#" + t.id + ' header h2 > .en, a[data-go="' + t.id + '"] > .en'),
-      function (e) {
-        if (!e.closest("small")) e.textContent = v;
-      },
-    );
   });
+}
+
+// Piece titles in the chosen English style: headings, contents, Previous/Next, and the left menu and search list
+// (copies of the contents). Called again when the contents lists are built anew (js/features/library.js).
+export function titlesSet(ia) {
+  if (!TRT) return;
+  if (ia === undefined) ia = P.tr === "iast";
+  titlesIn(document, ia);
+}
+
+// The titles inside r (the page, or a piece just built): its heading and its links to other pieces
+function titlesIn(r, ia) {
+  [].forEach.call(r.querySelectorAll('.ash header h2 > .en, a[data-go] .en'), function (e) {
+    var a = e.closest("a[data-go], .ash"),
+      t = a && TRT[a.getAttribute("data-go") || a.id];
+    // not the language tag in the home list
+    if (t && !e.closest("small, .lt")) e.textContent = enTitle(t, ia);
+  });
+}
+
+function enTitle(t, ia) {
+  if (ia && t.i === null)
+    t.i = IA(t.m).replace(/(^|[\s(])([^\s(])/g, function (x, a, c) {
+      return a + c.toUpperCase();
+    });
+  return ia ? t.i : t.s;
+}
+
+// A piece's title as its heading shows it, built or not: in English (en) in the chosen style, else in the chosen
+// script (js/text/search.js)
+export function titleText(id, en) {
+  var t = TRT && TRT[id];
+  return !t ? "" : en ? enTitle(t, P.tr === "iast") : SCR.to(t.m);
 }

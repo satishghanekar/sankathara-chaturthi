@@ -5,7 +5,7 @@ import { root } from "../core/page.js";
 import { shared, P } from "../core/state.js";
 import { foldSet, skDot, skRender } from "./date-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
-import { cur, pfSet, pjOpen } from "../core/apply.js";
+import { cur, pfSet, unfold } from "../core/apply.js";
 import { asLabel, asShow, asc } from "./bottom-bar.js";
 import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
@@ -166,7 +166,7 @@ function lineEl(id) {
 
 // Scroll to a line (from search) and flash it
 export function goLine(id, flash) {
-  pjOpen(document.querySelector('[data-l="' + id + '"]'));
+  unfold(document.querySelector('[data-l="' + id + '"]'));
   var el = lineEl(id);
   if (!el) return;
   // A line that is hidden in the current dhrupad mode: go to the start of its piece instead
@@ -232,8 +232,8 @@ export function apply() {
     b.setAttribute("aria-pressed", String(b.dataset.v === P.fnt));
   });
   var qi = document.getElementById("q");
-  qi.placeholder = P.ui === "mr" ? "ओळ शोधा (मराठी किंवा इंग्रजी अक्षरे)" : "Find a line (Marathi or English letters)";
-  qi.setAttribute("aria-label", P.ui === "mr" ? "ओळ शोधा" : "Find a line");
+  qi.placeholder = P.ui === "mr" ? "रचना किंवा ओळ शोधा" : "Find a text or a line";
+  qi.setAttribute("aria-label", qi.placeholder);
   root.setAttribute("data-ref", String(P.ref));
   root.setAttribute("data-hc", String(P.hc));
   // (media queries answer without laying the page out; innerWidth would, right after the changes above)

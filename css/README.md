@@ -25,6 +25,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the Sankashti-day home card and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
 | `09-settings-page.css` | The Settings page and Kannada letters. |
+| `13-library.css` | The Library page, as in Nitya Upasana: Back and the title, Recent, the search results, every text by section in the book-index look, and the search box at the foot on phones (at the top on wide screens). Taken from Nitya's styles in its load order. |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
 | `99-fallbacks.css` | Plain colours for browsers without `color-mix()` (iOS 15). **Keep it last**, because it replaces colours set in every file above. |
 
@@ -57,6 +58,8 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(min-width: 600px)` | Large phones and tablets: a larger home-page text limit |
 | `(min-width: 760px)`, `(max-width: 759.98px)` | The print builder (as in Nitya Upasana): below, What and How one step at a time (Next and back); from 760px (iPads upright too) side by side, the list scrolling on its own. Settings: below, the Reading tab tightened to fit one phone screen; from 760px a tab's groups in two columns, the preview beside the reading choices |
 | `(min-width: 820px)` | Tablets and up: two-column contents, wider spacing |
+| `(min-width: 600px) and (max-width: 1023px) and (orientation: portrait)` | Tablets held upright: the Library in two columns (`13-library.css`, as in Nitya Upasana) |
+| `(min-width: 1024px)` | With the wide layout on (`data-rail`, 1100px and wider here): the Library's search box at the top, not the foot (`13-library.css`, as in Nitya Upasana) |
 | `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`) |
 | `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers |
 

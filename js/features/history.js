@@ -2,7 +2,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { bt, onPiece } from "../core/page.js";
-import { aa, cur, jp, pjOpen, pn } from "../core/apply.js";
+import { aa, cur, jp, pn, unfold } from "../core/apply.js";
 import { TK, apply, goHome, tuckHold } from "./bars.js";
 import { refit } from "../text/autofit.js";
 import { anyOpen, closeForBack, pageEls, setJ, setP, trapped } from "./overlays.js";
@@ -53,7 +53,7 @@ export function init() {
     if (was) return;
     var st = e.state,
       el = location.hash && document.getElementById(location.hash.slice(1));
-    pjOpen(el);
+    unfold(el);
     homeView(!el || el.id === "home");
     if (st && typeof st.y === "number") scrollTo(0, st.y);
     else if (el) el.scrollIntoView();
