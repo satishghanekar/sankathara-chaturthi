@@ -4,8 +4,9 @@
 import { DV } from "./line-breaks.js";
 
 export function init() {
-  // Stanza numbers at the end of each verse (the dhrupad is not counted)
-  [].forEach.call(document.querySelectorAll('section.ash[id^="a"] .items'), function (b) {
+  // Stanza numbers at the end of each verse (the dhrupad is not counted), except where the text writes its own
+  // (section class ownsn: stanza-numbers: as-written in its file)
+  [].forEach.call(document.querySelectorAll('section.ash[id^="a"]:not(.ownsn) .items'), function (b) {
     var n = 0;
     [].forEach.call(b.querySelectorAll(".item:not(.rf):not(.dh)"), function (it) {
       n++;

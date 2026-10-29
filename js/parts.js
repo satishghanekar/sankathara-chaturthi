@@ -66,11 +66,12 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "js/" + f + ".js";
   });
-  // The texts: the list of texts and categories, then one file per text, as listed in content/library.json
+  // The texts: the list of texts, the categories and the reading page's groups, then one file per text, as listed in content/library.json
   // (js/text/load.js reads them; tests/site-files.spec.mjs checks this list against library.json)
   var content = [
     "library.json",
     "categories.json",
+    "groups.json",
     "texts/vedic-chant-atharvashirsha.txt",
     "texts/aarti-sukhkarta.txt",
     "texts/aarti-shendur-lal-chadhayo.txt",

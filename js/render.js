@@ -30,7 +30,12 @@
     );
   }
   function item(x) {
-    if (x.rmk) return '      <div class="rmk"><span class="mr">' + x.rmk.mr + '</span><span class="en" lang="en"><i class="ra">↻ </i>' + x.rmk.en + "</span></div>\n";
+    // the dhrupad's marker (↻ ध्रुपद) or a note of the text's own (nt: Phalashruti, ↻ ३ वेळा); the English gets the ↻ when
+    // the original has one, so a note that is a heading (फलश्रुति) does not look like a repeat
+    if (x.rmk) {
+      var ra = !x.nt || /^↻/.test(x.rmk.mr) ? '<i class="ra">↻ </i>' : "";
+      return '      <div class="rmk' + (x.nt ? " nt" : "") + '"><span class="mr">' + x.rmk.mr + '</span><span class="en" lang="en">' + ra + x.rmk.en + "</span></div>\n";
+    }
     return '      <div class="item' + (x.kind ? " " + x.kind : "") + (x.para ? " para" : "") + '">\n' + verse(x.lines, "        ", x.bold) + "      </div>\n";
   }
   function navLink(cls, p, label, iconFirst) {
@@ -45,6 +50,8 @@
       '      <h2><span class="no"><span class="nm">' + p.no.mr + '</span><span class="ne">' + p.no.en + "</span></span> " + two(p.title) + "</h2>\n" +
       '      <div class="tag">' + two(p.tag) + "</div>\n" +
       "    </header>\n";
+    // [once] lines and [note]s that come before the dhrupad at the top (js/text/content.js)
+    if (p.lead) h += '    <div class="items lead">\n' + p.lead.map(item).join("") + "    </div>\n";
     if (p.refrain)
       h += '    <div class="rftop">\n      <div class="lab">' + two(p.refrain.label) + "</div>\n" + verse(p.refrain.lines, "      ") + "    </div>\n";
     h += '    <div class="items">\n' + p.items.map(item).join("") + "    </div>\n";
