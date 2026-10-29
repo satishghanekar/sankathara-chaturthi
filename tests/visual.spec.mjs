@@ -4,7 +4,7 @@
 // Help, the dialogs, every theme and every language arrangement.
 // Recorded in Chromium; the site's fonts are its own files, so shots are the same on any Linux machine.
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, openMore, tapMore } from "./helpers.mjs";
+import { openSite, settle, SETUPS, openMore, tapMore, readText } from "./helpers.mjs";
 import { printFromButton } from "./print-helpers.mjs";
 
 const SIZES = {
@@ -27,7 +27,9 @@ async function shoot(browser, name, size, prefs, prepare) {
   await context.close();
 }
 
+// a text is read on its own: opened from the Library, then scrolled to just below its title (as in Nitya Upasana)
 const goTo = (id) => async (page) => {
+  await readText(page, id);
   await page.evaluate((id) => {
     const el = document.getElementById(id);
     scrollTo(0, el.getBoundingClientRect().top + scrollY - 60);
