@@ -14,7 +14,6 @@ PW_PROJECTS=chromium,firefox,webkit,iphone,ipad,pixel npm test   # every engine,
 npx playwright test print.spec.mjs   # one suite
 npx playwright test -g "kannada"     # tests whose name matches
 SAVE_PDFS=1 npx playwright test print.spec.mjs   # also keep every printed PDF in tests/pdfs/ to look at
-npm run print:audit                  # every printout a reader can make, as PDFs in tests/pdfs/, with a report
 npm run lhci                         # Lighthouse CI: CLS fails the run; score, LCP and TBT targets warn until they are met
 ```
 
@@ -45,22 +44,14 @@ Printing is checked the way a reader does it: the site's own Print button, then 
 
 The grid is every **Portrait** printout (Marathi, English) × every **text font** (Standard, Classic, Handwritten) × **Letter and A4**: 12 PDFs. **Landscape** (Marathi, English, Marathi and English side by side, Kannada and English side by side) × every text font, on Letter or A4 by turns, with the same checks. On top of that: the scholarly spelling (IAST), English as the main language, Kannada (single column, also on A4 and sideways), dhrupad after every verse, Marathi menus, everything folded on screen, printing from the browser's own menu (Ctrl/⌘ P), and Safari's page plan. In each PDF:
 
-- the contents page gives the page each piece really starts on;
-- no block (a heading with its dhrupad and first stanza, or a stanza) is split across pages, unless it is taller than a page even at its smallest (the print view marks it, and it breaks between lines);
-- every block of every piece is printed, even when folded on screen;
+- every text chosen is printed, in reading order, listed in the contents and starting on a new page, even when folded on screen;
+- no block (a heading with its dhrupad and first stanza, a stanza with its marker or repeat) is split across pages; a Vedic paragraph may run on between lines;
+- every block of every text is printed;
 - every page has its "N / total" footer;
 - screen-only controls (Open all, Settings, …) never print;
-- every English line is in the PDF (Devanagari and Kannada text can't be read back reliably from a PDF, so for those the block markers show nothing was lost);
-- the page count and contents numbers match the recorded baseline;
-- in the layout × font grid, upright and sideways: no line runs past its column, no text is missing, and side by side at most a few rows are out of step or lines broken mid-phrase.
-
-### Print audit
-
-`npm run print:audit` prints every combination a reader can choose, exactly as they would: what is printed (Marathi, Kannada, English, English in IAST, each original with English, either one first, and Marathi with IAST English) × the choices the Print pop-up offers (Portrait and Landscape for one language; Landscape, side by side, for both) × the four text fonts × the dhrupad once or after every verse × Letter and A4. That is 208 PDFs, kept as `tests/pdfs/<what>/<portrait|landscape>/<font>-<dhrupad>-<paper>.pdf` (for example `tests/pdfs/marathi-english/landscape/handwritten-dhrupad-once-letter.pdf`), each with a `.json` of what was found. It takes about four minutes.
-
-Every printout must pass the print checks above. On top of that, every printed line is marked, invisibly, at the start and end of each of its parts (`print-audit-helpers.mjs`), and the PDF shows where each landed. `tests/pdfs/REPORT.md` then lists, worst first, with totals for upright and sideways: text missing; lines running past their column (past the page's margin, or into the cell beside them side by side); side-by-side rows where one side takes more lines than the other; lines broken in the middle of a phrase rather than at a preferred break (including a break the fitting wrote in between two words, `br.pvmid`); pages left mostly empty before a page break; and how many lines were set smaller to fit. `tests/pdfs/FONT-SIZES.md` gives how large each script looks in each text font, the numbers behind `js/print/profiles.js`.
-
-The PDFs and reports are not committed (`tests/pdfs/` is in `.gitignore`). To look at the PDFs inside VS Code, install a PDF viewer extension such as vscode-pdf.
+- every English line is in the PDF, read against the texts themselves (Devanagari and Kannada text can't be read back reliably from a PDF, so for those the block markers show nothing was lost);
+- the page count matches the recorded baseline;
+- What to print: only the texts ticked print, one alone without contents, none ticked prints nothing.
 
 ## Baselines
 
@@ -75,7 +66,7 @@ Screenshots and print summaries depend a little on the machine (font smoothing, 
 - **`local/`** is used on a computer. `--update-snapshots` above refreshes it. It is recorded on the maintainer's Mac, so record it only there.
 - **Claude sessions in the cloud** (started from the Claude mobile app or claude.ai/code) run on Linux, where `local/` screenshots won't match. There, run the tests with `SNAPSHOT_ENV=ci` (or skip the screenshots with `--grep-invert screenshot`), and never run `--update-snapshots`: it would replace the Mac's pictures with Linux ones.
 - **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image. To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging.
-- The print tests check page numbers against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
+- The print tests check where every text starts and that no block is split, against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
 - `SNAPSHOT_ENV=ci` or `SNAPSHOT_ENV=local` picks a set by hand.
 
 ## What automation can't cover

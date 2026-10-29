@@ -17,6 +17,7 @@ var SITE_PARTS = (function () {
     "07-bottom-bar-folds",
     "08-contents-book",
     "09-settings-page",
+    "15-print",
     "99-fallbacks",
   ].map(function (f) {
     return "css/" + f + ".css";
@@ -58,8 +59,6 @@ var SITE_PARTS = (function () {
     "core/startup",
     "features/picture-viewer",
     "features/help",
-    "print/profiles",
-    "print/fit",
     "features/print",
     "features/share",
     "features/offline",

@@ -18,13 +18,14 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `00-fonts.css` | `@font-face` rules for `fonts/`. `unicode-range` makes the browser download only the parts a page uses. |
 | `01-theme.css` | Colour and font variables on `:root` for the light, sepia and dark themes and high contrast. |
 | `02-core.css` | The first full set of rules for the reading page: page, top bar, contents, pieces, language switching, search, phones held sideways, section headings. Also the first print rules. |
-| `03-menus-print-view.css` | Top-bar title, Share / QR / Print, the Print pop-up (`#prm`), Add to Home Screen, the print view (`#pv`) built for the Print button, the piece header card, and the dhrupad at the top of a piece. |
+| `03-menus-print-view.css` | Top-bar title, Share / QR / Print, the Print pop-up (`#prm`), Add to Home Screen, the piece header card, and the dhrupad at the top of a piece. |
 | `04-columns-rail.css` | Wide screens: two stanza columns, piece and stanza numbers, button rows, both languages side by side, and the left contents menu (`#rail`). |
 | `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament, fade-in, and the dhrupad markers. |
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding the contents and each piece, fold headings, bigger tap areas, the Sankashti-day home card and the reading sheet (Aa). |
 | `08-contents-book.css` | Home contents as a book index, author lines, and Both languages with English first. |
 | `09-settings-page.css` | The Settings page and Kannada letters. |
+| `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
 | `99-fallbacks.css` | Plain colours for browsers without `color-mix()` (iOS 15). **Keep it last**, because it replaces colours set in every file above. |
 
 ## Switches the styles read
