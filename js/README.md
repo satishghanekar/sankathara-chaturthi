@@ -20,6 +20,7 @@ There is no build step: the browser loads these files as they are.
 |---|---|
 | `core/page.js` | Page basics: the <html> element, the language button icons, the short message (flash) |
 | `core/state.js` | Settings (P), loaded from this device; `change()`, the one way the parts write them |
+| `core/words.js` | Helpers for writing words on the page, shared by the parts that build their own HTML: `esc`, Devanagari digits (`dv`, `num`), the menu language (`ui`), the reading languages (`lead`, `second`), Marathi in the chosen script (`scr`, `scrKey`, `mrLang`) and the month and weekday names (`MONTHS`, `DAYS`). Pure, unit-tested in `tests/unit/words.test.mjs`; no `init()`. Use these rather than writing a copy in a part (as in Nitya Upasana; `text/content.js` keeps its own `esc`, so the text parser does not depend on the settings) |
 | `store/migrate.js` | The settings as plain data: defaults, the upgrade of settings saved by older versions, the tidy-up (pure, unit-tested in `tests/unit/migrate.test.mjs`; no `init()`) |
 | `core/features.js` | Features held back for a later release |
 | `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks) |
@@ -49,7 +50,8 @@ There is no build step: the browser loads these files as they are.
 | `core/startup.js` | Start-up |
 | `features/picture-viewer.js` | Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move |
 | `features/help.js` | Help: opens over the page; the phone's Back button closes it |
-| `features/print.js` | Print: the pop-up (What to print, dhrupad, page, font) and the print view (`#pv`) it writes, laid out by `../css/15-print.css` (see *Printing* in `../ARCHITECTURE.md`) |
+| `features/print.js` | Print: the print builder (What, then How: language, dhrupad, page, font, preview, paper) and the print view (`#pv`) it writes, laid out by `../css/15-print.css` (see *Printing* in `../ARCHITECTURE.md`) |
+| `print/what.js` | The print builder's What step (as Nitya Upasana's, its Library tab): the texts under पूजा and आरती with ticks, search, Select all and Clear (no `init()`: `features/print.js` creates it) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
 | `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js) |
 

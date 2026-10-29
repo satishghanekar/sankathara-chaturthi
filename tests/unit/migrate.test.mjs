@@ -116,6 +116,13 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     for (const [v, want] of [["std", "std"], ["classic", "classic"], ["hand", "hand"], ["bold", ""], ["", ""], [3, ""], [undefined, ""]])
       expect(migratePrefs({ ...SHAPES.v6print, pfn: v }, PHONE).prefs.pfn).toBe(want);
   });
+  test("the printout's language and paper (2026-10-29, the print builder): as picked, else as the page and the region", () => {
+    const p = migratePrefs({ ...SHAPES.v6skip, plang: "both", ppr: "a4" }, PHONE).prefs;
+    expect([p.plang, p.ppr]).toEqual(["both", "a4"]);
+    const d = migratePrefs({ ...SHAPES.v6skip, plang: "fr", ppr: "legal" }, PHONE).prefs;
+    expect([d.plang, d.ppr]).toEqual(["", ""]);
+    expect([defaults(PHONE).plang, defaults(PHONE).ppr]).toEqual(["", ""]);
+  });
   test("a new reader starts in Standard, with the printout following it", () => {
     expect([defaults(PHONE).fnt, defaults(PHONE).pfn]).toEqual(["std", ""]);
   });
