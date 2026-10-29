@@ -308,44 +308,7 @@ html[data-sp] {
     radial-gradient(circle at 32px 50%, #fff 11px, transparent 12px),
     var(--accent);
 }
-/* the preview: a few lines as the pieces show them */
-.sp-prev {
-  margin-top: 12px;
-  padding: 12px 14px 14px;
-  border: 1px solid var(--rule);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
-  text-align: center;
-}
-/* Sepia: the accent tint took the grey preview lines just under 4.5:1 (4.36:1); plain surface keeps 4.77:1 */
-:root[data-pref="sepia"] .sp-prev {
-  background: var(--surface);
-}
-.sp-prev p {
-  margin: 0;
-  white-space: nowrap;
-}
-/* the preview is a fixed window: lines never wrap, so A+ visibly makes the text bigger, running past the edges
-   (faded) and below the window, as it would on the page */
-.sp-pw {
-  touch-action: pan-y; /* a pinch here changes the text size (js/features/pinch.js), not the page zoom */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 252px; /* room for two verses and the dhrupad, in either layout, so switching never moves the page */
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
-    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
-    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
-  mask-composite: intersect;
-}
-.sp-pw div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+
 /* About: the version line (version · offline state) in plain weight; a tap on it checks for updates, so the
    right side reads "Check for updates" in the accent colour, then "Checking…", "Up to date" in green, or "No internet" in amber */
 .sp #upd .sp-l {
@@ -360,110 +323,7 @@ html[data-sp] {
 .sp #upd[data-s="off"] #updv {
   color: var(--warn);
 }
-/* the preview's lines follow the pieces: the same text size (--fs) and share of it, line spacing and font */
-.sp-p1 {
-  font: 400 var(--fs) / 1.7 var(--body);
-}
-.sp-p1[lang="en"] {
-  font-size: calc(var(--fs) * 0.86);
-  line-height: 1.6;
-}
-.sp-p2 {
-  margin-top: 4px;
-  font: 400 calc(var(--fs) * 0.72) / 1.6 var(--body);
-  color: var(--muted);
-}
-.sp-p2[lang="en"] {
-  line-height: 1.5;
-}
-.sp-p1[lang="en"],
-.sp-p2[lang="en"] {
-  font-family: var(--lat);
-}
-/* with no second language the lines need less room */
-.sp-pw.sp-one {
-  height: 176px;
-}
-/* the preview's dhrupad follows Settings → Dhrupad (data-ref on the root), as on the page. Once: on top with its
-   label, and ↻ ध्रुपद under each verse (.sp-once); Every verse: after each verse (.sp-every). Each such part slides
-   open or shut (grid rows 0fr ↔ 1fr) when the setting changes, so it is plain what the choice does. */
-.sp-pw > .sp-tg {
-  display: grid;
-  grid-template-rows: 1fr;
-  opacity: 1;
-  /* stylelint-disable-next-line plugin/no-unsupported-browser-features -- where grid rows don't animate (iOS 15) the part just opens or shuts, and fades */
-  transition:
-    grid-template-rows 0.3s ease,
-    opacity 0.3s ease;
-}
-.sp-pw > .sp-tg > div {
-  min-height: 0;
-  overflow: hidden;
-}
-:root:not([data-ref="1"]) .sp-pw > .sp-once,
-:root[data-ref="1"] .sp-pw > .sp-every {
-  grid-template-rows: 0fr;
-  opacity: 0;
-}
-/* the dhrupad lines: bold as on the page, on a soft gold tint so they stand out from the verses */
-.sp-pw .sp-rf {
-  margin: 3px 0;
-  padding: 1px 12px 2px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--gold) 26%, transparent);
-}
-.sp-pw .sp-rf p {
-  font-weight: 600;
-}
-/* the dhrupad's English line in the full text colour: muted on the gold tint it fell below 4.5:1 */
-.sp-pw .sp-rf .sp-p2 {
-  color: var(--ink);
-}
-[data-hc="1"] .sp-pw .sp-rf {
-  background: none;
-  outline: 1px solid currentColor;
-}
-.sp-pw .sp-u + .sp-u,
-.sp-pw .sp-tg + .sp-u {
-  margin-top: 2px;
-}
-.sp-pw .sp-u .sp-p2 {
-  margin-top: 0;
-}
-.sp-pw .sp-lab {
-  font: 600 11px/1.4 var(--body);
-  color: var(--muted);
-  letter-spacing: 0.03em;
-}
-.sp-pw .sp-lab[lang="en"],
-.sp-pw .sp-rmk[lang="en"] {
-  font-family: var(--lat);
-}
-.sp-pw .sp-rmk {
-  margin: 0 0 4px;
-  font: 600 calc(var(--fs) * 0.6) / 1.4 var(--body);
-  color: var(--muted);
-}
-@media (prefers-reduced-motion: reduce) {
-  .sp-pw > .sp-tg {
-    transition: none;
-  }
-}
-/* two columns on wide screens make the pieces' text a little larger */
-:root[data-cols="2"] .sp-p1:not([lang="en"]) {
-  font-size: calc(var(--fs) * 1.05);
-}
-:root[data-cols="2"] .sp-p2 {
-  font-size: calc(var(--fs) * 0.8);
-}
-:root[data-font]:not([data-font="std"]) .sp-pw .sp-p1,
-:root[data-font]:not([data-font="std"]) .sp-pw .sp-p2 {
-  font-family: var(--tf), var(--body);
-}
-:root[data-font]:not([data-font="std"]) .sp-pw .sp-p1[lang="en"],
-:root[data-font]:not([data-font="std"]) .sp-pw .sp-p2[lang="en"] {
-  font-family: var(--tfl), var(--lat);
-}
+
 /* the maker's name and email, quiet, under About */
 .sp-by {
   margin: 18px 6px 8px;
@@ -599,11 +459,116 @@ html[data-scr="kn"] #bt[data-tl="mr"] #btt,
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr *,
-html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"],
 html[data-scr="kn"][data-font]:not([data-font="std"]) #prfs[lang="kn"] {
   font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
 }
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr,
 html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
   font-family: var(--kv, "Noto Sans Kannada"), "Noto Sans Kannada", var(--body) !important;
+}
+
+/* ==== The preview at the top of Settings → Reading, as in Nitya Upasana (its 09-settings-page.css): one line of the
+   dhrupad and one of the verse, in the languages Show picks, so the whole tab fits on a phone's screen ==== */
+/* the preview: a few lines as the pieces show them */
+.sp-prev {
+  padding: 12px 14px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  text-align: center;
+}
+/* Sepia: the accent tint took the grey preview lines just under 4.5:1 (4.36:1); plain surface keeps 4.77:1 */
+:root[data-pref="sepia"] .sp-prev {
+  background: var(--surface);
+}
+.sp-prev p {
+  margin: 0;
+  white-space: nowrap;
+}
+/* the preview is a fixed window: lines never wrap, so A+ visibly makes the text bigger, running past the edges
+   (faded) and below the window, as it would on the page */
+.sp-pw {
+  touch-action: pan-y; /* a pinch here changes the text size (js/features/pinch.js), not the page zoom */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 180px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
+    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 16px), transparent),
+    linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-composite: intersect;
+}
+.sp-pw > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* the preview's lines follow the pieces: the same text size (--fs) and share of it, line spacing and font */
+.sp-p1 {
+  font: 400 var(--fs) / 1.7 var(--body);
+}
+.sp-p1[lang="en"] {
+  font-size: calc(var(--fs) * 0.86);
+  line-height: 1.6;
+}
+.sp-p2 {
+  margin-top: 4px;
+  font: 400 calc(var(--fs) * 0.72) / 1.6 var(--body);
+  color: var(--muted);
+}
+.sp-p2[lang="en"] {
+  line-height: 1.5;
+}
+/* the dhrupad in the preview, in the accent colour so the Dhrupad choice shows where it is sung; the ↻ ध्रुपद note
+   that stands for it with "once", as under each verse on the page (.rmk) */
+.sp-pd {
+  color: var(--accent);
+}
+.sp-pn {
+  margin-top: 0.3em;
+  color: var(--muted);
+  font: 600 calc(var(--fs) * 0.6) / 1.2 var(--body);
+}
+.sp-p1[lang="en"],
+.sp-p2[lang="en"] {
+  font-family: var(--lat);
+}
+/* two columns on wide screens make the pieces' text a little larger */
+:root[data-cols="2"] .sp-p1:not([lang="en"]) {
+  font-size: calc(var(--fs) * 1.05);
+}
+:root[data-cols="2"] .sp-p2 {
+  font-size: calc(var(--fs) * 0.8);
+}
+:root[data-font]:not([data-font="std"]) .sp-pw > div {
+  font-family: var(--tf), var(--body);
+}
+:root[data-font]:not([data-font="std"]) .sp-pw > [lang="en"] {
+  font-family: var(--tf), var(--lat);
+}
+/* Phones: the Reading tab, preview and every choice, on one iPhone screen (Satish, 2026-10-27): the preview's heading
+   for screen readers only (the window says what it is) and the window shorter; the language rows without their
+   hints (the preview shows large and small); Show and Text font beside their labels; Verses' heading for screen
+   readers only (Dhrupad says what it is); rows and headings closer */
+@media screen and (max-width: 759.98px) {
+/* one height for every language and Dhrupad choice, so the cards below never jump: tall enough for the tallest at
+     100% (both languages, the dhrupad once: four lines and ↻ Refrain); narrow fades, so the lines show whole */
+.sp-prev {
+    padding: 4px 12px;
+  }
+.sp-pw {
+    height: 168px;
+    /* centred while the lines fit (one language leaves room), from the top once A+ makes them taller */
+    justify-content: safe center;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent),
+      linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent),
+      linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
+  }
+}
+html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"] {
+  font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
 }

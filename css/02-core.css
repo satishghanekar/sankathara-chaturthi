@@ -717,36 +717,11 @@ body {
   font-family: var(--lat);
 }
 
-.grp {
-  margin: 48px 0 -18px;
-  text-align: center;
-  font: 700 0.8em/1.2 var(--body);
-  color: var(--accent);
-  letter-spacing: 0.08em;
-}
-#home + .grp {
-  margin-top: 8px;
-  padding-top: 22px;
-  border-top: 1px solid var(--rule);
-}
-.grp + .ash {
-  border-top: 0;
-}
-.grp {
-  scroll-margin-top: 64px;
-}
-.grp[data-lang="both"] .en {
-  margin-left: 0.6em;
-  color: var(--muted);
-}
 @media print {
   .gh {
     margin-top: 14pt;
   }
-  .grp {
-    margin: 0 0 8pt;
-    break-after: avoid;
-  }
+
 }
 
 /* ==== Atharvashirsha: Vedic text in Tiro Devanagari Sanskrit ==== */

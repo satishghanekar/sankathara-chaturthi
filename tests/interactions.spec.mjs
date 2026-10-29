@@ -127,7 +127,7 @@ test("Home is on its own; a text shows the reading page, Home and Back bring Hom
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#tsc")).toBeVisible();
   await expect(page.locator("#p1")).toBeHidden();
-  await expect(page.locator("#g-aarti")).toBeHidden();
+  await expect(page.locator("#a1")).toBeHidden();
   await page.locator('#tsl a[data-go="a2"]').click();
   await expect(page.locator("#a2")).toBeVisible();
   await expect(page.locator("#a1")).toBeVisible();
@@ -250,8 +250,7 @@ test("piece fold is remembered across a reload @mobile", async ({ page }) => {
 // keeps none of its texts hidden
 test("no section rows while reading, and an old section fold hides nothing @mobile", async ({ page }) => {
   await openSite(page, { ...SETUPS.marathi, pf: 1, xf: 1 }, { hash: "#a1" });
-  await expect(page.locator(".grp")).toHaveCount(2);
-  for (const g of await page.locator(".grp").all()) await expect(g).toBeHidden();
+  await expect(page.locator(".grp")).toHaveCount(0);
   expect(await rootAttr(page, "data-pf")).toBeNull();
   expect(await rootAttr(page, "data-xf")).toBeNull();
   await expect(page.locator("#a1 .items")).toBeVisible();
