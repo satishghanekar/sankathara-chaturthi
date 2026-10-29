@@ -1,23 +1,20 @@
-// Tappable dhrupad markers (Aartis 1–5, 7 and 9)
+// Tappable dhrupad markers (every text with refrain: every-verse)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { shared } from "../core/state.js";
 import { topEdge } from "../features/bottom-bar.js";
 
-var RMKTAP;
-
 export function init() {
   // Tapping ↻ ध्रुपद shows the dhrupad in a bubble just above the marker, over the stanza just sung,
   // so the next stanza stays clear. Tap again, tap elsewhere or press Escape to close; it also closes by itself.
-  RMKTAP = ["a1", "a2", "a3", "a4", "a5", "a7", "a9"];
   shared.rmkPop = null;
-  RMKTAP.forEach(function (id) {
-    [].forEach.call(document.querySelectorAll("#" + id + " .items > .rmk"), function (m) {
-      m.classList.add("rmkt");
-      m.setAttribute("role", "button");
-      m.setAttribute("tabindex", "0");
-      m.setAttribute("aria-expanded", "false");
-    });
+  // Every dhrupad marker (not a [note] of the text's own, .nt) in a piece with the dhrupad at the top (.rftop)
+  [].forEach.call(document.querySelectorAll(".ash .items > .rmk:not(.nt)"), function (m) {
+    if (!m.closest("section.ash").querySelector(".rftop .verse")) return;
+    m.classList.add("rmkt");
+    m.setAttribute("role", "button");
+    m.setAttribute("tabindex", "0");
+    m.setAttribute("aria-expanded", "false");
   });
   document.addEventListener("click", function (e) {
     var m = e.target.closest && e.target.closest(".rmkt");
