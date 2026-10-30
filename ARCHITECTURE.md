@@ -6,7 +6,7 @@ The site is one page, `index.html`, plus plain CSS and JavaScript files. **There
 
 ## What happens when the page opens
 
-1. **`<head>`** loads the 11 style files in `css/` in number order, then `js/parts.js`, the one list of the site's files. `modulepreload` links fetch the script parts in parallel.
+1. **`<head>`** loads the style files in `css/` in number order, then `js/parts.js`, the one list of the site's files. `modulepreload` links fetch the script parts in parallel.
 2. **The splash** (`#spl`, the first thing in `<body>`, set up by the plain script `js/splash.js`) shows from the first paint: the app's picture, as on Home, the name, and the eight lamps around Ganesha lighting up in turn (as in Nitya Upasana, whose splash lights its seven stars). `js/splash.js` also puts the reader's theme from the boot copy of the settings on `<html>`, so the splash matches it. It fades out once `data-ready` is set (styles in `css/02-core.css`, "Splash"), or after 10 s if the site script never starts.
 3. **`<body>`** has the top bar, Settings, the home page and the dialogs, written in HTML. Help's text sits in a `<template>` and is only laid out when Help is first opened.
 4. **At the end of `<main>`**, `#pieces` marks where the pieces go, and the plain script `js/render.js` defines `renderPiece` (a piece's HTML) and `SCR` (Kannada, Telugu or Gujarati letters).
@@ -88,7 +88,7 @@ These hold for every text, so a new text prints correctly as soon as its file ex
   - Browsers install a new service worker when `sw.js` itself changes. Not every browser re-checks the files it imports, so the version must sit in `sw.js`.
   - The page needs the version at start-up too.
   - `tests/offline.spec.mjs` fails if the two differ.
-- **Check for updates** (the version line in Settings → More → About, `js/features/offline.js`) fetches the page and each file in `js/parts.js` fresh. If any changed, it saves them over the saved copy and asks for the new `sw.js` (waiting until a new version is in charge, 20 s at most), then reloads, so it finds changes even when the version stays the same.
+- **Check for updates** (the version line in Settings → More → About, `js/features/offline.js`) fetches the page and each file in `js/parts.js` fresh. If any changed, it saves them over the saved copy and asks for the new `sw.js` (waiting until a new version is in charge, 20 s at most), then reloads, so it finds changes even when the version stays the same. Safari and every iPhone and iPad browser (WebKit, `wk`) keep the scripts they have in memory until the app is closed, so there it asks the reader to close and reopen the app instead.
 - **`_headers`** lets phones keep font files for a year and pictures for a week without asking again. The page, styles and scripts are always re-checked (`no-cache`), so an update reaches readers on their next visit.
 
 ## Oldest supported browsers, and the fallbacks they need
