@@ -176,6 +176,8 @@ export default {
     dark: "ઘેરું",
     highContrast: "વધુ કૉન્ટ્રાસ્ટ",
     keepScreenOn: "પડદો ચાલુ રાખો",
+    afterLastTouch: "છેલ્લા સ્પર્શ પછી, મિનિટ",
+    off: "બંધ",
     about: "વિશે",
     helpAndHowToUse: "મદદ અને વાપરવાની રીત",
     addToHomeScreen: "હોમ સ્ક્રીન પર ઉમેરો",

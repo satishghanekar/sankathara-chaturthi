@@ -11,6 +11,7 @@ import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 import { spSet } from "./languages.js";
 import { fillWords, menuWords } from "../core/strings.js";
+import { num } from "../core/words.js";
 
 export var TK;
 var tkStrip, MQ900, MQ1000, MQ1100, tailF, skKey;
@@ -294,7 +295,12 @@ export function apply() {
     b.setAttribute("aria-pressed", b.dataset.v === P.th);
   });
   document.getElementById("tc").setAttribute("aria-pressed", String(!!P.hc));
-  document.getElementById("tw").setAttribute("aria-pressed", String(!!P.wake));
+  // Keep screen on: the minutes chosen, in the menu language's digits
+  [].forEach.call(document.querySelectorAll("#tw button"), function (/** @type {HTMLElement} */ b) {
+    var v = +b.dataset.v;
+    b.setAttribute("aria-pressed", String(v === P.wake));
+    if (v) b.textContent = num(v);
+  });
   if (!tailF) tailF = requestAnimationFrame(applyTail);
   szSet();
 }
