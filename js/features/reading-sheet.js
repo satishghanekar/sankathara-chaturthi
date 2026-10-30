@@ -10,6 +10,7 @@ import { setP } from "./overlays.js";
 import { refToggle } from "./dhrupad-button.js";
 import { ovDone, ovPush } from "./history.js";
 import { menuWords } from "../core/strings.js";
+import { ui } from "../core/words.js";
 
 var rsh, rsb, fsT, fsA;
 
@@ -100,12 +101,11 @@ function rsSettings(focusId) {
 
 // The choices as they are now
 function rsSet() {
-  var mr = P.ui === "mr",
-    w = menuWords("languages"),
+  var w = menuWords("languages"),
     o = P.l2 ? [P.lead, P.l2, "both"] : [P.lead, "+"];
   document.getElementById("rsl").innerHTML = o
     .map(function (v) {
-      var l = v === "both" || v === "+" ? (mr ? "mr" : "en") : LK(v) === "kn" ? "kn" : LK(v),
+      var l = v === "both" || v === "+" ? ui() : LK(v) === "kn" ? "kn" : LK(v),
         t = v === "both" ? w.both : v === "+" ? w.second : LANGS[LK(v)].n;
       return '<button type="button" data-v="' + v + '" lang="' + l + '"' + (v === "+" ? "" : ' aria-pressed="' + (v === P.lang) + '"') + ">" + t + "</button>";
     })
