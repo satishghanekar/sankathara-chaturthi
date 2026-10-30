@@ -81,7 +81,7 @@
  "tests/prettier.config.mjs": 0,
  "tests/print-helpers.mjs": 22,
  "tests/print-view.spec.mjs": 0,
- "tests/print.spec.mjs": 1213,
+ "tests/print.spec.mjs": 1221,
  "tests/serve.mjs": 1,
  "tests/site-files.spec.mjs": 34,
  "tests/smoke.spec.mjs": 0,
