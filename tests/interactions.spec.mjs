@@ -320,6 +320,23 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
 });
 
+// Kannada menus (js/strings/kn.js): the card, the bars and Settings in Kannada, marked lang="kn" so the Kannada font
+// and a screen reader's Kannada voice are used; Settings offers the three menu languages
+test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kannada @mobile", async ({ page }) => {
+  await openSite(page, SETUPS["kannada-menus"]);
+  await expect(page.locator("#skc .skh").first()).toHaveText(/^ಮುಂದಿನ (ಅಂಗಾರಕ )?ಚತುರ್ಥಿ$/);
+  await expect(page.locator("#rsb")).toHaveAccessibleName("ಓದು");
+  await expect(page.locator("#rsb [data-w]")).toHaveAttribute("lang", "kn");
+  await page.locator("#aa").click();
+  await page.locator('#spv button[data-v="screen"]').click();
+  await expect(page.locator("#su button")).toHaveText(["English", "मराठी", "ಕನ್ನಡ"]);
+  await expect(page.locator('#su button[data-v="kn"]')).toHaveAttribute("aria-pressed", "true");
+  // back to English, at once
+  await page.locator('#su button[data-v="en"]').click();
+  await page.locator("#xc").click();
+  await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
+});
+
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
 test("Aa opens the reading sheet: language, text size and dhrupad, then Escape closes it @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
