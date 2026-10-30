@@ -821,7 +821,8 @@ export function init() {
       // Safari keeps the sheet picked in its own dialog: it is told to pick Landscape there
       /** @type {HTMLElement} */ (document.getElementById("prl")).hidden = !(root.classList.contains("wk") && land(dm()));
       // Safari on a Mac: Chrome turns the page itself (Satish, 2026-10)
-      /** @type {HTMLElement} */ (document.getElementById("prc")).hidden = !root.classList.contains("wk") || iOS;
+      // (and Firefox, which drops the page numbers: no @page margin boxes, checked in Firefox 157)
+      /** @type {HTMLElement} */ (document.getElementById("prc")).hidden = !((root.classList.contains("wk") && !iOS) || root.classList.contains("ff"));
       bgo.hidden = !ready;
       pw.hidden = pv2.hidden = bsf.hidden = bcp.hidden = true;
     }
