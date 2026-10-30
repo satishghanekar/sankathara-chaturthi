@@ -613,12 +613,11 @@ export function init() {
     }
     // the paper, and the button that changes it (Letter or A4)
     function paperRow() {
-      var M = P.ui === "mr",
-        o = letter() ? "A4" : "Letter";
+      var o = letter() ? "A4" : "Letter";
       [].forEach.call(document.querySelectorAll(".prpaper"), function (/** @type {HTMLElement} */ x) {
         x.textContent = letter() ? "Letter" : "A4";
       });
-      /** @type {HTMLElement} */ (document.getElementById("prpa")).textContent = M ? o + " वापरा" : "Use " + o;
+      /** @type {HTMLElement} */ (document.getElementById("prpa")).textContent = menuWords("print").use(o);
       // Safari keeps the paper picked in its own dialog: when it is not the region's, it is told to pick it there
       [].forEach.call(document.querySelectorAll(".przp"), function (/** @type {HTMLElement} */ x) {
         x.textContent = letter() ? "Letter" : "A4";
