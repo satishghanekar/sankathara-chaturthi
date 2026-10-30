@@ -1,6 +1,6 @@
 // Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText } from "./helpers.mjs";
+import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, settingsTab } from "./helpers.mjs";
 
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
@@ -48,8 +48,9 @@ test("Settings → Dhrupad switches between once and after every verse @mobile",
   expect(await rootAttr(page, "data-ref")).toBe("1");
 });
 
-// Settings, as in Nitya Upasana: Reading | Screen | More, one tab at a time, opening on Reading each time
+// Settings on phones, as in Nitya Upasana: Reading | Screen | More, one tab at a time, opening on Reading each time
 test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await openSite(page, SETUPS.english);
   await page.locator("#aa").click();
   await expect(page.locator("#spv button")).toHaveText(["Reading", "Screen", "More"], { useInnerText: true });
@@ -73,6 +74,31 @@ test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobi
   await page.locator("#xc").click();
   await page.locator("#aa").click();
   await expect(page.locator('#spv [data-v="read"]')).toHaveAttribute("aria-pressed", "true");
+});
+
+// Settings on iPads and desktops, as in Nitya Upasana: no tabs, the title beside Back, every group at once in two
+// columns: the preview and the reading choices on the left, the screen and about on the right (Satish, 2026-10-30);
+// an iPad upright too; narrowed to a phone, the tabs are back
+test("Settings on a desktop or an iPad: every group at once, in two columns, no tabs", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#aa").click();
+  await expect(page.locator("#spv")).toBeHidden();
+  await expect(page.locator("#spt")).toBeVisible();
+  await expect(page.locator("#spt")).toHaveText("Settings");
+  for (const id of ["#sl1", "#st", "#tw", "#hlp2", "#upd"]) await expect(page.locator(id)).toBeVisible();
+  const x = async (sel) => (await page.locator(sel).boundingBox()).x;
+  expect(await x(".sp-c1")).toBeLessThan(await x(".sp-c2"));
+  for (const id of ["#sl1"]) expect(await page.locator(".sp-c1 " + id).count(), id).toBe(1);
+  for (const id of ["#st", "#hlp2", "#upd"]) expect(await page.locator(".sp-c2 " + id).count(), id).toBe(1);
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await expect(page.locator("#spv")).toBeHidden();
+  for (const id of ["#sl1", "#st", "#hlp2"]) await expect(page.locator(id)).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator("#spv")).toBeVisible();
+  await expect(page.locator("#st")).toBeHidden();
+  // (the title for screen readers only: a 1px box)
+  expect((await page.locator("#spt").boundingBox()).width).toBeLessThanOrEqual(1);
 });
 
 // ⋯ in the top bar, as in Nitya Upasana: App, Share, QR and Help; a choice closes it, Escape closes it with focus on ⋯
@@ -206,15 +232,15 @@ test("Settings opens, changes theme, high contrast and font, and closes with Bac
   await openSite(page, SETUPS.marathi);
   await page.locator("#aa").click();
   await expect(page.locator("#panel")).toBeVisible();
-  // the theme and contrast are on the Screen tab, the font on Reading
-  await page.locator('#spv [data-v="screen"]').click();
+  // the theme and contrast are on the Screen tab, the font on Reading (no tabs on desktops: every group at once)
+  await settingsTab(page, "screen");
   await page.locator('#st button[data-v="dark"]').click();
   expect(await rootAttr(page, "data-pref")).toBe("dark");
   await page.locator('#st button[data-v="sepia"]').click();
   expect(await rootAttr(page, "data-pref")).toBe("sepia");
   await page.locator("#tc").click();
   expect(await rootAttr(page, "data-hc")).toBe("1");
-  await page.locator('#spv [data-v="read"]').click();
+  await settingsTab(page, "read");
   await page.locator('#sfn button[data-v="classic"]').click();
   expect(await rootAttr(page, "data-font")).toBe("classic");
   await page.locator("#xc").click();
@@ -326,16 +352,17 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
 });
 
-// Kannada menus (js/strings/kn.js): the card, the bars and Settings in Kannada, marked lang="kn" so the Kannada font
-// and a screen reader's Kannada voice are used; Settings offers the three menu languages
+// Kannada menus (js/strings/kn.js), with the texts in Kannada letters: the card, the bars and Settings in Kannada,
+// marked lang="kn" so the Kannada font and a screen reader's Kannada voice are used; Settings offers English and
+// Kannada only (the menus are English or the language the texts are shown in)
 test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kannada @mobile", async ({ page }) => {
   await openSite(page, SETUPS["kannada-menus"]);
   await expect(page.locator("#skc .skh").first()).toHaveText(/^ಮುಂದಿನ (ಅಂಗಾರಕ )?ಚತುರ್ಥಿ$/);
   await expect(page.locator("#rsb")).toHaveAccessibleName("ಓದು");
   await expect(page.locator("#rsb [data-w]")).toHaveAttribute("lang", "kn");
   await page.locator("#aa").click();
-  await page.locator('#spv button[data-v="screen"]').click();
-  await expect(page.locator("#su button")).toHaveText(["English", "मराठी", "ಕನ್ನಡ", "తెలుగు", "ગુજરાતી"]);
+  await settingsTab(page, "screen");
+  await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", "ಕನ್ನಡ"]);
   await expect(page.locator('#su button[data-v="kn"]')).toHaveAttribute("aria-pressed", "true");
   // back to English, at once
   await page.locator('#su button[data-v="en"]').click();
@@ -368,23 +395,41 @@ for (const [setup, sans, classic, hand] of [
       expect(await first("#p1 .verse .mr p")).toBe(vedic);
     });
 
-// Marathi menus go with Marathi letters: picking Kannada, Telugu or Gujarati letters turns them into that language's;
-// other menus stay as they are whatever the letters (as in Nitya Upasana)
-for (const [from, pick, want] of [
-  ["mr", "kn", "ಓದು"],
-  ["mr", "te", "పఠనం"],
-  ["mr", "gu", "વાંચન"],
-  ["kn", "gu", "ಓದು"],
-  ["en", "te", "Reading"],
+// The menus are English or the language the texts are shown in, never mixed (as in Nitya Upasana): picking other
+// letters puts the menus back to English, and Settings then offers English and the new letters' language
+for (const [from, ind, pick] of [
+  ["mr", "mr", "kn"],
+  ["mr", "mr", "te"],
+  ["kn", "kn", "gu"],
+  ["en", "mr", "te"],
 ])
-  test(`${from} menus, then ${pick} letters picked in Settings: the menus follow the rule`, async ({ page }) => {
-    await openSite(page, { ...SETUPS.marathi, ui: from });
+  test(`${from} menus, then ${pick} letters picked in Settings: the menus go back to English`, async ({ page }) => {
+    const want = "Reading";
+    await openSite(page, { ...SETUPS.marathi, ind, ui: from });
     await page.locator("#aa").click();
     await page.locator("#sl1s").selectOption(pick);
     await page.locator("#xc").click();
     await expect(page.locator("#rsb")).toHaveAccessibleName(want);
     expect((await prefs(page)).ind).toBe(pick);
+    await page.locator("#aa").click();
+    await settingsTab(page, "screen");
+    await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", { kn: "ಕನ್ನಡ", te: "తెలుగు", gu: "ગુજરાતી" }[pick]]);
   });
+
+// Menus in another language than the texts (saved before this rule) open in English; with English as the main
+// language there is no choice of menus
+test("menus never mixed: Telugu menus over Marathi letters open in English; English texts offer no menu choice", async ({ page }) => {
+  await openSite(page, { ...SETUPS.marathi, ui: "te" });
+  // (the saved settings are tidied as they load: js/store/migrate.js tidy())
+  await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
+  await page.locator("#aa").click();
+  await settingsTab(page, "screen");
+  await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", "मराठी"]);
+  await settingsTab(page, "read");
+  await page.locator("#sl1s").selectOption("en:simple");
+  await settingsTab(page, "screen");
+  await expect(page.locator("#surow")).toBeHidden();
+});
 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
 test("Aa opens the reading sheet: language, text size and dhrupad, then Escape closes it @mobile", async ({ page }) => {

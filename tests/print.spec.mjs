@@ -612,7 +612,8 @@ for (const [setup, choice, mode, landscape] of [
 }
 
 // The page chosen is remembered (shown chosen next time), the printer is told the page size, and Safari,
-// which keeps the sheet picked in its own dialog, is told, once Landscape is chosen, to pick it there too
+// which keeps the sheet picked in its own dialog, is told, once Landscape is chosen, to pick it there too (and, on a
+// Mac, that Chrome prints it best; Firefox is told that too: it prints no page numbers)
 test("print pop-up: the page chosen is remembered and printed that way @chromium-only", async ({ browser }) => {
   for (const ua of [undefined, devices["Desktop Safari"].userAgent]) {
     const context = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: ua });
@@ -622,6 +623,19 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await page.locator("#prb").click();
     await howStep(page);
     await expect(page.locator("#prl")).toBeHidden();
+    await expect(page.locator("#prc")).toBeVisible({ visible: !!ua });
+    if (ua) {
+      // Firefox: the same note, and nothing about Safari's dialog
+      const ff = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: devices["Desktop Firefox"].userAgent });
+      const fp = await ff.newPage();
+      await stubPrint(fp);
+      await openSite(fp, SETUPS.marathi);
+      await fp.locator("#prb").click();
+      await howStep(fp);
+      await expect(fp.locator("#prc")).toBeVisible();
+      for (const id of ["#prl", "#prz"]) await expect(fp.locator(id)).toBeHidden();
+      await ff.close();
+    }
     const sizes = () =>
       page.evaluate(() => {
         const all = (rules) => [...rules].flatMap((r) => (r.cssRules && r.type !== 6 ? all(r.cssRules) : [r]));

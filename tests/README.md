@@ -18,7 +18,7 @@ npm run engines                      # every engine, as CI runs it (PW_PROJECTS=
 npx playwright test print.spec.mjs   # one suite
 npx playwright test -g "kannada"     # tests whose name matches
 SAVE_PDFS=1 npx playwright test print.spec.mjs   # also keep every printed PDF in tests/pdfs/ to look at
-npm run lhci                         # Lighthouse CI: CLS fails the run; score, LCP and TBT targets warn until they are met
+npm run lhci                         # Lighthouse CI: CLS and TBT (median of 3) fail the run; score and LCP warn
 npm run sister                       # still in line with the sister app (Nitya Upasana, in the folder beside this one)?
 ```
 
