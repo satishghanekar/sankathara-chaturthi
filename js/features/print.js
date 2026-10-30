@@ -20,6 +20,7 @@ import { FEAT_SW } from "../core/features.js";
 import { compose } from "../print/compose.js";
 import { createWhat, whatWords } from "../print/what.js";
 import { menuWords } from "../core/strings.js";
+import { ui } from "../core/words.js";
 
 // The page each printout is made for: one language upright, both languages side by side on a sideways page
 var CHOICE = { one: { page: "up" }, both: { page: "land" } };
@@ -614,8 +615,9 @@ export function init() {
     function paperRow() {
       var M = P.ui === "mr",
         o = letter() ? "A4" : "Letter";
-      /** @type {HTMLElement} */ (document.getElementById("prp")).textContent = /** @type {HTMLElement} */ (document.getElementById("prq")).textContent =
-        letter() ? "Letter" : "A4";
+      [].forEach.call(document.querySelectorAll(".prpaper"), function (/** @type {HTMLElement} */ x) {
+        x.textContent = letter() ? "Letter" : "A4";
+      });
       /** @type {HTMLElement} */ (document.getElementById("prpa")).textContent = M ? o + " वापरा" : "Use " + o;
       // Safari keeps the paper picked in its own dialog: when it is not the region's, it is told to pick it there
       [].forEach.call(document.querySelectorAll(".przp"), function (/** @type {HTMLElement} */ x) {
@@ -634,7 +636,7 @@ export function init() {
         t = what.total(),
         el = /** @type {HTMLElement} */ (document.getElementById("prsum"));
       el.textContent = "";
-      el.lang = P.ui === "mr" ? "mr" : "en";
+      el.lang = ui();
       var a = document.createElement("span");
       // one text: its name
       a.textContent = t.one || (t.texts ? w.texts(t.texts) : w.pick);
