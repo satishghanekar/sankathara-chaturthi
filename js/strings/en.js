@@ -176,6 +176,8 @@ export default {
     dark: "Dark",
     highContrast: "High contrast",
     keepScreenOn: "Keep screen on",
+    afterLastTouch: "Minutes after the last touch",
+    off: "Off",
     about: "About",
     helpAndHowToUse: "Help and how to use",
     addToHomeScreen: "Add to Home Screen",

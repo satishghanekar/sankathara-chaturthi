@@ -178,7 +178,7 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   test("no settings at all (a first visit): the defaults, at today's version", () => {
     const { prefs, changed } = migratePrefs(null, PHONE);
     expect(changed).toBe(true);
-    expect(prefs).toEqual({ ...defaults(PHONE), sv: 6, wake: 1 });
+    expect(prefs).toEqual({ ...defaults(PHONE), sv: 6, wake: 30 });
     expect(migratePrefs(undefined, DESK).prefs.wake).toBe(0);
     expect(migratePrefs({}, TABLET).prefs.fs).toBe(28);
   });
@@ -188,7 +188,7 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     expect(changed).toBe(true);
     expect(prefs.sv).toBe(SETTINGS_VERSION);
     expect(prefs.ref).toBe(1); // v3
-    expect(prefs.wake).toBe(1); // v4
+    expect(prefs.wake).toBe(30); // v4 (on: 30 minutes since 2026-10-30)
     expect([prefs.lead, prefs.l2, prefs.lang]).toEqual(["mr", "en", "both"]); // v6
     expect([prefs.fs, prefs.fsu, prefs.th, prefs.hc, prefs.ui]).toEqual([26, 1, "dark", 1, "mr"]);
   });
@@ -199,12 +199,12 @@ describe("settings from every older version are upgraded as js/core/state.js alw
 
   test("v2: dhrupad once by default (v3), English kept as shown", () => {
     const p = migratePrefs(SHAPES.v2, PHONE).prefs;
-    expect([p.ref, p.wake, p.lang, p.lead, p.l2, p.cols, p.th]).toEqual([1, 1, "en", "mr", "en", 2, "sepia"]);
+    expect([p.ref, p.wake, p.lang, p.lead, p.l2, p.cols, p.th]).toEqual([1, 30, "en", "mr", "en", 2, "sepia"]);
   });
 
   test("v4: the reader's dhrupad and screen choices stay; folds, location and the highlighted line carry over", () => {
     const p = migratePrefs(SHAPES.v4, PHONE).prefs;
-    expect([p.ref, p.wake, p.tr, p.hl, p.fold, p.tf]).toEqual([1, 1, "iast", "s1l3", 1, 1]);
+    expect([p.ref, p.wake, p.tr, p.hl, p.fold, p.tf]).toEqual([1, 30, "iast", "s1l3", 1, 1]);
     // the section folds are cleared since the section rows went (2026-10-29), so none keeps its texts hidden
     expect([p.pf, p.xf]).toEqual([0, 0]);
     expect(p.loc).toEqual({ lat: 40.1, lon: -83.1 });
@@ -294,6 +294,14 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   });
   test("a new reader starts in Standard, with the printout following it", () => {
     expect([defaults(PHONE).fnt, defaults(PHONE).pfn]).toEqual(["std", ""]);
+  });
+
+  test("Keep screen on (2026-10-30): minutes after the last touch kept; the old switch's on is 30 minutes, anything else off", () => {
+    const w = (wake) => migratePrefs({ ...SHAPES.v5font, sv: 6, wake }, PHONE).prefs.wake;
+    expect([0, 15, 30, 45, 60].map(w)).toEqual([0, 15, 30, 45, 60]);
+    expect([w(1), w(20), w(-5), w(0)]).toEqual([30, 30, 30, 0]);
+    expect(defaults(PHONE).wake).toBe(30);
+    expect(defaults(DESK).wake).toBe(0);
   });
 
   test("every shape comes out with every setting, and nothing else", () => {

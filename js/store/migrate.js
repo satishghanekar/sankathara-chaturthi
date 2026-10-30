@@ -32,7 +32,7 @@ export function defaults(env) {
     // letters, made by SCR in js/render.js while the page loads). There are no Kannada menus yet, so menus stay English.
     ref: 1, // dhrupad: 1 = once at the top, 0 = repeated after every stanza
     hc: 0, // high contrast
-    wake: env.desk ? 0 : 1, // keep the screen on (phones and tablets; off by default on computers)
+    wake: env.desk ? 0 : 30, // keep the screen on: minutes after the last touch (0 off, 15, 30, 45, 60; off by default on computers)
     cols: 0, // wide screens: 0 = automatic, 1 = one column, 2 = two columns
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
@@ -139,6 +139,8 @@ export function tidy(P) {
   if (["mr", "en", "both"].indexOf(P.plang) < 0) P.plang = "";
   if (["letter", "a4"].indexOf(P.ppr) < 0) P.ppr = "";
   if (P.tr !== "iast") P.tr = "simple";
+  // Keep screen on was a switch (1 on) before it took minutes (Satish, 2026-10-30): on is 30 minutes
+  if ([0, 15, 30, 45, 60].indexOf(P.wake) < 0) P.wake = P.wake ? 30 : 0;
   // a menu language's code (its file in js/strings/); one without words shows English (js/core/words.js ui())
   if (typeof P.ui !== "string" || !/^[a-z]{2,3}$/.test(P.ui)) P.ui = "en";
   return P;
