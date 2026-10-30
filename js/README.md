@@ -58,6 +58,6 @@ There is no build step: the browser loads these files as they are.
 | `print/compose.js` | Nitya Upasana's file: the texts to print, built afresh from the text files (with the script, English style, stanza numbers and line breaks) for each printout, whatever the reading page shows |
 | `print/what.js` | The print builder's What step (as Nitya Upasana's, its Library tab): the texts under वैदिक मंत्र and आरती with ticks, search, Select all and Clear (no `init()`: `features/print.js` creates it) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
-| `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js); the badge in Settings → About says when the site is saved for offline use (no message over the page: it covered the home card) |
+| `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js); the badge in Settings → About says when the site is saved for offline use (no message over the page: it covered the home card); About's version line (`#upr`: the version, under it the offline state or what Check for updates found, and the round button `#upd`, an icon for each state) and Finish the update (`#upm`, `upmInit()`: after an update saved on WebKit, the steps to close and reopen for an iPhone, an iPad or a Mac, written in the menu language) |
 
 `npm run lint` in `tests/` checks every file for mistakes, and for browser features that the oldest supported browsers (iOS 15.4) lack.
