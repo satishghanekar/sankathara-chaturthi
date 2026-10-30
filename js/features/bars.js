@@ -247,7 +247,7 @@ export function apply() {
   [].forEach.call(document.querySelectorAll(".wrap > .ash,#pv,#jl,#rail"), function (e) {
     e.setAttribute("data-lang", P.lang);
   });
-  [].forEach.call(document.querySelectorAll(".bar,#shr,#asc,#none,.libhd,.rch,#spv,#panel,#home > *,#qrm,#prm,#inm,#rsh,#szt,#szr,#fl"), function (e) {
+  [].forEach.call(document.querySelectorAll(".bar,#shr,#asc,#none,.libhd,.rch,#spv,#panel,#home > *,#qrm,#prm,#inm,#upm,#rsh,#szt,#szr,#fl"), function (e) {
     e.setAttribute("data-lang", P.ui);
   });
   // the page's own words (index.html data-w), when the menu language is not the one they show
