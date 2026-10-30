@@ -16,7 +16,9 @@ Each font is split by script the way Google serves it (`-devanagari`, `-kannada`
 | `noto-sans-kannada-kannada` | Noto Sans Kannada (variable), Kannada letters only | Kannada letters in the Standard font, and the dandas and Vedic marks in every font |
 | `noto-serif-kannada-kannada` | Noto Serif Kannada (variable) | Text font Classic, in Kannada (saved for offline on the first visit) |
 | `hubballi-kannada` | Hubballi (400) | Text font Handwritten, in Kannada (saved for offline on the first visit) |
+| `noto-sans-telugu-telugu`, `noto-sans-gujarati-gujarati` | Noto Sans Telugu, Noto Sans Gujarati (variable), their letters only | Telugu and Gujarati letters in the Standard font (kept once first used) |
+| `noto-serif-telugu-telugu`, `noto-serif-gujarati-gujarati` | Noto Serif Telugu, Noto Serif Gujarati (variable) | Text fonts Classic and Handwritten, in Telugu and Gujarati (kept once first used). The Gujarati faces have no ᳚: `js/render.js` writes it ॑॑ there |
 
 All of them are under the SIL Open Font License 1.1 (https://openfontlicense.org), which allows using and
 redistributing them with a website. Inter © The Inter Project Authors; Noto Sans Devanagari © Google LLC;
-Tiro Devanagari Marathi and Sanskrit © Tiro Typeworks Ltd.; Noto Serif, Noto Sans Kannada and Noto Serif Kannada © Google LLC; Hubballi © Erin McLaughlin; Sura © Carolina Giovagnoli; Kalam © Indian Type Foundry.
+Tiro Devanagari Marathi and Sanskrit © Tiro Typeworks Ltd.; Noto Serif, and Noto Sans and Noto Serif Kannada, Telugu and Gujarati © Google LLC; Hubballi © Erin McLaughlin; Sura © Carolina Giovagnoli; Kalam © Indian Type Foundry.

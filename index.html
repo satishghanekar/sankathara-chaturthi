@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.8.7">
+<meta name="version" content="aarti-v1.8.8">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -56,6 +56,8 @@
 <link rel="modulepreload" href="js/strings/en.js">
 <link rel="modulepreload" href="js/strings/mr.js">
 <link rel="modulepreload" href="js/strings/kn.js">
+<link rel="modulepreload" href="js/strings/te.js">
+<link rel="modulepreload" href="js/strings/gu.js">
 <link rel="modulepreload" href="js/core/strings.js">
 <link rel="modulepreload" href="js/store/migrate.js">
 <link rel="modulepreload" href="js/core/features.js">
@@ -243,6 +245,8 @@
               <button type="button" data-v="en" lang="en">English</button>
               <button type="button" data-v="mr" lang="mr">मराठी</button>
               <button type="button" data-v="kn" lang="kn">ಕನ್ನಡ</button>
+              <button type="button" data-v="te" lang="te">తెలుగు</button>
+              <button type="button" data-v="gu" lang="gu">ગુજરાતી</button>
             </div>
           </div>
           <div class="sp-row sp-stk">
@@ -408,7 +412,7 @@
       <h3>Settings</h3>
       <p>Settings has three tabs: <b>Reading</b> (the preview, the languages, text size and font, the dhrupad), <b>Screen</b> (menus, theme, high contrast, keeping the screen on) and <b>More</b> (help, Add to Home Screen, the version and updates). It opens on Reading.</p>
       <ul>
-        <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or <span lang="kn">ಕನ್ನಡ</span> (the same words in Kannada letters). Tap it to pick from a list; English is there twice, once for each spelling (see English spelling below). With Kannada the menus are in English, and the second language can be English or None.</li>
+        <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or the same words in Kannada, Telugu or Gujarati letters (<span lang="kn">ಕನ್ನಡ</span>, <span lang="te">తెలుగు</span>, <span lang="gu">ગુજરાતી</span>). Tap it to pick from a list; English is there twice, once for each spelling (see English spelling below). With Kannada, Telugu or Gujarati letters the second language can be English or None.</li>
         <li><b>Second language:</b> shown smaller, under each line, when <b>Show</b> (or Language under Aa) is set to both. Pick the other language, or <b>None</b> to read in one language only. Picking your second language as the main one swaps the two.</li>
         <li><b>Show:</b> the main language, the second, or both together (the same as Language under Aa).</li>
         <li><b>Menus and buttons</b> (Screen tab): English or मराठी, for the date card, buttons and settings (shown only with Marathi as the main language; otherwise menus are in English).</li>
