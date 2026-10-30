@@ -1,7 +1,7 @@
 // @ts-check
 // The menu words in Marathi (मराठी), every part's under its name, as in js/strings/en.js (js/core/strings.js).
 
-import { dv, num } from "../core/words.js";
+import { DAYS, dv, MONTHS, num } from "../core/words.js";
 
 export default {
   // The print builder's What step: Texts, Today, Routine (js/print/what.js)
@@ -210,5 +210,86 @@ export default {
   },
   language: {
     name: "मराठी",
+  },
+  sankashti: {
+    /** @param {number} wd @param {number} d @param {number} m @param {number} y */
+    day: function (wd, d, m, y) {
+      return DAYS.mr[wd] + ", " + dv(d) + " " + MONTHS.mr[m] + (y ? " " + dv(y) : "");
+    },
+    /** @param {number} h @param {string} mi */
+    time: function (h, mi) {
+      return (h >= 20 || h < 4 ? "रात्री " : h >= 16 ? "सायं. " : "") + dv(((h + 11) % 12) + 1) + ":" + dv(mi);
+    },
+    late: " (मध्यरात्रीनंतर)",
+    yourPlace: "तुमचे ठिकाण",
+    /** @param {string} place */
+    near: function (place) {
+      return place + " जवळ";
+    },
+    noGeo: "हे ब्राउझर ठिकाण देऊ शकत नाही",
+    noPlace: "ठिकाण मिळाले नाही",
+  },
+  card: {
+    next: "पुढील संकटहर चतुर्थी",
+    useLocation: "तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा",
+    heads: {
+      today: "आज संकटहर चतुर्थी",
+      tomorrow: "उद्या संकटहर चतुर्थी",
+      next: "पुढील चतुर्थी",
+      previous: "मागील संकटहर चतुर्थी",
+      upcoming: "आगामी संकटहर चतुर्थी",
+    },
+    /** @param {string} t */
+    angaraki: function (t) {
+      return t.indexOf("संकटहर") >= 0 ? t.replace("संकटहर", "अंगारकी संकटहर") : t.replace("चतुर्थी", "अंगारकी चतुर्थी");
+    },
+    /** @param {string} date */
+    today: function (date) {
+      return "आज: " + date;
+    },
+    /** @param {number} wd @param {number} d @param {number} m @param {number} y */
+    fullDate: function (wd, d, m, y) {
+      return DAYS.mr[wd] + ", " + dv(d) + " " + MONTHS.mr[m] + " " + dv(y);
+    },
+    monthsShort: ["जाने.", "फेब्रु.", "मार्च", "एप्रि.", "मे", "जून", "जुलै", "ऑग.", "सप्टें.", "ऑक्टो.", "नोव्हें.", "डिसें."],
+    /** @param {number} d @param {number} m @param {number} y @param {number} wd */
+    chip: function (d, m, y, wd) {
+      return (
+        dv(d) +
+        " " +
+        ["जाने.", "फेब्रु.", "मार्च", "एप्रि.", "मे", "जून", "जुलै", "ऑग.", "सप्टें.", "ऑक्टो.", "नोव्हें.", "डिसें."][m] +
+        " " +
+        dv(y) +
+        ", " +
+        DAYS.mr[wd]
+      );
+    },
+    chipAng: ", अंगारकी",
+    more: "आणखी तारखा",
+    dates: "संकटहर चतुर्थीच्या तारखा",
+    back: "↩ पुढील संकटहर चतुर्थीवर परत",
+    addAll: "सर्व पुढील तारखा कॅलेंडरमध्ये जोडा",
+    addOne: "कॅलेंडरमध्ये जोडा",
+    /** @param {number} n */
+    inDays: function (n) {
+      return dv(n) + " दिवसांनी";
+    },
+    /** @param {string} time */
+    moonrise: function (time) {
+      return "चंद्रोदय " + time;
+    },
+    useMy: "माझे ठिकाण वापरा",
+    updateMy: "माझे ठिकाण बदला",
+    open: "कार्ड उघडा",
+    fold: "कार्ड मिटवा",
+    folded: "कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा",
+    poojaAt: "आज पूजा सायं. ७:०० वाजता",
+    poojaNow: "पूजा सुरू आहे",
+    /** @param {number} h @param {number} m */
+    moonIn: function (h, m) {
+      return "चंद्रोदयाला " + (h > 0 ? dv(h) + " तास " : "") + dv(m) + " मिनिटे";
+    },
+    downloadedOne: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",
+    downloadedAll: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",
   },
 };

@@ -292,7 +292,9 @@ button[aria-pressed="true"] {
 :root {
   --lat: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
-[data-lang="en"] .mr,
+/* the Marathi part shows in Marathi and in both; in English or any other menu language (js/strings/), the English
+   part does, as nameLang() picks (js/core/words.js) */
+[data-lang]:not([data-lang="mr"], [data-lang="both"]) .mr,
 [data-lang="mr"] .en {
   display: none !important;
 }
