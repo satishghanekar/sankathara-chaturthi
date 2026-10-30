@@ -81,7 +81,6 @@ export default {
     update: { check: "Check for updates", busy: "Checking…", ok: "Up to date", off: "No internet", restart: "Close and reopen" },
     usingSaved: "No internet. Using the saved copy.",
     loading: "New version, loading…",
-    ready: "Ready to use offline",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "Updated to " + v + ". Close the app and open it again to finish.";
@@ -298,6 +297,17 @@ export default {
     back: "↩ Back to next Sankathara Chaturthi",
     addAll: "Add all upcoming dates to calendar",
     addOne: "Add to calendar",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return n + " days";
+    },
+    ringToday: "Today",
+    ringTomorrow: "Tomorrow",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "Yesterday" : n + " days ago";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return "in " + n + " days";
@@ -311,11 +321,9 @@ export default {
     open: "Open the card",
     fold: "Fold the card",
     folded: "Card folded · tap its line to open it",
-    poojaAt: "Pooja today at 7:00 pm",
-    poojaNow: "Pooja in progress",
-    /** "Moonrise in 2 h 10 min" @param {number} h the hours, or 0 @param {number} m */
-    moonIn: function (h, m) {
-      return "Moonrise in " + (h > 0 ? h + " h " : "") + m + " min";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return "in " + (h > 0 ? h + " h " : "") + m + " min";
     },
     downloadedOne: "Calendar file downloaded; open it to add the event",
     downloadedAll: "Calendar file downloaded; open it to add the events",

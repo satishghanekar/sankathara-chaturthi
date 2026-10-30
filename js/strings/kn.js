@@ -86,7 +86,6 @@ export default {
     },
     usingSaved: "ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ. ಉಳಿಸಿದ ಪ್ರತಿಯನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ.",
     loading: "ಹೊಸ ಆವೃತ್ತಿ, ತೆರೆಯುತ್ತಿದೆ…",
-    ready: "ಆಫ್‌ಲೈನ್ ಬಳಕೆಗೆ ಸಿದ್ಧ",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "ಆವೃತ್ತಿ " + v + " ಉಳಿಸಲಾಗಿದೆ. ಪೂರ್ಣಗೊಳಿಸಲು ಆ್ಯಪ್ ಮುಚ್ಚಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.";
@@ -299,6 +298,17 @@ export default {
     back: "↩ ಮುಂದಿನ ಸಂಕಟಹರ ಚತುರ್ಥಿಗೆ ಹಿಂತಿರುಗಿ",
     addAll: "ಮುಂಬರುವ ಎಲ್ಲ ದಿನಾಂಕಗಳನ್ನು ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
     addOne: "ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return n + " ದಿನ";
+    },
+    ringToday: "ಇಂದು",
+    ringTomorrow: "ನಾಳೆ",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "ನಿನ್ನೆ" : n + " ದಿನಗಳ ಹಿಂದೆ";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return n + " ದಿನಗಳಲ್ಲಿ";
@@ -312,11 +322,9 @@ export default {
     open: "ಕಾರ್ಡ್ ತೆರೆಯಿರಿ",
     fold: "ಕಾರ್ಡ್ ಮಡಚಿ",
     folded: "ಕಾರ್ಡ್ ಮಡಚಲಾಗಿದೆ · ತೆರೆಯಲು ಅದರ ಸಾಲನ್ನು ಒತ್ತಿ",
-    poojaAt: "ಇಂದು ಸಂಜೆ 7:00 ಕ್ಕೆ ಪೂಜೆ",
-    poojaNow: "ಪೂಜೆ ನಡೆಯುತ್ತಿದೆ",
-    /** @param {number} h @param {number} m */
-    moonIn: function (h, m) {
-      return "ಚಂದ್ರೋದಯಕ್ಕೆ " + (h > 0 ? h + " ಗಂ " : "") + m + " ನಿಮಿಷ";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return (h > 0 ? h + " ಗಂ " : "") + m + " ನಿಮಿಷದಲ್ಲಿ";
     },
     downloadedOne: "ಕ್ಯಾಲೆಂಡರ್ ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ; ಘಟನೆಯನ್ನು ಸೇರಿಸಲು ಅದನ್ನು ತೆರೆಯಿರಿ",
     downloadedAll: "ಕ್ಯಾಲೆಂಡರ್ ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ; ಘಟನೆಗಳನ್ನು ಸೇರಿಸಲು ಅದನ್ನು ತೆರೆಯಿರಿ",

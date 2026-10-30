@@ -34,19 +34,11 @@
   .sp-prev {
     background: var(--surface);
   }
-  .top .hero {
-    background: linear-gradient(180deg, var(--hdr), transparent);
+  .skc.today {
+    box-shadow: 0 0 0 3px var(--hdr);
   }
-  #iconb img {
-    filter: drop-shadow(0 0 8px var(--gold));
-  }
-  .skc {
-    background: var(--surface);
-    border-color: var(--gold);
-  }
-  .skc .skd .skin {
-    border: 1px solid var(--gold);
-    background: var(--surface);
+  .skc.today .skrs {
+    filter: drop-shadow(0 0 6px var(--gold));
   }
   .skc .skch.on {
     box-shadow:
