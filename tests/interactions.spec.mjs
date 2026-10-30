@@ -169,11 +169,17 @@ test("the evening's list follows the menu language @mobile", async ({ page }) =>
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("संस्कृत", { useInnerText: true });
 });
 
-test("the evening's list is in Kannada letters when they are chosen @mobile", async ({ page }) => {
-  await openSite(page, SETUPS.kannada);
-  await expect(page.locator("#tsh span").first()).toHaveText("ಸಂಧ್ಯಾಕಾಳ");
-  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("ಸುಖಕರ್ತಾ ದುಃಖಹರ್ತಾ");
-});
+// the same words in Kannada, Telugu or Gujarati letters (js/render.js SCRIPTS), as Nitya Upasana shows them
+for (const [setup, head, title] of [
+  ["kannada", "ಸಂಧ್ಯಾಕಾಳ", "ಸುಖಕರ್ತಾ ದುಃಖಹರ್ತಾ"],
+  ["telugu", "సంధ్యాకాళ", "సుఖకర్తా దుఃఖహర్తా"],
+  ["gujarati", "સંધ્યાકાળ", "સુખકર્તા દુઃખહર્તા"],
+])
+  test(`the evening's list is in ${setup} letters when they are chosen @mobile`, async ({ page }) => {
+    await openSite(page, SETUPS[setup]);
+    await expect(page.locator("#tsh span").first()).toHaveText(head);
+    await expect(page.locator("#tsl .t1").nth(1)).toHaveText(title);
+  });
 
 test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
@@ -329,13 +335,56 @@ test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kanna
   await expect(page.locator("#rsb [data-w]")).toHaveAttribute("lang", "kn");
   await page.locator("#aa").click();
   await page.locator('#spv button[data-v="screen"]').click();
-  await expect(page.locator("#su button")).toHaveText(["English", "मराठी", "ಕನ್ನಡ"]);
+  await expect(page.locator("#su button")).toHaveText(["English", "मराठी", "ಕನ್ನಡ", "తెలుగు", "ગુજરાતી"]);
   await expect(page.locator('#su button[data-v="kn"]')).toHaveAttribute("aria-pressed", "true");
   // back to English, at once
   await page.locator('#su button[data-v="en"]').click();
   await page.locator("#xc").click();
   await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
 });
+
+// Each script's own faces for each text font (css/09-settings-page.css --ks, --kc, --kh): Standard, Classic, and for
+// Handwritten Hubballi for Kannada, the Classic face for Telugu and Gujarati; the Atharvashirsha (#p1) keeps a face
+// that draws its Vedic marks
+for (const [setup, sans, classic, hand] of [
+  ["kannada", "Noto Sans Kannada", "SC Kn Classic", "SC Kn Hand"],
+  ["telugu", "Noto Sans Telugu", "SC Te Classic", "SC Te Classic"],
+  ["gujarati", "Noto Sans Gujarati", "SC Gu Classic", "SC Gu Classic"],
+])
+  for (const [fnt, aarti, vedic] of [
+    ["std", sans, sans],
+    ["classic", classic, classic],
+    ["hand", hand, sans],
+  ])
+    test(`${setup} letters in the ${fnt} text font: their own faces`, async ({ page }) => {
+      await openSite(page, { ...SETUPS[setup], fnt });
+      await buildAll(page);
+      const first = (sel) =>
+        page
+          .locator(sel)
+          .first()
+          .evaluate((e) => getComputedStyle(e).fontFamily.split(",")[0].replace(/"/g, ""));
+      expect(await first(".ash:not(#p1) .verse .mr p")).toBe(aarti);
+      expect(await first("#p1 .verse .mr p")).toBe(vedic);
+    });
+
+// Marathi menus go with Marathi letters: picking Kannada, Telugu or Gujarati letters turns them into that language's;
+// other menus stay as they are whatever the letters (as in Nitya Upasana)
+for (const [from, pick, want] of [
+  ["mr", "kn", "ಓದು"],
+  ["mr", "te", "పఠనం"],
+  ["mr", "gu", "વાંચન"],
+  ["kn", "gu", "ಓದು"],
+  ["en", "te", "Reading"],
+])
+  test(`${from} menus, then ${pick} letters picked in Settings: the menus follow the rule`, async ({ page }) => {
+    await openSite(page, { ...SETUPS.marathi, ui: from });
+    await page.locator("#aa").click();
+    await page.locator("#sl1s").selectOption(pick);
+    await page.locator("#xc").click();
+    await expect(page.locator("#rsb")).toHaveAccessibleName(want);
+    expect((await prefs(page)).ind).toBe(pick);
+  });
 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
 test("Aa opens the reading sheet: language, text size and dhrupad, then Escape closes it @mobile", async ({ page }) => {

@@ -430,33 +430,59 @@ html[data-sp] {
   }
 }
 
-/* ==== Kannada letters: the original text when it is shown in Kannada letters (html[data-scr="kn"], set by js/render.js),
-   and the word ಕನ್ನಡ wherever it appears (the language pages in Settings, Help) ==== */
-html[data-scr="kn"] .mr,
-html[data-scr="kn"] .mr *,
-html[data-scr="kn"] #home .nm,
-html[data-scr="kn"] #home .hl1,
-html[data-scr="kn"] #bt[data-tl="mr"] #btt,
-[lang="kn"]:not(html):not(.ash) {
-  font-family: "Noto Sans Kannada", var(--body) !important;
+/* ==== Kannada, Telugu and Gujarati letters: the original text when it is shown in those letters (html[data-scr], set
+   by js/render.js), and each language's name wherever it appears (the language pages in Settings, Help). Each
+   script's own faces (css/00-fonts.css): --ks for Standard, --kc for Classic, --kh for Handwritten (Hubballi for
+   Kannada; Telugu and Gujarati keep their Classic face). The dandas and Vedic accent marks come from the same face as
+   the letter they sit on ==== */
+html[data-scr="kn"],
+[lang="kn"],
+[data-lang="kn"] {
+  --ks: "Noto Sans Kannada";
+  --kc: "SC Kn Classic";
+  --kh: "SC Kn Hand";
 }
-/* the chosen text font (Settings → Text font) for the Kannada texts, the piece titles, the Contents list and the
-   Settings preview (the home card, section rows and menus keep the standard font); the Atharvashirsha keeps a font
-   with its Vedic accent marks (Noto Sans Kannada, or Noto Serif Kannada for Classic) */
-:root[data-font="classic"] {
-  --kf: "SC Kn Classic";
-  --kv: "SC Kn Classic";
+html[data-scr="te"],
+[lang="te"],
+[data-lang="te"] {
+  --ks: "Noto Sans Telugu";
+  --kc: "SC Te Classic";
+  --kh: "SC Te Classic";
 }
-:root[data-font="hand"] {
-  --kf: "SC Kn Hand";
+html[data-scr="gu"],
+[lang="gu"],
+[data-lang="gu"] {
+  --ks: "Noto Sans Gujarati";
+  --kc: "SC Gu Classic";
+  --kh: "SC Gu Classic";
 }
-html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) .ash .mr * {
-  font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
+html[data-scr] .mr,
+html[data-scr] .mr *,
+html[data-scr] #home .nm,
+html[data-scr] #home .hl1,
+html[data-scr] #bt[data-tl="mr"] #btt,
+:is([lang="kn"], [lang="te"], [lang="gu"]):not(html):not(.ash) {
+  font-family: var(--ks), var(--body) !important;
 }
-html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr,
-html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
-  font-family: var(--kv, "Noto Sans Kannada"), "Noto Sans Kannada", var(--body) !important;
+/* the chosen text font (Settings → Text font) for these texts, the piece titles, the Contents list and the Settings
+   preview (the home card, section rows and menus keep the standard font): --kf, taken on each element from its own
+   script's faces; the Atharvashirsha keeps a face with its Vedic accent marks (--kv: the Classic one, else Standard) */
+:root[data-font="classic"],
+:root[data-font="classic"] [lang] {
+  --kf: var(--kc);
+  --kv: var(--kc);
+}
+:root[data-font="hand"],
+:root[data-font="hand"] [lang] {
+  --kf: var(--kh);
+}
+html[data-scr][data-font]:not([data-font="std"]) .ash .mr,
+html[data-scr][data-font]:not([data-font="std"]) .ash .mr * {
+  font-family: var(--kf), var(--ks), var(--body) !important;
+}
+html[data-scr][data-font]:not([data-font="std"]) #p1 .mr,
+html[data-scr][data-font]:not([data-font="std"]) #p1 .mr * {
+  font-family: var(--kv, var(--ks)), var(--ks), var(--body) !important;
 }
 
 /* ==== The preview at the top of Settings → Reading, as in Nitya Upasana (its 09-settings-page.css): one line of the
@@ -561,13 +587,13 @@ html[data-scr="kn"][data-font]:not([data-font="std"]) #p1 .mr * {
       linear-gradient(to right, transparent, #000 6px, #000 calc(100% - 6px), transparent), linear-gradient(to bottom, #000 calc(100% - 6px), transparent);
   }
 }
-html[data-scr="kn"][data-font]:not([data-font="std"]) .sp-pw [lang="kn"] {
-  font-family: var(--kf), "Noto Sans Kannada", var(--body) !important;
+html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="te"], [lang="gu"]) {
+  font-family: var(--kf), var(--ks), var(--body) !important;
 }
 
-/* Kannada menus (Settings → Menus and buttons → ಕನ್ನಡ): the words the scripts write into the bar, the menus and the
-   dialogs, which carry the menu language as data-lang (js/features/bars.js apply()). The page's own words take
-   lang="kn" and the rule above. Its unicode-range keeps the Marathi and English in them in their own fonts. */
-[data-lang="kn"]:not(.ash) {
-  font-family: "Noto Sans Kannada", var(--body);
+/* Kannada, Telugu and Gujarati menus (Settings → Menus and buttons): the words the scripts write into the bar, the menus
+   and the dialogs, which carry the menu language as data-lang (js/features/bars.js apply()). The page's own words take
+   their lang and the rule above. The faces' unicode-range keeps the Marathi and English in them in their own fonts. */
+:is([data-lang="kn"], [data-lang="te"], [data-lang="gu"]):not(.ash) {
+  font-family: var(--ks), var(--body);
 }
