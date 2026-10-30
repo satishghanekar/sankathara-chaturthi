@@ -9,7 +9,7 @@ Automation covers the engines (Chromium, Firefox, WebKit) and emulated phones an
 | iPhone (current iOS) | Safari | Open, Add to Home Screen, open from the icon, turn on Airplane mode and reopen. Print → Save as PDF in Portrait and in Landscape; every text starts on a new page; From the Home Screen app, Print goes to Open in Safari, and the choices carry over. |
 | iPhone with a notch or Dynamic Island | Safari | **Pinch** (the tests can only simulate it in Chromium): on a verse the text grows and shrinks and the page never zooms; on the home card nothing happens; the size bubble and then Default size appear below the top bar, also at the very end of a piece, and Default size can be tapped. Turn the phone sideways: Help's ✕, the picture's ✕ and the bottom bar buttons are clear of the notch. |
 | iPhone | WhatsApp link preview and in-app viewer | The preview shows the picture and title; the page opens and reads. |
-| Older iPad or iPhone on iOS 15 | Safari | Home card, Settings switches (on/off visible), date strip, search highlight all show their colours. |
+| Older iPad or iPhone on iOS 15 | Safari | Home card and its ring, Settings switches (on/off visible), More dates, search highlight all show their colours. |
 | Android phone | Chrome | Install from the App button; reopen offline; pinch; Print → Save as PDF (A4). Settings → More → About shows "v1.2 · Offline ready"; a tap on it shows Checking…, then Up to date. |
 | Android phone | Samsung Internet | Opens and reads; Settings; dark theme. |
 | Windows PC | Edge | Two columns and the side menu sit centred (the scrollbar doesn't push them); Ctrl + / −; Print (Letter) in Portrait and in Landscape. Settings → Accessibility → Contrast themes on: buttons, icons and the focus ring stay visible. |
