@@ -176,6 +176,8 @@ export default {
     dark: "ముదురు",
     highContrast: "అధిక కాంట్రాస్ట్",
     keepScreenOn: "తెరను ఆన్‌లో ఉంచు",
+    afterLastTouch: "చివరి స్పర్శ తర్వాత, నిమిషాలు",
+    off: "ఆఫ్",
     about: "గురించి",
     helpAndHowToUse: "సహాయం, వాడే విధానం",
     addToHomeScreen: "హోమ్ స్క్రీన్‌కు జోడించు",
