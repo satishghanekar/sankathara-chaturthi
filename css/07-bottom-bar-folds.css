@@ -406,12 +406,6 @@
     margin-bottom: 2px;
     padding-bottom: 3px;
   }
-  .skc .skm {
-    row-gap: 0;
-  }
-  .skc .skp.own {
-    margin-top: -2px;
-  }
   .skc .sks {
     margin-top: 4px;
     padding: 8px 6px 7px;
@@ -813,7 +807,7 @@ html[data-asb="1"] {
 /* the ring: the picture inside it, the count under it */
 .skc .skr {
   grid-column: 1;
-  grid-row: 1 / span 3;
+  grid-row: 1 / span 4;
   text-align: center;
 }
 .skc .skrw {
@@ -914,43 +908,79 @@ html[data-asb="1"] {
 #home.skn .skc[data-lang="en"] .skd {
   font: 600 24px/1.2 var(--lat);
 }
-/* the chips: on the day the time left first, then the moonrise and the place */
+/* under the date (Satish, 2026-10-30): the month line, then the moonrise and the place, one line each beside the ring,
+   so the card is the same height whatever the place is called; a long name ends in "…" */
+.skc .skpn {
+  grid-column: 2;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font: 500 14px/1.35 var(--body);
+}
+.skc .skpn[lang="en"] {
+  font-family: var(--lat);
+  font-size: 13px;
+}
 .skc .skm,
 #home.skn .skc .skm,
 #home.pday .skc.today .skm {
-  grid-column: 1 / -1;
+  grid-column: 2;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 6px;
-  margin: 12px 0 0;
-  font-size: 13.5px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  margin: 6px 0 0;
+  font-size: 14px;
 }
 .skc .skm > .skmr,
 .skc .skm > .skp,
 #home.pday .skc.today .skm > .skp {
-  display: inline-flex;
-  flex-basis: auto;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  min-height: 34px;
+  gap: 7px;
+  min-width: 0;
+  min-height: 30px;
   margin: 0;
-  padding: 0 9px;
-  border: 1px solid var(--hdrl);
-  border-radius: 99px;
-  background: var(--bg);
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--ink);
-  font: 500 13px/1.2 var(--lat);
+  font: 400 14.5px/1.3 var(--lat);
+  text-align: left;
+}
+.skc .skm > .skmr {
+  flex-wrap: wrap;
+  column-gap: 7px;
+}
+.skc .skm > .skmr svg {
+  flex: none;
+  color: var(--gold);
+}
+/* the place: the whole line is the button, 44px tall to tap, without making the card taller */
+.skc .skm > .skp {
+  width: 100%;
+  min-height: 44px;
+  margin: -7px 0 -7px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.skc .skm > .skp svg {
+  flex: none;
+  color: var(--accent);
+}
+.skc .skm .skpl {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
-.skc .skm > .skp {
-  padding-right: 0;
+.skc .skm > .skp:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+  border-radius: 8px;
 }
-.skc .skm > .skp .skli {
-  margin: 0;
-}
-/* on the day itself (.hot): the moonrise lit, the time left before it in its chip, and the place outlined; the rest
-   of the card as on any day (Satish, 2026-10-30) */
+/* on the day itself (.hot): the moonrise lit, the time left before it after it, and the place in the accent colour;
+   the rest of the card as on any day (Satish, 2026-10-30) */
 .skc .skm .skcd,
 #home.pday .skc.today .skcd {
   margin: 0;
@@ -964,24 +994,13 @@ html[data-asb="1"] {
 .skc .skm .mr {
   font-family: var(--body);
 }
-.skc .skm .skdt {
-  display: none;
-}
-.skc .skm > .skmr.hot {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--bg);
-  font-weight: 600;
-  box-shadow:
-    0 0 0 2px var(--surface),
-    0 0 0 3.5px var(--accent);
-}
+.skc .skm > .skmr.hot,
 .skc .skm > .skmr.hot svg {
-  color: var(--bg);
+  color: var(--accent);
+  font-weight: 600;
 }
 .skc .skm > .skp.hot,
 #home.pday .skc.today .skm > .skp.hot {
-  border-color: var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
@@ -1046,15 +1065,9 @@ html[data-asb="1"] {
 .skc #skall {
   margin: 4px auto 6px;
 }
-/* Large phones, tablets and desktops: the chips beside the ring, under the date, and the foot's two buttons together
-   on the left, rather than spread across a wide card */
+/* Large phones, tablets and desktops: the foot's two buttons together on the left, rather than spread across a wide
+   card */
 @media (min-width: 600px) {
-  .skc .skm,
-  #home.skn .skc .skm,
-  #home.pday .skc.today .skm {
-    grid-column: 2;
-    margin-top: 10px;
-  }
   .skc .skft {
     margin-top: 14px;
     padding: 0 6px;

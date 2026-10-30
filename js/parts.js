@@ -46,6 +46,8 @@ var SITE_PARTS = (function () {
     "text/iast",
     "text/layout",
     "features/astronomy",
+    "core/panchang-names",
+    "core/panchang",
     "features/date-card",
     "text/dhrupad-markers",
     "text/stanza-numbers",

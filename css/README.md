@@ -22,7 +22,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `04-columns-rail.css` | Wide screens: two stanza columns, piece and stanza numbers, both languages side by side, and the left contents menu (`#rail`). |
 | `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament, fade-in, and the dhrupad markers. |
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
-| `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the home card in one piece (the picture in its countdown ring, the date, chips and foot; its last rules) and the reading sheet (Aa). |
+| `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the home card in one piece (the picture in its countdown ring; beside it the date, the month line, the moonrise and the place; the foot; its last rules) and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
 | `09-settings-page.css` | The Settings page and Kannada, Telugu and Gujarati letters (each script's faces as `--ks`, `--kc`, `--kh`). |
 | `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |

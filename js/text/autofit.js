@@ -3,7 +3,6 @@
 
 import { root, secs } from "../core/page.js";
 import { LEAD, P, dfs, phoneBoost } from "../core/state.js";
-import { skDot } from "../features/date-card.js";
 import { ZW } from "./line-breaks.js";
 
 var VW, MQL, FR, CW, MQP;
@@ -209,10 +208,6 @@ function fontsIn() {
   fontN = n;
   autoFs();
   pullSoon();
-  // the date card's chips may wrap differently in the arrived font
-  try {
-    skDot();
-  } catch (e) {}
 }
 
 // The fonts in place at start-up (a repeat visit) need no second fit (js/core/startup.js); fontsIn() handles any that
