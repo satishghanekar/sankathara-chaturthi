@@ -459,6 +459,8 @@ test("the month line names an adhika month @mobile", async ({ page }) => {
 // Sankashti day (28 Oct 2026 in Columbus): the card opens on tonight's moonrise; the date strip, the calendar
 // links wait under More dates
 test("on Sankashti day the card leads with moonrise, and More dates opens the rest @mobile", async ({ page }) => {
+  // (a phone: desktops show the dates beside the card, with no More dates)
+  await page.setViewportSize({ width: 390, height: 844 });
   await openSite(page, SETUPS.marathi, { now: new Date("2026-10-28T17:30:00-04:00") });
   await expect(page.locator("#home")).toHaveClass(/\bpday\b/);
   // the card as on any day, its moonrise lit with the time left, the place outlined, the ring full; no pooja line
@@ -475,12 +477,15 @@ test("on Sankashti day the card leads with moonrise, and More dates opens the re
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
-  await expect(page.locator("#skall")).toBeVisible();
+  // Add all in the foot, in Add to calendar's place, while More dates is open
+  await expect(page.locator("#skc .skft #skall")).toBeVisible();
+  await expect(page.locator("#skcal")).toBeHidden();
 });
 
 // Other days: the card leads with the next Chaturthi date and its moonrise too, with the date strip under More dates
 test("on other days the card leads with the next Chaturthi date, and More dates opens the strip @mobile", async ({ page }) => {
-  // (in the menu language: English here, Marathi with Marathi menus)
+  // (in the menu language: English here, Marathi with Marathi menus; a phone)
+  await page.setViewportSize({ width: 390, height: 844 });
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#home")).not.toHaveClass(/\bpday\b/);
   await expect(page.locator("#skc .skh").first()).toHaveText(/^(Angaraki )?Next Chaturthi date$/);
@@ -498,6 +503,74 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   const mr = await page.context().newPage();
   await openSite(mr, SETUPS["marathi-menus"]);
   await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
+});
+
+// More dates (Satish, 2026-10-30), on a phone: a date in another year keeps the large date on one line, its year on
+// the month line; "↩ Next date" sits at the end of today's line, not on a line of its own; Add all to calendar takes
+// Add to calendar's place in the foot while More dates is open, so it needs no line under the strip either
+test("More dates on a phone: the year on the month line, Next date beside today's, Add all in the foot @mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openSite(page, SETUPS.marathi, { now: new Date("2026-10-30T09:00:00-04:00") });
+  await expect(page.locator("#skcal")).toBeVisible();
+  await expect(page.locator("#skall")).toBeHidden();
+  await page.locator("#skmore").click();
+  await expect(page.locator("#skall")).toBeVisible();
+  await expect(page.locator("#skcal")).toBeHidden();
+  await expect(page.locator("#skb")).toBeHidden();
+  const line = page.locator("#skc .sktd");
+  const lineH = await line.evaluate((e) => e.getBoundingClientRect().height);
+  // 25 Jan 2027, two dates on
+  await page.locator('#skc .skch[aria-label^="25 Jan 2027"]').click();
+  await expect(page.locator("#skc .skd")).toHaveText("Mon, Jan 25");
+  await expect(page.locator("#skc .skpn")).toHaveText("Paush Krishna Chaturthi · 2027");
+  const one = await page.locator("#skc .skd").evaluate((e) => e.getBoundingClientRect().height < parseFloat(getComputedStyle(e).fontSize) * 2);
+  expect(one).toBe(true);
+  // Next date at the end of today's line, which keeps its height
+  const back = page.locator("#skc .sktd #skb");
+  await expect(back).toBeVisible();
+  await expect(back).toHaveText("↩ Next date");
+  expect(await line.evaluate((e) => e.getBoundingClientRect().height)).toBe(lineH);
+  await back.click();
+  await expect(page.locator("#skc .skd")).toHaveText("Fri, Nov 27");
+  await expect(page.locator("#skc .skpn")).toHaveText("Kartik Krishna Chaturthi");
+  await expect(back).toBeHidden();
+  // the old lines under the strip are gone
+  await expect(page.locator("#skc")).not.toContainText("Back to next");
+  await expect(page.locator("#skc")).not.toContainText("upcoming dates");
+});
+
+// iPads (600px and wider): under More dates every date at once, a row a year with its label, no strip to scroll;
+// last year's dates behind "Last year's dates"
+test("More dates on an iPad: a row a year, last year's behind a link", async ({ page }) => {
+  await page.setViewportSize({ width: 820, height: 1180 });
+  await openSite(page, SETUPS.marathi, { now: new Date("2026-10-30T09:00:00-04:00") });
+  await page.locator("#skmore").click();
+  const years = page.locator("#skc .skyr:not(.old) .sky");
+  await expect(years).toHaveText(["2026", "2027"]);
+  expect(await page.locator("#skc .sks").evaluate((s) => s.scrollWidth <= s.clientWidth)).toBe(true);
+  await expect(page.locator("#skc .skyr.old")).toBeHidden();
+  const old = page.locator("#skold");
+  await expect(old).toHaveText("‹ Last year's dates");
+  await expect(old).toHaveAttribute("aria-expanded", "false");
+  await old.click();
+  await expect(old).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#skc .skyr.old .sky")).toHaveText("2025");
+});
+
+// Desktops (1100px and wider): the dates beside the card's details, always shown; no More dates, and the foot has
+// both Add to calendar and Add all to calendar
+test("on a desktop the dates sit beside the card, always open", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openSite(page, SETUPS.marathi, { now: new Date("2026-10-30T09:00:00-04:00") });
+  await expect(page.locator("#skmore")).toBeHidden();
+  await expect(page.locator("#skc .sks")).toBeVisible();
+  await expect(page.locator("#skc .sktd")).toBeVisible();
+  await expect(page.locator("#skcal")).toBeVisible();
+  await expect(page.locator("#skall")).toBeVisible();
+  const dates = await page.locator("#skc .skdp").boundingBox();
+  const details = await page.locator("#skc .skd").boundingBox();
+  expect(dates.x).toBeGreaterThan(details.x + details.width);
+  expect(dates.y).toBeLessThan(details.y + details.height);
 });
 
 // The card in one piece (Satish, 2026-10-30): the picture in a ring that fills as the next Sankathara Chaturthi comes

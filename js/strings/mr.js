@@ -282,8 +282,9 @@ export default {
     chipAng: ", अंगारकी",
     more: "आणखी तारखा",
     dates: "संकटहर चतुर्थीच्या तारखा",
-    back: "↩ पुढील संकटहर चतुर्थीवर परत",
-    addAll: "सर्व पुढील तारखा कॅलेंडरमध्ये जोडा",
+    back: "↩ पुढील तारीख",
+    addAll: "सर्व कॅलेंडरमध्ये जोडा",
+    older: "‹ मागील वर्षाच्या तारखा",
     addOne: "कॅलेंडरमध्ये जोडा",
     // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
     /** @param {number} n */
