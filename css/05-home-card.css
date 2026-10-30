@@ -327,25 +327,6 @@
   margin: -6px -8px -6px 2px;
   vertical-align: -3px;
 }
-/* Pin button after the place name: use / update my location */
-.skc .skli {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: -6px -4px -6px -2px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: none;
-  color: var(--accent);
-  cursor: pointer;
-}
-.skc .skm .skli svg {
-  color: inherit;
-}
-.skc .skli:focus-visible,
 .skc #skb:focus-visible,
 .skc #skall:focus-visible {
   outline: 2px solid var(--ink);
@@ -390,10 +371,6 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-}
-.skc .skp.own {
-  flex-basis: 100%;
-  justify-content: center;
 }
 .skc .skl {
   background: none;

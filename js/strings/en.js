@@ -320,7 +320,6 @@ export default {
     updateMy: "Update my location",
     open: "Open the card",
     fold: "Fold the card",
-    folded: "Card folded · tap its line to open it",
     /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
     moonLeft: function (h, m) {
       return "in " + (h > 0 ? h + " h " : "") + m + " min";

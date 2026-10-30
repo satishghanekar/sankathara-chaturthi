@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.8.13">
+<meta name="version" content="aarti-v1.8.14">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -64,6 +64,8 @@
 <link rel="modulepreload" href="js/text/iast.js">
 <link rel="modulepreload" href="js/text/layout.js">
 <link rel="modulepreload" href="js/features/astronomy.js">
+<link rel="modulepreload" href="js/core/panchang-names.js">
+<link rel="modulepreload" href="js/core/panchang.js">
 <link rel="modulepreload" href="js/features/date-card.js">
 <link rel="modulepreload" href="js/text/dhrupad-markers.js">
 <link rel="modulepreload" href="js/text/stanza-numbers.js">
@@ -413,7 +415,8 @@
       <h3>The date card</h3>
       <ul>
         <li>Shows today's date, the next Sankathara Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankathara Chaturthi (on a Tuesday) is marked.</li>
-        <li><b>Pin</b> (after the place name, or <b>📍 Use my location</b>): tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
+        <li>Under the date, its month in the Marathi calendar (<b>Kartik Krishna Chaturthi</b>, कार्तिक वद्य चतुर्थी; अधिक when it is an extra month), then the moonrise and the place.</li>
+        <li><b>The place</b> (with its pin, or <b>📍 Use my location</b>): tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
         <li><b>The picture:</b> tap the Ganesha picture on the card to see it full screen. Pinch or double-tap to zoom, drag to look around; ✕, Back or a tap outside closes it.</li>
         <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap beside the picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
         <li><b>Fold what you don't need:</b> a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. The <b>Fold all</b> / <b>Open all</b> button on the <b>आरती / Aarti</b> heading folds or opens every aarti at once. Your phone remembers these. Going to a folded piece from the Library or search opens it.</li>

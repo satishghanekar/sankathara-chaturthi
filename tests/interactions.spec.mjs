@@ -421,8 +421,39 @@ test("home card folds to one line and opens again @mobile", async ({ page }) => 
   await page.locator("#cvb").click();
   await expect(page.locator("#slim")).toBeVisible();
   await expect(page.locator("#skc")).toBeHidden();
+  // no "Card folded" message over the page (Satish, 2026-10-30)
+  await expect(page.locator("#fl")).not.toHaveClass(/\bon\b/);
   await page.locator("#slim").click();
   await expect(page.locator("#skc")).toBeVisible();
+});
+
+// The month line, the moonrise and the place sit beside the ring, one line each (Satish, 2026-10-30): a longer place
+// name ("Lewis Center, OH" after Update my location) used to wrap the chips onto a second line and make the card taller
+test("a longer place name keeps the card's height; the place line is one button @mobile", async ({ page }) => {
+  const now = { now: new Date("2026-10-30T09:00:00-04:00") };
+  const height = (p) => p.locator("#skc").evaluate((c) => Math.round(c.getBoundingClientRect().height));
+  await openSite(page, SETUPS.marathi, now);
+  await expect(page.locator("#skc .skp")).toContainText("Columbus, OH");
+  const columbus = await height(page);
+  const lc = await page.context().newPage();
+  await openSite(lc, { ...SETUPS.marathi, loc: { lat: 40.2, lon: -83.01 } }, now);
+  const place = lc.locator("#skc .skp");
+  await expect(place).toContainText("Lewis Center, OH");
+  expect(await height(lc)).toBe(columbus);
+  // beside the ring, not under it, and one line
+  const ring = await lc.locator("#skc .skr").boundingBox();
+  const box = await place.boundingBox();
+  expect(box.x).toBeGreaterThan(ring.x + ring.width);
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  await expect(place.locator(".skpl")).toHaveCSS("white-space", "nowrap");
+  // named by the place first, then what it does (WCAG 2.5.3)
+  await expect(place).toHaveAccessibleName(/^Lewis Center, OH, Update my location$/);
+});
+
+// An adhika month is named so: 3 Jun 2026 is in Adhika Jyeshtha
+test("the month line names an adhika month @mobile", async ({ page }) => {
+  await openSite(page, SETUPS["marathi-menus"], { now: new Date("2026-05-20T09:00:00-04:00") });
+  await expect(page.locator("#skc .skpn")).toHaveText("अधिक ज्येष्ठ वद्य चतुर्थी");
 });
 
 // Sankashti day (28 Oct 2026 in Columbus): the card opens on tonight's moonrise; the date strip, the calendar
@@ -470,8 +501,8 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
 });
 
 // The card in one piece (Satish, 2026-10-30): the picture in a ring that fills as the next Sankathara Chaturthi comes
-// nearer, how far it is under it in the reading languages; the moonrise and the place as chips; Add to calendar and
-// More dates at its foot. 30 Oct 2026: the next is 27 Nov, 28 days off, the ring a little filled
+// nearer, how far it is under it in the reading languages; beside it the month line, the moonrise and the place;
+// Add to calendar and More dates at its foot. 30 Oct 2026: the next is 27 Nov, 28 days off, the ring a little filled
 test("the card: the picture in a ring that fills as the day comes nearer, the count under it @mobile", async ({ page }) => {
   await openSite(page, { ...SETUPS.marathi, lang: "both" }, { now: new Date("2026-10-30T09:00:00-04:00") });
   await expect(page.locator("#skrc .skrc1")).toHaveText("२८ दिवस");
@@ -482,7 +513,8 @@ test("the card: the picture in a ring that fills as the day comes nearer, the co
   expect(early).toBeLessThan(40);
   // the picture still opens full screen
   await expect(page.locator("#skc #iconb")).toBeVisible();
-  // the chips and the foot
+  // beside the ring: the month line, the moonrise and the place; and the foot
+  await expect(page.locator("#skc .skpn")).toHaveText("Kartik Krishna Chaturthi");
   await expect(page.locator("#skc .skmr")).toContainText("Moonrise");
   await expect(page.locator("#skc .skp")).toContainText("Columbus");
   await expect(page.locator("#skcal")).toHaveText(/Add to calendar/);

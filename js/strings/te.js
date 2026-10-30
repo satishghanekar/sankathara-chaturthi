@@ -315,7 +315,6 @@ export default {
     updateMy: "నా స్థానాన్ని నవీకరించు",
     open: "కార్డ్ తెరువు",
     fold: "కార్డ్ మడువు",
-    folded: "కార్డ్ మడిచింది · తెరవడానికి దాని పంక్తిని నొక్కండి",
     /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
     moonLeft: function (h, m) {
       return (h > 0 ? h + " గం " : "") + m + " నిమిషాల్లో";
