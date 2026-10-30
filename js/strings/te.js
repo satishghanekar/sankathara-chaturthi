@@ -80,7 +80,6 @@ export default {
     update: { check: "అప్‌డేట్‌ల కోసం చూడు", busy: "చూస్తోంది…", ok: "తాజాగా ఉంది", off: "ఇంటర్నెట్ లేదు", restart: "మూసి మళ్లీ తెరవండి" },
     usingSaved: "ఇంటర్నెట్ లేదు. సేవ్ చేసిన ప్రతిని వాడుతున్నాం.",
     loading: "కొత్త వెర్షన్, తెరుచుకుంటోంది…",
-    ready: "ఆఫ్‌లైన్ వాడకానికి సిద్ధం",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "వెర్షన్ " + v + " సేవ్ అయింది. పూర్తి చేయడానికి యాప్‌ను మూసి మళ్లీ తెరవండి.";
@@ -293,6 +292,17 @@ export default {
     back: "↩ తర్వాతి సంకటహర చతుర్థికి తిరిగి",
     addAll: "రాబోయే అన్ని తేదీలను క్యాలెండర్‌కు జోడించు",
     addOne: "క్యాలెండర్‌కు జోడించు",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return n + " రోజులు";
+    },
+    ringToday: "ఈరోజు",
+    ringTomorrow: "రేపు",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "నిన్న" : n + " రోజుల క్రితం";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return n + " రోజుల్లో";

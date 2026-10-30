@@ -86,7 +86,6 @@ export default {
     },
     usingSaved: "ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ. ಉಳಿಸಿದ ಪ್ರತಿಯನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ.",
     loading: "ಹೊಸ ಆವೃತ್ತಿ, ತೆರೆಯುತ್ತಿದೆ…",
-    ready: "ಆಫ್‌ಲೈನ್ ಬಳಕೆಗೆ ಸಿದ್ಧ",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "ಆವೃತ್ತಿ " + v + " ಉಳಿಸಲಾಗಿದೆ. ಪೂರ್ಣಗೊಳಿಸಲು ಆ್ಯಪ್ ಮುಚ್ಚಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.";
@@ -299,6 +298,17 @@ export default {
     back: "↩ ಮುಂದಿನ ಸಂಕಟಹರ ಚತುರ್ಥಿಗೆ ಹಿಂತಿರುಗಿ",
     addAll: "ಮುಂಬರುವ ಎಲ್ಲ ದಿನಾಂಕಗಳನ್ನು ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
     addOne: "ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return n + " ದಿನ";
+    },
+    ringToday: "ಇಂದು",
+    ringTomorrow: "ನಾಳೆ",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "ನಿನ್ನೆ" : n + " ದಿನಗಳ ಹಿಂದೆ";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return n + " ದಿನಗಳಲ್ಲಿ";

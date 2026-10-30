@@ -3,7 +3,7 @@
 
 import { note } from "../core/page.js";
 import { menuWords } from "../core/strings.js";
-import { esc, nameOf, num, ui } from "../core/words.js";
+import { esc, lead, mrLang, nameOf, num, second, ui } from "../core/words.js";
 import { P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
@@ -356,12 +356,15 @@ function one(t, cls) {
 }
 
 export function skRender() {
-  var box = document.getElementById("skc");
-  if (!box) return;
+  var box = document.getElementById("skc"),
+    inner = document.getElementById("skx");
+  if (!box || !inner) return;
   var L = skLoc();
+  // no place yet: no date to count down to, so no ring
+  box.classList.toggle("noloc", !L);
   if (!L) {
     box.hidden = false;
-    box.innerHTML =
+    inner.innerHTML =
       '<div class="skh">' +
       one(menuWords("card").next) +
       '</div><button type="button" class="skl" id="skl">📍 ' +
@@ -429,15 +432,17 @@ export function skRender() {
   });
   var ph = skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
   box.hidden = false;
-  box.innerHTML =
+  inner.innerHTML =
+    '<div class="skt"></div>' +
+    // the card's foot: Add to calendar (the date shown, when it is still to come: skShow) and More dates (CSS:
+    // #home.skn): everything below it waits behind this button
+    '<div class="skft"><span class="skcw"></span>' +
+    '<button type="button" class="skmore" id="skmore" aria-expanded="false">' +
+    one(w.more) +
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>' +
     '<div class="sktd">' +
     one(w.today(w.fullDate(now.getDay(), now.getDate(), now.getMonth(), now.getFullYear()))) +
     "</div>" +
-    '<div class="skt"></div>' +
-    // More dates (CSS: #home.skn): everything below it waits behind this button
-    '<button type="button" class="skmore" id="skmore" aria-expanded="false">' +
-    one(w.more) +
-    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
     // The first, quick render has only the next date. The strip and the "Add all" button are already laid
     // out, invisible, so the card is its full height before the page is shown and nothing below it jumps
     // when the full list arrives (it moved the home page down by about 100px on a phone).
@@ -539,22 +544,21 @@ function skShow(k, focus) {
   var hd = dd === 0 ? w.heads.today : dd === 1 ? w.heads.tomorrow : k === C.ni ? w.heads.next : k < C.ni ? w.heads.previous : w.heads.upcoming;
   if (f.ang) hd = w.angaraki(hd);
   box.className = "skc" + (dd === 0 ? " today" : "");
+  var moon =
+    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>';
+  // The heading, then the date large; on the day itself the moonrise is the large line and the date goes under it
+  // (Satish, 2026-10-30: the card in one piece, the picture in its ring beside it)
   box.querySelector(".skt").innerHTML =
     '<div class="skh">' +
     one(hd) +
     "</div>" +
-    '<div class="skd">' +
-    one(f.day) +
-    // a few days ahead: "in 14 days" badge (today and tomorrow are already in the heading)
-    (dd >= 2 ? one(w.inDays(dd), "skin") : "") +
-    (o.day + 86400000 > Date.now()
-      ? '<button type="button" class="skli" id="skcal" aria-label="' +
-        w.addOne +
-        '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg></button>'
-      : "") +
-    "</div>" +
-    '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>' +
-    one(w.moonrise("<b>" + f.time + "</b>")) +
+    (dd === 0
+      ? '<div class="skd skdm">' + moon + one(w.moonrise("<b>" + f.time + "</b>")) + "</div>" + '<div class="skd2">' + one(f.day) + "</div>"
+      : '<div class="skd">' + one(f.day) + "</div>") +
+    // the chips: the moonrise (on other days) and the place; on the day, the time left before the moonrise first
+    '<div class="skm">' +
+    '<div class="skcd" hidden></div>' +
+    (dd === 0 ? "" : '<span class="skmr">' + moon + one(w.moonrise("<b>" + f.time + "</b>")) + "</span>") +
     // the place as the menus name it (Marathi menus: its Marathi name; Kannada: that in Kannada letters)
     '<span class="skp" lang="' +
     ui() +
@@ -563,8 +567,17 @@ function skShow(k, focus) {
     '<button type="button" class="skli" id="skl" aria-label="' +
     (L.own ? w.updateMy : w.useMy) +
     '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button>' +
-    "</span></div>" +
-    '<div class="skcd" hidden></div>';
+    "</span></div>";
+  // Add to calendar in the card's foot, while the date shown is still to come
+  var cw = box.querySelector(".skcw");
+  if (cw)
+    cw.innerHTML =
+      o.day + 86400000 > Date.now()
+        ? '<button type="button" class="skfb" id="skcal"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>' +
+          one(w.addOne) +
+          "</button>"
+        : "";
+  skRing(k, dd);
   skDot();
   requestAnimationFrame(skDot);
   skSlim();
@@ -581,6 +594,33 @@ function skShow(k, focus) {
   });
   st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
   if (focus) on.focus({ preventScroll: true });
+}
+
+/**
+ * The ring round the picture: full on the day, filling as the date shown comes nearer (from the Sankashti before it,
+ * else a month of the moon, 29.5 days); empty for a date gone by. Under it, how far the date is, in the reading
+ * languages: "28 days" and "२८ दिवस", "उद्या", "आज"
+ * @param {number} k the date shown (its place in skCache.list) @param {number} dd days from today
+ */
+function skRing(k, dd) {
+  var C = skCache,
+    arc = document.querySelector("#skc .skr1"),
+    cnt = document.getElementById("skrc");
+  if (!C || !arc || !cnt) return;
+  var prev = C.list[k - 1],
+    span = prev ? Math.round((C.list[k].day - prev.day) / 86400000) : 29.5,
+    frac = dd < 0 ? 0 : dd === 0 ? 1 : Math.max(0.03, Math.min(1, 1 - dd / span)),
+    len = 2 * Math.PI * 40;
+  arc.setAttribute("stroke-dasharray", (len * frac).toFixed(1) + " " + len.toFixed(1));
+  cnt.innerHTML = [lead(), second()]
+    .filter(Boolean)
+    .map(function (l, i) {
+      var c = l === "en" ? "en" : mrLang(),
+        w = menuWords("card", c),
+        t = dd === 0 ? w.ringToday : dd === 1 ? w.ringTomorrow : dd < 0 ? w.ringAgo(-dd) : w.ringDays(dd);
+      return '<span class="' + (i ? "skrc2" : "skrc1") + '" lang="' + c + '">' + esc(t) + "</span>";
+    })
+    .join("");
 }
 
 // True within 120 km of Bharatiya Hindu Temple, Powell OH, where the group meets 7:00–8:30 pm
@@ -619,7 +659,12 @@ function skCd() {
     m.push(w.moonIn(h, mm));
   }
   x.hidden = !m.length;
-  x.innerHTML = one(m.join(" · "));
+  // a chip each (the pooja's time, the time left before the moonrise), so a narrow phone wraps between them
+  x.innerHTML = m
+    .map(function (t) {
+      return '<span class="skcc">' + one(t) + "</span>";
+    })
+    .join("");
 }
 
 // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.
