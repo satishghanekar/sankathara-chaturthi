@@ -10,6 +10,7 @@
 // No init(): js/features/print.js creates it (createWhat) when it starts.
 
 import { esc, lead, num, scr, scrKey, second, ui } from "../core/words.js";
+import { menuWords } from "../core/strings.js";
 
 /**
  * @typedef {{ id: string, sec: string, title: string, titleEn: string, language: string }} WhatText  id: the piece's
@@ -19,38 +20,9 @@ import { esc, lead, num, scr, scrKey, second, ui } from "../core/words.js";
  * @typedef {{ shelves: () => WhatShelf[], onChange: () => void }} WhatOptions
  */
 
-const W = {
-  en: {
-    what: "What to print",
-    search: "Search the texts",
-    all: "All texts",
-    selectAll: "Select all",
-    clear: "Clear",
-    none: "No text matches",
-    /** @param {number} n */
-    texts: function (n) {
-      return n + (n === 1 ? " text" : " texts");
-    },
-    pick: "Pick at least one text",
-  },
-  mr: {
-    what: "काय प्रिंट करायचे",
-    search: "रचना शोधा",
-    all: "सर्व रचना",
-    selectAll: "सर्व निवडा",
-    clear: "सर्व काढा",
-    none: "अशी रचना नाही",
-    /** @param {number} n */
-    texts: function (n) {
-      return num(n) + " रचना";
-    },
-    pick: "किमान एक रचना निवडा",
-  },
-};
-
 /** The words in the menu language */
 export function whatWords() {
-  return W[ui()];
+  return menuWords("printWhat");
 }
 
 /**
