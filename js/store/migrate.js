@@ -126,7 +126,7 @@ export function tidy(P) {
   P.pf = P.xf = 0;
   if (P.lead !== "en") P.lead = "mr";
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
-  if (P.ind !== "kn") P.ind = "mr";
+  if (["kn", "te", "gu"].indexOf(P.ind) < 0) P.ind = "mr";
   if (P.por !== "land" && P.por !== "up") P.por = "";
   // Marathi menus go with the texts in Marathi letters (other menu languages are free: js/strings/)
   if (P.ui === "mr" && (P.lead === "en" || P.ind !== "mr")) P.ui = "en";
