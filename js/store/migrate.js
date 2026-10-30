@@ -128,8 +128,9 @@ export function tidy(P) {
   if (P.l2 === P.lead || ["mr", "en", ""].indexOf(P.l2) < 0) P.l2 = P.lead === "en" ? "mr" : "en";
   if (["kn", "te", "gu"].indexOf(P.ind) < 0) P.ind = "mr";
   if (P.por !== "land" && P.por !== "up") P.por = "";
-  // Marathi menus go with the texts in Marathi letters (other menu languages are free: js/strings/)
-  if (P.ui === "mr" && (P.lead === "en" || P.ind !== "mr")) P.ui = "en";
+  // Menus in English, or in the language the texts are shown in (Marathi, or the letters picked: P.ind), never mixed
+  // (Satish, 2026-10-30: no Marathi texts under Telugu menus); with English as the main language, English
+  if (P.ui !== "en" && (P.lead === "en" || P.ui !== P.ind)) P.ui = "en";
   if (!P.l2 || [P.lead, P.l2, "both"].indexOf(P.lang) < 0) P.lang = P.lead;
   if (["auto", "light", "sepia", "dark"].indexOf(P.th) < 0) P.th = "auto";
   // three text fonts since 2026-10-25: Bold (Sura) was dropped, and a saved "bold" reads as Standard
