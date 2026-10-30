@@ -316,11 +316,9 @@ export default {
     open: "కార్డ్ తెరువు",
     fold: "కార్డ్ మడువు",
     folded: "కార్డ్ మడిచింది · తెరవడానికి దాని పంక్తిని నొక్కండి",
-    poojaAt: "ఈరోజు సాయంత్రం 7:00 కి పూజ",
-    poojaNow: "పూజ జరుగుతోంది",
-    /** @param {number} h @param {number} m */
-    moonIn: function (h, m) {
-      return "చంద్రోదయానికి " + (h > 0 ? h + " గం " : "") + m + " నిమి";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return (h > 0 ? h + " గం " : "") + m + " నిమిషాల్లో";
     },
     downloadedOne: "క్యాలెండర్ ఫైల్ డౌన్‌లోడ్ అయింది; ఈవెంట్ జోడించడానికి దాన్ని తెరవండి",
     downloadedAll: "క్యాలెండర్ ఫైల్ డౌన్‌లోడ్ అయింది; ఈవెంట్‌లు జోడించడానికి దాన్ని తెరవండి",

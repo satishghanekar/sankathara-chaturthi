@@ -309,11 +309,9 @@ export default {
     open: "कार्ड उघडा",
     fold: "कार्ड मिटवा",
     folded: "कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा",
-    poojaAt: "आज पूजा सायं. ७:०० वाजता",
-    poojaNow: "पूजा सुरू आहे",
-    /** @param {number} h @param {number} m */
-    moonIn: function (h, m) {
-      return "चंद्रोदयाला " + (h > 0 ? dv(h) + " तास " : "") + dv(m) + " मिनिटे";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return (h > 0 ? dv(h) + " तास " : "") + dv(m) + " मिनिटांत";
     },
     downloadedOne: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",
     downloadedAll: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",

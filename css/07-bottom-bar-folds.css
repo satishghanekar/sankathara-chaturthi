@@ -488,11 +488,10 @@ html[data-asb="1"] {
 }
 
 /* ==== The date card: next Chaturthi date first, More dates folded ====
-   js/features/date-card.js sets #home.skn once the date is known: the card leads with the next Chaturthi date,
-   larger, and its moonrise, under today's date; the date strip and "Add all upcoming dates" wait under "More dates"
-   (#skmore; #home.pmore while open). The calendar icon and the App / Share / QR / Print / Help row stay in sight.
-   On Sankashti day itself (#home.pday) the moonrise time is large, the contents below are set larger, and the
-   button row waits under More dates too. */
+   js/features/date-card.js sets #home.skn once the date is known: the card leads with the next Chaturthi date and
+   its moonrise; the date strip, today's date and "Add all upcoming dates" wait under "More dates" (#skmore;
+   #home.pmore while open). On Sankashti day itself (#home.pday) the card keeps its layout, its moonrise and place lit
+   (the card in one piece, at the end of this file). */
 .skc .skm b {
   font-weight: inherit;
 }
@@ -915,39 +914,6 @@ html[data-asb="1"] {
 #home.skn .skc[data-lang="en"] .skd {
   font: 600 24px/1.2 var(--lat);
 }
-.skc .skdm {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  color: var(--ink);
-}
-.skc .skdm svg {
-  align-self: center;
-  color: var(--gold);
-}
-.skc .skdm .en,
-.skc .skdm .mr {
-  font: 500 15px/1.2 var(--lat);
-  color: var(--muted);
-}
-.skc .skdm .mr {
-  font-family: var(--body);
-}
-.skc .skdm b {
-  margin-left: 4px;
-  color: var(--ink);
-  font: 600 28px/1.1 var(--lat);
-  white-space: nowrap;
-}
-.skc .skd2 {
-  grid-column: 2;
-  margin-top: 2px;
-  color: var(--muted);
-  font: 400 14px/1.3 var(--lat);
-}
-.skc .skd2 .mr {
-  font-family: var(--body);
-}
 /* the chips: on the day the time left first, then the moonrise and the place */
 .skc .skm,
 #home.skn .skc .skm,
@@ -962,7 +928,6 @@ html[data-asb="1"] {
 }
 .skc .skm > .skmr,
 .skc .skm > .skp,
-.skc .skm .skcc,
 #home.pday .skc.today .skm > .skp {
   display: inline-flex;
   flex-basis: auto;
@@ -984,10 +949,13 @@ html[data-asb="1"] {
 .skc .skm > .skp .skli {
   margin: 0;
 }
-/* on the day: the pooja's time and the time left, a chip each */
-.skc .skm > .skcd:not([hidden]),
+/* on the day itself (.hot): the moonrise lit, the time left before it in its chip, and the place outlined; the rest
+   of the card as on any day (Satish, 2026-10-30) */
+.skc .skm .skcd,
 #home.pday .skc.today .skcd {
-  display: contents;
+  margin: 0;
+  font: inherit;
+  color: inherit;
 }
 .skc .skm .skmr b,
 #home.skn .skc .skm b {
@@ -999,10 +967,22 @@ html[data-asb="1"] {
 .skc .skm .skdt {
   display: none;
 }
-.skc .skm .skcc {
+.skc .skm > .skmr.hot {
   border-color: var(--accent);
   background: var(--accent);
   color: var(--bg);
+  font-weight: 600;
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3.5px var(--accent);
+}
+.skc .skm > .skmr.hot svg {
+  color: var(--bg);
+}
+.skc .skm > .skp.hot,
+#home.pday .skc.today .skm > .skp.hot {
+  border-color: var(--accent);
+  color: var(--accent);
   font-weight: 600;
 }
 /* the foot: Add to calendar | More dates */

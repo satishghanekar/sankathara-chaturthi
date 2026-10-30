@@ -321,11 +321,9 @@ export default {
     open: "Open the card",
     fold: "Fold the card",
     folded: "Card folded · tap its line to open it",
-    poojaAt: "Pooja today at 7:00 pm",
-    poojaNow: "Pooja in progress",
-    /** "Moonrise in 2 h 10 min" @param {number} h the hours, or 0 @param {number} m */
-    moonIn: function (h, m) {
-      return "Moonrise in " + (h > 0 ? h + " h " : "") + m + " min";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return "in " + (h > 0 ? h + " h " : "") + m + " min";
     },
     downloadedOne: "Calendar file downloaded; open it to add the event",
     downloadedAll: "Calendar file downloaded; open it to add the events",
