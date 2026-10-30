@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.8.17">
+<meta name="version" content="aarti-v1.8.18">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -369,16 +369,16 @@
     <p class="inn"><span data-w="page.itWillThenOpenLike">It will then open like an app, even without internet.</span></p>
     <button type="button" class="wide" id="inx"><span data-w="page.ok">OK</span></button></div>
 </div>
-<!-- ==== Help (English only), opened from the home page and Settings ==== -->
+<!-- ==== Help (English only), opened from the top bar's Share menu and Settings → More → About ==== -->
 <div id="help" hidden role="dialog" aria-modal="true" aria-labelledby="hlpt" lang="en">
   <div class="hlpbar"><h2 id="hlpt">Help</h2><button type="button" id="hlpx" aria-label="Close help"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <!-- Help's text is laid out only when Help is first opened (js/features/help.js) -->
   <template id="hlpc">
     <div class="hlpin">
-      <p class="hlead">This site has the texts we recite at the Sankathara Chaturthi pooja: the Ganapati Atharvashirsha and the aartis (Marathi and Hindi), as written or in Kannada letters, with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
+      <p class="hlead">This site has the texts we recite at the Sankathara Chaturthi pooja: the Ganapati Atharvashirsha and the aartis (Marathi and Hindi), as written or in Kannada, Telugu or Gujarati letters, with English transliteration (in an everyday or a scholarly spelling). It works without internet once opened.</p>
 
       <h3>Put it on your phone</h3>
-      <p>Tap <b>⋯</b> in the top bar, then <b>App</b> (phone with an arrow), or <b>Add to Home Screen</b> under About in Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
+      <p>Tap <b>Share</b> (the square with an arrow) in the top bar, then <b>App</b> (phone with an arrow), or <b>Add to Home Screen</b> under About in Settings. On Android and in Chrome or Edge on a computer this usually installs it in one tap; otherwise it shows the steps for your phone or browser (on a Mac in Safari: Share or File → Add to Dock).</p>
       <h4>iPhone (Safari or Chrome)</h4>
       <ol>
         <li>Open the site in <b>Safari</b>. If you opened it from WhatsApp, Mail or Messages, tap the compass or ⋯ icon to open it in Safari first; those built-in viewers don't have the option.</li>
@@ -414,35 +414,33 @@
 
       <h3>The date card</h3>
       <ul>
-        <li>Shows today's date, the next Sankathara Chaturthi and its <b>moonrise time</b> for where you are. Angaraki Sankathara Chaturthi (on a Tuesday) is marked.</li>
+        <li>Shows the next Sankathara Chaturthi and its <b>moonrise time</b> for where you are, beside Ganesha's picture in a ring that fills as the day comes nearer, with how many days are left under it. Angaraki Sankathara Chaturthi (on a Tuesday) is named so.
         <li>Under the date, its month in the Marathi calendar (<b>Kartik Krishna Chaturthi</b>, कार्तिक वद्य चतुर्थी; अधिक when it is an extra month), then the moonrise and the place.</li>
         <li><b>The place</b> (with its pin, or <b>📍 Use my location</b>): tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
         <li><b>The picture:</b> tap the Ganesha picture on the card to see it full screen. Pinch or double-tap to zoom, drag to look around; ✕, Back or a tap outside closes it.</li>
-        <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap beside the picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again. On the home page the <b>Ganesha</b> home buttons (top bar title, bottom bar) do the same: tap to close the card, tap again to open it. Your phone remembers this. On Sankashti day the card opens by itself.</li>
-        <li><b>Fold what you don't need:</b> a tap anywhere on a piece's heading (or its round ⌃) folds that piece down to its heading; tap it again to open it. The <b>Fold all</b> / <b>Open all</b> button on the <b>आरती / Aarti</b> heading folds or opens every aarti at once. Your phone remembers these. Going to a folded piece from the Library or search opens it.</li>
-        <li><b>Date strip:</b> swipe to see past and future dates; tap one to show it. “Back to next Sankathara Chaturthi” returns.</li>
-        <li><b>Calendar icon</b> next to the date: adds that day's pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio) to your calendar with a reminder 2 hours before. On a computer it downloads a calendar file for you to open. On an iPhone it opens Calendar's Add screen. On Android it opens your calendar app with the event filled in, and the app's own reminder setting applies. Past dates have no icon.</li>
-        <li><b>Add all upcoming dates to calendar:</b> adds every coming Sankathara Chaturthi at once.</li>
+        <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap beside the picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again. Your phone remembers this. On Sankashti day the card opens by itself.</li>
+        <li><b>Fold a text:</b> a tap anywhere on a text's heading (or its round ⌃) folds it down to its heading; tap it again to open it. Your phone remembers this. Going to a folded text from the Library or search opens it.</li>
+        <li><b>Add to calendar</b>, at the foot of the card: adds the date shown, the pooja (7:00–8:30 pm, at Bharatiya Hindu Temple when you are in central Ohio), with a reminder 2 hours before. On a computer it downloads a calendar file for you to open. On an iPhone it opens Calendar's Add screen. On Android it opens your calendar app with the event filled in, and the app's own reminder setting applies. A date gone by can't be added.</li>
         <li><b>Next Chaturthi date:</b> the card leads with the next Sankashti date and its moonrise. A date in another year has its year at the end of the month line. <b>Add to calendar</b> adds the date shown. The other dates wait under <b>More dates</b>: today's date, then every Sankathara Chaturthi of this year and next (on a phone in a strip to swipe; on an iPad a row for each year, with last year's behind <b>‹ Last year's dates</b>). Tap one to show it in the card; <b>↩ Next date</b>, at the end of today's date, goes back. While More dates is open the foot's button is <b>Add all to calendar</b>. On a computer the dates are always beside the card, with both buttons under it. On Sankashti day the moonrise and the place are lit, with how long until the moon rises.</li>
       </ul>
 
       <h3>Buttons at the top</h3>
       <ul>
         <li><b>Home</b> (Ganesha and title): back to the start. While you read, the title shows the piece on screen (for example <i lang="mr">५. दत्ताची आरती</i>).</li>
-        <li><b>Library</b> (the book in the bottom bar, and at the end of each text): every text under वैदिक मंत्र and आरती, to jump to any of them, or type a few letters of a line in Marathi, English or Kannada to find it. Plain letters are enough, and spelling is forgiving: <i>sukhakarta</i>, <i>ganpati</i> and <i>vithal</i> find <i>sukhakartā</i>, <i>Ganapati</i> and <i>Vitthal</i>, and a typo in a longer word is forgiven. The matching words are shown in bold; tap a result to go to that line. On a computer you can type straight away, and use ↑ ↓ and Enter.</li>
+        <li><b>Library</b> (the book in the bottom bar, and at the end of each text): every text under वैदिक मंत्र and आरती, to jump to any of them, or type a few letters of a title or a line in Marathi, English or the letters your texts are shown in to find it. Matching texts come first, under <b>Texts</b>, then the lines inside them, under <b>Lines</b>; while the box is empty, <b>Recent</b> lists the places you went to from search. Plain letters are enough, and spelling is forgiving: <i>sukhakarta</i>, <i>ganpati</i> and <i>vithal</i> find <i>sukhakartā</i>, <i>Ganapati</i> and <i>Vitthal</i>, and a typo in a longer word is forgiven. The matching words are shown in bold; tap a text to open it, or a line to go to that line. On a phone the search box is at the foot of the page, within reach of your thumb; on a computer it is at the top, you can type straight away, and use ↑ ↓ and Enter.</li>
         <li><b>Print</b> (printer): see <i>Print</i> below.</li>
-        <li><b>⋯</b> (More): a small menu with <b>App</b> (add to your Home Screen), <b>Share</b>, <b>QR</b> and <b>Help</b>.</li>
+        <li><b>Share</b> (the square with an arrow; the word Share beside it on a computer): a small menu with <b>App</b> (add to your Home Screen), <b>Share</b>, <b>QR</b> and <b>Help</b>.</li>
         <li><b>⚙ Settings:</b> opens as its own page under the top bar; <b>‹</b> (or your phone's Back) returns you to where you were. See below.</li>
         <li>The language (main, second or both) and the dhrupad (once at the top, or after every verse) are under <b>Aa</b> in the bottom bar, and in Settings. In “once” mode, tap <b>↻ ध्रुपद</b> under a stanza to see the refrain; tap anywhere to close it.</li>
       </ul>
 
       <h3>Settings</h3>
-      <p>Settings has three tabs: <b>Reading</b> (the preview, the languages, text size and font, the dhrupad), <b>Screen</b> (menus, theme, high contrast, keeping the screen on) and <b>More</b> (help, Add to Home Screen, the version and updates). It opens on Reading.</p>
+      <p>On a phone, Settings has three tabs: <b>Reading</b> (the preview, the languages, text size and font, the dhrupad), <b>Screen</b> (menus, theme, high contrast, keeping the screen on) and <b>More</b> (help, Add to Home Screen, the version and updates). It opens on Reading. On an iPad or a computer there are no tabs: every group shows at once in two columns.</p>
       <ul>
         <li><b>Main language:</b> the language you read in, in large text: <span lang="mr">मराठी</span> (the text as written), English (in English letters) or the same words in Kannada, Telugu or Gujarati letters (<span lang="kn">ಕನ್ನಡ</span>, <span lang="te">తెలుగు</span>, <span lang="gu">ગુજરાતી</span>). Tap it to pick from a list; English is there twice, once for each spelling (see English spelling below). With Kannada, Telugu or Gujarati letters the second language can be English or None.</li>
         <li><b>Second language:</b> shown smaller, under each line, when <b>Show</b> (or Language under Aa) is set to both. Pick the other language, or <b>None</b> to read in one language only. Picking your second language as the main one swaps the two.</li>
         <li><b>Show:</b> the main language, the second, or both together (the same as Language under Aa).</li>
-        <li><b>Menus and buttons</b> (Screen tab): English or मराठी, for the date card, buttons and settings (shown only with Marathi as the main language; otherwise menus are in English).</li>
+        <li><b>Menus and buttons</b> (Screen): English, or the language your texts are shown in (मराठी, ಕನ್ನಡ, తెలుగు or ગુજરાતી), for the card, buttons and settings. With English as the main language they are in English.</li>
         <li><b>Preview:</b> the start of two verses of the Ganapati aarti and its dhrupad (tinted), as your choices will show them. With Dhrupad set to Once, the dhrupad is on top and ↻ ध्रुपद marks where it is sung; with Every verse, it follows each verse.</li>
         <li><b>English spelling:</b> picked with English in the language list, as <i>English · Sukhkarta</i> or <i>English · sukhakartā</i>: how the English lines and the titles of the pieces are spelled.
           <ul>
@@ -455,33 +453,34 @@
         <li><b>Dhrupad:</b> the refrain once at the top, or after every verse (the same as Dhrupad under Aa). The Print pop-up can set it for the printout only.</li>
         <li><b>Layout</b> (wide screens only): one or two columns of stanzas.</li>
         <li><b>Theme</b> (Auto, Light, Sepia, Dark).</li>
-        <li><b>High contrast</b> and <b>Keep screen on</b>: switches; tap to turn on or off. Keep screen on starts on for phones and tablets and off on computers.</li>
-        <li><b>About:</b> this Help, <b>Add to Home Screen</b> (until the site is installed), and one line: the version (v1.2), whether the site is saved for offline use, and <b>Check for updates</b>; tap it to check (see Good to know below).</li>
+        <li><b>High contrast</b>: a switch; tap to turn it on or off.</li>
+        <li><b>Keep screen on</b>: Off, 15, 30, 45 or 60 minutes after your last touch, key or scroll; after that the phone dims and locks as usual. It starts at 30 on phones and tablets and Off on computers.</li>
+        <li><b>About:</b> this Help, <b>Add to Home Screen</b> (until the site is installed), and one line: the version, whether the site is saved for offline use, and <b>Check for updates</b>; tap it to check (see Good to know below).</li>
       </ul>
 
       <h3>While reading</h3>
       <ul>
         <li><b>Tap a line</b> to highlight it, so everyone can keep their place; its whole stanza gets a soft band too, so you find it again at a glance. Tap again to clear.</li>
-        <li><b>More room to read:</b> on phones and tablets, the top and bottom bars slide away as you scroll down, leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
+        <li><b>More room to read:</b> on phones and tablets, while you read a text the top and bottom bars slide away as you scroll down (on the home page they stay), leaving a thin strip with the name of the piece. Scroll up a little, tap a blank part of the page or the strip, or reach the end of the page to bring them back.</li>
         <li><b>Pinch</b> (on a computer: a trackpad pinch, or Ctrl + / Ctrl − and Ctrl 0 to reset; ⌘ on a Mac) or use A− / A+ (under <b>Aa</b> in the bottom bar, or in Settings) to change the text size. The line between your fingers (or under the pointer; with the keys, the one in the middle of the screen) stays where it is, so you keep your place. The page itself never zooms. On the top card of the home page a pinch does nothing, and the rest of the home page grows only a little. The bubble shows the size (100% is the normal size for your screen); right after a pinch, tap <b>↺ Default size</b> to go back to normal.</li>
         <li><b>Back:</b> your phone's Back button (or swipe) closes an open menu or box, then goes back to where you were before the last jump, for example from an aarti back to the Library.</li>
-        <li><b>Bottom bar (on every page):</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring pieces (on the home page, Next opens the first piece); the <b>Ganesha</b> goes home, and the <b>book</b> opens the Library (every text, and search). On the smallest phones Prev and Next show just their arrows. Like the top bar it keeps its size when you change the text size or pinch, and it steps aside while Settings or the Library is open.</li>
+        <li><b>Bottom bar:</b> <b>‹ Prev</b> and <b>Next ›</b> go to the neighbouring texts; the <b>Ganesha</b> goes home, the <b>book</b> opens the Library (every text, and search) and <b>Aa</b> the reading choices. On the home page it has just the Library and Aa. On the smallest phones Prev and Next show just their arrows. Like the top bar it keeps its size when you change the text size or pinch.</li>
         <li><b>Aa</b> (bottom bar): slides up the reading choices within reach of your thumb: <b>Language</b> (main, second or both, the same as Show in Settings), <b>Text size</b> (A− and A+, with ↺ to go back to the normal size) and <b>Dhrupad</b> (once, or after every verse), plus <b>All settings</b>. Your place stays put as you change them. Tap outside it, ✕ or your phone's Back to close it.</li>
-        <li>The screen stays on while the site is open (you can turn this off in Settings).</li>
+        <li>The screen stays on while you read, until some minutes after your last touch (Settings → Screen → <b>Keep screen on</b>).</li>
       </ul>
 
       <h3>Share, QR and Print</h3>
-      <p>Share and QR are in the <b>⋯</b> menu in the top bar, with App and Help; Print is the printer beside it.</p>
+      <p>Share and QR are in the <b>Share</b> menu in the top bar, with App and Help; Print is the printer beside it.</p>
       <ul>
         <li><b>Share</b> sends a ready reminder with the next date, pooja time, moonrise and the link, for WhatsApp or messages.</li>
         <li><b>QR</b> shows a code others can scan with their camera to open the site.</li>
-        <li><b>Print</b> makes a printout or PDF in two steps (side by side on a wide screen). <b>What to print:</b> tick the texts you want, under वैदिक मंत्र and आरती; type a few letters to find one, and use <b>Select all</b> or <b>Clear</b> for everything or for one group. They print with a contents page listing them, each text starting on a new page; one text alone prints without contents. Your choice is remembered. On a phone, tap <b>Next: how to print</b>. <b>How to print:</b> pick the <b>Language</b> (yours, English or Both), the <b>Dhrupad</b> (Once or Every verse), the <b>Page</b> (Portrait or Landscape) and the <b>Print font</b> (each tile shows a word in that font). One language prints in a column (the Atharvashirsha as running paragraphs, like a printed booklet); both languages print side by side, on Landscape only. These are for the printout only: they start as the page shows it, are remembered for your next printout, and leave the reading page as it is. The small picture shows the first page; <b>Use A4</b> (or <b>Use Letter</b>) changes the paper. Then tap <b>Print</b>. In Safari, also choose Landscape in the print dialog for Landscape, or the printout comes out small. On an iPhone, if it asks, tap <b>Ready: Print now</b>. From the Home Screen app, tap <b>Open in Safari</b> (or <b>Copy link</b> and paste it into Safari): your choices go with it.</li>
+        <li><b>Print</b> makes a printout or PDF in two steps (side by side on a wide screen). <b>What to print:</b> tick the texts you want, under वैदिक मंत्र and आरती; type a few letters to find one, and use <b>Select all</b> or <b>Clear</b> for everything or for one group. They print with a contents page listing them, each text starting on a new page; one text alone prints without contents. Your choice is remembered. On a phone, tap <b>Next: how to print</b>. <b>How to print:</b> pick the <b>Language</b> (yours, English or Both), the <b>Dhrupad</b> (Once or Every verse), the <b>Page</b> (Portrait or Landscape) and the <b>Print font</b> (each tile shows a word in that font). One language prints in a column (the Atharvashirsha as running paragraphs, like a printed booklet); both languages print side by side, on Landscape only. These are for the printout only: they start as the page shows it, are remembered for your next printout, and leave the reading page as it is. The small picture shows the first page; <b>Use A4</b> (or <b>Use Letter</b>) changes the paper. Then tap <b>Print</b>. In Safari, also choose Landscape in the print dialog for Landscape, or the printout comes out small; in Safari on a Mac, and in Firefox, Chrome prints it best. On an iPhone, if it asks, tap <b>Ready: Print now</b>. From the Home Screen app, tap <b>Open in Safari</b> (or <b>Copy link</b> and paste it into Safari): your choices go with it.</li>
       </ul>
 
       <h3>Good to know</h3>
       <ul>
-        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and a short “Ready to use offline” note shows. Settings → More → About shows “Offline ready” beside the version once it is saved. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
-        <li><b>Getting updates:</b> the site opens straight from the copy saved on your phone, so it starts quickly even with a weak connection. When a new version is published it is saved in the background while you are online, and the next time you open the site you get it. To look straight away, open Settings → More and tap the version line under About: it shows “Checking…”, then “Up to date” (or “No internet”), or reloads with the new version.</li>
+        <li><b>Works without internet:</b> the first time you open the site it is saved on your phone, and Settings → More → About shows “Offline ready” beside the version once it is. With no internet, a small cloud with a line through it shows in the top bar: the saved copy is in use, and everything still works.</li>
+        <li><b>Getting updates:</b> the site opens straight from the copy saved on your phone, so it starts quickly even with a weak connection. When a new version is published it is saved in the background while you are online, and the next time you open the site you get it. To look straight away, open Settings → More and tap the version line under About: it shows “Checking…”, then “Up to date” (or “No internet”), or reloads with the new version. On an iPhone or iPad, and in Safari on a Mac, it saves the new version and says “Updated to v…. Close the app and open it again to finish.”</li>
         <li><b>Privacy:</b> your settings and location stay on your phone. Nothing is sent anywhere.</li>
         <li>Moonrise times are calculated on your phone and may differ by a few minutes from printed calendars.</li>
       </ul>
