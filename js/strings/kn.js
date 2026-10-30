@@ -21,6 +21,12 @@ export default {
     texts: texts,
     pick: "ಕನಿಷ್ಠ ಒಂದು ಪಠ್ಯವನ್ನು ಆರಿಸಿ",
   },
+  // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
+  session: {
+    sessions: { morning: "ಬೆಳಿಗ್ಗೆ", afternoon: "ಮಧ್ಯಾಹ್ನ", evening: "ಸಂಜೆ" },
+    texts: texts,
+    ended: "ಈ ಸಮಯ ಮುಗಿಯಿತು",
+  },
   // The top bar (js/features/bars.js)
   bar: {
     /** @param {string} t */

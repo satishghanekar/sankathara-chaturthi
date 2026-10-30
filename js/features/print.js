@@ -954,7 +954,8 @@ export function init() {
       // the language: the main one, the other, or both (the main one first, as on the page). Both prints side by side
       // on Landscape, so the page row then says so instead of offering a choice
       var lg = /** @type {HTMLElement} */ (document.getElementById("prlg")),
-        LV = LEAD === "en" ? ["en", "mr", "both"] : ["mr", "en", "both"];
+        // (the main language first, as Settings has it: LEAD is English only while both are shown)
+        LV = P.lead === "en" ? ["en", "mr", "both"] : ["mr", "en", "both"];
       lg.textContent = "";
       LV.forEach(function (v) {
         var b = document.createElement("button");

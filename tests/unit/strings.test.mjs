@@ -20,6 +20,7 @@ const MOVED = [
   "js/features/bottom-bar.js",
   "js/features/settings-panel.js",
   "js/features/pinch.js",
+  "js/features/session-card.js",
 ];
 
 /** Every word's path in a set of words, with what kind it is: "string", "function/2" (two values), "list/12" */
