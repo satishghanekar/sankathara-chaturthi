@@ -289,8 +289,9 @@ export default {
     chipAng: ", અંગારકી",
     more: "વધુ તારીખો",
     dates: "સંકટહર ચતુર્થીની તારીખો",
-    back: "↩ હવે પછીની સંકટહર ચતુર્થી પર પાછા",
-    addAll: "આવનારી બધી તારીખો કૅલેન્ડરમાં ઉમેરો",
+    back: "↩ હવે પછીની તારીખ",
+    addAll: "બધી કૅલેન્ડરમાં ઉમેરો",
+    older: "‹ ગયા વર્ષની તારીખો",
     addOne: "કૅલેન્ડરમાં ઉમેરો",
     // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
     /** @param {number} n */

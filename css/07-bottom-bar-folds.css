@@ -410,9 +410,6 @@
     margin-top: 4px;
     padding: 8px 6px 7px;
   }
-  .skc #skall {
-    margin: 0 auto -6px;
-  }
 }
 
 /* Text font (Settings): Standard keeps the site's own fonts; the others change only the texts (Marathi and English),
@@ -521,9 +518,7 @@ html[data-asb="1"] {
 #home.pmore .skc .skmore svg {
   transform: rotate(180deg);
 }
-#home.skn:not(.pmore) .skc .sks,
-#home.skn:not(.pmore) .skc #skb,
-#home.skn:not(.pmore) .skc #skall {
+#home.skn:not(.pmore) .skc .sks {
   display: none;
 }
 /* the days before: the date a little larger, the moonrise time in bold */
@@ -1046,27 +1041,74 @@ html[data-asb="1"] {
   outline: 2px solid var(--ink);
   outline-offset: -2px;
 }
-/* under More dates: today's date, the strip of dates, Back to the next and Add all, across the card */
+/* Add all to calendar (Satish, 2026-10-30): in the foot instead of Add to calendar while More dates is open, so it
+   needs no line of its own; Add to calendar comes back when More dates closes */
+#home.skn:not(.pmore) .skc #skall,
+#home.skn.pmore .skc #skcal {
+  display: none;
+}
+/* a date gone by has no Add to calendar: More dates then stands alone, with no line before it */
+#home.skn:not(.pmore) .skc .skcw:empty ~ .skmore {
+  border-left: 0;
+}
+/* under More dates: today's date with "↩ Next date" at its end (shown while another date is), then the strip */
+.skc .skdp {
+  display: contents;
+}
 .skc .sktd,
-.skc .sks,
-.skc #skb,
-.skc #skall {
+.skc .sks {
   grid-column: 1 / -1;
 }
-#home.skn:not(.pmore) .skc .sktd {
+#home.skn:not(.pmore) .skc .sktd,
+#home.skn:not(.pmore) .skc #skold {
   display: none;
 }
 #home.skn .skc .sktd {
-  margin: 8px 0 0;
-  padding: 0 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+  margin: 4px 0 0;
+  padding: 0;
   border: 0;
-  text-align: center;
+  text-align: left;
 }
-.skc #skall {
-  margin: 4px auto 6px;
+.skc .sktd #skb:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  border-radius: 99px;
+  background: none;
+  color: var(--accent);
+  font: 600 13px/1.2 var(--lat);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.skc .sktd #skb .mr {
+  font-family: var(--body);
+}
+.skc .sktd #skb:focus-visible,
+.skc #skold:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+/* phones: the years' groups and labels step aside, so the dates scroll in one strip, the year on its first date */
+.skc .skyr,
+.skc .skyc {
+  display: contents;
+}
+.skc .sky,
+.skc #skold {
+  display: none;
 }
 /* Large phones, tablets and desktops: the foot's two buttons together on the left, rather than spread across a wide
-   card */
+   card. Under More dates every date at once, a row a year with its label (no strip to scroll); last year's wait
+   behind "Last year's dates" */
 @media (min-width: 600px) {
   .skc .skft {
     margin-top: 14px;
@@ -1076,5 +1118,98 @@ html[data-asb="1"] {
   #home.skn .skc .skmore {
     flex: none;
     padding: 0 18px;
+  }
+  .skc .sks {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: visible;
+    padding-top: 4px;
+    border-top: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .skc .skyr {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: start;
+  }
+  .skc:not(.skoldon) .skyr.old {
+    display: none;
+  }
+  .skc .sky {
+    display: block;
+    color: var(--muted);
+    font: 700 12px/46px var(--lat);
+    letter-spacing: 0.04em;
+  }
+  .skc .sky .mr {
+    font-family: var(--body);
+  }
+  .skc .skyc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 4px;
+  }
+  .skc .skch i {
+    display: none;
+  }
+  .skc #skold {
+    grid-column: 1 / -1;
+    justify-self: start;
+    align-self: flex-start;
+    min-height: 40px;
+    margin: 2px 0 8px 48px;
+    padding: 0;
+    font: 500 13px/1.3 var(--lat);
+    color: var(--muted);
+  }
+  #home.skn.pmore .skc #skold:not([hidden]) {
+    display: block;
+  }
+}
+/* Desktops (with the contents menu): the dates beside the card's details, always open, so no More dates; the foot
+   has Add to calendar and Add all to calendar side by side */
+@media screen and (min-width: 1100px) {
+  .skc {
+    grid-template-columns: 92px minmax(0, 0.9fr) minmax(0, 1.25fr);
+    grid-template-rows: auto auto auto auto 1fr;
+  }
+  .skc .skr {
+    grid-row: 1 / span 5;
+  }
+  .skc .skdp,
+  #home.skn:not(.pmore) .skc .skdp {
+    display: flex;
+    flex-direction: column;
+    grid-column: 3;
+    grid-row: 1 / span 5;
+    min-width: 0;
+    margin-left: 6px;
+    padding-left: 20px;
+    border-left: 1px solid var(--hdrl);
+  }
+  #home.skn .skc .sktd,
+  #home.skn:not(.pmore) .skc .sktd,
+  #home.skn .skc .sks,
+  #home.skn:not(.pmore) .skc .sks {
+    display: flex;
+  }
+  #home.skn .skc .sktd {
+    margin: 0;
+  }
+  #home.skn .skc #skold:not([hidden]) {
+    display: block;
+  }
+  #home.skn .skc .skmore {
+    display: none;
+  }
+  #home.skn .skc #skall,
+  #home.skn:not(.pmore) .skc #skall,
+  #home.skn.pmore .skc #skcal {
+    display: flex;
+  }
+  .skc .skcw:not(:empty) + #skall {
+    border-left: 1px solid var(--hdrl);
   }
 }

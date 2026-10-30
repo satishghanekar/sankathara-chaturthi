@@ -289,8 +289,9 @@ export default {
     chipAng: ", అంగారక",
     more: "మరిన్ని తేదీలు",
     dates: "సంకటహర చతుర్థి తేదీలు",
-    back: "↩ తర్వాతి సంకటహర చతుర్థికి తిరిగి",
-    addAll: "రాబోయే అన్ని తేదీలను క్యాలెండర్‌కు జోడించు",
+    back: "↩ తర్వాతి తేదీ",
+    addAll: "అన్నీ క్యాలెండర్‌కు జోడించు",
+    older: "‹ గత సంవత్సరం తేదీలు",
     addOne: "క్యాలెండర్‌కు జోడించు",
     // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
     /** @param {number} n */
