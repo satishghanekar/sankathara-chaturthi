@@ -218,8 +218,7 @@ export function init() {
         document.getElementById("cvb").onclick();
       });
   });
-  // "More dates" opens the strip and "Add all upcoming dates" (and on Sankashti day the App/Share/QR/Print/Help row);
-  // it starts closed on every visit
+  // "More dates" opens the dates, and turns the foot's Add to calendar into Add all; it starts closed on every visit
   pdMore = false;
   skOld = false;
   document.addEventListener("click", function (e) {
@@ -240,7 +239,7 @@ export function init() {
     if (e.target.closest("#skcal")) skIcs();
     else if (e.target.closest("#skall")) skIcs(true);
   });
-  // Date strip: tap a date, or use the arrow keys / Home / End; "Back to next Sankathara Chaturthi" returns
+  // The dates: tap one, or use the arrow keys / Home / End; "↩ Next date" returns
   document.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("#skc .skch, #skb");
     if (!b || !skCache) return;
@@ -494,9 +493,8 @@ export function skRender() {
   pdSet();
 }
 
-// The card leads with the next Chaturthi date and its moonrise; the date strip, today's date and "Add all upcoming
-// dates" wait under "More dates" (CSS: #home.skn, and #home.pmore while open). On Sankashti day itself (#home.pday)
-// the moonrise is set large, the contents are larger, and the App/Share/QR/Print/Help row waits under More dates too.
+// The card leads with the next Chaturthi date and its moonrise; today's date and the dates wait under "More dates"
+// (CSS: #home.skn, and #home.pmore while open). On Sankashti day itself (#home.pday) the moonrise and the place are lit.
 function pdSet() {
   var h = document.getElementById("home"),
     b = document.getElementById("skmore"),
