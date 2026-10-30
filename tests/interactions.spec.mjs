@@ -326,8 +326,9 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
 });
 
-// Kannada menus (js/strings/kn.js): the card, the bars and Settings in Kannada, marked lang="kn" so the Kannada font
-// and a screen reader's Kannada voice are used; Settings offers the three menu languages
+// Kannada menus (js/strings/kn.js), with the texts in Kannada letters: the card, the bars and Settings in Kannada,
+// marked lang="kn" so the Kannada font and a screen reader's Kannada voice are used; Settings offers English and
+// Kannada only (the menus are English or the language the texts are shown in)
 test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kannada @mobile", async ({ page }) => {
   await openSite(page, SETUPS["kannada-menus"]);
   await expect(page.locator("#skc .skh").first()).toHaveText(/^ಮುಂದಿನ (ಅಂಗಾರಕ )?ಚತುರ್ಥಿ$/);
@@ -335,7 +336,7 @@ test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kanna
   await expect(page.locator("#rsb [data-w]")).toHaveAttribute("lang", "kn");
   await page.locator("#aa").click();
   await page.locator('#spv button[data-v="screen"]').click();
-  await expect(page.locator("#su button")).toHaveText(["English", "मराठी", "ಕನ್ನಡ", "తెలుగు", "ગુજરાતી"]);
+  await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", "ಕನ್ನಡ"]);
   await expect(page.locator('#su button[data-v="kn"]')).toHaveAttribute("aria-pressed", "true");
   // back to English, at once
   await page.locator('#su button[data-v="en"]').click();
@@ -368,13 +369,12 @@ for (const [setup, sans, classic, hand] of [
       expect(await first("#p1 .verse .mr p")).toBe(vedic);
     });
 
-// Marathi menus go with Marathi letters: picking Kannada, Telugu or Gujarati letters turns them into that language's;
-// other menus stay as they are whatever the letters (as in Nitya Upasana)
+// The menus are English or the language the texts are shown in, never mixed (as in Nitya Upasana): picking other
+// letters takes menus in the old letters' language to the new letters' language, and leaves English menus English
 for (const [from, pick, want] of [
   ["mr", "kn", "ಓದು"],
   ["mr", "te", "పఠనం"],
   ["mr", "gu", "વાંચન"],
-  ["kn", "gu", "ಓದು"],
   ["en", "te", "Reading"],
 ])
   test(`${from} menus, then ${pick} letters picked in Settings: the menus follow the rule`, async ({ page }) => {
@@ -384,7 +384,25 @@ for (const [from, pick, want] of [
     await page.locator("#xc").click();
     await expect(page.locator("#rsb")).toHaveAccessibleName(want);
     expect((await prefs(page)).ind).toBe(pick);
+    await page.locator("#aa").click();
+    await page.locator('#spv button[data-v="screen"]').click();
+    await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", { kn: "ಕನ್ನಡ", te: "తెలుగు", gu: "ગુજરાતી" }[pick]]);
   });
+
+// Menus in another language than the texts (saved before this rule) open in English; with English as the main
+// language there is no choice of menus
+test("menus never mixed: Telugu menus over Marathi letters open in English; English texts offer no menu choice", async ({ page }) => {
+  await openSite(page, { ...SETUPS.marathi, ui: "te" });
+  // (the saved settings are tidied as they load: js/store/migrate.js tidy())
+  await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
+  await page.locator("#aa").click();
+  await page.locator('#spv button[data-v="screen"]').click();
+  await expect(page.locator("#su button:not([hidden])")).toHaveText(["English", "मराठी"]);
+  await page.locator('#spv button[data-v="read"]').click();
+  await page.locator("#sl1s").selectOption("en:simple");
+  await page.locator('#spv button[data-v="screen"]').click();
+  await expect(page.locator("#surow")).toBeHidden();
+});
 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach
 test("Aa opens the reading sheet: language, text size and dhrupad, then Escape closes it @mobile", async ({ page }) => {
