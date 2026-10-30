@@ -204,16 +204,7 @@
 .ash header .tag {
   font-size: 12.5px;
 }
-/* Date card: the calendar and pin buttons keep their look but get a full 44 px area to tap;
-   the date strip fades out at its edges, so dates cut off at the side read as "swipe for more" */
-.skc .skli {
-  position: relative;
-}
-.skc .skli::after {
-  content: "";
-  position: absolute;
-  inset: -6px;
-}
+/* Date card: the date strip fades out at its edges, so dates cut off at the side read as "swipe for more" */
 .skc .sks {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
   mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);

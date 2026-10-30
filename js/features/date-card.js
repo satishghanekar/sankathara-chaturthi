@@ -6,6 +6,8 @@ import { menuWords } from "../core/strings.js";
 import { esc, lead, mrLang, nameOf, num, second, ui } from "../core/words.js";
 import { P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
+import { masaOf } from "../core/panchang.js";
+import { ADHIKA, PAKSHA, TITHI } from "../core/panchang-names.js";
 
 var SKTZ, SKCITY, skToday, foldTouched, pdMore;
 // The next Sankathara Chaturthi, worked out once (js/features/share.js reads it for the Share message)
@@ -198,17 +200,14 @@ export function init() {
     [22.57, 88.36, "कोलकाता", "Kolkata, West Bengal"],
   ];
   skCache = null;
-  addEventListener("resize", skDot);
-  if (document.fonts) document.fonts.ready.then(skDot);
   // Folded card: one slim line with Ganesha, the next Sankathara Chaturthi and moonrise (always the next one,
   // whichever date is picked in the strip). On Sankashti day the card stays open unless folded again that visit.
   skToday = false;
   foldTouched = false;
   document.getElementById("cvb").onclick = function () {
     foldTouched = true;
+    // no "Card folded" message (Satish, 2026-10-30): it covered the page, and the slim line says itself how to open it
     change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, cardFoldSet);
-    // a fold is remembered, so say how to get the card back (it can fold by a tap on Ganesha or Home)
-    if (P.fold) note(menuWords("card").folded, 3000);
   };
   // One-hand use: tapping the Ganesha picture folds the card, and tapping the folded slim line opens it
   ["#home .hero", "#slim"].forEach(function (s) {
@@ -481,19 +480,26 @@ function pdSet() {
   if (b) b.setAttribute("aria-expanded", String(has && pdMore));
 }
 
-// Hide the "·" before the place name when the name wraps onto its own line
-export function skDot() {
-  var p = document.querySelector("#skc .skp");
-  if (!p) return;
-  p.firstChild.hidden = false;
-  p.classList.remove("own");
-  var vis = [].filter.call(p.parentNode.children, function (e) {
-    return e !== p && e.tagName === "SPAN" && e.offsetWidth;
-  })[0];
-  if (vis && p.offsetTop + p.offsetHeight / 2 > vis.offsetTop + vis.offsetHeight) {
-    p.firstChild.hidden = true;
-    p.classList.add("own");
-  }
+/**
+ * The Sankashti's month, paksha and tithi: "कार्तिक वद्य चतुर्थी" (Kartik Krishna Chaturthi), the amanta month as
+ * Marathi calendars name it, अधिक when so (js/core/panchang.js, from Nitya Upasana)
+ * @param {{ start: number }} o @returns {{ mr: string, en: string }}
+ */
+function skMasa(o) {
+  var m = masaOf(new Date(o.start)),
+    ns = (m.adhikaName ? [ADHIKA] : []).concat([m.name, PAKSHA.krishna, TITHI[3]]);
+  return {
+    mr: ns
+      .map(function (n) {
+        return n.mr;
+      })
+      .join(" "),
+    en: ns
+      .map(function (n) {
+        return n.en;
+      })
+      .join(" "),
+  };
 }
 
 function skSlim() {
@@ -547,7 +553,7 @@ function skShow(k, focus) {
   var moon =
     '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>';
   // The heading, then the date large (Satish, 2026-10-30: the card in one piece, the picture in its ring beside it).
-  // On the day itself the same, the moonrise and the place lit (.hot), the time left before the moonrise in its chip
+  // On the day itself the same, the moonrise and the place lit (.hot), the time left before the moonrise after it
   var hot = dd === 0 ? " hot" : "";
   box.querySelector(".skt").innerHTML =
     '<div class="skh">' +
@@ -556,7 +562,13 @@ function skShow(k, focus) {
     '<div class="skd">' +
     one(f.day) +
     "</div>" +
-    // the chips: the moonrise and the place
+    // Beside the ring, under the date (Satish, 2026-10-30): the month line, then the moonrise and the place, one line
+    // each, so a longer place name ("Lewis Center, OH") never pushes the card taller; it ends in "…" instead
+    '<div class="skpn" lang="' +
+    ui() +
+    '">' +
+    esc(nameOf(skMasa(o))) +
+    "</div>" +
     '<div class="skm">' +
     '<span class="skmr' +
     hot +
@@ -564,17 +576,18 @@ function skShow(k, focus) {
     moon +
     one(w.moonrise("<b>" + f.time + "</b>")) +
     '<span class="skcd" hidden></span></span>' +
-    // the place as the menus name it (Marathi menus: its Marathi name; Kannada: that in Kannada letters)
-    '<span class="skp' +
+    // the place as the menus name it (Marathi menus: its Marathi name; Kannada: that in Kannada letters); the whole
+    // line is the button, named by the place and then what it does (WCAG 2.5.3)
+    '<button type="button" class="skp' +
     hot +
-    '" lang="' +
+    '" id="skl" lang="' +
     ui() +
-    '"><span class="skdt">· </span>' +
+    '" aria-label="' +
+    esc(nameOf(L) + ", " + (L.own ? w.updateMy : w.useMy)) +
+    '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg>' +
+    '<span class="skpl">' +
     esc(nameOf(L)) +
-    '<button type="button" class="skli" id="skl" aria-label="' +
-    (L.own ? w.updateMy : w.useMy) +
-    '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button>' +
-    "</span></div>";
+    "</span></button></div>";
   // Add to calendar in the card's foot, while the date shown is still to come
   var cw = box.querySelector(".skcw");
   if (cw)
@@ -585,8 +598,6 @@ function skShow(k, focus) {
           "</button>"
         : "";
   skRing(k, dd);
-  skDot();
-  requestAnimationFrame(skDot);
   skSlim();
   skCd();
   box.querySelector("#skb").hidden = k === C.ni;
