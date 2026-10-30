@@ -26,6 +26,7 @@ const STATES = [
   ["home sepia", { ...SETUPS.marathi, th: "sepia" }],
   ["home high contrast", { ...SETUPS.marathi, hc: 1 }],
   ["home Marathi menus", SETUPS["marathi-menus"]],
+  ["home Kannada menus", SETUPS["kannada-menus"]],
   ["both languages", SETUPS.both],
   ["Kannada", SETUPS["kannada-both"]],
   ["English main", SETUPS["english-main-both"]],

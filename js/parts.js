@@ -37,6 +37,7 @@ var SITE_PARTS = (function () {
     "core/words",
     "strings/en",
     "strings/mr",
+    "strings/kn",
     "core/strings",
     "store/migrate",
     "core/features",

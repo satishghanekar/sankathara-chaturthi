@@ -22,6 +22,7 @@ import { dv, esc, mrLang, scr, scrKey } from "../core/words.js";
 import { flash, onPiece, pieceEl } from "../core/page.js";
 import { P } from "../core/state.js";
 import { unfold } from "../core/apply.js";
+import { menuWords } from "../core/strings.js";
 import { jumpTo } from "./history.js";
 
 /** @typedef {import("../core/routine.js").Session} Session */
@@ -316,7 +317,7 @@ export function sessionStep(s, dir) {
   var st = stepInSession(run.ids, id, dir);
   if (!st || "end" in st)
     return {
-      label: P.ui === "mr" ? "मुख्य पान" : "Home",
+      label: menuWords("page").home,
       go: function () {
         endSession(!!st);
       },
