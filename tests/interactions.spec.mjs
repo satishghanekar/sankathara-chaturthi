@@ -1,6 +1,6 @@
 // Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, settingsTab } from "./helpers.mjs";
+import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, settingsTab, langMismatches } from "./helpers.mjs";
 
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
@@ -276,16 +276,44 @@ test("the evening's list follows the menu language @mobile", async ({ page }) =>
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("संस्कृत", { useInnerText: true });
 });
 
-// the same words in Kannada, Telugu or Gujarati letters (js/render.js SCRIPTS), as Nitya Upasana shows them
+// the titles in Kannada, Telugu or Gujarati letters (js/render.js SCRIPTS), as Nitya Upasana shows them; the session
+// in that language's own word, not Marathi's संध्याकाळ written in its letters (Satish, 2026-10-30)
 for (const [setup, head, title] of [
-  ["kannada", "ಸಂಧ್ಯಾಕಾಳ", "ಸುಖಕರ್ತಾ ದುಃಖಹರ್ತಾ"],
-  ["telugu", "సంధ్యాకాళ", "సుఖకర్తా దుఃఖహర్తా"],
-  ["gujarati", "સંધ્યાકાળ", "સુખકર્તા દુઃખહર્તા"],
+  ["kannada", "ಸಂಜೆ", "ಸುಖಕರ್ತಾ ದುಃಖಹರ್ತಾ"],
+  ["telugu", "సాయంత్రం", "సుఖకర్తా దుఃఖహర్తా"],
+  ["gujarati", "સાંજ", "સુખકર્તા દુઃખહર્તા"],
 ])
   test(`the evening's list is in ${setup} letters when they are chosen @mobile`, async ({ page }) => {
     await openSite(page, SETUPS[setup]);
     await expect(page.locator("#tsh span").first()).toHaveText(head);
     await expect(page.locator("#tsl .t1").nth(1)).toHaveText(title);
+  });
+
+// The session follows the reading languages (Settings → Reading), as Nitya Upasana's Home card: the main one first,
+// the main one alone when there is no second; the top bar's title in the first language shown; every word marked
+// with its language, in Kannada, Telugu and Gujarati menus too (Satish, 2026-10-30)
+test("English as the main language: the session and its titles in English first, the top bar's title too @mobile", async ({ page }) => {
+  await openSite(page, SETUPS["english-main-both"]);
+  await expect(page.locator("#tsh")).toHaveText("Evening · संध्याकाळ");
+  await expect(page.locator("#tsl li").first().locator(".tno")).toHaveText("1.");
+  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("Sukhkarta Dukhharta");
+  await expect(page.locator("#tsl .t1").nth(1)).toHaveAttribute("lang", "en");
+  await expect(page.locator("#btt")).toHaveText("Sankathara Chaturthi");
+  await expect(page.locator("#btt")).toHaveAttribute("lang", "en");
+});
+
+test("English alone: no Marathi in the session @mobile", async ({ page }) => {
+  await openSite(page, { lead: "en", l2: "", lang: "en" });
+  await expect(page.locator("#tsh")).toHaveText("Evening");
+  await expect(page.locator("#tsl .t2")).toHaveCount(0);
+  expect(await page.locator("#tsc").innerText()).not.toMatch(/[\u0900-\u097F]/);
+});
+
+for (const k of ["kn", "te", "gu"])
+  test(`${k} letters and menus: Home's words each marked with their language @mobile`, async ({ page }) => {
+    await openSite(page, { lang: "both", lead: "mr", l2: "en", ind: k, ui: k, loc: { lat: 39.96, lon: -83.0 } });
+    await expect(page.locator("#tsc")).toHaveAttribute("lang", k);
+    expect(await langMismatches(page, ["#home", "body > .bar"])).toEqual([]);
   });
 
 test("search finds a line with forgiving spelling and opens it @mobile", async ({ page }) => {

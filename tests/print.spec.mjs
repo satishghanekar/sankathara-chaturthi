@@ -736,3 +736,18 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
   ).toEqual(["1", "0", "1"]);
   await expect(page.locator("#prm")).toBeVisible();
 });
+
+// The builder's language buttons in the order Settings has them: English first when English is the main language,
+// even with English alone shown (the order came from both being shown before; Satish, 2026-10-30)
+test("print builder: English as the main language lists English first @chromium-only", async ({ browser }) => {
+  const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
+  const page = await context.newPage();
+  await openSite(page, { lang: "en", lead: "en", l2: "mr" });
+  if (!(await page.locator("#prb").isVisible())) await page.locator("#slim").click();
+  await page.locator("#prb").click();
+  await page.locator("#prm").waitFor({ state: "visible" });
+  await howStep(page);
+  await expect(page.locator("#prlg button")).toHaveText(["English", "Marathi", "Both"]);
+  await expect(page.locator("#prlg [aria-pressed=true]")).toHaveText("English");
+  await context.close();
+});

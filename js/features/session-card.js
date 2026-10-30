@@ -18,8 +18,9 @@
 
 import { loaded } from "../text/load.js";
 import { SESSIONS, sessionAt, stepInSession, textsFor } from "../core/routine.js";
-import { dv, esc, mrLang, scr, scrKey } from "../core/words.js";
-import { flash, onPiece, pieceEl } from "../core/page.js";
+import { dv, esc, lead, mrLang, nameLang, nameOf, scr, scrKey, second, ui } from "../core/words.js";
+import { iaTitle } from "../text/iast.js";
+import { note, onPiece, pieceEl } from "../core/page.js";
 import { P } from "../core/state.js";
 import { unfold } from "../core/apply.js";
 import { menuWords } from "../core/strings.js";
@@ -28,13 +29,6 @@ import { jumpTo } from "./history.js";
 /** @typedef {import("../core/routine.js").Session} Session */
 /** @typedef {{ ids: string[], session: Session, day: string, at: number }} Run */
 
-// The sessions' names (Nitya Upasana's; the evening keeps this site's word, संध्याकाळ)
-/** @type {Record<Session, { mr: string, en: string }>} */
-const NAMES = {
-  morning: { mr: "सकाळ", en: "Morning" },
-  afternoon: { mr: "दुपार", en: "Afternoon" },
-  evening: { mr: "संध्याकाळ", en: "Evening" },
-};
 // the session being read, kept for the tab (sessionStorage), and how long one from an earlier day is still taken up
 const RUN_KEY = "sk-run";
 const RUN_KEEP = 3 * 3600 * 1000;
@@ -54,9 +48,33 @@ var lists = /** @type {any} */ ({});
 /** @type {Session[]} the sessions with texts */
 var have = [];
 
-/** @param {string} mr @param {string} en */
-function two(mr, en) {
-  return '<span class="mr">' + esc(scr(mr)) + '</span><span class="en" lang="en">' + esc(en) + "</span>";
+/** The reading languages the card is in: the main one, and the second when there is one. Show (the main, the second
+ * or both) is for the texts; the card keeps both, as Nitya Upasana's does */
+function langs() {
+  return /** @type {("mr" | "en")[]} */ ([lead(), second()].filter(Boolean));
+}
+
+/** The lang of a reading language as shown: the original's letters, or English @param {"mr" | "en"} l */
+function code(l) {
+  return l === "en" ? "en" : mrLang();
+}
+
+/** A text's title in a reading language: the original in its letters, or English plain or scholarly (IAST)
+ * @param {import("../text/content.js").LibraryText} x @param {"mr" | "en"} l */
+function titleIn(x, l) {
+  return l === "mr" ? scr(x.title) : P.tr === "iast" ? iaTitle(x.title) : x.titleEn;
+}
+
+/** What the card is drawn for: the menu language, the reading languages, the letters and the English style */
+function drawnFor() {
+  return [ui(), langs().join("+"), scrKey(), P.tr].join("|");
+}
+var drawn = "";
+
+/** Re-draw when the menu language, the reading languages, the letters or the English style change (called by
+ * apply(), js/features/bars.js) */
+export function sessionLang() {
+  if (drawnFor() !== drawn && have.length) draw();
 }
 
 export function init() {
@@ -170,16 +188,26 @@ function shown() {
 function draw() {
   var s = shown(),
     ids = lists[s],
-    n = NAMES[s],
+    ls = langs(),
+    w = menuWords("session"),
     tabs = document.getElementById("tss"),
-    langs = /** @type {any} */ (loaded.library).languages;
-  /** @type {HTMLElement} */ (document.getElementById("tsh")).innerHTML =
-    '<span lang="' + mrLang() + '">' + esc(scr(n.mr)) + '</span> <span class="tsdot" aria-hidden="true">·</span> <span lang="en">' + n.en + "</span>";
-  /** @type {HTMLElement} */ (document.getElementById("tsn")).innerHTML = two(dv(ids.length) + " रचना", ids.length + (ids.length === 1 ? " text" : " texts"));
+    names = /** @type {any} */ (loaded.library).languages,
+    sc = document.getElementById("tsc");
+  drawn = drawnFor();
+  // the menu language for the words around the titles (screen readers pick the voice from lang)
+  if (sc) sc.lang = ui();
+  // The session's heading and the titles in the reading languages (Settings → Reading): the main one first, the second
+  // after it; each in its own words, Kannada letters bringing Kannada's session names (Satish, 2026-10-30)
+  /** @type {HTMLElement} */ (document.getElementById("tsh")).innerHTML = ls
+    .map(function (l) {
+      return '<span lang="' + code(l) + '">' + esc(menuWords("session", code(l)).sessions[s]) + "</span>";
+    })
+    .join(' <span class="tsdot" aria-hidden="true">·</span> ');
+  /** @type {HTMLElement} */ (document.getElementById("tsn")).textContent = w.texts(ids.length);
   /** @type {HTMLElement} */ (document.getElementById("tsl")).innerHTML = ids
     .map(function (id, i) {
       var x = t[id],
-        l = langs[x.language];
+        l = names[x.language];
       return (
         "<li>" +
         // (not data-go: a title starts the session, above)
@@ -189,16 +217,16 @@ function draw() {
         id +
         '">' +
         '<span class="tno" aria-hidden="true">' +
-        esc(scr(dv(i + 1))) +
+        (ls[0] === "en" ? i + 1 : esc(scr(dv(i + 1)))) +
         ".</span>" +
-        '<span class="tt"><span class="t1" lang="' +
-        (scrKey() || x.language) +
-        '">' +
-        esc(scr(x.title)) +
-        '</span><span class="t2" lang="en">' +
-        esc(x.titleEn) +
-        "</span></span>" +
-        (l ? '<span class="ttg">' + two(l.mr, l.en) + "</span>" : "") +
+        '<span class="tt">' +
+        ls
+          .map(function (lg, k) {
+            return '<span class="t' + (k + 1) + '" lang="' + (lg === "en" ? "en" : scrKey() || x.language) + '">' + esc(titleIn(x, lg)) + "</span>";
+          })
+          .join("") +
+        "</span>" +
+        (l ? '<span class="ttg">' + esc(nameOf(l)) + "</span>" : "") +
         "</a></li>"
       );
     })
@@ -212,17 +240,18 @@ function draw() {
     b.hidden = have.indexOf(x) < 0;
     b.setAttribute("aria-selected", String(on));
     b.tabIndex = on ? 0 : -1;
-    /** @type {HTMLElement} */ (b.querySelector(".tsw")).innerHTML = two(NAMES[x].mr, NAMES[x].en);
+    /** @type {HTMLElement} */ (b.querySelector(".tsw")).textContent = w.sessions[x];
   });
   /** @type {HTMLElement} */ (document.getElementById("tsp")).setAttribute("aria-labelledby", "tss-" + s);
 }
 
 // ---- Reading a session (as Nitya Upasana's js/features/today-card.js) ----
 
-/** A text's title in the menu language, for ‹ Prev / Next › @param {string} id */
+/** A text's title in the menu language, for ‹ Prev / Next ›: the original (in its letters) in Marathi, Kannada,
+ * Telugu and Gujarati menus, English in English ones @param {string} id */
 function titleOf(id) {
   var x = t[id];
-  return !x ? "" : P.ui === "mr" ? scr(x.title) : x.titleEn;
+  return !x ? "" : nameLang() === "mr" ? scr(x.title) : x.titleEn;
 }
 
 /** Open a text in the reading page, reading this session @param {string} id */
@@ -299,7 +328,7 @@ function endSession(done) {
     try {
       h.focus({ preventScroll: true });
     } catch (e) {}
-  if (done) flash("या वेळेची उपासना पूर्ण", "End of the session");
+  if (done) note(menuWords("session").ended);
 }
 
 /**

@@ -4,6 +4,7 @@
 import { onPiece, root } from "../core/page.js";
 import { P, setLead } from "../core/state.js";
 import { cardFoldSet, skDot, skRender } from "./date-card.js";
+import { sessionLang } from "./session-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
 import { cur, foldSet, unfold } from "../core/apply.js";
 import { asLabel, asShow, asc } from "./bottom-bar.js";
@@ -11,7 +12,7 @@ import { szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 import { spSet } from "./languages.js";
 import { fillWords, menuWords } from "../core/strings.js";
-import { num } from "../core/words.js";
+import { num, shown, ui } from "../core/words.js";
 
 export var TK;
 var tkStrip, MQ900, MQ1000, MQ1100, tailF, skKey;
@@ -117,8 +118,9 @@ export function mark() {
   // as in Nitya Upasana
   if (c) root.removeAttribute("data-home");
   else if (!root.hasAttribute("data-home")) root.setAttribute("data-home", "1");
-  // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती")
-  var en = P.lang === "en",
+  // Top bar title: the site's name, or once a piece's heading has scrolled under the bar, that piece ("३. देवीची आरती"),
+  // in the first reading language shown: English when it is the main one, with both shown too (Satish, 2026-10-30)
+  var en = shown()[0] === "en",
     tt = en ? "Sankathara Chaturthi" : SCR.to("संकटहर चतुर्थी"),
     bt0 = document.getElementById("bt"),
     hd = c && c.classList.contains("ash") && c.querySelector("header");
@@ -128,10 +130,13 @@ export function mark() {
     if (nm) tt = (no ? no.textContent + " " : "") + nm.textContent;
     bt0.classList.add("pc");
   } else bt0.classList.remove("pc");
-  if (document.getElementById("btt").textContent !== tt) document.getElementById("btt").textContent = tt;
+  var btt = document.getElementById("btt");
+  if (btt.textContent !== tt) btt.textContent = tt;
+  btt.lang = en ? "en" : SCR.k || "mr";
   // its spoken name starts with what it does and contains the words shown (WCAG 2.5.3)
   var bl = menuWords("bar").home(tt);
   if (bt0.getAttribute("aria-label") !== bl) bt0.setAttribute("aria-label", bl);
+  bt0.lang = ui(); // its spoken name is in the menu language, the title in it in its own (btt)
   // the slim strip shown while the bars are tucked away carries the same name and progress line
   var tkt = document.getElementById("tkt");
   if (tkt.textContent !== tt) tkt.textContent = tt;
@@ -291,6 +296,8 @@ export function apply() {
     } else skDot();
   } catch (e) {}
   cardFoldSet();
+  // the session's heading and titles follow the reading languages, its words the menu language
+  sessionLang();
   [].forEach.call(document.querySelectorAll("#st button"), function (b) {
     b.setAttribute("aria-pressed", b.dataset.v === P.th);
   });

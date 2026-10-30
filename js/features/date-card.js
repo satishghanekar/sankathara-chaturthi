@@ -3,7 +3,7 @@
 
 import { note } from "../core/page.js";
 import { menuWords } from "../core/strings.js";
-import { num, ui } from "../core/words.js";
+import { esc, nameOf, num, ui } from "../core/words.js";
 import { P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
@@ -555,15 +555,15 @@ function skShow(k, focus) {
     "</div>" +
     '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>' +
     one(w.moonrise("<b>" + f.time + "</b>")) +
-    '<span class="skp" lang="en"><span class="skdt">· </span>' +
-    L.en +
+    // the place as the menus name it (Marathi menus: its Marathi name; Kannada: that in Kannada letters)
+    '<span class="skp" lang="' +
+    ui() +
+    '"><span class="skdt">· </span>' +
+    esc(nameOf(L)) +
     '<button type="button" class="skli" id="skl" aria-label="' +
     (L.own ? w.updateMy : w.useMy) +
     '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button>' +
     "</span></div>" +
-    '<div class="ske" lang="en">Moonrise ' +
-    f.ten +
-    "</div>" +
     '<div class="skcd" hidden></div>';
   skDot();
   requestAnimationFrame(skDot);

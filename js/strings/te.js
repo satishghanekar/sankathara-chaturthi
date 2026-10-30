@@ -21,6 +21,12 @@ export default {
     texts: texts,
     pick: "కనీసం ఒక పాఠాన్ని ఎంచుకోండి",
   },
+  // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
+  session: {
+    sessions: { morning: "ఉదయం", afternoon: "మధ్యాహ్నం", evening: "సాయంత్రం" },
+    texts: texts,
+    ended: "ఈ సమయం ముగిసింది",
+  },
   // The top bar (js/features/bars.js)
   bar: {
     /** @param {string} t */
