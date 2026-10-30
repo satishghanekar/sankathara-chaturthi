@@ -316,11 +316,9 @@ export default {
     open: "કાર્ડ ખોલો",
     fold: "કાર્ડ વાળી દો",
     folded: "કાર્ડ વાળી દીધું · ખોલવા તેની લીટી દબાવો",
-    poojaAt: "આજે સાંજે 7:00 વાગ્યે પૂજા",
-    poojaNow: "પૂજા ચાલુ છે",
-    /** @param {number} h @param {number} m */
-    moonIn: function (h, m) {
-      return "ચંદ્રોદયને " + (h > 0 ? h + " કલાક " : "") + m + " મિનિટ";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return (h > 0 ? h + " કલાક " : "") + m + " મિનિટમાં";
     },
     downloadedOne: "કૅલેન્ડર ફાઇલ ડાઉનલોડ થઈ; ઘટના ઉમેરવા તેને ખોલો",
     downloadedAll: "કૅલેન્ડર ફાઇલ ડાઉનલોડ થઈ; ઘટનાઓ ઉમેરવા તેને ખોલો",

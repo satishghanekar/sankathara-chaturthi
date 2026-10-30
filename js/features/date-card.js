@@ -546,21 +546,28 @@ function skShow(k, focus) {
   box.className = "skc" + (dd === 0 ? " today" : "");
   var moon =
     '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>';
-  // The heading, then the date large; on the day itself the moonrise is the large line and the date goes under it
-  // (Satish, 2026-10-30: the card in one piece, the picture in its ring beside it)
+  // The heading, then the date large (Satish, 2026-10-30: the card in one piece, the picture in its ring beside it).
+  // On the day itself the same, the moonrise and the place lit (.hot), the time left before the moonrise in its chip
+  var hot = dd === 0 ? " hot" : "";
   box.querySelector(".skt").innerHTML =
     '<div class="skh">' +
     one(hd) +
     "</div>" +
-    (dd === 0
-      ? '<div class="skd skdm">' + moon + one(w.moonrise("<b>" + f.time + "</b>")) + "</div>" + '<div class="skd2">' + one(f.day) + "</div>"
-      : '<div class="skd">' + one(f.day) + "</div>") +
-    // the chips: the moonrise (on other days) and the place; on the day, the time left before the moonrise first
+    '<div class="skd">' +
+    one(f.day) +
+    "</div>" +
+    // the chips: the moonrise and the place
     '<div class="skm">' +
-    '<div class="skcd" hidden></div>' +
-    (dd === 0 ? "" : '<span class="skmr">' + moon + one(w.moonrise("<b>" + f.time + "</b>")) + "</span>") +
+    '<span class="skmr' +
+    hot +
+    '">' +
+    moon +
+    one(w.moonrise("<b>" + f.time + "</b>")) +
+    '<span class="skcd" hidden></span></span>' +
     // the place as the menus name it (Marathi menus: its Marathi name; Kannada: that in Kannada letters)
-    '<span class="skp" lang="' +
+    '<span class="skp' +
+    hot +
+    '" lang="' +
     ui() +
     '"><span class="skdt">· </span>' +
     esc(nameOf(L)) +
@@ -631,7 +638,7 @@ export function skTemple(L) {
   return 12742 * Math.asin(Math.sqrt(a * a + Math.cos(L.lat * r0) * Math.cos(40.2148 * r0) * b * b)) <= 120;
 }
 
-// On the day: "Pooja today at 7:00 pm" (central Ohio) and "Moonrise in 2 h 10 min"; refreshed every minute
+// On the day, in the moonrise's chip: " · in 2 h 10 min" until the moon rises; refreshed every minute
 function skCd() {
   var x = document.querySelector("#skc .skcd"),
     C = skCache,
@@ -639,32 +646,14 @@ function skCd() {
   if (!x || !C || !L) return;
   var o = C.list[C.sel],
     w = menuWords("card"),
-    now = Date.now(),
-    m = [];
-  if (Math.round((o.day - skMid()) / 86400000) !== 0) {
+    now = Date.now();
+  if (Math.round((o.day - skMid()) / 86400000) !== 0 || !o.rise || now >= o.rise) {
     x.hidden = true;
     return;
   }
-  if (skTemple(L)) {
-    var d = new Date(o.day),
-      t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0).getTime(),
-      t1 = t0 + 90 * 60000;
-    if (now < t0) m.push(w.poojaAt);
-    else if (now < t1) m.push(w.poojaNow);
-  }
-  if (o.rise && now < o.rise) {
-    var mins = Math.ceil((o.rise - now) / 60000),
-      h = Math.floor(mins / 60),
-      mm = mins % 60;
-    m.push(w.moonIn(h, mm));
-  }
-  x.hidden = !m.length;
-  // a chip each (the pooja's time, the time left before the moonrise), so a narrow phone wraps between them
-  x.innerHTML = m
-    .map(function (t) {
-      return '<span class="skcc">' + one(t) + "</span>";
-    })
-    .join("");
+  var mins = Math.ceil((o.rise - now) / 60000);
+  x.hidden = false;
+  x.innerHTML = one(" · " + w.moonLeft(Math.floor(mins / 60), mins % 60));
 }
 
 // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.

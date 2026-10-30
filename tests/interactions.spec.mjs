@@ -430,9 +430,13 @@ test("home card folds to one line and opens again @mobile", async ({ page }) => 
 test("on Sankashti day the card leads with moonrise, and More dates opens the rest @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi, { now: new Date("2026-10-28T17:30:00-04:00") });
   await expect(page.locator("#home")).toHaveClass(/\bpday\b/);
-  // the moonrise is the large line beside the ring (Satish, 2026-10-30), the ring full and its count Today
-  await expect(page.locator("#skc .skdm b")).toHaveText(/pm/);
+  // the card as on any day, its moonrise lit with the time left, the place outlined, the ring full; no pooja line
+  // (Satish, 2026-10-30)
+  await expect(page.locator("#skc .skmr.hot b")).toHaveText(/pm/);
+  await expect(page.locator("#skc .skmr.hot .skcd")).toHaveText(/^ · in (\d+ h )?\d+ min$/);
+  await expect(page.locator("#skc .skp.hot")).toBeVisible();
   await expect(page.locator("#skrc")).toContainText("Today");
+  await expect(page.locator("#skc")).not.toContainText("Pooja");
   const more = page.locator("#skmore");
   await expect(more).toBeVisible();
   await expect(more).toHaveAttribute("aria-expanded", "false");

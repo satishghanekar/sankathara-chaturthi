@@ -322,11 +322,9 @@ export default {
     open: "ಕಾರ್ಡ್ ತೆರೆಯಿರಿ",
     fold: "ಕಾರ್ಡ್ ಮಡಚಿ",
     folded: "ಕಾರ್ಡ್ ಮಡಚಲಾಗಿದೆ · ತೆರೆಯಲು ಅದರ ಸಾಲನ್ನು ಒತ್ತಿ",
-    poojaAt: "ಇಂದು ಸಂಜೆ 7:00 ಕ್ಕೆ ಪೂಜೆ",
-    poojaNow: "ಪೂಜೆ ನಡೆಯುತ್ತಿದೆ",
-    /** @param {number} h @param {number} m */
-    moonIn: function (h, m) {
-      return "ಚಂದ್ರೋದಯಕ್ಕೆ " + (h > 0 ? h + " ಗಂ " : "") + m + " ನಿಮಿಷ";
+    /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
+    moonLeft: function (h, m) {
+      return (h > 0 ? h + " ಗಂ " : "") + m + " ನಿಮಿಷದಲ್ಲಿ";
     },
     downloadedOne: "ಕ್ಯಾಲೆಂಡರ್ ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ; ಘಟನೆಯನ್ನು ಸೇರಿಸಲು ಅದನ್ನು ತೆರೆಯಿರಿ",
     downloadedAll: "ಕ್ಯಾಲೆಂಡರ್ ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ; ಘಟನೆಗಳನ್ನು ಸೇರಿಸಲು ಅದನ್ನು ತೆರೆಯಿರಿ",
