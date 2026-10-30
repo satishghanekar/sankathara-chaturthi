@@ -2,7 +2,6 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { note } from "../core/page.js";
-import { P } from "../core/state.js";
 import { skCache, skFmt, skLoc, skMid, skTemple } from "./date-card.js";
 import { ovDone, ovPush } from "./history.js";
 import { focusBack } from "./more-menu.js";
@@ -40,14 +39,13 @@ export function init() {
     function shareText(sep) {
       var C = skCache,
         L = skLoc(),
-        mr = P.ui === "mr",
         w = menuWords("share");
       if (!C || !L) return w.plain(title) + (sep ? "" : "\n" + url) + w.tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
         f = skFmt(o),
         t = skTemple(L),
         ang = f.ang ? "Angaraki " : ""; // with the name, which is always English
-      return w.next(ang, mr ? f.dmr : f.den, t ? w.temple : "", o.rise ? (mr ? f.tmr : f.ten) : "") + (sep ? "" : w.link(url)) + w.tip;
+      return w.next(ang, f.day, t ? w.temple : "", o.rise ? f.time : "") + (sep ? "" : w.link(url)) + w.tip;
     }
     document.getElementById("shb").onclick = function () {
       var txt = shareText();

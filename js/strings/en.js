@@ -2,6 +2,8 @@
 // The menu words in English, every part's under its name (js/core/strings.js menuWords()). English is the complete
 // set: another language's file has the same words, and a word it lacks is taken from here.
 
+import { DAYS, MONTHS } from "../core/words.js";
+
 export default {
   // The print builder's What step: Texts, Today, Routine (js/print/what.js)
   printWhat: {
@@ -224,5 +226,82 @@ export default {
   // The language's own name, in its own letters: Settings → Menus and buttons (js/features/settings-panel.js)
   language: {
     name: "English",
+  },
+  // The place and the Sankashti dates, as in Nitya Upasana (js/features/date-card.js: skFmt, the place, its messages)
+  sankashti: {
+    /** "Tue, Oct 28" (with the year when not this year: "Tue, Oct 28, 2027")
+     * @param {number} wd the weekday (0 = Sunday) @param {number} d @param {number} m (0 = January) @param {number} y or 0 */
+    day: function (wd, d, m, y) {
+      return DAYS.en[wd].slice(0, 3) + ", " + MONTHS.en[m].slice(0, 3) + " " + d + (y ? ", " + y : "");
+    },
+    /** A moonrise: "8:47 pm" @param {number} h 0–23 @param {string} mi two digits */
+    time: function (h, mi) {
+      return ((h + 11) % 12) + 1 + ":" + mi + (h >= 12 ? " pm" : " am");
+    },
+    late: " (after midnight)",
+    yourPlace: "Your location",
+    /** @param {string} place */
+    near: function (place) {
+      return "near " + place;
+    },
+    noGeo: "Location is not available in this browser",
+    noPlace: "Could not get your location",
+  },
+  // The Sankathara card on Home (js/features/date-card.js)
+  card: {
+    next: "Next Sankathara Chaturthi",
+    useLocation: "Use my location to show the date and moonrise",
+    heads: {
+      today: "Sankathara Chaturthi today",
+      tomorrow: "Sankathara Chaturthi tomorrow",
+      next: "Next Chaturthi date",
+      previous: "Previous Sankathara Chaturthi",
+      upcoming: "Upcoming Sankathara Chaturthi",
+    },
+    /** A heading on a Tuesday: Angaraki before "Sankathara", or before "Chaturthi" where there is no "Sankathara"
+     * @param {string} t */
+    angaraki: function (t) {
+      return t.indexOf("Sankathara") >= 0 ? t.replace("Sankathara", "Angaraki Sankathara") : t.replace("Chaturthi", "Angaraki Chaturthi");
+    },
+    /** @param {string} date */
+    today: function (date) {
+      return "Today: " + date;
+    },
+    /** "Thu, Oct 30, 2026" @param {number} wd @param {number} d @param {number} m @param {number} y */
+    fullDate: function (wd, d, m, y) {
+      return DAYS.en[wd].slice(0, 3) + ", " + MONTHS.en[m].slice(0, 3) + " " + d + ", " + y;
+    },
+    monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    /** A date in the strip, spoken: "28 Oct 2026, Tuesday" @param {number} d @param {number} m @param {number} y @param {number} wd */
+    chip: function (d, m, y, wd) {
+      return d + " " + MONTHS.en[m].slice(0, 3) + " " + y + ", " + DAYS.en[wd];
+    },
+    chipAng: ", Angaraki",
+    more: "More dates",
+    dates: "Sankathara Chaturthi dates",
+    back: "↩ Back to next Sankathara Chaturthi",
+    addAll: "Add all upcoming dates to calendar",
+    addOne: "Add to calendar",
+    /** @param {number} n */
+    inDays: function (n) {
+      return "in " + n + " days";
+    },
+    /** @param {string} time */
+    moonrise: function (time) {
+      return "Moonrise " + time;
+    },
+    useMy: "Use my location",
+    updateMy: "Update my location",
+    open: "Open the card",
+    fold: "Fold the card",
+    folded: "Card folded · tap its line to open it",
+    poojaAt: "Pooja today at 7:00 pm",
+    poojaNow: "Pooja in progress",
+    /** "Moonrise in 2 h 10 min" @param {number} h the hours, or 0 @param {number} m */
+    moonIn: function (h, m) {
+      return "Moonrise in " + (h > 0 ? h + " h " : "") + m + " min";
+    },
+    downloadedOne: "Calendar file downloaded; open it to add the event",
+    downloadedAll: "Calendar file downloaded; open it to add the events",
   },
 };

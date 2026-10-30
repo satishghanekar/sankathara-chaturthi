@@ -1,11 +1,13 @@
 // Next Sankathara Chaturthi card (computed on this device; works offline)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { flash } from "../core/page.js";
+import { note } from "../core/page.js";
+import { menuWords } from "../core/strings.js";
+import { num, ui } from "../core/words.js";
 import { P, change } from "../core/state.js";
 import { SK } from "./astronomy.js";
 
-var SKTZ, SKCITY, SKWM, SKMM, SKMS, skToday, foldTouched, pdMore;
+var SKTZ, SKCITY, skToday, foldTouched, pdMore;
 // The next Sankathara Chaturthi, worked out once (js/features/share.js reads it for the Share message)
 /** @type {any} */
 export var skCache = null;
@@ -196,9 +198,6 @@ export function init() {
     [22.57, 88.36, "कोलकाता", "Kolkata, West Bengal"],
   ];
   skCache = null;
-  SKWM = ["रविवार", "सोमवार", "मंगळवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
-  SKMM = ["जानेवारी", "फेब्रुवारी", "मार्च", "एप्रिल", "मे", "जून", "जुलै", "ऑगस्ट", "सप्टेंबर", "ऑक्टोबर", "नोव्हेंबर", "डिसेंबर"];
-  SKMS = ["जाने.", "फेब्रु.", "मार्च", "एप्रि.", "मे", "जून", "जुलै", "ऑग.", "सप्टें.", "ऑक्टो.", "नोव्हें.", "डिसें."];
   addEventListener("resize", skDot);
   if (document.fonts) document.fonts.ready.then(skDot);
   // Folded card: one slim line with Ganesha, the next Sankathara Chaturthi and moonrise (always the next one,
@@ -209,7 +208,7 @@ export function init() {
     foldTouched = true;
     change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, cardFoldSet);
     // a fold is remembered, so say how to get the card back (it can fold by a tap on Ganesha or Home)
-    if (P.fold) flash("कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा", "Card folded · tap its line to open it", 3000);
+    if (P.fold) note(menuWords("card").folded, 3000);
   };
   // One-hand use: tapping the Ganesha picture folds the card, and tapping the folded slim line opens it
   ["#home .hero", "#slim"].forEach(function (s) {
@@ -260,7 +259,7 @@ export function init() {
     var b = e.target.closest && e.target.closest("#skl");
     if (!b) return;
     if (!navigator.geolocation) {
-      flash("हे ब्राउझर ठिकाण देऊ शकत नाही", "Location is not available in this browser");
+      note(menuWords("sankashti").noGeo);
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -270,7 +269,7 @@ export function init() {
         skRender();
       },
       function () {
-        flash("ठिकाण मिळाले नाही", "Could not get your location");
+        note(menuWords("sankashti").noPlace);
       },
       { timeout: 15000, maximumAge: 86400000 },
     );
@@ -298,7 +297,9 @@ function skNear(lat, lon) {
       best = c;
     }
   });
-  var o = { lat: lat, lon: lon, mr: "तुमचे ठिकाण", en: "Your location", own: 1 };
+  var wm = menuWords("sankashti", "mr"),
+    we = menuWords("sankashti", "en");
+  var o = { lat: lat, lon: lon, mr: wm.yourPlace, en: we.yourPlace, own: 1 };
   if (sub) {
     o.mr = sub[2];
     o.en = sub[3];
@@ -306,8 +307,8 @@ function skNear(lat, lon) {
     o.mr = best[2];
     o.en = best[3];
   } else if (best && bd <= 120) {
-    o.mr = best[2] + " जवळ";
-    o.en = "near " + best[3];
+    o.mr = wm.near(best[2]);
+    o.en = we.near(best[3]);
   }
   return o;
 }
@@ -322,37 +323,36 @@ export function skLoc() {
   return c ? { lat: c[0], lon: c[1], mr: c[2], en: c[3] } : null;
 }
 
-function skDV(n) {
-  return String(n).replace(/[0-9]/g, function (d) {
-    return "०१२३४५६७८९"[d];
-  });
-}
-
 export function skMid(t) {
   var d = t ? new Date(t) : new Date();
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
-// Date (with the year when it is not this year) and moonrise text for one Sankashti, in Marathi and English
+// Date (with the year when it is not this year) and moonrise text for one Sankashti, in the menu language
+// (js/strings/: sankashti), and the moonrise in English for calendar files (ten)
 export function skFmt(o) {
-  var d = new Date(o.day),
+  var w = menuWords("sankashti"),
+    we = menuWords("sankashti", "en"),
+    d = new Date(o.day),
     yr = d.getFullYear() !== new Date().getFullYear(),
     r = o.rise ? new Date(o.rise) : null,
     h = r ? r.getHours() : 0,
     mi = r ? ("0" + r.getMinutes()).slice(-2) : "",
-    h12 = r ? ((h + 11) % 12) + 1 : 0,
     late = r && r.getDate() !== d.getDate();
   return {
     d: d,
     ang: d.getDay() === 2,
-    dmr: SKWM[d.getDay()] + ", " + skDV(d.getDate()) + " " + SKMM[d.getMonth()] + (yr ? " " + skDV(d.getFullYear()) : ""),
-    den: d.toLocaleDateString(
-      "en-US",
-      yr ? { weekday: "short", day: "numeric", month: "short", year: "numeric" } : { weekday: "short", day: "numeric", month: "short" },
-    ),
-    tmr: r ? (h >= 20 || h < 4 ? "रात्री " : h >= 16 ? "सायं. " : "") + skDV(h12) + ":" + skDV(mi) + (late ? " (मध्यरात्रीनंतर)" : "") : "—",
-    ten: r ? h12 + ":" + mi + (h >= 12 ? " pm" : " am") + (late ? " (after midnight)" : "") : "—",
+    day: w.day(d.getDay(), d.getDate(), d.getMonth(), yr ? d.getFullYear() : 0),
+    time: r ? w.time(h, mi) + (late ? w.late : "") : "—",
+    ten: r ? we.time(h, mi) + (late ? we.late : "") : "—",
   };
+}
+
+// One phrase of the card in the menu language: a span with the language's code as its class and lang, so the card's
+// styles for .mr and .en still apply
+function one(t, cls) {
+  var l = ui();
+  return '<span class="' + (cls ? cls + " " : "") + l + '" lang="' + l + '">' + t + "</span>";
 }
 
 export function skRender() {
@@ -362,7 +362,11 @@ export function skRender() {
   if (!L) {
     box.hidden = false;
     box.innerHTML =
-      '<div class="skh"><span class="mr">पुढील संकटहर चतुर्थी</span><span class="en" lang="en">Next Sankathara Chaturthi</span></div><button type="button" class="skl" id="skl">📍 <span class="mr">तारीख आणि चंद्रोदय पाहण्यासाठी माझे ठिकाण वापरा</span><span class="en" lang="en">Use my location to show the date and moonrise</span></button>';
+      '<div class="skh">' +
+      one(menuWords("card").next) +
+      '</div><button type="button" class="skl" id="skl">📍 ' +
+      one(menuWords("card").useLocation) +
+      "</button>";
     skSlim();
     pdSet();
     return;
@@ -399,7 +403,7 @@ export function skRender() {
       } catch (e) {}
     }, 50);
   }
-  var en = P.ui === "en",
+  var w = menuWords("card"),
     now = new Date(),
     chips = "",
     lastY = 0;
@@ -415,46 +419,24 @@ export function skRender() {
       k +
       '" aria-label="' +
       // spoken name: the date as shown on the chip first (WCAG 2.5.3), then the year and weekday
-      (en
-        ? d.getDate() +
-          " " +
-          d.toLocaleDateString("en-US", { month: "short" }) +
-          " " +
-          Y +
-          ", " +
-          d.toLocaleDateString("en-US", { weekday: "long" }) +
-          (f.ang ? ", Angaraki" : "")
-        : skDV(d.getDate()) + " " + SKMS[d.getMonth()] + " " + skDV(Y) + ", " + SKWM[d.getDay()] + (f.ang ? ", अंगारकी" : "")) +
-      '"><span class="mr"><b>' +
-      skDV(d.getDate()) +
-      "</b>" +
-      SKMS[d.getMonth()] +
-      '</span><span class="en" lang="en"><b>' +
-      d.getDate() +
-      "</b>" +
-      d.toLocaleDateString("en-US", { month: "short" }) +
-      "</span>" +
-      (Y !== lastY ? '<i aria-hidden="true"><span class="mr">' + skDV(Y) + '</span><span class="en">' + Y + "</span></i>" : "") +
+      w.chip(d.getDate(), d.getMonth(), Y, d.getDay()) +
+      (f.ang ? w.chipAng : "") +
+      '">' +
+      one("<b>" + num(d.getDate()) + "</b>" + w.monthsShort[d.getMonth()]) +
+      (Y !== lastY ? '<i aria-hidden="true">' + one(num(Y)) + "</i>" : "") +
       "</button>";
     lastY = Y;
   });
   var ph = skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
   box.hidden = false;
   box.innerHTML =
-    '<div class="sktd"><span class="mr">आज: ' +
-    SKWM[now.getDay()] +
-    ", " +
-    skDV(now.getDate()) +
-    " " +
-    SKMM[now.getMonth()] +
-    " " +
-    skDV(now.getFullYear()) +
-    '</span><span class="en" lang="en">Today: ' +
-    now.toLocaleDateString("en-US", { weekday: "short", day: "numeric", month: "short", year: "numeric" }) +
-    "</span></div>" +
+    '<div class="sktd">' +
+    one(w.today(w.fullDate(now.getDay(), now.getDate(), now.getMonth(), now.getFullYear()))) +
+    "</div>" +
     '<div class="skt"></div>' +
     // More dates (CSS: #home.skn): everything below it waits behind this button
-    '<button type="button" class="skmore" id="skmore" aria-expanded="false"><span class="mr">आणखी तारखा</span><span class="en" lang="en">More dates</span>' +
+    '<button type="button" class="skmore" id="skmore" aria-expanded="false">' +
+    one(w.more) +
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>' +
     // The first, quick render has only the next date. The strip and the "Add all" button are already laid
     // out, invisible, so the card is its full height before the page is shown and nothing below it jumps
@@ -462,21 +444,20 @@ export function skRender() {
     '<div class="sks"' +
     ph +
     ' role="listbox" aria-orientation="horizontal" aria-label="' +
-    (en ? "Sankathara Chaturthi dates" : "संकटहर चतुर्थीच्या तारखा") +
+    w.dates +
     '">' +
     chips +
     "</div>" +
-    '<button type="button" class="skl" id="skb" hidden><span class="mr">↩ पुढील संकटहर चतुर्थीवर परत</span><span class="en" lang="en">↩ Back to next Sankathara Chaturthi</span></button>' +
+    '<button type="button" class="skl" id="skb" hidden>' +
+    one(w.back) +
+    "</button>" +
     '<button type="button" class="skl" id="skall"' +
     ph +
-    '><span class="mr">सर्व पुढील तारखा कॅलेंडरमध्ये जोडा</span><span class="en" lang="en">Add all upcoming dates to calendar</span></button>';
+    ">" +
+    one(w.addAll) +
+    "</button>";
   skShow(skCache.sel);
   pdSet();
-}
-
-// Angaraki (on a Tuesday): the name before "Sankathara", or before "Chaturthi" where the heading has no "Sankathara"
-function skAng(t, a, b, w) {
-  return t.indexOf(a) >= 0 ? t.replace(a, w + a) : t.replace(b, w + b);
 }
 
 // The card leads with the next Chaturthi date and its moonrise; the date strip, today's date and "Add all upcoming
@@ -517,35 +498,18 @@ function skSlim() {
     o = C && skLoc() && C.list[C.ni];
   if (!o) {
     skToday = false;
-    t.innerHTML = '<b><span class="mr">॥ श्री गणेशाय नमः ॥</span><span class="en">॥ श्री गणेशाय नमः ॥</span></b>';
+    // the same in every language
+    t.innerHTML = "<b>" + one("॥ श्री गणेशाय नमः ॥") + "</b>";
     cardFoldSet();
     return;
   }
   var f = skFmt(o),
+    w = menuWords("card"),
     dd = Math.round((o.day - skMid()) / 86400000),
-    hm = dd === 0 ? "आज संकटहर चतुर्थी" : dd === 1 ? "उद्या संकटहर चतुर्थी" : "पुढील चतुर्थी",
-    he = dd === 0 ? "Sankathara Chaturthi today" : dd === 1 ? "Sankathara Chaturthi tomorrow" : "Next Chaturthi date";
-  if (f.ang) {
-    hm = skAng(hm, "संकटहर", "चतुर्थी", "अंगारकी ");
-    he = skAng(he, "Sankathara", "Chaturthi", "Angaraki ");
-  }
+    hd = dd === 0 ? w.heads.today : dd === 1 ? w.heads.tomorrow : w.heads.next;
+  if (f.ang) hd = w.angaraki(hd);
   skToday = dd === 0;
-  t.innerHTML =
-    '<b><span class="mr">' +
-    hm +
-    '</span><span class="en" lang="en">' +
-    he +
-    "</span></b>" +
-    '<span class="sld"><span class="mr">' +
-    f.dmr +
-    '</span><span class="en" lang="en">' +
-    f.den +
-    "</span></span>" +
-    '<span class="slm"><span class="mr">चंद्रोदय ' +
-    f.tmr +
-    '</span><span class="en" lang="en">Moonrise ' +
-    f.ten +
-    "</span></span>";
+  t.innerHTML = "<b>" + one(hd) + "</b>" + '<span class="sld">' + one(f.day) + "</span>" + '<span class="slm">' + one(w.moonrise(f.time)) + "</span>";
   cardFoldSet();
 }
 
@@ -557,7 +521,7 @@ export function cardFoldSet() {
   top.classList.toggle("fold", f);
   document.getElementById("slim").hidden = !f;
   b.setAttribute("aria-expanded", String(!f));
-  b.setAttribute("aria-label", f ? (P.ui === "mr" ? "कार्ड उघडा" : "Open the card") : P.ui === "mr" ? "कार्ड मिटवा" : "Fold the card");
+  b.setAttribute("aria-label", f ? menuWords("card").open : menuWords("card").fold);
 }
 
 // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
@@ -570,61 +534,31 @@ function skShow(k, focus) {
   C.sel = k;
   var o = C.list[k],
     f = skFmt(o),
+    w = menuWords("card"),
     dd = Math.round((o.day - skMid()) / 86400000);
-  var hm =
-      dd === 0
-        ? "आज संकटहर चतुर्थी"
-        : dd === 1
-          ? "उद्या संकटहर चतुर्थी"
-          : k === C.ni
-            ? "पुढील चतुर्थी"
-            : k < C.ni
-              ? "मागील संकटहर चतुर्थी"
-              : "आगामी संकटहर चतुर्थी",
-    he =
-      dd === 0
-        ? "Sankathara Chaturthi today"
-        : dd === 1
-          ? "Sankathara Chaturthi tomorrow"
-          : k === C.ni
-            ? "Next Chaturthi date"
-            : k < C.ni
-              ? "Previous Sankathara Chaturthi"
-              : "Upcoming Sankathara Chaturthi";
-  if (f.ang) {
-    hm = skAng(hm, "संकटहर", "चतुर्थी", "अंगारकी ");
-    he = skAng(he, "Sankathara", "Chaturthi", "Angaraki ");
-  }
+  var hd = dd === 0 ? w.heads.today : dd === 1 ? w.heads.tomorrow : k === C.ni ? w.heads.next : k < C.ni ? w.heads.previous : w.heads.upcoming;
+  if (f.ang) hd = w.angaraki(hd);
   box.className = "skc" + (dd === 0 ? " today" : "");
   box.querySelector(".skt").innerHTML =
-    '<div class="skh"><span class="mr">' +
-    hm +
-    '</span><span class="en" lang="en">' +
-    he +
-    "</span></div>" +
-    '<div class="skd"><span class="mr">' +
-    f.dmr +
-    "</span>" +
+    '<div class="skh">' +
+    one(hd) +
+    "</div>" +
+    '<div class="skd">' +
+    one(f.day) +
     // a few days ahead: "in 14 days" badge (today and tomorrow are already in the heading)
-    (dd >= 2 ? '<span class="skin mr">' + skDV(dd) + " दिवसांनी</span>" : "") +
-    '<span class="en" lang="en">' +
-    f.den +
-    "</span>" +
-    (dd >= 2 ? '<span class="skin en" lang="en">in ' + dd + " days</span>" : "") +
+    (dd >= 2 ? one(w.inDays(dd), "skin") : "") +
     (o.day + 86400000 > Date.now()
       ? '<button type="button" class="skli" id="skcal" aria-label="' +
-        (P.ui === "en" ? "Add to calendar" : "कॅलेंडरमध्ये जोडा") +
+        w.addOne +
         '"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg></button>'
       : "") +
     "</div>" +
-    '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg><span class="mr">चंद्रोदय <b>' +
-    f.tmr +
-    '</b></span><span class="en" lang="en">Moonrise <b>' +
-    f.ten +
-    '</b></span><span class="skp" lang="en"><span class="skdt">· </span>' +
+    '<div class="skm"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" fill="currentColor"/></svg>' +
+    one(w.moonrise("<b>" + f.time + "</b>")) +
+    '<span class="skp" lang="en"><span class="skdt">· </span>' +
     L.en +
     '<button type="button" class="skli" id="skl" aria-label="' +
-    (P.ui === "en" ? (L.own ? "Update my location" : "Use my location") : L.own ? "माझे ठिकाण बदला" : "माझे ठिकाण वापरा") +
+    (L.own ? w.updateMy : w.useMy) +
     '"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></svg></button>' +
     "</span></div>" +
     '<div class="ske" lang="en">Moonrise ' +
@@ -664,9 +598,9 @@ function skCd() {
     L = skLoc();
   if (!x || !C || !L) return;
   var o = C.list[C.sel],
+    w = menuWords("card"),
     now = Date.now(),
-    m = [],
-    e = [];
+    m = [];
   if (Math.round((o.day - skMid()) / 86400000) !== 0) {
     x.hidden = true;
     return;
@@ -675,23 +609,17 @@ function skCd() {
     var d = new Date(o.day),
       t0 = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 19, 0).getTime(),
       t1 = t0 + 90 * 60000;
-    if (now < t0) {
-      m.push("आज पूजा सायं. ७:०० वाजता");
-      e.push("Pooja today at 7:00 pm");
-    } else if (now < t1) {
-      m.push("पूजा सुरू आहे");
-      e.push("Pooja in progress");
-    }
+    if (now < t0) m.push(w.poojaAt);
+    else if (now < t1) m.push(w.poojaNow);
   }
   if (o.rise && now < o.rise) {
     var mins = Math.ceil((o.rise - now) / 60000),
       h = Math.floor(mins / 60),
       mm = mins % 60;
-    m.push("चंद्रोदयाला " + (h ? skDV(h) + " तास " : "") + skDV(mm) + " मिनिटे");
-    e.push("Moonrise in " + (h ? h + " h " : "") + mm + " min");
+    m.push(w.moonIn(h, mm));
   }
   x.hidden = !m.length;
-  x.innerHTML = '<span class="mr">' + m.join(" · ") + '</span><span class="en" lang="en">' + e.join(" · ") + "</span>";
+  x.innerHTML = one(m.join(" · "));
 }
 
 // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.
@@ -752,7 +680,7 @@ function skIcs(all) {
     a.download = all ? "sankathara-all.ics" : "sankathara-" + dt(v1.d) + ".ics";
     document.body.appendChild(a);
     a.click();
-    flash("कॅलेंडर फाइल डाउनलोड झाली; ती उघडा", "Calendar file downloaded; open it to add " + (all ? "the events" : "the event"));
+    note(all ? menuWords("card").downloadedAll : menuWords("card").downloadedOne);
     setTimeout(function () {
       URL.revokeObjectURL(u);
       a.remove();
