@@ -21,6 +21,12 @@ export default {
     texts: texts,
     pick: "ઓછામાં ઓછો એક પાઠ પસંદ કરો",
   },
+  // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
+  session: {
+    sessions: { morning: "સવાર", afternoon: "બપોર", evening: "સાંજ" },
+    texts: texts,
+    ended: "આ સમય પૂરો થયો",
+  },
   // The top bar (js/features/bars.js)
   bar: {
     /** @param {string} t */

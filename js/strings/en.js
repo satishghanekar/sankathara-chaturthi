@@ -19,6 +19,15 @@ export default {
     },
     pick: "Pick at least one text",
   },
+  // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
+  session: {
+    sessions: { morning: "Morning", afternoon: "Afternoon", evening: "Evening" },
+    /** @param {number} n */
+    texts: function (n) {
+      return n + (n === 1 ? " text" : " texts");
+    },
+    ended: "End of the session",
+  },
   // The top bar (js/features/bars.js)
   bar: {
     /** The title's spoken name: what it does, then the words shown @param {string} t */

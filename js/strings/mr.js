@@ -18,6 +18,15 @@ export default {
     },
     pick: "किमान एक रचना निवडा",
   },
+  // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
+  session: {
+    sessions: { morning: "सकाळ", afternoon: "दुपार", evening: "संध्याकाळ" },
+    /** @param {number} n */
+    texts: function (n) {
+      return dv(n) + " रचना";
+    },
+    ended: "या वेळेची उपासना पूर्ण",
+  },
   bar: {
     /** @param {string} t */
     home: function (t) {

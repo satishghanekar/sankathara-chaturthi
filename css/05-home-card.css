@@ -430,14 +430,6 @@
   display: block;
   font: 400 12px/1.4 var(--lat);
 }
-.skc .ske {
-  display: none;
-}
-.skc[data-lang="both"] .ske {
-  display: block;
-  font: 400 12px/1.4 var(--lat);
-  color: var(--muted);
-}
 .skc[data-lang="en"] .skd {
   font: 600 1.1em/1.35 var(--lat);
 }
