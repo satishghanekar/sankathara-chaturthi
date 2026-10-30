@@ -9,7 +9,7 @@ import { SK } from "./astronomy.js";
 import { masaOf } from "../core/panchang.js";
 import { ADHIKA, PAKSHA, TITHI } from "../core/panchang-names.js";
 
-var SKTZ, SKCITY, skToday, foldTouched, pdMore;
+var SKTZ, SKCITY, skToday, foldTouched, pdMore, skOld;
 // The next Sankathara Chaturthi, worked out once (js/features/share.js reads it for the Share message)
 /** @type {any} */
 export var skCache = null;
@@ -221,6 +221,12 @@ export function init() {
   // "More dates" opens the strip and "Add all upcoming dates" (and on Sankashti day the App/Share/QR/Print/Help row);
   // it starts closed on every visit
   pdMore = false;
+  skOld = false;
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest("#skold")) return;
+    skOld = !skOld;
+    if (skCache) skOldSet(skCache.sel);
+  });
   document.addEventListener("click", function (e) {
     if (!e.target.closest || !e.target.closest("#skmore")) return;
     pdMore = !pdMore;
@@ -388,8 +394,9 @@ export function skRender() {
       return;
     }
     skCache = { key: key, list: first, ni: 0, sel: 0, part: 1 };
-    setTimeout(function () {
-      if (!skCache || skCache.key !== key) return;
+    /** @returns {boolean} whether the card was drawn with them */
+    var all = function () {
+      if (!skCache || skCache.key !== key) return false;
       try {
         var y = new Date().getFullYear(),
           list = SK.upcoming(new Date(y - 1, 0, 1).getTime(), L.lat, L.lon, 40).filter(function (o) {
@@ -400,10 +407,15 @@ export function skRender() {
           if (list[k].day >= today) {
             skCache = { key: key, list: list, ni: k, sel: k };
             skRender();
-            return;
+            return true;
           }
       } catch (e) {}
-    }, 50);
+      return false;
+    };
+    // Desktops show every date beside the card from the start (no More dates), so they work them out at once: added a
+    // moment later, they made the card grow after the page appeared. Elsewhere they wait behind More dates.
+    if (matchMedia("screen and (min-width: 1100px)").matches && all()) return;
+    if (skCache.part) setTimeout(all, 50);
   }
   var w = menuWords("card"),
     now = new Date(),
@@ -413,6 +425,18 @@ export function skRender() {
     var f = skFmt(o),
       d = f.d,
       Y = d.getFullYear();
+    // each year a group, its label shown from 600px wide (the dates there wrap a row a year; on phones they scroll
+    // in one strip, the year on the year's first date); last year's wait behind "Last year's dates" there
+    if (Y !== lastY)
+      chips +=
+        (lastY ? "</div></div>" : "") +
+        '<div class="skyr' +
+        (Y < now.getFullYear() ? " old" : "") +
+        '" role="group" aria-label="' +
+        Y +
+        '"><span class="sky" aria-hidden="true">' +
+        one(num(Y)) +
+        '</span><div class="skyc">';
     chips +=
       '<button type="button" role="option" class="skch' +
       (k < skCache.ni ? " past" : "") +
@@ -429,22 +453,33 @@ export function skRender() {
       "</button>";
     lastY = Y;
   });
+  chips += "</div></div>";
   var ph = skCache.part ? ' aria-hidden="true" style="visibility:hidden"' : "";
+  var cal =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>';
   box.hidden = false;
   inner.innerHTML =
     '<div class="skt"></div>' +
-    // the card's foot: Add to calendar (the date shown, when it is still to come: skShow) and More dates (CSS:
-    // #home.skn): everything below it waits behind this button
+    // the card's foot: Add to calendar (the date shown, when it is still to come: skShow), Add all to calendar (in its
+    // place while More dates is open; beside it on desktops) and More dates (CSS: #home.skn): the dates wait behind it
     '<div class="skft"><span class="skcw"></span>' +
+    '<button type="button" class="skfb" id="skall">' +
+    cal +
+    one(w.addAll) +
+    "</button>" +
     '<button type="button" class="skmore" id="skmore" aria-expanded="false">' +
     one(w.more) +
     '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>' +
-    '<div class="sktd">' +
+    // the dates: today's date, with "↩ Next date" at its end while another date is shown (Satish, 2026-10-30: not a
+    // line of its own), then the strip; on desktops all of it beside the card's details (.skdp)
+    '<div class="skdp"><div class="sktd">' +
     one(w.today(w.fullDate(now.getDay(), now.getDate(), now.getMonth(), now.getFullYear()))) +
-    "</div>" +
-    // The first, quick render has only the next date. The strip and the "Add all" button are already laid
-    // out, invisible, so the card is its full height before the page is shown and nothing below it jumps
-    // when the full list arrives (it moved the home page down by about 100px on a phone).
+    '<button type="button" class="skbn" id="skb" hidden>' +
+    one(w.back) +
+    "</button></div>" +
+    // The first, quick render has only the next date. The strip is already laid out, invisible, so the card is its
+    // full height before the page is shown and nothing below it jumps when the full list arrives (it moved the home
+    // page down by about 100px on a phone).
     '<div class="sks"' +
     ph +
     ' role="listbox" aria-orientation="horizontal" aria-label="' +
@@ -452,14 +487,9 @@ export function skRender() {
     '">' +
     chips +
     "</div>" +
-    '<button type="button" class="skl" id="skb" hidden>' +
-    one(w.back) +
-    "</button>" +
-    '<button type="button" class="skl" id="skall"' +
-    ph +
-    ">" +
-    one(w.addAll) +
-    "</button>";
+    '<button type="button" class="skl" id="skold" aria-expanded="false">' +
+    one(w.older) +
+    "</button></div>";
   skShow(skCache.sel);
   pdSet();
 }
@@ -559,8 +589,9 @@ function skShow(k, focus) {
     '<div class="skh">' +
     one(hd) +
     "</div>" +
+    // the date without its year (one line in every language); a year other than this one ends the month line
     '<div class="skd">' +
-    one(f.day) +
+    one(menuWords("sankashti").day(f.d.getDay(), f.d.getDate(), f.d.getMonth(), 0)) +
     "</div>" +
     // Beside the ring, under the date (Satish, 2026-10-30): the month line, then the moonrise and the place, one line
     // each, so a longer place name ("Lewis Center, OH") never pushes the card taller; it ends in "…" instead
@@ -568,6 +599,7 @@ function skShow(k, focus) {
     ui() +
     '">' +
     esc(nameOf(skMasa(o))) +
+    (f.d.getFullYear() !== new Date().getFullYear() ? " · " + num(f.d.getFullYear()) : "") +
     "</div>" +
     '<div class="skm">' +
     '<span class="skmr' +
@@ -604,7 +636,8 @@ function skShow(k, focus) {
   var st = box.querySelector(".sks"),
     on = null;
   if (!st) return;
-  [].forEach.call(st.children, function (b, i) {
+  skOldSet(k);
+  [].forEach.call(st.querySelectorAll(".skch"), function (b, i) {
     b.classList.toggle("on", i === k);
     b.setAttribute("aria-selected", String(i === k));
     b.tabIndex = i === k ? 0 : -1;
@@ -612,6 +645,19 @@ function skShow(k, focus) {
   });
   st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
   if (focus) on.focus({ preventScroll: true });
+}
+
+// Last year's dates (600px and wider, where the dates wrap a row a year): behind "Last year's dates", and shown
+// whenever the date picked is one of them (the arrow keys and Home reach them)
+function skOldSet(k) {
+  var box = document.getElementById("skc"),
+    b = document.getElementById("skold"),
+    C = skCache;
+  if (!box || !b || !C) return;
+  var on = skOld || new Date(C.list[k].day).getFullYear() < new Date().getFullYear();
+  box.classList.toggle("skoldon", on);
+  b.setAttribute("aria-expanded", String(on));
+  b.hidden = !box.querySelector(".skyr.old");
 }
 
 /**

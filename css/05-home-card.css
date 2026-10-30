@@ -327,21 +327,6 @@
   margin: -6px -8px -6px 2px;
   vertical-align: -3px;
 }
-.skc #skb:focus-visible,
-.skc #skall:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-}
-.skc #skb:not([hidden]),
-.skc #skall {
-  display: block;
-  margin: 6px auto 0;
-}
-.skc #skall {
-  margin: 2px auto -6px;
-  font-size: 12px;
-  color: var(--muted);
-}
 /* On the day: pooja time and moonrise countdown */
 .skc .skcd {
   margin-top: 2px;

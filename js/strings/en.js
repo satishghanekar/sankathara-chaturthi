@@ -294,8 +294,9 @@ export default {
     chipAng: ", Angaraki",
     more: "More dates",
     dates: "Sankathara Chaturthi dates",
-    back: "↩ Back to next Sankathara Chaturthi",
-    addAll: "Add all upcoming dates to calendar",
+    back: "↩ Next date",
+    addAll: "Add all to calendar",
+    older: "‹ Last year's dates",
     addOne: "Add to calendar",
     // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
     /** @param {number} n */

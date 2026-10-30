@@ -295,8 +295,9 @@ export default {
     chipAng: ", ಅಂಗಾರಕ",
     more: "ಇನ್ನಷ್ಟು ದಿನಾಂಕಗಳು",
     dates: "ಸಂಕಟಹರ ಚತುರ್ಥಿಯ ದಿನಾಂಕಗಳು",
-    back: "↩ ಮುಂದಿನ ಸಂಕಟಹರ ಚತುರ್ಥಿಗೆ ಹಿಂತಿರುಗಿ",
-    addAll: "ಮುಂಬರುವ ಎಲ್ಲ ದಿನಾಂಕಗಳನ್ನು ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
+    back: "↩ ಮುಂದಿನ ದಿನಾಂಕ",
+    addAll: "ಎಲ್ಲವನ್ನೂ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
+    older: "‹ ಕಳೆದ ವರ್ಷದ ದಿನಾಂಕಗಳು",
     addOne: "ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಿ",
     // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
     /** @param {number} n */
