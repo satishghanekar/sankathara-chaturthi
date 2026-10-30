@@ -36,10 +36,10 @@ There is no build step: the browser loads these files as they are.
 | `core/apply.js` | Nitya Upasana's file: the current piece (`cur()`), each piece's fold button (`foldSet()`, `unfold()` when it is gone to) and the menus |
 | `features/bottom-bar.js` | Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›, as in Nitya Upasana |
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
-| `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More on phones (`#spv`, `spTab()`; each `.sp-grp` says its tab); from 760px wide (`WIDE`: iPads and desktops) no tabs, every group at once, as in Nitya Upasana |
+| `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More on phones (`#spv`, `spTab()`; each `.sp-grp` says its tab); from 760px wide and 521px high (`WIDE`: iPads and desktops; a phone held sideways keeps the tabs) no tabs, every group at once, as in Nitya Upasana |
 | `features/dhrupad-button.js` | Dhrupad: `refToggle()` switches once / after every stanza, keeping the reader's place (used by the Aa sheet and Settings; no `init()`) |
 | `features/reading-sheet.js` | Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach |
-| `features/wake-lock.js` | Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested. |
+| `features/wake-lock.js` | Keep the screen on (Wake Lock) for the minutes chosen in Settings (`P.wake`: 0 off, 15, 30, 45, 60), counted from the last touch, key or scroll, then let go so the phone locks as usual. Browsers drop the lock when the page is hidden, so it is asked for again on the way back. |
 | `features/overlays.js` | Everything that opens over the page, listed once, as in Nitya Upasana (no `init()`): `LAYERS` (which keep Tab inside, which the phone's Back closes), and the two pages, Settings (`setP`) and the Library (`setJ`), opened and closed one way; read by `history.js` and `bottom-bar.js` |
 | `features/history.js` | Back button, and where the page is, as in Nitya Upasana: `jumpTo()`, Home on its own (`homeView()`), and one text at a time (`solo()`) |
 | `features/languages.js` | Settings page: languages |

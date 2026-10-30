@@ -182,6 +182,8 @@ export default {
     dark: "ಗಾಢ",
     highContrast: "ಹೆಚ್ಚಿನ ಕಾಂಟ್ರಾಸ್ಟ್",
     keepScreenOn: "ಪರದೆ ಆನ್ ಇರಲಿ",
+    afterLastTouch: "ಕೊನೆಯ ಸ್ಪರ್ಶದ ನಂತರ, ನಿಮಿಷಗಳು",
+    off: "ಆಫ್",
     about: "ಕುರಿತು",
     helpAndHowToUse: "ಸಹಾಯ ಮತ್ತು ಬಳಸುವ ವಿಧಾನ",
     addToHomeScreen: "ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ",

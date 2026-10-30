@@ -161,6 +161,8 @@ export default {
     dark: "गडद",
     highContrast: "अधिक ठळक",
     keepScreenOn: "स्क्रीन चालू ठेवा",
+    afterLastTouch: "शेवटच्या स्पर्शानंतर, मिनिटे",
+    off: "बंद",
     about: "माहिती",
     helpAndHowToUse: "मदत आणि वापर",
     addToHomeScreen: "होम स्क्रीनवर ठेवा",
