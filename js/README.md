@@ -36,7 +36,7 @@ There is no build step: the browser loads these files as they are.
 | `core/apply.js` | Nitya Upasana's file: the current piece (`cur()`), each piece's fold button (`foldSet()`, `unfold()` when it is gone to) and the menus |
 | `features/bottom-bar.js` | Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›, as in Nitya Upasana |
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
-| `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More (`#spv`, `spTab()`; each `.sp-grp` says its tab), as in Nitya Upasana |
+| `features/settings-panel.js` | Settings panel: its rows, and its tabs Reading \| Screen \| More on phones (`#spv`, `spTab()`; each `.sp-grp` says its tab); from 760px wide (`WIDE`: iPads and desktops) no tabs, every group at once, as in Nitya Upasana |
 | `features/dhrupad-button.js` | Dhrupad: `refToggle()` switches once / after every stanza, keeping the reader's place (used by the Aa sheet and Settings; no `init()`) |
 | `features/reading-sheet.js` | Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad, within thumb reach |
 | `features/wake-lock.js` | Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested. |
