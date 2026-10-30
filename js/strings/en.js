@@ -81,7 +81,6 @@ export default {
     update: { check: "Check for updates", busy: "Checking…", ok: "Up to date", off: "No internet", restart: "Close and reopen" },
     usingSaved: "No internet. Using the saved copy.",
     loading: "New version, loading…",
-    ready: "Ready to use offline",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "Updated to " + v + ". Close the app and open it again to finish.";
@@ -298,6 +297,17 @@ export default {
     back: "↩ Back to next Sankathara Chaturthi",
     addAll: "Add all upcoming dates to calendar",
     addOne: "Add to calendar",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return n + " days";
+    },
+    ringToday: "Today",
+    ringTomorrow: "Tomorrow",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "Yesterday" : n + " days ago";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return "in " + n + " days";

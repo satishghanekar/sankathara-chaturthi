@@ -366,21 +366,6 @@
 
 /* Vibrant home card (option B): gold glow behind the picture, warm date box, next date in the accent colour
    with an "in N days" badge, a gold ring on the chosen date chip, past dates dimmed */
-.top .hero {
-  background:
-    radial-gradient(closest-side, color-mix(in srgb, var(--gold) 38%, transparent), transparent) no-repeat center 0 / 150px 110px,
-    linear-gradient(180deg, var(--hdr), transparent);
-}
-#iconb img {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--gold) 55%, transparent));
-}
-.skc {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface) 55%);
-  border-color: color-mix(in srgb, var(--gold) 55%, var(--hdrl));
-}
-.skc.today {
-  border-color: var(--accent);
-}
 .skc .skh .en {
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -393,24 +378,6 @@
 .skc .skd {
   color: var(--accent);
   font-weight: 600;
-}
-.skc .skd .skin {
-  display: inline-block;
-  margin: 0 2px 0 8px;
-  padding: 0 9px;
-  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--accent);
-  font: 600 12px/1.6 var(--lat);
-  vertical-align: 4px;
-  white-space: nowrap;
-}
-.skc .skd .skin.mr {
-  font-family: var(--body);
-}
-.skc[data-lang="both"] .skd .skin.en {
-  display: none;
 }
 .skc .skch.on {
   box-shadow:
@@ -580,38 +547,6 @@ html[data-asb="1"] {
 }
 #home.skn .skc .skm b {
   font-weight: 600;
-}
-/* today's date chosen: "Moonrise" over the time in large type, the place under it */
-#home.pday .skc.today .skm {
-  margin-top: 8px;
-}
-#home.pday .skc.today .skm > svg {
-  display: none;
-}
-#home.pday .skc.today .skm > .mr,
-#home.pday .skc.today .skm > .en {
-  font-size: 15px;
-  color: var(--muted);
-}
-#home.pday .skc.today .skm b {
-  display: block;
-  font: 600 44px/1.15 var(--lat);
-  color: var(--ink);
-}
-#home.pday .skc.today .skm > .mr b {
-  font-family: var(--body);
-  font-size: 40px;
-}
-#home.pday .skc.today .skp {
-  flex-basis: 100%;
-  justify-content: center;
-}
-#home.pday .skc.today .skp .skdt {
-  display: none;
-}
-#home.pday .skc.today .skcd {
-  margin-top: 8px;
-  font-size: 15px;
 }
 
 /* ==== Reading sheet (Aa in the bottom bar): language, text size and dhrupad within thumb reach ====
@@ -822,4 +757,331 @@ html[data-asb="1"] {
 }
 :root[data-font]:not([data-font="std"]) #jl .tocg ol.toc .en {
   font-family: var(--tf), var(--lat);
+}
+
+/* ==== The date card in one piece (Satish, 2026-10-30): the app's picture in a ring that fills as the next Sankathara
+   Chaturthi comes nearer, the count under it; beside it the heading and the date (on the day itself, the moonrise),
+   then the moonrise and the place as chips, and a foot with Add to calendar and More dates. The frame around the
+   card and the picture (.top) shows only when the card is folded to its slim line. js/features/date-card.js ==== */
+.top:not(.fold) {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.top .hero {
+  margin: 0 0 8px;
+  padding: 0;
+  background: none;
+}
+.top .hero .hl1 {
+  font-size: 15px;
+  opacity: 0.9;
+}
+#cvb {
+  top: 0;
+  right: 0;
+}
+.skc {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  margin: 0 0 14px;
+  padding: 14px 14px 0;
+  border: 1px solid var(--hdrl);
+  border-radius: 18px;
+  background: var(--surface);
+  text-align: left;
+}
+.skc.today {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 8px 24px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.skc.noloc {
+  display: block;
+  padding-bottom: 10px;
+  text-align: center;
+}
+.skc.noloc .skr {
+  display: none;
+}
+#skx,
+.skc .skt {
+  display: contents;
+}
+/* the ring: the picture inside it, the count under it */
+.skc .skr {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  text-align: center;
+}
+.skc .skrw {
+  position: relative;
+  display: block;
+  width: 92px;
+  height: 92px;
+}
+.skc .skrs {
+  position: absolute;
+  inset: 0;
+  width: 92px;
+  height: 92px;
+}
+.skc .skr0,
+.skc .skr1 {
+  fill: none;
+  stroke-width: 6;
+}
+.skc .skr0 {
+  stroke: var(--hdrl);
+}
+.skc .skr1 {
+  stroke: var(--accent);
+  stroke-linecap: round;
+}
+.skc.today .skrs {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 55%, transparent));
+}
+.skc #iconb {
+  position: absolute;
+  inset: 12px;
+  width: 68px;
+  height: 68px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+}
+.skc #iconb img {
+  display: block;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: none;
+}
+.skc .skrc {
+  display: block;
+  margin-top: 4px;
+}
+.skc .skrc1 {
+  display: block;
+  color: var(--accent);
+  font: 700 13px/1.2 var(--lat);
+}
+.skc .skrc2 {
+  display: block;
+  color: var(--muted);
+  font: 500 11.5px/1.25 var(--body);
+}
+.skc .skrc [lang="mr"],
+.skc .skrc [lang="kn"],
+.skc .skrc [lang="te"],
+.skc .skrc [lang="gu"] {
+  font-family: var(--body);
+}
+.skc .skrc2[lang="en"] {
+  font-family: var(--lat);
+}
+/* beside the ring: the heading, then the date (or on the day the moonrise) large */
+.skc .skh,
+#home.skn .skc .skh {
+  grid-column: 2;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font: 600 13px/1.3 var(--lat);
+  letter-spacing: 0.01em;
+}
+.skc .skh .en,
+.skc .skh .mr {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 1em;
+}
+.skc .skh .mr {
+  font-family: var(--body);
+}
+.skc .skd,
+#home.skn .skc .skd,
+#home.skn .skc[data-lang="en"] .skd {
+  grid-column: 2;
+  margin: 2px 0 0;
+  color: var(--accent);
+  font: 400 26px/1.2 var(--head);
+}
+#home.skn .skc[data-lang="en"] .skd {
+  font: 600 24px/1.2 var(--lat);
+}
+.skc .skdm {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--ink);
+}
+.skc .skdm svg {
+  align-self: center;
+  color: var(--gold);
+}
+.skc .skdm .en,
+.skc .skdm .mr {
+  font: 500 15px/1.2 var(--lat);
+  color: var(--muted);
+}
+.skc .skdm .mr {
+  font-family: var(--body);
+}
+.skc .skdm b {
+  margin-left: 4px;
+  color: var(--ink);
+  font: 600 28px/1.1 var(--lat);
+  white-space: nowrap;
+}
+.skc .skd2 {
+  grid-column: 2;
+  margin-top: 2px;
+  color: var(--muted);
+  font: 400 14px/1.3 var(--lat);
+}
+.skc .skd2 .mr {
+  font-family: var(--body);
+}
+/* the chips: on the day the time left first, then the moonrise and the place */
+.skc .skm,
+#home.skn .skc .skm,
+#home.pday .skc.today .skm {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px;
+  margin: 12px 0 0;
+  font-size: 13.5px;
+}
+.skc .skm > .skmr,
+.skc .skm > .skp,
+.skc .skm .skcc,
+#home.pday .skc.today .skm > .skp {
+  display: inline-flex;
+  flex-basis: auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 34px;
+  margin: 0;
+  padding: 0 9px;
+  border: 1px solid var(--hdrl);
+  border-radius: 99px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 13px/1.2 var(--lat);
+  white-space: nowrap;
+}
+.skc .skm > .skp {
+  padding-right: 0;
+}
+.skc .skm > .skp .skli {
+  margin: 0;
+}
+/* on the day: the pooja's time and the time left, a chip each */
+.skc .skm > .skcd:not([hidden]),
+#home.pday .skc.today .skcd {
+  display: contents;
+}
+.skc .skm .skmr b,
+#home.skn .skc .skm b {
+  font-weight: 600;
+}
+.skc .skm .mr {
+  font-family: var(--body);
+}
+.skc .skm .skdt {
+  display: none;
+}
+.skc .skm .skcc {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+/* the foot: Add to calendar | More dates */
+.skc .skft {
+  grid-column: 1 / -1;
+  display: flex;
+  margin: 12px -14px 0;
+  border-top: 1px solid var(--hdrl);
+}
+.skc .skcw {
+  display: contents;
+}
+.skc .skfb,
+#home.skn .skc .skmore {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  height: auto;
+  min-height: 46px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font: 600 14px/1.2 var(--lat);
+  cursor: pointer;
+}
+.skc .skfb + .skmore,
+#home.skn .skc .skfb + .skmore {
+  border-left: 1px solid var(--hdrl);
+}
+.skc .skfb .mr,
+#home.skn .skc .skmore .mr {
+  font-family: var(--body);
+}
+.skc .skfb:focus-visible,
+.skc .skmore:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+/* under More dates: today's date, the strip of dates, Back to the next and Add all, across the card */
+.skc .sktd,
+.skc .sks,
+.skc #skb,
+.skc #skall {
+  grid-column: 1 / -1;
+}
+#home.skn:not(.pmore) .skc .sktd {
+  display: none;
+}
+#home.skn .skc .sktd {
+  margin: 8px 0 0;
+  padding: 0 0 4px;
+  border: 0;
+  text-align: center;
+}
+.skc #skall {
+  margin: 4px auto 6px;
+}
+/* Large phones, tablets and desktops: the chips beside the ring, under the date, and the foot's two buttons together
+   on the left, rather than spread across a wide card */
+@media (min-width: 600px) {
+  .skc .skm,
+  #home.skn .skc .skm,
+  #home.pday .skc.today .skm {
+    grid-column: 2;
+    margin-top: 10px;
+  }
+  .skc .skft {
+    margin-top: 14px;
+    padding: 0 6px;
+  }
+  .skc .skfb,
+  #home.skn .skc .skmore {
+    flex: none;
+    padding: 0 18px;
+  }
 }

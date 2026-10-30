@@ -430,7 +430,9 @@ test("home card folds to one line and opens again @mobile", async ({ page }) => 
 test("on Sankashti day the card leads with moonrise, and More dates opens the rest @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi, { now: new Date("2026-10-28T17:30:00-04:00") });
   await expect(page.locator("#home")).toHaveClass(/\bpday\b/);
-  await expect(page.locator("#skc .skm b").last()).toHaveText(/pm/);
+  // the moonrise is the large line beside the ring (Satish, 2026-10-30), the ring full and its count Today
+  await expect(page.locator("#skc .skdm b")).toHaveText(/pm/);
+  await expect(page.locator("#skrc")).toContainText("Today");
   const more = page.locator("#skmore");
   await expect(more).toBeVisible();
   await expect(more).toHaveAttribute("aria-expanded", "false");
@@ -447,7 +449,8 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#home")).not.toHaveClass(/\bpday\b/);
   await expect(page.locator("#skc .skh").first()).toHaveText(/^(Angaraki )?Next Chaturthi date$/);
-  await expect(page.locator("#skc .sktd")).toBeVisible();
+  // today's date waits under More dates with the strip (the ring's count says how far the date is)
+  await expect(page.locator("#skc .sktd")).toBeHidden();
   const more = page.locator("#skmore");
   await expect(more).toBeVisible();
   await expect(more).toHaveAttribute("aria-expanded", "false");
@@ -455,10 +458,38 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
+  await expect(page.locator("#skc .sktd")).toBeVisible();
   // (a page of its own: the set-up is given on a page's first visit)
   const mr = await page.context().newPage();
   await openSite(mr, SETUPS["marathi-menus"]);
   await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
+});
+
+// The card in one piece (Satish, 2026-10-30): the picture in a ring that fills as the next Sankathara Chaturthi comes
+// nearer, how far it is under it in the reading languages; the moonrise and the place as chips; Add to calendar and
+// More dates at its foot. 30 Oct 2026: the next is 27 Nov, 28 days off, the ring a little filled
+test("the card: the picture in a ring that fills as the day comes nearer, the count under it @mobile", async ({ page }) => {
+  await openSite(page, { ...SETUPS.marathi, lang: "both" }, { now: new Date("2026-10-30T09:00:00-04:00") });
+  await expect(page.locator("#skrc .skrc1")).toHaveText("२८ दिवस");
+  await expect(page.locator("#skrc .skrc2")).toHaveText("28 days");
+  const fill = () => page.locator("#skc .skr1").evaluate((c) => parseFloat(c.getAttribute("stroke-dasharray")));
+  const early = await fill();
+  expect(early).toBeGreaterThan(0);
+  expect(early).toBeLessThan(40);
+  // the picture still opens full screen
+  await expect(page.locator("#skc #iconb")).toBeVisible();
+  // the chips and the foot
+  await expect(page.locator("#skc .skmr")).toContainText("Moonrise");
+  await expect(page.locator("#skc .skp")).toContainText("Columbus");
+  await expect(page.locator("#skcal")).toHaveText(/Add to calendar/);
+  // the day before: nearly full, Tomorrow
+  await page.clock.setFixedTime(new Date("2026-11-26T09:00:00-05:00"));
+  await page.reload();
+  await settle(page);
+  await expect(page.locator("#skrc .skrc1")).toHaveText("उद्या");
+  expect(await fill()).toBeGreaterThan(200);
+  // no "Ready to use offline" over the card (the badge in Settings → About says it)
+  await expect(page.locator("#fl")).not.toHaveText("Ready to use offline");
 });
 
 // Kannada menus (js/strings/kn.js), with the texts in Kannada letters: the card, the bars and Settings in Kannada,

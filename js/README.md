@@ -28,7 +28,7 @@ There is no build step: the browser loads these files as they are.
 | `text/iast.js` | IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks), Nitya Upasana's file: each piece's English lines and titles in the chosen style as it is built (`onPiece`), `trSet()` to switch, `englishStyle()` for a copy out of the page, `titleText()` for a title as its heading shows it, `iaTitle()` for a title in IAST, each word capitalised |
 | `text/layout.js` | Layout helpers that run once |
 | `features/astronomy.js` | Astronomy for the Next Sankathara Chaturthi card |
-| `features/date-card.js` | Next Sankathara Chaturthi card (computed on this device; works offline) |
+| `features/date-card.js` | Next Sankathara Chaturthi card (computed on this device; works offline), in one piece (Satish, 2026-10-30): the app's picture in a ring that fills as the date shown comes nearer (`skRing()`: from the Sankashti before it, else a moon's month), how far it is under it in the reading languages; beside it the heading and the date (on the day, the moonrise large); the moonrise and the place as chips (on the day, the pooja's time and the time left first); a foot with Add to calendar and More dates (the strip of dates, today's date, Add all) |
 | `text/dhrupad-markers.js` | Tappable dhrupad markers (every text with refrain: every-verse) |
 | `text/stanza-numbers.js` | Stanza numbers |
 | `text/line-breaks.js` | Preferred line breaks |
@@ -57,6 +57,6 @@ There is no build step: the browser loads these files as they are.
 | `print/compose.js` | Nitya Upasana's file: the texts to print, built afresh from the text files (with the script, English style, stanza numbers and line breaks) for each printout, whatever the reading page shows |
 | `print/what.js` | The print builder's What step (as Nitya Upasana's, its Library tab): the texts under वैदिक मंत्र and आरती with ticks, search, Select all and Clear (no `init()`: `features/print.js` creates it) |
 | `features/share.js` | Share, QR code and the Add to Home Screen buttons |
-| `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js) |
+| `features/offline.js` | Offline use: home-screen app details and the service worker (sw.js); the badge in Settings → About says when the site is saved for offline use (no message over the page: it covered the home card) |
 
 `npm run lint` in `tests/` checks every file for mistakes, and for browser features that the oldest supported browsers (iOS 15.4) lack.

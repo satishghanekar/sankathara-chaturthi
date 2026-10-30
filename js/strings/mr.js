@@ -72,7 +72,6 @@ export default {
     update: { check: "अपडेट तपासा", busy: "तपासत आहे…", ok: "सर्व अद्ययावत आहे", off: "इंटरनेट नाही", restart: "ॲप बंद करून पुन्हा उघडा" },
     usingSaved: "इंटरनेट नाही. जतन केलेली प्रत वापरत आहे.",
     loading: "नवीन आवृत्ती, उघडत आहे…",
-    ready: "ऑफलाइन वापरासाठी तयार",
     /** @param {string} v the new version ("v1.37.17") */
     reopen: function (v) {
       return "आवृत्ती " + v + " जतन झाली. पूर्ण करण्यासाठी ॲप बंद करून पुन्हा उघडा.";
@@ -286,6 +285,17 @@ export default {
     back: "↩ पुढील संकटहर चतुर्थीवर परत",
     addAll: "सर्व पुढील तारखा कॅलेंडरमध्ये जोडा",
     addOne: "कॅलेंडरमध्ये जोडा",
+    // the count under the card's ring (js/features/date-card.js): how far the date shown is from today
+    /** @param {number} n */
+    ringDays: function (n) {
+      return dv(n) + " दिवस";
+    },
+    ringToday: "आज",
+    ringTomorrow: "उद्या",
+    /** @param {number} n */
+    ringAgo: function (n) {
+      return n === 1 ? "काल" : dv(n) + " दिवसांपूर्वी";
+    },
     /** @param {number} n */
     inDays: function (n) {
       return dv(n) + " दिवसांनी";

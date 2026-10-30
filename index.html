@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.8.12">
+<meta name="version" content="aarti-v1.8.13">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -305,11 +305,18 @@
     <button type="button" id="cvb" aria-expanded="true" aria-controls="skc" aria-label="Fold the card"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg></button>
     <div id="slim" hidden><img src="picture-360.webp" alt="" width="44" height="44"><div id="slimt"></div></div>
     <div class="hero">
-      <!-- The app's picture; a tap opens it full screen (#pzv), where it can be pinched or double-tapped to zoom -->
-      <button type="button" id="iconb" aria-label="Show the picture full screen"><img src="picture-360.webp" fetchpriority="high" alt="" width="360" height="360"></button>
       <div class="hl1" aria-hidden="true">॥ श्री गणेशाय नमः ॥</div>
     </div>
-    <div id="skc" class="skc" hidden></div>
+    <!-- The card (Satish, 2026-10-30): the app's picture in a ring that fills as the next Sankathara Chaturthi comes
+         nearer, the count under it (js/features/date-card.js); a tap on the picture opens it full screen (#pzv), where
+         it can be pinched or double-tapped to zoom. Beside it and under it, the date, moonrise and place (#skx) -->
+    <div id="skc" class="skc" hidden>
+      <div class="skr">
+        <span class="skrw"><svg class="skrs" viewBox="0 0 92 92" aria-hidden="true"><circle class="skr0" cx="46" cy="46" r="40"/><circle class="skr1" cx="46" cy="46" r="40" stroke-dasharray="0 252" transform="rotate(-90 46 46)"/></svg><button type="button" id="iconb" aria-label="Show the picture full screen"><img src="picture-360.webp" fetchpriority="high" alt="" width="360" height="360"></button></span>
+        <span class="skrc" id="skrc"></span>
+      </div>
+      <div id="skx"></div>
+    </div>
     <h1 class="sr"><span data-w="page.sankatharaChaturthi">Sankathara Chaturthi</span></h1>
     </div>
     <!-- The session's texts (js/features/session-card.js, from content/routines.json), as Nitya Upasana's Today card
