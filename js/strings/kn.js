@@ -321,7 +321,6 @@ export default {
     updateMy: "ನನ್ನ ಸ್ಥಳವನ್ನು ನವೀಕರಿಸಿ",
     open: "ಕಾರ್ಡ್ ತೆರೆಯಿರಿ",
     fold: "ಕಾರ್ಡ್ ಮಡಚಿ",
-    folded: "ಕಾರ್ಡ್ ಮಡಚಲಾಗಿದೆ · ತೆರೆಯಲು ಅದರ ಸಾಲನ್ನು ಒತ್ತಿ",
     /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
     moonLeft: function (h, m) {
       return (h > 0 ? h + " ಗಂ " : "") + m + " ನಿಮಿಷದಲ್ಲಿ";

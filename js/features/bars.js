@@ -3,7 +3,7 @@
 
 import { onPiece, root } from "../core/page.js";
 import { P, setLead } from "../core/state.js";
-import { cardFoldSet, skDot, skRender } from "./date-card.js";
+import { cardFoldSet, skRender } from "./date-card.js";
 import { sessionLang } from "./session-card.js";
 import { autoFs, pullSoon } from "../text/autofit.js";
 import { cur, foldSet, unfold } from "../core/apply.js";
@@ -287,13 +287,13 @@ export function apply() {
   root.style.setProperty("--fs", P.fs + "px");
   pullSoon();
   // The date card is rebuilt only when the menu language or the day changes (rebuilding it on
-  // every language switch cost a second page layout on slow phones); otherwise just re-check its wrap
+  // every language switch cost a second page layout on slow phones)
   var sk = P.ui + new Date().toDateString();
   try {
     if (sk !== skKey) {
       skKey = sk;
       skRender();
-    } else skDot();
+    }
   } catch (e) {}
   cardFoldSet();
   // the session's heading and titles follow the reading languages, its words the menu language

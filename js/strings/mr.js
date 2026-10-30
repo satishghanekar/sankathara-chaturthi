@@ -308,7 +308,6 @@ export default {
     updateMy: "माझे ठिकाण बदला",
     open: "कार्ड उघडा",
     fold: "कार्ड मिटवा",
-    folded: "कार्ड मिटवले · उघडण्यासाठी ओळीवर टॅप करा",
     /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
     moonLeft: function (h, m) {
       return (h > 0 ? dv(h) + " तास " : "") + dv(m) + " मिनिटांत";

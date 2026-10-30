@@ -315,7 +315,6 @@ export default {
     updateMy: "મારું સ્થાન તાજું કરો",
     open: "કાર્ડ ખોલો",
     fold: "કાર્ડ વાળી દો",
-    folded: "કાર્ડ વાળી દીધું · ખોલવા તેની લીટી દબાવો",
     /** the time left before the moonrise, in the moonrise chip on the day @param {number} h @param {number} m */
     moonLeft: function (h, m) {
       return (h > 0 ? h + " કલાક " : "") + m + " મિનિટમાં";
