@@ -4,13 +4,14 @@
 
 import { fitPreview } from "./languages.js";
 import { FSA } from "../text/autofit.js";
-import { flash } from "../core/page.js";
+import { flash, note } from "../core/page.js";
 import { P, dfs, change } from "../core/state.js";
 import { trSet } from "../text/iast.js";
 import { refit } from "../text/autofit.js";
 import { cur, pn } from "../core/apply.js";
 import { apply } from "./bars.js";
 import { buildIX } from "../text/search.js";
+import { menuWords } from "../core/strings.js";
 
 var fsT;
 
@@ -142,7 +143,7 @@ export function trPick(v) {
       }
     });
     if (bad.length) {
-      flash("बदल पूर्ण झाला नाही (" + bad.join("; ") + ")", "Could not finish the change (" + bad.join("; ") + ")");
+      note(menuWords("settings").failed(bad.join("; ")));
       var zt = document.getElementById("fl");
       zt.classList.add("err");
       clearTimeout(flash.t);

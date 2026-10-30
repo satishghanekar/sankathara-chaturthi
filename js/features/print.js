@@ -13,12 +13,13 @@
 // Nothing is measured, so every browser prints the same way, at once, from the tap that asked for it. The contents
 // list the texts without page numbers, and no page has a border (Satish, 2026-10-28, as in Nitya Upasana).
 
-import { flash, pieceEl, root } from "../core/page.js";
+import { note as message, pieceEl, root } from "../core/page.js";
 import { LEAD, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
 import { compose } from "../print/compose.js";
 import { createWhat, whatWords } from "../print/what.js";
+import { menuWords } from "../core/strings.js";
 
 // The page each printout is made for: one language upright, both languages side by side on a sideways page
 var CHOICE = { one: { page: "up" }, both: { page: "land" } };
@@ -46,7 +47,7 @@ export function init() {
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
     // the original's language, by the letters it is shown in (P.ind), as the Print pop-up names it: in Marathi
     // menus, then in English. A new script (js/render.js) adds its name here.
-    var NAMES = { mr: ["मराठी", "Marathi"], kn: ["कन्नड", "Kannada"] };
+
     // The printout's language: picked under How (the original, English or both), else as the page shows it (P.lang).
     // Like the font, it is the printout's only: the reading page keeps its own
     function plang() {
@@ -567,13 +568,12 @@ export function init() {
     }
     function preview() {
       if (pm.hidden) return;
-      var M = P.ui === "mr",
-        ids = first(),
+      var ids = first(),
         m = dm(),
         k = ids ? [m, ids[0], plang(), LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter()].join("|") : "",
         sh = sheet(m),
         w = 120; // its width (css/03-menus-print-view.css .prsheet)
-      shv.setAttribute("aria-label", M ? "पहिल्या पानाची झलक" : "Preview of the first page");
+      shv.setAttribute("aria-label", menuWords("print").preview);
       shv.style.height = Math.round((w * sh[1]) / sh[0]) + "px";
       if (k === pshown && shv.firstChild) return;
       pshown = k;
@@ -853,7 +853,7 @@ export function init() {
       try {
         navigator.clipboard.writeText(u).then(
           function () {
-            flash("लिंक कॉपी झाली: Safari मध्ये पेस्ट करा", "Link copied: paste it into Safari");
+            message(menuWords("print").linkCopied);
           },
           function () {
             window.prompt("Copy this link and paste it into Safari", u);
@@ -898,7 +898,7 @@ export function init() {
     /** @param {string} mode */
     function go(mode) {
       last = mode;
-      if (!what.total().texts) return flash("किमान एक रचना निवडा", "Pick at least one text");
+      if (!what.total().texts) return message(menuWords("print").pick);
       // the iPhone Home Screen app cannot print: straight to Open in Safari
       if (iOS && standalone) return toSafari(true);
       pm.hidden = true;
@@ -922,15 +922,15 @@ export function init() {
       pmMode(false);
       // the language names follow what is printed: the original's place holds Marathi or Kannada, and with
       // both languages shown the main one comes first (left, or on top)
-      var M = P.ui === "mr",
-        en = M ? "इंग्रजी" : "English",
-        or = (NAMES[P.ind] || NAMES.mr)[M ? 0 : 1],
+      var pw = menuWords("print"),
+        en = pw.langs.en,
+        or = P.ind === "kn" ? pw.langs.kn : pw.langs.mr,
         l1 = LEAD === "en" ? en : or,
         l2 = LEAD === "en" ? or : en;
       // the page: Portrait or Landscape (one language), a tap picks it; both languages: Landscape, side by side
       /** @param {HTMLElement} b @param {string} page */
       function opt(b, page) {
-        b.textContent = page === "land" ? (M ? "आडवे" : "Landscape") : M ? "उभे" : "Portrait";
+        b.textContent = page === "land" ? pw.landscape : pw.portrait;
         b.setAttribute("data-page", page);
         b.onclick = function () {
           change({ por: page });
@@ -949,7 +949,7 @@ export function init() {
         var b = document.createElement("button");
         b.type = "button";
         b.setAttribute("data-v", v);
-        b.textContent = v === "both" ? (M ? "दोन्ही" : "Both") : v === "en" ? en : or;
+        b.textContent = v === "both" ? pw.both : v === "en" ? en : or;
         lg.appendChild(b);
       });
       lg.onclick = function (e) {
@@ -963,17 +963,11 @@ export function init() {
         refresh();
       };
       langRow();
-      /** @type {HTMLElement} */ (document.getElementById("prpv")).textContent = !FEAT_SW
-        ? M
-          ? "उभे: वर " + l1 + ", खाली " + l2
-          : "Portrait: " + l1 + " above " + l2
-        : M
-          ? "आडवे: शेजारी शेजारी"
-          : "Landscape, side by side";
+      /** @type {HTMLElement} */ (document.getElementById("prpv")).textContent = !FEAT_SW ? pw.stacked(l1, l2) : pw.side;
       pages1();
       rows();
       paperRow();
-      /** @type {HTMLElement} */ (document.getElementById("prx")).setAttribute("aria-label", M ? "रद्द" : "Cancel");
+      /** @type {HTMLElement} */ (document.getElementById("prx")).setAttribute("aria-label", pw.cancel);
       // What, drawn afresh (the reading languages and the menu language may have changed), with the texts last left out
       what.render();
       what.set(
