@@ -24,7 +24,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the Sankashti-day home card and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
-| `09-settings-page.css` | The Settings page and Kannada letters. |
+| `09-settings-page.css` | The Settings page and Kannada, Telugu and Gujarati letters (each script's faces as `--ks`, `--kc`, `--kh`). |
 | `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
 | `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
@@ -46,7 +46,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-hv`: Home on its own (no text open); the texts below it are not shown.
   - `data-home`: Home is on screen: the bottom bar keeps only the Library and Aa, and the bars never tuck away.
   - `data-run`: a session from Home is being read: only its texts (`.inrun`), in session order, in one scroll. Otherwise one text at a time (`.solo`), as in Nitya Upasana.
-  - `data-lead="en"`: English is the main language; `data-scr`: Kannada letters.
+  - `data-lead="en"`: English is the main language; `data-scr`: Kannada, Telugu or Gujarati letters (`kn`, `te`, `gu`).
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 
 ## Breakpoints

@@ -38,6 +38,8 @@ var SITE_PARTS = (function () {
     "strings/en",
     "strings/mr",
     "strings/kn",
+    "strings/te",
+    "strings/gu",
     "core/strings",
     "store/migrate",
     "core/features",
