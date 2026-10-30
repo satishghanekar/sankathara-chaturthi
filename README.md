@@ -87,7 +87,7 @@ Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in pla
 
 ### The version
 
-Phones keep a saved copy of the site and always open from it, without asking the network, so the site starts quickly even on a weak connection. Phones download files again only when the version changes: opening the site online notices the new `sw.js`, which saves a whole new copy in the background (the fonts are carried over), and the next launch opens the new version. So a change reaches phones only with a new version. **Check for updates** (a tap on the version line in Settings → More → About) compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
+Phones keep a saved copy of the site and always open from it, without asking the network, so the site starts quickly even on a weak connection. Phones download files again only when the version changes: opening the site online notices the new `sw.js`, which saves a whole new copy in the background (the fonts are carried over), and the next launch opens the new version. So a change reaches phones only with a new version. **Check for updates** (the round button beside the version in Settings → More → About) compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
 
 The version is what Settings → More → About shows. It appears in **two** places, and both must always be the **same**:
 
