@@ -9,7 +9,18 @@ import en from "../../js/strings/en.js";
 const LISTS = [];
 
 // The parts whose words are in the catalog; each one moved adds its file here
-const MOVED = ["js/print/what.js"];
+const MOVED = [
+  "js/print/what.js",
+  "js/features/offline.js",
+  "js/text/search.js",
+  "js/features/share.js",
+  "js/features/reading-sheet.js",
+  "js/features/languages.js",
+  "js/features/dhrupad-button.js",
+  "js/features/bottom-bar.js",
+  "js/features/settings-panel.js",
+  "js/features/pinch.js",
+];
 
 /** Every word's path in a set of words, with what kind it is: "string", "function/2" (two values), "list/12" */
 function shape(o, at = "") {
