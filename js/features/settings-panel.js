@@ -11,7 +11,8 @@ import { refit } from "../text/autofit.js";
 import { cur, pn } from "../core/apply.js";
 import { apply } from "./bars.js";
 import { buildIX } from "../text/search.js";
-import { menuWords } from "../core/strings.js";
+import { LANGS, menuWords } from "../core/strings.js";
+import { esc } from "../core/words.js";
 
 var fsT;
 
@@ -66,7 +67,14 @@ export function init() {
       refit();
     });
   };
-  document.getElementById("su").onclick = function (e) {
+  // the menu languages: one button each, from the catalog (js/strings/), named in its own letters
+  var su = /** @type {HTMLElement} */ (document.getElementById("su"));
+  su.innerHTML = Object.keys(LANGS)
+    .map(function (code) {
+      return '<button type="button" data-v="' + code + '" lang="' + code + '">' + esc(menuWords("language", code).name) + "</button>";
+    })
+    .join("");
+  su.onclick = function (e) {
     var v = (e.target.closest("button") || { dataset: {} }).dataset.v;
     if (v) {
       change({ ui: v }, apply);
