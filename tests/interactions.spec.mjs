@@ -370,15 +370,16 @@ for (const [setup, sans, classic, hand] of [
     });
 
 // The menus are English or the language the texts are shown in, never mixed (as in Nitya Upasana): picking other
-// letters takes menus in the old letters' language to the new letters' language, and leaves English menus English
-for (const [from, pick, want] of [
-  ["mr", "kn", "ಓದು"],
-  ["mr", "te", "పఠనం"],
-  ["mr", "gu", "વાંચન"],
-  ["en", "te", "Reading"],
+// letters puts the menus back to English, and Settings then offers English and the new letters' language
+for (const [from, ind, pick] of [
+  ["mr", "mr", "kn"],
+  ["mr", "mr", "te"],
+  ["kn", "kn", "gu"],
+  ["en", "mr", "te"],
 ])
-  test(`${from} menus, then ${pick} letters picked in Settings: the menus follow the rule`, async ({ page }) => {
-    await openSite(page, { ...SETUPS.marathi, ui: from });
+  test(`${from} menus, then ${pick} letters picked in Settings: the menus go back to English`, async ({ page }) => {
+    const want = "Reading";
+    await openSite(page, { ...SETUPS.marathi, ind, ui: from });
     await page.locator("#aa").click();
     await page.locator("#sl1s").selectOption(pick);
     await page.locator("#xc").click();
