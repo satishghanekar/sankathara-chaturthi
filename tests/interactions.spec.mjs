@@ -302,9 +302,10 @@ test("on Sankashti day the card leads with moonrise, and More dates opens the re
 
 // Other days: the card leads with the next Chaturthi date and its moonrise too, with the date strip under More dates
 test("on other days the card leads with the next Chaturthi date, and More dates opens the strip @mobile", async ({ page }) => {
+  // (in the menu language: English here, Marathi with Marathi menus)
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#home")).not.toHaveClass(/\bpday\b/);
-  await expect(page.locator("#skc .skh").first()).toContainText("पुढील चतुर्थी");
+  await expect(page.locator("#skc .skh").first()).toHaveText(/^(Angaraki )?Next Chaturthi date$/);
   await expect(page.locator("#skc .sktd")).toBeVisible();
   const more = page.locator("#skmore");
   await expect(more).toBeVisible();
@@ -313,6 +314,10 @@ test("on other days the card leads with the next Chaturthi date, and More dates 
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#skc .sks")).toBeVisible();
+  // (a page of its own: the set-up is given on a page's first visit)
+  const mr = await page.context().newPage();
+  await openSite(mr, SETUPS["marathi-menus"]);
+  await expect(mr.locator("#skc .skh").first()).toHaveText(/^पुढील (अंगारकी )?चतुर्थी$/);
 });
 
 // Reading sheet: Aa in the bottom bar; language, text size and dhrupad in one place, within thumb reach

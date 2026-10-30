@@ -34,8 +34,6 @@ A word a language lacks is taken from English. `tests/unit/strings.test.mjs` che
 3. If it is written in letters the site has no font for, add one (`fonts/`, `css/00-fonts.css`) and give `.gu` (the class the filled words take) that font.
 4. `npm run unit` says what is missing.
 
-Not yet in the catalog: the Sankathara card on Home (`js/features/date-card.js`), which still writes its words in both languages as `.mr` and `.en` spans shown by `data-lang`.
-
 ## Where the state lives
 
 - **`P`** (`js/core/state.js`) holds everything the reader chose: languages, theme, font, text size, folds, the highlighted line, and so on.
