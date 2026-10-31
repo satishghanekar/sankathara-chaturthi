@@ -350,12 +350,12 @@ test("Settings opens, changes theme, high contrast and font, and closes with Bac
   await page.locator("#tc").click();
   expect(await rootAttr(page, "data-hc")).toBe("1");
   await settingsTab(page, "read");
-  await page.locator('#sfn button[data-v="classic"]').click();
-  expect(await rootAttr(page, "data-font")).toBe("classic");
+  await page.locator('#sfn button[data-v="bold"]').click();
+  expect(await rootAttr(page, "data-font")).toBe("bold");
   await page.locator("#xc").click();
   await expect(page.locator("#panel")).toBeHidden();
   const p = await prefs(page);
-  expect([p.th, p.hc, p.fnt]).toEqual(["sepia", 1, "classic"]);
+  expect([p.th, p.hc, p.fnt]).toEqual(["sepia", 1, "bold"]);
 });
 
 test("text size A+ / A− / reset", async ({ page }) => {
@@ -619,18 +619,18 @@ test("Kannada menus: the card, the bars and Settings in Kannada, marked as Kanna
   await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
 });
 
-// Each script's own faces for each text font (css/09-settings-page.css --ks, --kc, --kh): Standard, Classic, and for
-// Handwritten Hubballi for Kannada, the Classic face for Telugu and Gujarati; the Atharvashirsha (#p1) keeps a face
-// that draws its Vedic marks
-for (const [setup, sans, classic, hand] of [
-  ["kannada", "Noto Sans Kannada", "SC Kn Classic", "SC Kn Hand"],
-  ["telugu", "Noto Sans Telugu", "SC Te Classic", "SC Te Classic"],
+// Each script's own faces for each text font (css/09-settings-page.css --ks, --kf), as in Nitya Upasana: Noto Sans in
+// Modern, Tiro in Traditional (Gujarati: Noto Serif, as Tiro has none), Noto Serif in Bold. Each draws the Vedic marks,
+// so the Atharvashirsha (#p1) takes the same face
+for (const [setup, sans, trad, serif] of [
+  ["kannada", "Noto Sans Kannada", "SC Kn Tiro", "SC Kn Classic"],
+  ["telugu", "Noto Sans Telugu", "SC Te Tiro", "SC Te Classic"],
   ["gujarati", "Noto Sans Gujarati", "SC Gu Classic", "SC Gu Classic"],
 ])
   for (const [fnt, aarti, vedic] of [
     ["std", sans, sans],
-    ["classic", classic, classic],
-    ["hand", hand, sans],
+    ["classic", trad, trad],
+    ["bold", serif, serif],
   ])
     test(`${setup} letters in the ${fnt} text font: their own faces`, async ({ page }) => {
       await openSite(page, { ...SETUPS[setup], fnt });

@@ -417,29 +417,35 @@ html[data-sp] {
 
 /* ==== Kannada, Telugu and Gujarati letters: the original text when it is shown in those letters (html[data-scr], set
    by js/render.js), and each language's name wherever it appears (the language pages in Settings, Help). Each
-   script's own faces (css/00-fonts.css): --ks for Standard, --kc for Classic, --kh for Handwritten (Hubballi for
-   Kannada; Telugu and Gujarati keep their Classic face). The dandas and Vedic accent marks come from the same face as
-   the letter they sit on ==== */
+   script's own faces (css/00-fonts.css), as in Nitya Upasana: --ks for Modern, --kf for Traditional and Bold (Tiro's
+   in Traditional, Noto Serif's in Bold). The dandas and Vedic accent marks come from the same face as the letter they
+   sit on ==== */
 html[data-scr="kn"],
 [lang="kn"],
 [data-lang="kn"] {
   --ks: "Noto Sans Kannada";
-  --kc: "SC Kn Classic";
-  --kh: "SC Kn Hand";
+  --kf: "SC Kn Classic";
 }
 html[data-scr="te"],
 [lang="te"],
 [data-lang="te"] {
   --ks: "Noto Sans Telugu";
-  --kc: "SC Te Classic";
-  --kh: "SC Te Classic";
+  --kf: "SC Te Classic";
 }
 html[data-scr="gu"],
 [lang="gu"],
 [data-lang="gu"] {
   --ks: "Noto Sans Gujarati";
-  --kc: "SC Gu Classic";
-  --kh: "SC Gu Classic";
+  --kf: "SC Gu Classic";
+}
+/* Traditional's Kannada and Telugu: Tiro's (Gujarati keeps Noto Serif's: Tiro has none) */
+html[data-scr="kn"][data-font="classic"],
+:root[data-font="classic"] :is([lang="kn"], [data-lang="kn"]) {
+  --kf: "SC Kn Tiro";
+}
+html[data-scr="te"][data-font="classic"],
+:root[data-font="classic"] :is([lang="te"], [data-lang="te"]) {
+  --kf: "SC Te Tiro";
 }
 html[data-scr] .mr,
 html[data-scr] .mr *,
@@ -450,24 +456,10 @@ html[data-scr] #bt[data-tl="mr"] #btt,
   font-family: var(--ks), var(--body) !important;
 }
 /* the chosen text font (Settings → Text font) for these texts, the piece titles, the Contents list and the Settings
-   preview (the home card, section rows and menus keep the standard font): --kf, taken on each element from its own
-   script's faces; the Atharvashirsha keeps a face with its Vedic accent marks (--kv: the Classic one, else Standard) */
-:root[data-font="classic"],
-:root[data-font="classic"] [lang] {
-  --kf: var(--kc);
-  --kv: var(--kc);
-}
-:root[data-font="hand"],
-:root[data-font="hand"] [lang] {
-  --kf: var(--kh);
-}
+   preview (the home card, section rows and menus keep the standard font) */
 html[data-scr][data-font]:not([data-font="std"]) .ash .mr,
 html[data-scr][data-font]:not([data-font="std"]) .ash .mr * {
   font-family: var(--kf), var(--ks), var(--body) !important;
-}
-html[data-scr][data-font]:not([data-font="std"]) #p1 .mr,
-html[data-scr][data-font]:not([data-font="std"]) #p1 .mr * {
-  font-family: var(--kv, var(--ks)), var(--ks), var(--body) !important;
 }
 
 /* ==== The preview at the top of Settings → Reading, as in Nitya Upasana (its 09-settings-page.css): one line of the
@@ -549,7 +541,7 @@ html[data-scr][data-font]:not([data-font="std"]) #p1 .mr * {
 :root[data-font]:not([data-font="std"]) .sp-pw > div {
   font-family: var(--tf), var(--body);
 }
-:root[data-font]:not([data-font="std"]) .sp-pw > [lang="en"] {
+:root[data-font] .sp-pw > [lang="en"] {
   font-family: var(--tf), var(--lat);
 }
 /* Phones: the Reading tab, preview and every choice, on one iPhone screen (Satish, 2026-10-27): the preview's heading

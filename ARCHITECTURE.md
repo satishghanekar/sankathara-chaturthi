@@ -113,6 +113,7 @@ The floor is **iOS 15.4** (iPhone 6s / 7, iPad Air 2 / mini 4 run up to iOS 15.8
 - **Reordering the CSS by topic.** The cascade depends on the order rules were added, and moving rules caused about 12,000 conflicts. The CSS was split where it stood instead.
 - **An SVG sprite for repeated icons.** The page has 41 icons, of which 28 are different. Compression already makes the repeats almost free, and `<use>` inside buttons behaves differently in older Safari.
 - **Moving the version into `js/parts.js` only.** See *Offline use and updates*.
+- **Other text fonts (2026-10-31).** Kalam (the old Handwritten) has no Vedic svara marks, 5 of the 15 IAST letters and no Kannada, Telugu or Gujarati face, so the app showed other fonts in its place; Baloo 2, Hind and Anek have faces in every script but no svara marks in Kannada, Telugu or Gujarati. Martel, Amita and Yatra One draw the reph wrongly (दर्शन as दरशन). Only Tiro, Noto Serif and Noto Sans draw every mark the texts use, so both apps use those three (`fonts/README.md`).
 
 ## Checking a change
 
