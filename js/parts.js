@@ -74,6 +74,7 @@ var SITE_PARTS = (function () {
     "features/picture-viewer",
     "features/help",
     "print/compose",
+    "print/pages",
     "print/what",
     "features/print",
     "features/share",
