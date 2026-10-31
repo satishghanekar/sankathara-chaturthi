@@ -412,32 +412,42 @@
   }
 }
 
-/* Text font (Settings): Standard keeps the site's own fonts; the others change only the texts (Marathi and English),
-   the piece titles and the home page's Contents list.
-   The Atharvashirsha's Marathi lines keep their Sanskrit font, which has the Vedic accent marks. */
+/* Text font (Settings → Text font, and the same three in the Print pop-up: css/00-fonts.css), as in Nitya Upasana:
+   Modern (std) keeps the site's own fonts for the Marathi, with the texts' English in Noto Sans (it has the IAST svara
+   marks, Inter does not); Traditional and Bold change the texts (Marathi and English), on screen and in print alike.
+   All three draw the Vedic svara marks, so the Atharvashirsha follows the chosen font too. */
+:root[data-font="std"] {
+  --tf: "SC Sans";
+}
 :root[data-font="classic"] {
   --tf: "SC Classic";
-  --tfl: "SC Classic";
 }
-:root[data-font="hand"] {
-  --tf: "SC Hand";
-  --tfl: "SC Hand";
-}
-/* --tfl is the chosen font for English. Handwritten (Kalam) lacks the scholarly English letters (ṃ ṇ ṭ ḍ ḥ ṛ ṣ
-   ṅ ḷ), which would come from another font in the middle of a word; with the scholarly spelling
-   (data-tr="iast") its English lines use the standard font, which has them all. */
-:root[data-font="hand"][data-tr="iast"] {
-  --tfl: "Inter";
+:root[data-font="bold"] {
+  --tf: "SC Bold";
 }
 :root[data-font]:not([data-font="std"]) .ash .items,
 :root[data-font]:not([data-font="std"]) .ash .rftop {
   font-family: var(--tf), var(--body);
 }
-:root[data-font]:not([data-font="std"]) .ash .items .en,
-:root[data-font]:not([data-font="std"]) .ash .rftop .en,
-:root[data-font]:not([data-font="std"]) .ash .items .en p,
-:root[data-font]:not([data-font="std"]) .ash .rftop .en p {
-  font-family: var(--tfl), var(--lat);
+:root[data-font] .ash .items .en,
+:root[data-font] .ash .rftop .en,
+:root[data-font] .ash .items .en p,
+:root[data-font] .ash .rftop .en p {
+  font-family: var(--tf), var(--lat);
+}
+/* Bold: Noto Serif set SemiBold, so it reads strongly in low light and on paper; what is bold in every font (the
+   dhrupad, a [dhrupad bold] block) a step further, so it still stands out */
+:root[data-font="bold"] .ash .items,
+:root[data-font="bold"] .ash .rftop,
+:root[data-font="bold"] .sp-pw > div,
+:root[data-font="bold"] .sp-pw > [lang="en"] {
+  font-weight: 600;
+}
+:root[data-font="bold"] .item.rf p,
+:root[data-font="bold"] .verse p.rf,
+:root[data-font="bold"] .rftop p,
+:root[data-font="bold"] .verse.bold p {
+  font-weight: 800;
 }
 
 /* and each piece's title row: its font names point to the chosen font first. The home card, the section rows
@@ -445,7 +455,7 @@
 :root[data-font]:not([data-font="std"]) .ash header {
   --head: var(--tf), "Tiro Devanagari Marathi", "Kohinoor Devanagari", "Noto Sans Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, serif;
   --body: var(--tf), "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN", "Nirmala UI", Mangal, sans-serif;
-  --lat: var(--tfl), "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  --lat: var(--tf), "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 
 /* ==== Bigger tap areas, same look (2026-10-14 accessibility review) ====

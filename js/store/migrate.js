@@ -37,9 +37,9 @@ export function defaults(env) {
     loc: null, // { lat, lon } from "Use my location"
     hl: "", // data-l id of the highlighted (tapped) line
     por: "", // the page last chosen in the Print pop-up: "" not yet (CHOICE in js/features/print.js) | "up" Portrait | "land" Landscape
-    fnt: "std", // text font: std | classic | hand (Settings → Text font; a saved "bold", a font since dropped, reads as std)
+    fnt: "classic", // text font: classic Traditional | std Modern | bold Bold (Settings → Text font, as in Nitya Upasana)
     pref: "", // dhrupad in the printout, picked in the Print pop-up: "" as on the page (ref) | 0 after every verse | 1 once
-    pfn: "", // font of the printout, picked in the Print pop-up: "" the text font above | std | classic | hand
+    pfn: "", // font of the printout, picked in the Print pop-up: "" the text font above | classic | std | bold
     plang: "", // language of the printout: "" as the page shows it | mr (the original) | en | both
     ppr: "", // paper of the printout: "" as the device's region suggests (Letter in the US and Canada) | letter | a4
     pskip: [], // texts left out of the printout (their piece ids: a1, p1 …), unticked under What to print; a new text prints
@@ -133,9 +133,9 @@ export function tidy(P) {
   if (P.ui !== "en" && (P.lead === "en" || P.ui !== P.ind)) P.ui = "en";
   if (!P.l2 || [P.lead, P.l2, "both"].indexOf(P.lang) < 0) P.lang = P.lead;
   if (["auto", "light", "sepia", "dark"].indexOf(P.th) < 0) P.th = "auto";
-  // three text fonts since 2026-10-25: Bold (Sura) was dropped, and a saved "bold" reads as Standard
-  if (["std", "classic", "hand"].indexOf(P.fnt) < 0) P.fnt = "std";
-  if (["std", "classic", "hand"].indexOf(P.pfn) < 0) P.pfn = "";
+  // the three text fonts of Nitya Upasana since 2026-10-31 (Handwritten dropped: it had no Vedic marks)
+  if (["std", "classic", "bold"].indexOf(P.fnt) < 0) P.fnt = "classic";
+  if (["std", "classic", "bold"].indexOf(P.pfn) < 0) P.pfn = "";
   if (["mr", "en", "both"].indexOf(P.plang) < 0) P.plang = "";
   if (["letter", "a4"].indexOf(P.ppr) < 0) P.ppr = "";
   if (P.tr !== "iast") P.tr = "simple";

@@ -158,7 +158,7 @@ const SHAPES = {
     loc: null,
     hl: "",
     por: "land",
-    fnt: "hand",
+    fnt: "bold",
     pref: "",
     pfn: "",
     pskip: ["a2", "a10"],
@@ -219,9 +219,9 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     expect([p.lead, p.l2, p.lang]).toEqual(["mr", "en", "both"]);
   });
 
-  test("v5 with fonts: Handwritten kept, the rest kept", () => {
+  test("v5 with fonts: Handwritten (dropped 2026-10-31) reads as Traditional, the rest kept", () => {
     const p = migratePrefs(SHAPES.v5font, PHONE).prefs;
-    expect([p.fnt, p.th, p.ui, p.lang]).toEqual(["hand", "dark", "mr", "mr"]);
+    expect([p.fnt, p.th, p.ui, p.lang]).toEqual(["classic", "dark", "mr", "mr"]);
   });
 
   test("v5 with English first in Both: English becomes the main language, Marathi the second, menus English", () => {
@@ -232,8 +232,7 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   test("v6 (Kannada letters, IAST, Landscape printing): nothing to upgrade; Kannada keeps English menus", () => {
     const { prefs, changed } = migratePrefs(SHAPES.v6, PHONE);
     expect(changed).toBe(false);
-    // (the Bold font, dropped 2026-10-25, reads as Standard)
-    expect([prefs.ind, prefs.ui, prefs.tr, prefs.por, prefs.fnt, prefs.hc, prefs.fsu, prefs.fs]).toEqual(["kn", "en", "iast", "land", "std", 1, 1, 26]);
+    expect([prefs.ind, prefs.ui, prefs.tr, prefs.por, prefs.fnt, prefs.hc, prefs.fsu, prefs.fs]).toEqual(["kn", "en", "iast", "land", "bold", 1, 1, 26]);
     expect(prefs.af).toEqual(["a9"]);
   });
 
@@ -258,18 +257,18 @@ describe("settings from every older version are upgraded as js/core/state.js alw
   test("What to print (version 1.2): the texts left out are kept", () => {
     const { prefs, changed } = migratePrefs(SHAPES.v6skip, PHONE);
     expect(changed).toBe(false);
-    expect([prefs.pskip, prefs.fnt, prefs.por, prefs.pf]).toEqual([["a2", "a10"], "hand", "land", 0]);
+    expect([prefs.pskip, prefs.fnt, prefs.por, prefs.pf]).toEqual([["a2", "a10"], "bold", "land", 0]);
     expect(migratePrefs({ ...SHAPES.v6skip, pskip: "a2" }, PHONE).prefs.pskip).toEqual([]);
   });
 
-  test("three text fonts (2026-10-25): Standard, Classic and Handwritten kept; anything else (Bold) Standard", () => {
+  test("three text fonts, as in Nitya Upasana (2026-10-31): Traditional, Modern and Bold kept; anything else (Handwritten) Traditional", () => {
     for (const [v, want] of [
       ["std", "std"],
       ["classic", "classic"],
-      ["hand", "hand"],
-      ["bold", "std"],
-      ["", "std"],
-      [undefined, "std"],
+      ["bold", "bold"],
+      ["hand", "classic"],
+      ["", "classic"],
+      [undefined, "classic"],
     ])
       expect(migratePrefs({ ...SHAPES.v6print, fnt: v }, PHONE).prefs.fnt).toBe(want);
   });
@@ -277,8 +276,8 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     for (const [v, want] of [
       ["std", "std"],
       ["classic", "classic"],
-      ["hand", "hand"],
-      ["bold", ""],
+      ["bold", "bold"],
+      ["hand", ""],
       ["", ""],
       [3, ""],
       [undefined, ""],
@@ -292,8 +291,8 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     expect([d.plang, d.ppr]).toEqual(["", ""]);
     expect([defaults(PHONE).plang, defaults(PHONE).ppr]).toEqual(["", ""]);
   });
-  test("a new reader starts in Standard, with the printout following it", () => {
-    expect([defaults(PHONE).fnt, defaults(PHONE).pfn]).toEqual(["std", ""]);
+  test("a new reader starts in Traditional, with the printout following it", () => {
+    expect([defaults(PHONE).fnt, defaults(PHONE).pfn]).toEqual(["classic", ""]);
   });
 
   test("Keep screen on (2026-10-30): minutes after the last touch kept; the old switch's on is 30 minutes, anything else off", () => {
@@ -316,7 +315,7 @@ describe("settings from every older version are upgraded as js/core/state.js alw
       { sv: 6, fs: "huge", th: "neon", fnt: 3, af: "a1", asp: [1], loc: { lat: "x" }, lang: "fr", l2: "de", pref: "1", tr: "other" },
       PHONE,
     ).prefs;
-    expect([p.fs, p.th, p.fnt, p.lang, p.l2, p.pref, p.tr]).toEqual([24, "auto", "std", "mr", "en", "", "simple"]);
+    expect([p.fs, p.th, p.fnt, p.lang, p.l2, p.pref, p.tr]).toEqual([24, "auto", "classic", "mr", "en", "", "simple"]);
     expect(p.af).toEqual([]);
     expect(p.asp).toEqual({});
     expect(p.loc).toBeNull();

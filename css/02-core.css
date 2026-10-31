@@ -717,10 +717,13 @@ body {
   }
 }
 
-/* ==== Atharvashirsha: Vedic text in Tiro Devanagari Sanskrit ==== */
+/* ==== Atharvashirsha: room for the Vedic marks; in Traditional, Tiro Devanagari Sanskrit (the Sanskrit cut of the
+   same design, made for them); Modern and Bold draw them in their own faces ==== */
 #p1 .mr p {
-  font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", "Sanskrit 2003", "Kohinoor Devanagari", var(--body);
   line-height: 2.1;
+}
+:root[data-font="classic"] #p1 .mr p {
+  font-family: "Tiro Devanagari Sanskrit", var(--tf), var(--body);
 }
 #p1 .verse .mr {
   font-size: 1.05em;
