@@ -989,3 +989,16 @@ test("the version line: the version, its state under it, and the round Check for
     expect(Math.round(b.width) + "x" + Math.round(b.height), w + ": 44px").toBe("44x44");
   }
 });
+
+// A title tapped on Home: its text lands just under the top bar and stays there while the page settles (fonts arriving,
+// the text fitted again), in every font; Bold's texts above it once grew enough to scroll it out of view
+// (js/core/apply.js holdAim())
+for (const fnt of ["classic", "std", "bold"])
+  test(`a title tapped on Home stays just under the top bar, ${fnt} @mobile`, async ({ page }) => {
+    await openSite(page, { ...SETUPS.marathi, fnt });
+    await page.locator('#tsl a[href="./#a3"]').click();
+    await page.waitForTimeout(1000);
+    const top = await page.locator("#a3").evaluate((e) => e.getBoundingClientRect().top);
+    expect(top).toBeGreaterThanOrEqual(0);
+    expect(top).toBeLessThan(120);
+  });
