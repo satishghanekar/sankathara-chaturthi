@@ -1,7 +1,7 @@
 /* ==== The printout: its whole look ====
    js/features/print.js writes the print view (#pv) from the texts in classes of its own (pv…), so nothing of the
    reading page's look reaches the paper: this file is all of it. Nothing is measured: every size here is fixed, and
-   the browser breaks the pages by four rules ("Pages", below). The text font (Standard, Classic, Handwritten: data-font
+   the browser breaks the pages by four rules ("Pages", below). The text font (Modern, Traditional, Bold: data-font
    while printing) is the one thing that changes how a text looks. (As in Nitya Upasana, from which it comes.)
 
    Kinds of text, and how each prints:
@@ -40,36 +40,34 @@
   }
 
   /* ---- The fonts: the printout's text font (data-font), for the original, the Vedic texts, Kannada, Telugu and
-     Gujarati letters (--ks, --kc, --kh: css/09-settings-page.css) and English; a bold line (the dhrupad at the top, a
+     Gujarati letters (--ks, --kf: css/09-settings-page.css) and English; a bold line (the dhrupad at the top, a
      [dhrupad bold] block) in a face that has a bold of its own (Tiro has none, and a bold made up by Safari printed
      every word three times over in the PDF's text) ---- */
   :root[data-print] #pv {
     --po: var(--body);
     --pved: var(--body);
     --pk: var(--ks, "Noto Sans Kannada"), var(--body);
-    --pe: var(--lat);
+    --pe: "SC Sans", var(--lat);
     --pob: var(--po);
     --peb: var(--pe);
     --pw: 400;
     --pwb: 700;
   }
-  /* Classic: Noto Serif (Devanagari, Latin, Kannada), which has a bold of its own */
   :root[data-print][data-font="classic"] #pv {
     --po: "SC Classic", var(--body);
     --pved: "Tiro Devanagari Sanskrit", "SC Classic", var(--body);
-    --pk: var(--kc, "SC Kn Classic"), var(--ks, "Noto Sans Kannada"), var(--body);
+    --pk: var(--kf, "SC Kn Classic"), var(--ks, "Noto Sans Kannada"), var(--body);
     --pe: "SC Classic", var(--lat);
+    --pob: "SC Bold", var(--body);
+    --peb: "SC Bold", var(--lat);
   }
-  /* Handwritten: Kalam (with its own bold) and Hubballi for Kannada; Kalam lacks the scholarly English letters
-     (ṃ ṇ ḥ), so English in IAST keeps the standard face rather than mix fonts within a word */
-  :root[data-print][data-font="hand"] #pv {
-    --po: "SC Hand", var(--body);
-    --pved: "Tiro Devanagari Sanskrit", "SC Hand", var(--body);
-    --pk: var(--kh, "SC Kn Hand"), var(--ks, "Noto Sans Kannada"), var(--body);
-    --pe: "SC Hand", var(--lat);
-  }
-  :root[data-print][data-font="hand"][data-tr="iast"] #pv {
-    --pe: var(--lat);
+  :root[data-print][data-font="bold"] #pv {
+    --po: "SC Bold", var(--body);
+    --pved: "SC Bold", var(--body);
+    --pk: var(--kf, "SC Kn Classic"), var(--ks, "Noto Sans Kannada"), var(--body);
+    --pe: "SC Bold", var(--lat);
+    --pw: 600;
+    --pwb: 800;
   }
 
   :root[data-print] #pv {

@@ -24,7 +24,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the home card in one piece (the picture in its countdown ring; beside it the date, the month line, the moonrise and the place; the foot with Add all while More dates is open; the dates in a strip on phones, a row a year from 600px and beside the card from 1100px; its last rules) and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
-| `09-settings-page.css` | The Settings page and Kannada, Telugu and Gujarati letters (each script's faces as `--ks`, `--kc`, `--kh`).; About's version line (`#upr`: the state under the version, the round button `#upd` with an icon for each state, `.vli`) and Finish the update (`#upm`: a sheet at the foot on phones, a card from 760px) |
+| `09-settings-page.css` | The Settings page and Kannada, Telugu and Gujarati letters (each script's faces as `--ks`, `--kf`: Noto Sans in Modern, Tiro in Traditional, Noto Serif in Bold).; About's version line (`#upr`: the state under the version, the round button `#upd` with an icon for each state, `.vli`) and Finish the update (`#upm`: a sheet at the foot on phones, a card from 760px) |
 | `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
 | `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
@@ -42,7 +42,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-rail`: the left menu is shown.
   - `data-print`: `one` or `side`, only while printing; then `data-font` and `data-ref` take the Print pop-up's font and dhrupad.
   - `data-land`: the printout is on sideways pages, only while printing (and in the pop-up's preview): set a little tighter.
-  - `data-font`: the text font.
+  - `data-font`: the text font: `classic` (Traditional, the default), `std` (Modern) or `bold` (Bold), as in Nitya Upasana.
   - `data-tuck`: the bars are tucked away.
   - `data-hv`: Home on its own (no text open); the texts below it are not shown.
   - `data-home`: Home is on screen: the bottom bar keeps only the Library and Aa, and the bars never tuck away.

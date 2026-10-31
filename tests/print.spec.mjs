@@ -30,7 +30,7 @@ const SIDEWAYS = [
 ];
 // iPhone 13 emulation in Chromium (the device entry names WebKit as its browser, which newContext does not take)
 const { defaultBrowserType: _bt, ...IPHONE } = devices["iPhone 13"];
-const FONTS = ["std", "classic", "hand"];
+const FONTS = ["std", "classic", "bold"];
 // Letter is chosen for US / Canada / Mexico / Philippines, A4 everywhere else (see LTR in js/features/print.js)
 const PAPERS = [
   { paper: "Letter", locale: "en-US" },
@@ -752,20 +752,20 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
   await howStep(page);
   await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Once", { useInnerText: true });
   // the same three fonts as Settings, in the same order, each a tile with the text's first word in that font; the
-  // printout's starts as the text font (Classic here)
-  await expect(page.locator("#prfn .prfm")).toHaveText(["Standard", "Classic", "Handwritten"], { useInnerText: true });
-  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Classic", { useInnerText: true });
+  // printout's starts as the text font (Traditional here)
+  await expect(page.locator("#prfn .prfm")).toHaveText(["Traditional", "Modern", "Bold"], { useInnerText: true });
+  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Traditional", { useInnerText: true });
   await expect(page.locator('#prfn [data-v="classic"] .prfx')).toHaveText("सुखकर्ता");
   const font = (v) => page.locator(`#prfn [data-v="${v}"] .prfx`).evaluate((e) => getComputedStyle(e).fontFamily);
   expect(await font("classic")).toContain("SC Classic");
-  expect(await font("hand")).toContain("SC Hand");
+  expect(await font("bold")).toContain("SC Bold");
   expect(await font("std")).not.toContain("SC ");
   // a font picked here is the printout's only: the reading page keeps its own,
   // and the page takes it just while it prints
-  await page.locator('#prfn [data-v="hand"]').click();
-  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Handwritten", { useInnerText: true });
+  await page.locator('#prfn [data-v="bold"]').click();
+  await expect(page.locator("#prfn [aria-pressed=true] .prfm")).toHaveText("Bold", { useInnerText: true });
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")));
-  expect([prefs.pfn, prefs.fnt]).toEqual(["hand", "classic"]);
+  expect([prefs.pfn, prefs.fnt]).toEqual(["bold", "classic"]);
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-font"))).toBe("classic");
   expect(
     await page.evaluate(() => {
@@ -774,7 +774,7 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
       window.dispatchEvent(new Event("afterprint"));
       return [f, document.documentElement.getAttribute("data-font")];
     }),
-  ).toEqual(["hand", "classic"]);
+  ).toEqual(["bold", "classic"]);
   // the dhrupad likewise: every verse in the printout, once on the reading page
   await page.locator('#prdg [data-v="0"]').click();
   await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Every verse", { useInnerText: true });

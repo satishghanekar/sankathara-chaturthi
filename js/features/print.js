@@ -49,14 +49,19 @@ export function init() {
       /** @type {{ m: string, ids: string[] | null } | null} the printout just printed, until the reader is back */
       again = null,
       seen = false; // the browser has started printing (beforeprint) since the last window.print()
-    // the faces of the other scripts the original can be shown in (js/render.js SCRIPTS), for Standard, Classic and
-    // Handwritten (css/00-fonts.css): Telugu and Gujarati have no handwritten face here, and keep their Classic one
+    // the faces of the other scripts the original can be shown in (js/render.js SCRIPTS): Modern's, Bold's and
+    // Traditional's (css/00-fonts.css: Tiro's Kannada and Telugu; Gujarati keeps Noto Serif's, as Tiro has none)
     /** @type {Record<string, string[]>} */
     var IND = {
-      kn: ["Noto Sans Kannada", "SC Kn Classic", "SC Kn Hand"],
-      te: ["Noto Sans Telugu", "SC Te Classic", "SC Te Classic"],
+      kn: ["Noto Sans Kannada", "SC Kn Classic", "SC Kn Tiro"],
+      te: ["Noto Sans Telugu", "SC Te Classic", "SC Te Tiro"],
       gu: ["Noto Sans Gujarati", "SC Gu Classic", "SC Gu Classic"],
     };
+    // a font's place in IND
+    /** @param {string} f */
+    function indAt(f) {
+      return f === "std" ? 0 : f === "bold" ? 1 : 2;
+    }
     // the original's language, by the letters it is shown in (P.ind), as the Print pop-up names it: in Marathi
     // menus, then in English. A new script (js/render.js) adds its name here.
 
@@ -496,26 +501,30 @@ export function init() {
       var pp = letter() ? [215.9, 279.4] : [210, 297]; // upright
       return land(mode) ? [pp[1], pp[0]] : pp;
     }
-    // The printout's font: one of the same three as Settings → Text font, picked in the pop-up, else the text font. It
-    // is the page's font (data-font) only while printing, so picking one for the printout leaves the reading page as it
-    // is (Satish, 2026-10)
-    var FONTS = ["std", "classic", "hand"];
+    // The printout's font: one of the same three as Settings → Text font (Traditional, Modern, Bold, as in Nitya
+    // Upasana), picked in the pop-up, else the text font. It is the page's font (data-font) only while printing, so
+    // picking one for the printout leaves the reading page as it is (Satish, 2026-10)
+    var FONTS = ["std", "classic", "bold"];
     function pfn() {
-      return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : P.fnt;
+      return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : FONTS.indexOf(P.fnt) >= 0 ? P.fnt : "classic";
     }
     // The printout's dhrupad (once, or after every verse) likewise: picked in the pop-up, else as the page shows it
     function pref() {
       if (alt && alt.ref !== undefined) return alt.ref;
       return P.pref === 0 || P.pref === 1 ? P.pref : P.ref;
     }
-    // The fonts the printout uses, asked for ahead (a browser prints only the faces it has loaded): the chosen font, the
-    // Atharvashirsha's Tiro Devanagari Sanskrit, and Kannada letters' when they are on
+    // The fonts the printout uses, asked for ahead (a browser prints only the faces it has loaded): the chosen font's
+    // regular and bold, the Vedic chants' Tiro Devanagari Sanskrit in Traditional, and Kannada letters' when they are on
     function fontsAhead() {
       if (!document.fonts || !document.fonts.load) return;
       var f = pfn(),
-        want = ['400 16px "Tiro Devanagari Sanskrit"'];
-      if (FAM[f]) want.push('400 16px "' + FAM[f] + '"');
-      if (IND[olang()]) want.push('400 16px "' + IND[olang()][f === "classic" ? 1 : f === "hand" ? 2 : 0] + '"');
+        want =
+          f === "classic"
+            ? ['400 16px "SC Classic"', '700 16px "SC Bold"', '400 16px "Tiro Devanagari Sanskrit"']
+            : f === "bold"
+              ? ['600 16px "SC Bold"', '800 16px "SC Bold"']
+              : ['400 16px "SC Sans"', '700 16px "SC Sans"'];
+      if (IND[olang()]) want.push('400 16px "' + IND[olang()][indAt(f)] + '"');
       want.forEach(function (x) {
         try {
           document.fonts.load(x, "कॅ॑A").catch(function () {});
@@ -940,16 +949,15 @@ export function init() {
       rows();
       refresh();
     };
-    // the printout's fonts by name (Standard is the page's own)
-    /** @type {Record<string, string>} */
-    var FAM = { classic: "SC Classic", hand: "SC Hand" };
-    // a tile's word in its font. Set here: the page's own font rules follow the text font
+    var FAM = { classic: "SC Classic", bold: "SC Bold" };
+    // the sample: the first words of the first verse, in each language printed (the main one first), in the
+    // printout's font. Set here: the page's own font rules follow the text font
     /** @param {string} lang @param {string} [font] (else the printout's) */
     function fam(lang, font) {
       var f = font || pfn(),
         ind = IND[lang],
-        base = ind ? '"' + ind[0] + '", var(--body)' : lang === "en" ? "var(--lat)" : "var(--body)";
-      return f === "std" || !FAM[f] ? base : '"' + (ind ? ind[f === "hand" ? 2 : 1] : FAM[f]) + '", ' + base;
+        base = ind ? '"' + ind[0] + '", var(--body)' : lang === "en" ? '"SC Sans", var(--lat)' : "var(--body)";
+      return f === "std" ? base : '"' + (ind ? ind[indAt(f)] : FAM[f]) + '", ' + base;
     }
     /** @param {string} k */
     function words(k) {
