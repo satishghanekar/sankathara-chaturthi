@@ -60,7 +60,7 @@ The grid is every **Portrait** printout (Marathi, English) × every **text font*
 - screen-only controls (Open all, Settings, …) never print;
 - every English line is in the PDF, read against the texts themselves (Devanagari and Kannada text can't be read back reliably from a PDF, so for those the block markers show nothing was lost);
 - the page count matches the recorded baseline;
-- the print builder (as in Nitya Upasana): What then How on a phone, side by side on a wide screen; only the texts ticked print, one alone without contents, none ticked waits; a group's Select all and Clear; Marathi menus; the printout's language; the preview and the paper; Open in Safari carries the texts ticked.
+- the print builder (as in Nitya Upasana): What then How on a phone, side by side on a wide screen; only the texts ticked print, one alone without contents, none ticked waits; a group's Select all and Clear; Marathi menus; the printout's language; the preview and the paper; the star on the recommended choices, the hints under Dhrupad and Page, and "about N pages", which must be the pages of the PDF (the count's rules are unit-tested in `unit/pages.test.mjs`); Open in Safari carries the texts ticked.
 
 ## Baselines
 
