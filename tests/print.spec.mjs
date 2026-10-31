@@ -635,6 +635,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await howStep(page);
     await expect(page.locator("#prl")).toBeHidden();
     await expect(page.locator("#prc")).toBeVisible({ visible: !!ua });
+    await expect(page.locator("#prs")).toBeVisible({ visible: !!ua });
     if (ua) {
       // Firefox: the same note, and nothing about Safari's dialog
       const ff = await browser.newContext({ locale: "en-US", serviceWorkers: "block", userAgent: devices["Desktop Firefox"].userAgent });
@@ -644,7 +645,7 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
       await fp.locator("#prb").click();
       await howStep(fp);
       await expect(fp.locator("#prc")).toBeVisible();
-      for (const id of ["#prl", "#prz"]) await expect(fp.locator(id)).toBeHidden();
+      for (const id of ["#prl", "#prz", "#prs"]) await expect(fp.locator(id)).toBeHidden();
       await ff.close();
     }
     const sizes = () =>
@@ -667,6 +668,49 @@ test("print pop-up: the page chosen is remembered and printed that way @chromium
     await expect(page.locator("#pr2")).toHaveAttribute("aria-pressed", "true");
     await context.close();
   }
+});
+
+// How to print best (the print audit, 2026-10-30): Once and Portrait take the fewest pages, so they carry a star (and are
+// described as recommended), and the hint under each row says what the choice made gives; a choice that takes more
+// pages says about how many more. The bottom bar says about how many pages, counted as Chrome breaks them: here, the
+// printout has exactly that many
+test("print pop-up: the recommended choices, the hints and about how many pages @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, { ...SETUPS.marathi, por: "up", pref: 1, ppr: "letter" });
+  await page.locator("#prb").click();
+  await howStep(page);
+  for (const b of [page.locator('#prdg [data-v="1"]'), page.locator("#pr1")]) {
+    await expect(b.locator(".prbest")).toHaveCount(1);
+    await expect(b).toHaveAccessibleDescription("Recommended");
+  }
+  await expect(page.locator('#prdg [data-v="0"] .prbest, #pr2 .prbest')).toHaveCount(0);
+  await expect(page.locator("#prdhh")).toHaveText(/^Fewest pages/);
+  await expect(page.locator("#prpgh")).toHaveText(/^Best for one language/);
+  await expect(page.locator("#prdhh .prbest, #prpgh .prbest")).toHaveCount(2);
+  const about = page.locator("#prsum b");
+  await expect(about).toHaveText(/^about \d+ pages$/);
+  const once = Number((await about.textContent()).replace(/\D/g, ""));
+  // Every verse: no star in the hint, and how many pages more than Once
+  await page.locator('#prdg [data-v="0"]').click();
+  await expect(page.locator("#prdhh")).toHaveText(/as it is sung: about \d+ pages? more than Once\.$/);
+  await expect(page.locator("#prdhh .prbest")).toHaveCount(0);
+  await expect(about).not.toHaveText(`about ${once} pages`);
+  // Landscape: how many more than Portrait
+  await page.locator('#prdg [data-v="1"]').click();
+  await page.locator("#pr2").click();
+  await expect(page.locator("#prpgh")).toHaveText(/^Larger, wider lines, but about \d+ pages? more than Portrait\.$/);
+  // both languages: side by side, and why
+  await page.locator('#prlg [data-v="both"]').click();
+  await expect(page.locator("#prpgh")).toHaveText(/^Each line beside its English\./);
+  await expect(page.locator("#prpgh .prbest")).toHaveCount(1);
+  // the count is the printout's: back to one language upright, then printed
+  await page.locator('#prlg [data-v="mr"]').click();
+  await page.locator("#pr1").click();
+  await expect(about).toHaveText(`about ${once} pages`);
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 0);
+  await page.emulateMedia({ media: "print" });
+  expect((await pdfPages(page, "Letter")).pages.length).toBe(once);
 });
 
 // A saved page is kept from one visit to the next

@@ -65,12 +65,14 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 // change and say why. (Set 2026-10-29: scripts 138 KB, styles 49 KB, index.html 19 KB. Then the menu words moved to
 // js/strings/ in both languages: scripts 145 KB, index.html 18 KB. Scripts raised 2026-10-30 to 170 KB for the
 // Kannada, Telugu and Gujarati menus, js/strings/kn.js, te.js and gu.js: 163 KB then. Raised 2026-10-30 to 185 KB for
-// the month line on the date card, js/core/panchang.js and panchang-names.js from Nitya Upasana: 178 KB then. Styles
+// the month line on the date card, js/core/panchang.js and panchang-names.js from Nitya Upasana: 178 KB then. Raised
+// 2026-10-31 to 195 KB for the Print pop-up's hints and page count in five languages, js/print/pages.js: 189.2 KB
+// then. Styles
 // raised 2026-10-30 to 55 KB for More dates a row a year on iPads and beside the card on desktops: 52.3 KB then.)
 test("the scripts, styles and page stay within their size budget", () => {
   const parts = siteParts();
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(185_000);
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(195_000);
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(55_000);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(20_000);
 });
