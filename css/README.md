@@ -41,6 +41,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-cols`: `1` or `2` columns.
   - `data-rail`: the left menu is shown.
   - `data-print`: `one` or `side`, only while printing; then `data-font` and `data-ref` take the Print pop-up's font and dhrupad.
+  - `data-land`: the printout is on sideways pages, only while printing (and in the pop-up's preview): set a little tighter.
   - `data-font`: the text font.
   - `data-tuck`: the bars are tucked away.
   - `data-hv`: Home on its own (no text open); the texts below it are not shown.

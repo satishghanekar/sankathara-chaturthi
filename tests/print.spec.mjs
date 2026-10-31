@@ -8,6 +8,7 @@
 //   - in layouts with English, every English line of the print view is in the PDF
 //   - the page count and the page each piece starts on match the recorded baseline
 //   - no line is lost, side by side rows stay in step and lines break mid-phrase only rarely (see the print audit)
+//   - nothing prints in a page's bottom margin but its footer; sideways, an aarti of three stanzas fits on one page
 // PDFs can only be made by Chromium, so this suite is Chromium-only.
 import { test, expect, devices } from "@playwright/test";
 import { openSite, SETUPS, SNAP_ENV } from "./helpers.mjs";
@@ -66,6 +67,16 @@ for (const L of SIDEWAYS)
     test(`sideways · ${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
       const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt, por: "land" }, choice: L.choice, mode: L.mode, ...P });
       expect(r.pdf.landscape, "the PDF pages are sideways").toBe(true);
+      // the printout is set a little tighter sideways (data-land), so an aarti of three stanzas fits on one page
+      const at = markerPages(r.pdf.pages);
+      for (const id of ["a1", "a2", "a3"]) {
+        const pages = new Set(
+          Object.entries(at)
+            .filter(([k]) => k.startsWith(id + ":"))
+            .map(([, p]) => p),
+        );
+        expect([...pages], `${id} on one sideways page`).toHaveLength(1);
+      }
       const summary = checkPrintout(r);
       expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
     });
