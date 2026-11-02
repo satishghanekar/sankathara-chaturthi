@@ -65,20 +65,18 @@ The grid is every **Portrait** printout (Marathi, English) × every **text font*
 
 ## Baselines
 
-Text, screenshots and print summaries are kept in `__snapshots__/`. They are the accepted look of the site (first recorded before the 2026-10 refactor, to prove it changed nothing a reader can see). When you change something on purpose (a new line, a new colour), update them and check the diff in the pull request:
+Text, screenshots and print summaries are kept in `__snapshots__/`. They are the accepted look of the site (first recorded before the 2026-10 refactor, to prove it changed nothing a reader can see). When you change something on purpose (a new line, a new colour), update them and check the diff in the pull request. The text snapshots can be updated on your computer; on a Mac the pictures and print summaries are skipped, so this leaves them alone (they come from CI, below):
 
 ```sh
 npx playwright test --update-snapshots
 ```
 
-Screenshots and print summaries depend a little on the machine (font smoothing, and the odd line that lands one page later in a PDF), so there are two sets, `local/` and `ci/`, in `__snapshots__/visual.spec.mjs/chromium/` and `__snapshots__/print.spec.mjs/chromium/`. The text snapshots are the same everywhere and are shared.
+Screenshots and print summaries depend a little on the machine (font smoothing, and the odd line that lands one page later in a PDF), so they are kept for one machine type: `ci/`, in `__snapshots__/visual.spec.mjs/chromium/` and `__snapshots__/print.spec.mjs/chromium/`. The text snapshots are the same everywhere and are shared.
 
-- **`local/`** is used on a computer. `--update-snapshots` above refreshes it. It is recorded on the maintainer's Mac, so record it only there.
-- **Claude sessions in the cloud** (started from the Claude mobile app or claude.ai/code) run on Linux, where `local/` screenshots won't match. There, run the tests with `SNAPSHOT_ENV=ci` (or skip the screenshots with `--grep-invert screenshot`), and never run `--update-snapshots`: it would replace the Mac's pictures with Linux ones.
-- **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image. To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging.
-- The print tests check where every text starts and that no block is split, against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
-- **On a Mac** the screenshots are skipped and the print summaries are not compared (`MAC_SKIPS_PIXELS` in `helpers.mjs`, 2026-11-02): a Mac's text is drawn a little differently, so a run there was never green. Everything else in those tests still runs, and CI compares the pictures on every push. `SNAPSHOT_ENV=local` compares against the Mac's set anyway.
-- `SNAPSHOT_ENV=ci` or `SNAPSHOT_ENV=local` picks a set by hand.
+- **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image, and by any other Linux machine (a Claude session in the cloud). To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging. Never run `--update-snapshots` on your own machine: its pictures would replace CI's.
+- **On a Mac** the screenshots are skipped and the print summaries are not compared (`MAC_SKIPS_PIXELS` in `helpers.mjs`): a Mac's text is drawn a little differently, so they could never match. Everything else in those tests still runs, and CI compares them on every push. (A Mac's own set, `local/`, was kept until 2026-11-02; nothing used it, so it went out of date and was removed.)
+- The print tests check where every text starts and that no block is split, against the PDF on every machine, so a summary that differs between machines is still a correct printout.
+- `SNAPSHOT_ENV=ci` compares on a Mac anyway (expect differences).
 
 ## What automation can't cover
 
