@@ -590,8 +590,7 @@ export function init() {
           refresh();
         },
       }),
-      bnx = /** @type {HTMLElement} */ (document.getElementById("prnx")),
-      wide = window.matchMedia ? matchMedia("(min-width: 760px)") : null;
+      bnx = /** @type {HTMLElement} */ (document.getElementById("prnx"));
     // the texts ticked (their piece ids), or null for every text
     function chosen() {
       return what.pick();
@@ -600,6 +599,29 @@ export function init() {
     function refresh() {
       pagesSoon();
       preview();
+      howLine();
+    }
+    // On a phone's What step the bottom bar says how it will print, the choice made in each row under How ("Marathi ·
+    // Dhrupad (धृ): Once · Portrait · Traditional"), with Change beside it: Print is a tap away, How only when wanted
+    // (Satish, 2026-11-01)
+    function howLine() {
+      /** @param {string} id */
+      function on(id) {
+        var b = document.querySelector("#" + id + ' [aria-pressed="true"]');
+        return b ? /** @type {string} */ (b.textContent) : "";
+      }
+      var pg = /** @type {HTMLElement} */ (document.getElementById("prpg")),
+        f = document.querySelector('#prfn [aria-pressed="true"] .prfm'),
+        t = /** @type {HTMLElement} */ (document.getElementById("prhowt"));
+      t.textContent = [
+        on("prlg"),
+        on("prdg") && /** @type {HTMLElement} */ (document.querySelector("#prdh .prk")).textContent + ": " + on("prdg"),
+        pg.hidden ? /** @type {HTMLElement} */ (document.getElementById("prpv")).textContent : on("prpg"),
+        f ? f.textContent : "",
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      t.lang = ui();
     }
     // The preview under How: the first page of the first text ticked, as it prints, made small. Written as the print
     // view is (build), into a frame the size of the page, cut off at the page's foot
@@ -1054,7 +1076,7 @@ export function init() {
       bpr.hidden = pn.hidden = po.hidden = ready;
       /** @type {HTMLElement} */ (document.getElementById("prst")).hidden =
         /** @type {HTMLElement} */ (document.getElementById("prsum")).hidden =
-        bnx.hidden =
+        /** @type {HTMLElement} */ (document.getElementById("prhow")).hidden =
           ready;
       // (neither step: the title shows, without ‹ What to print)
       if (ready) pm.setAttribute("data-step", "ready");
@@ -1241,8 +1263,8 @@ export function init() {
       ovPush();
       pm.hidden = false;
       refresh();
-      // (a card taller than the screen stays at its top: Next or Print is in the bar at the bottom)
-      (wide && wide.matches ? bpr : bnx).focus({ preventScroll: true });
+      // (a card taller than the screen stays at its top: Print is in the bar at the bottom)
+      bpr.focus({ preventScroll: true });
     }
     function langRow() {
       [].forEach.call(/** @type {HTMLElement} */ (document.getElementById("prlg")).children, function (/** @type {HTMLElement} */ b) {
