@@ -15,7 +15,7 @@
 // PW_CHROMIUM_PATH points Chromium at a pre-installed browser instead of Playwright's own download.
 import { defineConfig, devices } from "@playwright/test";
 // Same rule as SNAP_ENV in helpers.mjs (kept here so the config does not load the test helpers)
-const SNAP_ENV = process.env.SNAPSHOT_ENV || (process.env.CI ? "ci" : "local");
+const SNAP_ENV = process.env.SNAPSHOT_ENV || "ci";
 
 const exe = process.env.PW_CHROMIUM_PATH;
 const chromiumLaunch = exe ? { launchOptions: { executablePath: exe } } : {};
