@@ -10,7 +10,7 @@ There is no build step: the browser loads these files as they are.
 
 - Loading a part only defines its functions and variables. Each part's `init()` does its start-up work (reads the page, adds listeners), and `main.js` calls the `init()`s in a fixed order. That is the order the code ran in when it was one file (`app.js`), so a part can rely on everything above it in `main.js` being ready. Each `init()` runs on its own (`run()`): one that throws is reported in the console and the parts after it still start.
 - A part imports what it uses from other parts by name, for example `import { P, change } from "../core/state.js"`. Functions can be imported in any order. A variable belongs to the part that sets it, and other parts only read it.
-- A value several parts read belongs to the one part that sets it, and the others import it (an imported variable can be read, not changed), as in Nitya Upasana: `FSA` (the fitted text size) and `fontsNow()` in `text/autofit.js`, `rmkPop` (the open dhrupad bubble) in `text/dhrupad-markers.js`, `skCache` (the next Sankathara Chaturthi) in `features/date-card.js`, and `LEAD` (the leading language, set by `apply()` through `setLead()`) in `core/state.js`.
+- A value several parts read belongs to the one part that sets it, and the others import it (an imported variable can be read, not changed), as in Nitya Upasana: `FSA` (the default text size for this screen, "100%") and `fontsNow()` in `text/autofit.js`, `rmkPop` (the open dhrupad bubble) in `text/dhrupad-markers.js`, `skCache` (the next Sankathara Chaturthi) in `features/date-card.js`, and `LEAD` (the leading language, set by `apply()` through `setLead()`) in `core/state.js`.
 - The settings are `P` (`core/state.js`), saved on this device only (localStorage key `aarti2-prefs`). `apply()` (`features/bars.js`) turns `P` into the `data-*` switches on `<html>` that the styles react to (see `../css/README.md`).
 - A new file must also be added to `parts.js`, so it is kept for offline use. `tests/site-files.spec.mjs` checks this.
 
@@ -33,7 +33,7 @@ There is no build step: the browser loads these files as they are.
 | `text/dhrupad-markers.js` | Tappable dhrupad markers (every text with refrain: every-verse) |
 | `text/stanza-numbers.js` | Stanza numbers |
 | `text/line-breaks.js` | Preferred line breaks |
-| `text/autofit.js` | Auto-fit text size |
+| `text/autofit.js` | The text size, as in Nitya Upasana: the default for this screen (`dfs()`, `core/state.js`, times the reader's own text size, `textScale()`), the same for every text, unless the reader chose one; a long line wraps rather than the text shrinking. Also the two columns' pull |
 | `core/apply.js` | Nitya Upasana's file: the current piece (`cur()`), each piece's fold button (`foldSet()`, `unfold()` when it is gone to) and the menus |
 | `features/bottom-bar.js` | Bottom bar (#asc): ‹ Prev, Home, Library, Aa, Next ›, as in Nitya Upasana |
 | `features/bars.js` | Bars tuck away while reading (CSS: "Bars tuck away while reading"), and apply() |
