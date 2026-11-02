@@ -41,7 +41,7 @@
   border-radius: 10px;
   background: none;
   color: var(--ink);
-  font: 550 14.5px/1.25 var(--lat);
+  font: 550 var(--fz-m)/1.25 var(--lat);
   text-align: center;
   cursor: pointer;
 }
@@ -62,7 +62,7 @@
 }
 #tss .tshn {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--fz-xs);
   font-weight: 500;
   line-height: 1.2;
 }
@@ -198,7 +198,7 @@
 }
 #jlt {
   margin: 0;
-  font: 400 22px/1.3 var(--head);
+  font: 400 var(--fz-xxl)/1.3 var(--head);
   color: var(--accent);
 }
 #jlt [lang="en"] {

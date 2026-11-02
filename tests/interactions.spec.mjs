@@ -1004,3 +1004,19 @@ for (const fnt of ["classic", "std", "bold"])
     expect(top).toBeGreaterThanOrEqual(0);
     expect(top).toBeLessThan(120);
   });
+
+// Back puts focus on the button that opened the page, in Safari too, which focuses no button that is clicked or tapped
+// (js/features/overlays.js notes the button pressed; Satish, 2026-11-02, from Nitya Upasana)
+test("Settings and the Library: closing returns focus to the button that opened them, in every browser", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page.locator("#aa").click();
+  await expect(page.locator("#panel")).toBeVisible();
+  await page.locator("#xc").click();
+  await expect(page.locator("#panel")).toBeHidden();
+  await expect(page.locator("#aa")).toBeFocused();
+  await page.locator("#asq").click();
+  await expect(page.locator("#jump")).toBeVisible();
+  await page.locator("#jbk").click();
+  await expect(page.locator("#jump")).toBeHidden();
+  await expect(page.locator("#asq")).toBeFocused();
+});

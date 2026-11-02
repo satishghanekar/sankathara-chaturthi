@@ -80,7 +80,7 @@
   border-radius: 12px;
   padding: 6px 12px 2px;
   margin-bottom: 8px;
-  font: 400 15px/1.4 var(--lat);
+  font: 400 var(--fz-m)/1.4 var(--lat);
 }
 #tsc[hidden] {
   display: none;
@@ -97,7 +97,7 @@
 }
 #tsh {
   margin: 0;
-  font: 400 22px/29px var(--head);
+  font: 400 var(--fz-xxl)/29px var(--head);
   color: var(--accent);
 }
 #tsh [lang="en"] {
@@ -106,7 +106,7 @@
 #tsn {
   flex: none;
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--fz-m);
 }
 #tsl {
   margin: 0;
@@ -138,7 +138,7 @@
   flex: none;
   min-width: 1.6em;
   color: var(--muted);
-  font: 400 14px/1 var(--body);
+  font: 400 var(--fz-m)/1 var(--body);
   text-align: right;
 }
 #tsl .tt {
@@ -147,13 +147,13 @@
 }
 #tsl .tt .t1 {
   display: block;
-  font: 400 19px/26px var(--head);
+  font: 400 var(--fz-xl)/26px var(--head);
   overflow-wrap: anywhere;
 }
 #tsl .tt .t2 {
   display: block;
   color: var(--muted);
-  font: 400 12.5px/17px var(--lat);
+  font: 400 var(--fz-s)/17px var(--lat);
 }
 #tsl .ttg {
   flex: none;
@@ -162,7 +162,7 @@
   border-radius: 10px;
   background: var(--surface);
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--fz-xs);
   white-space: nowrap;
 }
 #tsc[data-lang="mr"] .ttg {
@@ -330,7 +330,7 @@
 /* On the day: pooja time and moonrise countdown */
 .skc .skcd {
   margin-top: 2px;
-  font: 600 13px/1.4 var(--lat);
+  font: 600 var(--fz-s)/1.4 var(--lat);
   color: var(--accent);
 }
 .skc .skcd .mr {
@@ -363,7 +363,7 @@
   padding: 4px 8px;
   min-height: 32px;
   color: var(--accent);
-  font: 500 13px/1.3 var(--lat);
+  font: 500 var(--fz-s)/1.3 var(--lat);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -371,7 +371,7 @@
 .skc[data-lang="both"] .skh .en,
 .skc[data-lang="both"] .skd .en {
   display: block;
-  font: 400 12px/1.4 var(--lat);
+  font: 400 var(--fz-xs)/1.4 var(--lat);
   color: var(--muted);
 }
 .skc[data-lang="both"] .skm .en {
@@ -382,7 +382,7 @@
   margin: 0 0 4px;
   padding-bottom: 4px;
   border-bottom: 1px solid var(--hdrl);
-  font: 500 14px/1.4 var(--body);
+  font: 500 var(--fz-m)/1.4 var(--body);
   color: var(--ink);
 }
 .skc[data-lang="en"] .sktd {
@@ -390,7 +390,7 @@
 }
 .skc[data-lang="both"] .sktd .en {
   display: block;
-  font: 400 12px/1.4 var(--lat);
+  font: 400 var(--fz-xs)/1.4 var(--lat);
 }
 .skc[data-lang="en"] .skd {
   font: 600 1.1em/1.35 var(--lat);
@@ -417,12 +417,12 @@
   border-radius: 12px;
   background: var(--bg);
   color: var(--ink);
-  font: 400 12px/1.25 var(--body);
+  font: 400 var(--fz-xs)/1.25 var(--body);
   cursor: pointer;
 }
 .skc .skch b {
   display: block;
-  font: 600 16px/1.2 var(--body);
+  font: 600 var(--fz-l)/1.2 var(--body);
 }
 .skc[data-lang="en"] .skch b {
   font-family: var(--lat);
@@ -452,7 +452,7 @@
   padding: 0 3px;
   background: var(--surface);
   color: var(--muted);
-  font: 600 10px/1.2 var(--lat);
+  font: 600 var(--fz-xs)/1.2 var(--lat);
   font-style: normal;
 }
 .skc[data-lang="both"] .skch i .en {
@@ -474,11 +474,11 @@
     align-items: center;
     gap: 8px;
     margin: 0 0 10px;
-    font: 600 15px/1.35 var(--head);
+    font: 600 var(--fz-m)/1.35 var(--head);
     color: var(--accent);
   }
   #rail[data-lang="en"] .rhome {
-    font: 600 14px/1.35 var(--lat);
+    font: 600 var(--fz-m)/1.35 var(--lat);
   }
   #rail .rhome .en {
     display: none;
@@ -491,7 +491,7 @@
   }
   #rail[data-lang="both"] .rhome .en {
     display: inline;
-    font: 400 12px var(--lat);
+    font: 400 var(--fz-xs) var(--lat);
     color: var(--muted);
     margin-left: 4px;
   }
