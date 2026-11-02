@@ -44,11 +44,11 @@ A word a language lacks is taken from English. `tests/unit/strings.test.mjs` che
   - It sets the `data-*` switches the styles react to: `data-lang` on each region, and `data-ref`, `data-cols`, `data-rail`, `data-font`, `data-pref` and `data-hc` on `<html>`.
   - It sets `--fs`, the text size.
   - Anything that changes a setting calls `change({ … }, then)` (`js/core/state.js`, as in Nitya Upasana): the values go into `P`, `then` (usually `apply()`) brings the page up to date, and everything is saved. Only the size while a pinch is under way, the auto-fit's size and start-up repairs write `P` directly.
-- **Auto-fit** (`js/text/autofit.js`) works out the largest text size at which every verse line fits the screen on one row. On phones the default is 110% of that (`phoneBoost()` in `js/core/state.js`, 2026-10-25), so a few long lines wrap; it still shows as 100%.
-  - It measures all lines at once in a hidden copy, so the page is laid out only once.
-  - It remembers each result per language, font, layout and window size.
-  - It is skipped when the reader has chosen a size (`P.fsu`).
-- **A value several parts read belongs to the part that sets it**, and the others import it (a JavaScript module can only change its own variables, so the others read it): the fitted text size (`FSA`, `js/text/autofit.js`), the leading language (`LEAD`, `js/core/state.js`, set through `setLead()`), the next Sankathara Chaturthi (`skCache`, `js/features/date-card.js`) and the open dhrupad bubble (`rmkPop`, `js/text/dhrupad-markers.js`), as in Nitya Upasana.
+- **Text size** (`dfs()` in `js/core/state.js`, applied by `js/text/autofit.js`; Satish, 2026-11-02, as in Nitya Upasana): one default by how far the screen is read from, the same for every text: 22px on a phone (20px under 360px wide), 28px on an iPad, 24px on a computer (26px on a screen 1600px wide or more), times the reader's own text size (`textScale()`: Larger Text on an iPhone or iPad through Safari's `-apple-system-body`, else the browser's default size; 0.85 to 1.5).
+  - It replaces the auto-fit (the largest size at which every line fitted, measured on the first text opened, and 110% of that on phones since 2026-10-25): a long line now wraps, its rows closer together and evenly split, so it reads as one line.
+  - A size the reader chose (`P.fsu`) is kept.
+  - The menus and labels have their own six sizes (`--fz-*` in `css/01-theme.css`, times the same `--ts`), the same on every screen.
+- **A value several parts read belongs to the part that sets it**, and the others import it (a JavaScript module can only change its own variables, so the others read it): the default text size, "100%" (`FSA`, `js/text/autofit.js`), the leading language (`LEAD`, `js/core/state.js`, set through `setLead()`), the next Sankathara Chaturthi (`skCache`, `js/features/date-card.js`) and the open dhrupad bubble (`rmkPop`, `js/text/dhrupad-markers.js`), as in Nitya Upasana.
 - **The styles** read only those switches and variables. `css/README.md` lists them and explains the one rule for editing: a later rule for the same element wins, so change the last one.
 
 ## Printing
