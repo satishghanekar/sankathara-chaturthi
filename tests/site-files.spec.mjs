@@ -70,8 +70,8 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 // then. Styles
 // raised 2026-10-30 to 55 KB for More dates a row a year on iPads and beside the card on desktops: 52.3 KB then; on
 // 2026-10-31 to 58 KB for Nitya Upasana's three text fonts (their faces in every script, Bold's weights): 55.2 KB then.
-// index.html raised 2026-11-01 to 22 KB for Help on the Print pop-up's how-it-prints line: 20.0 KB then, as CI's Node
-// 22 compresses it (some 70 bytes more than Node 25 on a Mac).)
+// index.html raised 2026-11-01 to 22 KB, as it had reached 20.0 KB as CI's Node 22 compresses it (some 70 bytes more
+// than Node 25 on a Mac).)
 test("the scripts, styles and page stay within their size budget", () => {
   const parts = siteParts();
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
