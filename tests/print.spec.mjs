@@ -11,7 +11,7 @@
 //   - nothing prints in a page's bottom margin but its footer; sideways, an aarti of three stanzas fits on one page
 // PDFs can only be made by Chromium, so this suite is Chromium-only.
 import { test, expect, devices } from "@playwright/test";
-import { openSite, SETUPS, SNAP_ENV } from "./helpers.mjs";
+import { openSite, SETUPS, SNAP_ENV, MAC_SKIPS_PIXELS } from "./helpers.mjs";
 import { printOnce, checkPrintout, stubPrint, printFromButton, howStep, readPrintView, addMarkers, pdfPages, markerPages } from "./print-helpers.mjs";
 
 test.describe.configure({ mode: "parallel" });
@@ -56,7 +56,8 @@ for (const L of LAYOUTS)
       test(`${L.name} · ${fnt} font · ${P.paper} @chromium-only`, async ({ browser }) => {
         const r = await printOnce(browser, { prefs: { ...SETUPS[L.setup], fnt }, choice: L.choice, mode: L.mode, ...P });
         const summary = checkPrintout(r);
-        expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${L.name}-${fnt}-${P.paper}.json`]);
+        // (the page counts depend on the machine\'s fonts: on a Mac left to CI, MAC_SKIPS_PIXELS; checkPrintout still runs)
+        if (!MAC_SKIPS_PIXELS) expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${L.name}-${fnt}-${P.paper}.json`]);
       });
     }
 
@@ -78,7 +79,8 @@ for (const L of SIDEWAYS)
         expect([...pages], `${id} on one sideways page`).toHaveLength(1);
       }
       const summary = checkPrintout(r);
-      expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
+      // (the page counts depend on the machine\'s fonts: on a Mac left to CI, MAC_SKIPS_PIXELS; checkPrintout still runs)
+      if (!MAC_SKIPS_PIXELS) expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `sideways-${L.name}-${fnt}-${P.paper}.json`]);
     });
   });
 
@@ -92,7 +94,8 @@ for (const X of [
     const r = await printOnce(browser, { prefs: { ...X.prefs, por: "land" }, choice: X.choice, mode: X.mode, paper: "Letter", locale: "en-US" });
     expect(r.pdf.landscape).toBe(true);
     const summary = checkPrintout(r);
-    expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
+    // (the page counts depend on the machine\'s fonts: on a Mac left to CI, MAC_SKIPS_PIXELS; checkPrintout still runs)
+    if (!MAC_SKIPS_PIXELS) expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
   });
 }
 
@@ -101,7 +104,8 @@ for (const X of EXTRAS) {
     const paper = X.paper || "Letter";
     const r = await printOnce(browser, { prefs: X.prefs, choice: X.choice, mode: X.mode, paper, locale: X.locale || "en-US" });
     const summary = checkPrintout(r);
-    expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
+    // (the page counts depend on the machine\'s fonts: on a Mac left to CI, MAC_SKIPS_PIXELS; checkPrintout still runs)
+    if (!MAC_SKIPS_PIXELS) expect(JSON.stringify(summary, null, 1)).toMatchSnapshot([SNAP_ENV, `${X.name}.json`]);
   });
 }
 

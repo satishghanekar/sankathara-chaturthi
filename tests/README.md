@@ -77,6 +77,7 @@ Screenshots and print summaries depend a little on the machine (font smoothing, 
 - **Claude sessions in the cloud** (started from the Claude mobile app or claude.ai/code) run on Linux, where `local/` screenshots won't match. There, run the tests with `SNAPSHOT_ENV=ci` (or skip the screenshots with `--grep-invert screenshot`), and never run `--update-snapshots`: it would replace the Mac's pictures with Linux ones.
 - **`ci/`** is used by the GitHub test run, which runs in Playwright's Docker image. To refresh it, push a commit to a branch with `[update-snapshots]` in its message. The *Update CI snapshots* workflow (`.github/workflows/update-snapshots.yml`) then takes new screenshots on GitHub and commits them to that branch. Look at the changed pictures in the pull request before merging.
 - The print tests check where every text starts and that no block is split, against the PDF on every machine, so a summary that differs between the two sets is still a correct printout.
+- **On a Mac** the screenshots are skipped and the print summaries are not compared (`MAC_SKIPS_PIXELS` in `helpers.mjs`, 2026-11-02): a Mac's text is drawn a little differently, so a run there was never green. Everything else in those tests still runs, and CI compares the pictures on every push. `SNAPSHOT_ENV=local` compares against the Mac's set anyway.
 - `SNAPSHOT_ENV=ci` or `SNAPSHOT_ENV=local` picks a set by hand.
 
 ## What automation can't cover
