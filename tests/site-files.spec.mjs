@@ -69,13 +69,15 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 // 2026-10-31 to 195 KB for the Print pop-up's hints and page count in five languages, js/print/pages.js: 189.2 KB
 // then. Styles
 // raised 2026-10-30 to 55 KB for More dates a row a year on iPads and beside the card on desktops: 52.3 KB then; on
-// 2026-10-31 to 58 KB for Nitya Upasana's three text fonts (their faces in every script, Bold's weights): 55.2 KB then.)
+// 2026-10-31 to 58 KB for Nitya Upasana's three text fonts (their faces in every script, Bold's weights): 55.2 KB then.
+// index.html raised 2026-11-01 to 22 KB for Help on the Print pop-up's how-it-prints line: 20.0 KB then, as CI's Node
+// 22 compresses it (some 70 bytes more than Node 25 on a Mac).)
 test("the scripts, styles and page stay within their size budget", () => {
   const parts = siteParts();
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
   expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(195_000);
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(58_000);
-  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(20_000);
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
 
 // The Content-Security-Policy in _headers (Cloudflare Pages sends it; tests/serve.mjs too, so every test runs under it):
