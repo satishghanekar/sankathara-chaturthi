@@ -125,8 +125,8 @@ test("browser menu print gives every text @chromium-only", async ({ browser }) =
 });
 
 // ---- The print builder (as in Nitya Upasana): What, then How ----
-// A phone shows one step at a time: What first, every text ticked, with how many in the bar; Next goes on to How,
-// ‹ What to print comes back. What is ticked is what prints, with its own contents, and is remembered (P.pskip).
+// A phone shows one step at a time: What first, every text ticked, with how many in the bar, and Print under how it will
+// print; Change goes on to How, ‹ What to print comes back. What is ticked is what prints, with its own contents, and is remembered (P.pskip).
 test("print builder: pick texts on a phone, then print just those @chromium-only", async ({ browser }) => {
   const context = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
   const page = await context.newPage();
@@ -135,8 +135,11 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await page.locator("#prb").click();
   await expect(page.locator("#prwh")).toBeVisible();
   await expect(page.locator("#prhw")).toBeHidden();
-  await expect(page.locator("#prgp")).toBeHidden();
-  await expect(page.locator("#prnx")).toBeFocused();
+  // Print is in the bottom bar at once, under how it will print and Change (How)
+  await expect(page.locator("#prgp")).toBeFocused();
+  await expect(page.locator("#prhowt")).toHaveText("Marathi · Dhrupad (धृ): Once · Portrait · Traditional");
+  await expect(page.locator("#prnx")).toHaveAccessibleName("Change");
+  await expect(page.locator("#prnx")).toHaveAccessibleDescription("Marathi · Dhrupad (धृ): Once · Portrait · Traditional");
   const boxes = page.locator("#prwl .tpkl input");
   await expect(boxes).toHaveCount(11);
   expect(await boxes.evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
@@ -144,10 +147,11 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   // the groups of the reading page, in its order
   await expect(page.locator("#prwl .prgr")).toHaveCount(2);
   expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["vedic-chant", "aarti"]);
-  // Clear everything: nothing to print, so Next waits
+  // Clear everything: nothing to print, so Print and Change wait
   await page.locator('.prcb[data-cat=""]').click();
   await expect(page.locator("#prsum")).toContainText("Pick at least one text");
   await expect(page.locator("#prnx")).toBeDisabled();
+  await expect(page.locator("#prgp")).toBeDisabled();
   await expect(page.locator('.prcb[data-cat=""]')).toHaveText("Select all");
   // two texts, one found by search
   await page.locator(".prwq").fill("datta");
@@ -156,15 +160,18 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await page.locator(".prwq").fill("");
   await page.locator('#prwl .tpkl li[data-id="p1"] input').check();
   await expect(page.locator("#prsum span").first()).toHaveText("2 texts");
-  // Next, and back
+  // Change, a choice there (the line follows it), and back
   await page.locator("#prnx").click();
   await expect(page.locator("#prhw")).toBeVisible();
   await expect(page.locator("#prwh")).toBeHidden();
+  await expect(page.locator("#prhow")).toBeHidden();
   await expect(page.locator("#prgp")).toBeFocused();
+  await page.locator('#prdg [data-v="0"]').click();
   await page.locator("#prbk").click();
   await expect(page.locator("#prwh")).toBeVisible();
+  await expect(page.locator("#prhowt")).toHaveText("Marathi · Dhrupad (धृ): Every verse · Portrait · Traditional");
   await expect(page.locator('#prwl .tpkl li[data-id="p1"] input')).toBeChecked();
-  await page.locator("#prnx").click();
+  // Print from What
   await page.locator("#prgp").click();
   await page.waitForFunction(() => window.__printed > 0 || !document.getElementById("prgo").hidden, null, { timeout: 15_000 });
   if (await page.locator("#prgo").isVisible()) await page.locator("#prgo").click();
@@ -203,7 +210,7 @@ test("print builder: a group's Select all and Clear, and one text alone @chromiu
   await page.locator("#prb").click();
   await expect(page.locator("#prwh")).toBeVisible();
   await expect(page.locator("#prhw")).toBeVisible();
-  await expect(page.locator("#prnx")).toBeHidden();
+  await expect(page.locator("#prhow")).toBeHidden();
   await expect(page.locator("#prgp")).toBeFocused();
   const first = page.locator('#prwl .prgr[data-cat="vedic-chant"]'),
     second = page.locator('#prwl .prgr[data-cat="aarti"]');
