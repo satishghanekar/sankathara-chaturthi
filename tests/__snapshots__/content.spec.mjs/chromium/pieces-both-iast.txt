@@ -19,8 +19,6 @@ Gaṇapatyatharvaśīrṣopaniṣat
 
 स्व॒स्ति नो॒ बृह॒स्पति॑र्दधातु ॥
 
-ॐ शान्तिः॒ शान्तिः॒ शान्तिः॑ ॥
-
 om̐ bha̱draṃ karṇe̍bhiḥ śṛṇu̱yāma̍ devāḥ |
 
 bha̱draṃ pa̍śyemā̱kṣabhi̱ryaja̍trāḥ |
@@ -37,7 +35,9 @@ sva̱sti na̱stārkṣyo̱ ari̍ṣṭanemiḥ |
 
 sva̱sti no̱ bṛha̱spati̍rdadhātu ||
 
-om̐ śānti̱ḥ śānti̱ḥ śānti̍ḥ ||
+॥ ॐ शान्तिः॒ शान्तिः॒ शान्तिः॑ ॥
+
+|| om̐ śānti̱ḥ śānti̱ḥ śānti̍ḥ ||
 
 ॐ नम॑स्ते ग॒णप॑तये ।
 
@@ -410,6 +410,38 @@ mahāpratyavāyā̎t pramu̱cyate |
 sa sarvavidbhavati sa sarva̍vidbha̱vati |
 
 ya e̍vaṃ ve̱da | ityu̍pa̱niṣa̍t || 14 ||
+
+ॐ भ॒द्रं कर्णे॑भिः शृणु॒याम॑ देवाः ।
+
+भ॒द्रं प॑श्येमा॒क्षभि॒र्यज॑त्राः ।
+
+स्थि॒रैरङ्गै᳚स्तुष्टु॒वाग्ं स॑स्त॒नूभिः॑ ।
+
+व्यशे॑म दे॒वहि॑तं॒ यदायुः॑ ।
+
+स्व॒स्ति न॒ इन्द्रो॑ वृ॒द्धश्र॑वाः ।
+
+स्व॒स्ति नः॑ पू॒षा वि॒श्ववे॑दाः ।
+
+स्व॒स्ति न॒स्तार्क्ष्यो॒ अरि॑ष्टनेमिः ।
+
+स्व॒स्ति नो॒ बृह॒स्पति॑र्दधातु ॥
+
+om̐ bha̱draṃ karṇe̍bhiḥ śṛṇu̱yāma̍ devāḥ |
+
+bha̱draṃ pa̍śyemā̱kṣabhi̱ryaja̍trāḥ |
+
+sthi̱rairaṅgai̎stuṣṭu̱vāgṃ sa̍sta̱nūbhi̍ḥ |
+
+vyaśe̍ma de̱vahi̍ta̱ṃ yadāyu̍ḥ |
+
+sva̱sti na̱ indro̍ vṛ̱ddhaśra̍vāḥ |
+
+sva̱sti na̍ḥ pū̱ṣā vi̱śvave̍dāḥ |
+
+sva̱sti na̱stārkṣyo̱ ari̍ṣṭanemiḥ |
+
+sva̱sti no̱ bṛha̱spati̍rdadhātu ||
 
 ॥ ॐ शान्तिः॒ शान्तिः॒ शान्तिः॑ ॥
 
