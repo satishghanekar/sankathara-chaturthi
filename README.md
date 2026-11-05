@@ -180,7 +180,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 | `line-id-exceptions` | Only for the old Vitthal Aarti, whose 4th line has always been `s7l4r`: `s7l4=s7l4r`. |
 | `refrain` | `every-verse`: the `[dhrupad]` is shown once at the top, and after every stanza the app adds the "↻ ध्रुपद" note and the dhrupad again (for the धृ button). `always`: the refrain lines are written inside the stanzas and always shown (today's Dnyaneshwar Aarti). Leave it out for none. |
 | `refrain-before-first` | `yes` when the dhrupad is also sung before the first stanza (Vitthal Aarti, Jai Ganesh Deva). |
-| `layout` | `prose` prints the text as running paragraphs, like a booklet (the Atharvashirsha). |
+| `layout` | `prose` prints the text as running paragraphs, like a booklet (the Atharvashirsha). `lines` sets a Vedic chant line by line, as its booklet does, on screen and paper; a long verse reference (॥ ९.००१.०६ ॥) shows on a phone as just the verse (॥ ६ ॥). |
 | `credit`, `credit-en` | The author line in each language. `[name](address)` becomes a Wikipedia link that opens in a new tab, with its ↗. |
 | `credit-note`, `credit-note-en` | A second, smaller author line (Vitthal Aarti: "also credited to Sant Namdev"). |
 
