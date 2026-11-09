@@ -46,7 +46,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
   - `data-tuck`: the bars are tucked away.
   - `data-hv`: Home on its own (no text open); the texts below it are not shown.
   - `data-home`: Home is on screen: the bottom bar keeps only the Library and Aa, and the bars never tuck away.
-  - `data-run`: a session from Home is being read: only its texts (`.inrun`), in session order, in one scroll. Otherwise one text at a time (`.solo`), as in Nitya Upasana.
+  - `data-run`: a session from Home is being read: only its texts (`.inrun`), in session order, in one scroll, each numbered by its place in the session (`.rno`, the Library's number hidden). Otherwise one text at a time (`.solo`), as in Nitya Upasana.
   - `data-lead="en"`: English is the main language; `data-scr`: Kannada, Telugu or Gujarati letters (`kn`, `te`, `gu`).
   - `data-ready`: the site script has started. Until then the page is hidden, so it never shows half set up.
 

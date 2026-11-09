@@ -969,6 +969,45 @@ test("a session in another order than the Library's: Home lists it so, and Next 
   await expect(page.locator("#asn")).toHaveAttribute("aria-label", "Next: Home");
 });
 
+// Screen readers and the Tab key follow the page's own order, not the order shown (WCAG 1.3.2, 2.4.3): a session in
+// another order than the Library's is moved into it in the page, numbered as on Home, as in Nitya Upasana
+test("a session's texts are in session order in the page itself, numbered by the session, for screen readers and Tab @mobile", async ({ page }) => {
+  await page.route("**/content/routines.json", (r) =>
+    r.fulfill({ json: { evening: { mode: "fixed", texts: ["aarti-shendur-lal-chadhayo", "vedic-chant-atharvashirsha", "aarti-sukhkarta"] } } }),
+  );
+  await openSite(page, SETUPS.marathi);
+  await page.locator('#tsl a[href="./#a2"]').click();
+  await expect(page.locator("#a2")).toBeVisible();
+  // the page's own order (what screen readers and Tab follow), not only the order shown
+  const inPage = () => page.evaluate(() => [...document.querySelectorAll("#main > .ash.inrun")].map((x) => x.id));
+  await expect.poll(inPage).toEqual(["a2", "p1", "a1"]);
+  // each numbered by its place in the session, as on Home's list; the Library's number (per section) hidden while it runs
+  const numbers = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("#main > .ash.inrun h2")].map((h) =>
+        [...h.querySelectorAll(".no > span")]
+          .filter((n) => n.getClientRects().length)
+          .map((n) => n.textContent)
+          .join(" "),
+      ),
+    );
+  expect(await numbers()).toEqual(["१.", "२.", "३."]);
+  // Tab goes from the first text's fold button to the second's, each told apart by its text's title
+  await page.locator("#a2 .afb").focus();
+  await expect(page.locator("#a2 .afb")).toHaveAccessibleDescription(/शेंदुर/);
+  let next = "";
+  for (let i = 0; i < 40 && !next; i++) {
+    await page.keyboard.press("Tab");
+    next = await page.evaluate(() => (document.activeElement.matches(".afb") ? document.activeElement.closest(".ash").id : ""));
+  }
+  expect(next).toBe("p1");
+  // leaving the session puts the pieces back in the Library's order, with the Library's numbers
+  await page.locator("#ash").click();
+  await expect(page.locator("html")).not.toHaveAttribute("data-run", "1");
+  expect(await page.evaluate(() => [...document.querySelectorAll("#main > .ash")].map((x) => x.id))).toEqual(["p1", "a1", "a2"]);
+  await expect(page.locator("#main .rno")).toHaveCount(0);
+});
+
 // About's version line: the version, under it the offline state at its start, and the round button beside them, a
 // 44px target named for what it does; on the narrowest phone too
 test("the version line: the version, its state under it, and the round Check for updates button beside them", async ({ page }) => {
