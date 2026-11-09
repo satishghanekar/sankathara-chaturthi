@@ -89,3 +89,53 @@ test("every file carries the Content-Security-Policy: this site only, no inline 
     expect(csp, path).toMatch(/script-src 'self'(;|$)/);
   }
 });
+
+// Type checking (npm run types) covers only the files that start with "// @ts-check". These still don't: the list may
+// only get shorter, as each file is typed (in Nitya Upasana first, for the files the two apps share). A new file, or
+// one taken off the list, fails here until it has the line.
+const UNCHECKED = [
+  "core/apply.js",
+  "core/features.js",
+  "core/page.js",
+  "core/startup.js",
+  "core/state.js",
+  "features/astronomy.js",
+  "features/bars.js",
+  "features/bottom-bar.js",
+  "features/clicks.js",
+  "features/dhrupad-button.js",
+  "features/help.js",
+  "features/history.js",
+  "features/languages.js",
+  "features/more-menu.js",
+  "features/offline.js",
+  "features/overlays.js",
+  "features/picture-viewer.js",
+  "features/pinch.js",
+  "features/print.js",
+  "features/reading-sheet.js",
+  "features/settings-panel.js",
+  "features/share.js",
+  "features/wake-lock.js",
+  "main.js",
+  "parts.js",
+  "print/compose.js",
+  "render.js",
+  "text/autofit.js",
+  "text/dhrupad-markers.js",
+  "text/iast.js",
+  "text/layout.js",
+  "text/line-breaks.js",
+  "text/stanza-numbers.js",
+];
+test("every script is type-checked, except the files still waiting for it", () => {
+  const all = [];
+  (function walk(dir) {
+    for (const e of readdirSync(new URL("../js/" + dir, import.meta.url), { withFileTypes: true })) {
+      if (e.isDirectory()) walk(dir + e.name + "/");
+      else if (e.name.endsWith(".js")) all.push(dir + e.name);
+    }
+  })("");
+  const unchecked = all.filter((f) => !/^\/\/ @ts-check/m.test(readFileSync(new URL("../js/" + f, import.meta.url), "utf8").slice(0, 300))).sort();
+  expect(unchecked).toEqual([...UNCHECKED].sort());
+});
