@@ -1,3 +1,4 @@
+// @ts-check
 // Next Sankathara Chaturthi card (computed on this device; works offline)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
@@ -9,7 +10,21 @@ import { SK } from "./astronomy.js";
 import { masaOf } from "../core/panchang.js";
 import { ADHIKA, PAKSHA, TITHI } from "../core/panchang-names.js";
 
-var SKTZ, SKCITY, skToday, foldTouched, pdMore, skOld;
+/**
+ * A place for the moonrise, with own = 1 when no listed city is close (the reader's own location)
+ * @typedef {{ lat: number, lon: number, mr: string, en: string, own?: number }} Place
+ * A Sankashti (js/features/astronomy.js SK.upcoming): its day (local midnight), moonrise and when the chaturthi starts
+ * @typedef {{ day: number, rise: number | null, start: number }} Sankashti
+ */
+/** @type {Record<string, [number, number, string, string]>} default place for each time zone (set by init()) */
+var SKTZ = {};
+/** @type {Array<[number, number, string, string, number?]>} the cities named for a location (set by init()) */
+var SKCITY = [];
+/** whether today is the Sankashti; the card folded or opened this visit; More dates open; last year's dates shown */
+var skToday = false,
+  foldTouched = false,
+  pdMore = false,
+  skOld = false;
 // The next Sankathara Chaturthi, worked out once (js/features/share.js reads it for the Share message)
 /** @type {any} */
 export var skCache = null;
@@ -204,30 +219,34 @@ export function init() {
   // whichever date is picked in the strip). On Sankashti day the card stays open unless folded again that visit.
   skToday = false;
   foldTouched = false;
-  document.getElementById("cvb").onclick = function () {
+  var cvb = /** @type {HTMLElement} */ (document.getElementById("cvb"));
+  cvb.onclick = function () {
     foldTouched = true;
     // no "Card folded" message (Satish, 2026-10-30): it covered the page, and the slim line says itself how to open it
-    change({ fold: document.querySelector("#home .top").classList.contains("fold") ? 0 : 1 }, cardFoldSet);
+    var top = document.querySelector("#home .top");
+    change({ fold: top && top.classList.contains("fold") ? 0 : 1 }, cardFoldSet);
   };
   // One-hand use: tapping the Ganesha picture folds the card, and tapping the folded slim line opens it
   ["#home .hero", "#slim"].forEach(function (s) {
     var e = document.querySelector(s);
     if (e)
       e.addEventListener("click", function (ev) {
-        if (ev.target.closest("#iconb")) return; // the picture opens full screen instead
-        document.getElementById("cvb").onclick();
+        if (/** @type {HTMLElement} */ (ev.target).closest("#iconb")) return; // the picture opens full screen instead
+        cvb.click();
       });
   });
   // "More dates" opens the dates, and turns the foot's Add to calendar into Add all; it starts closed on every visit
   pdMore = false;
   skOld = false;
   document.addEventListener("click", function (e) {
-    if (!e.target.closest || !e.target.closest("#skold")) return;
+    var t = /** @type {HTMLElement} */ (e.target);
+    if (!t.closest || !t.closest("#skold")) return;
     skOld = !skOld;
     if (skCache) skOldSet(skCache.sel);
   });
   document.addEventListener("click", function (e) {
-    if (!e.target.closest || !e.target.closest("#skmore")) return;
+    var t = /** @type {HTMLElement} */ (e.target);
+    if (!t.closest || !t.closest("#skmore")) return;
     pdMore = !pdMore;
     pdSet();
     // the strip was hidden, so put the chosen date back in the middle of it
@@ -235,32 +254,38 @@ export function init() {
   });
   setInterval(skCd, 60000);
   document.addEventListener("click", function (e) {
-    if (!e.target.closest) return;
-    if (e.target.closest("#skcal")) skIcs();
-    else if (e.target.closest("#skall")) skIcs(true);
+    var t = /** @type {HTMLElement} */ (e.target);
+    if (!t.closest) return;
+    if (t.closest("#skcal")) skIcs();
+    else if (t.closest("#skall")) skIcs(true);
   });
   // The dates: tap one, or use the arrow keys / Home / End; "↩ Next date" returns
   document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("#skc .skch, #skb");
+    var t = /** @type {HTMLElement} */ (e.target),
+      b = /** @type {HTMLElement | null} */ (t.closest && t.closest("#skc .skch, #skb"));
     if (!b || !skCache) return;
     if (b.id === "skb") {
       skShow(skCache.ni);
-      var on = document.querySelector("#skc .skch.on");
+      var on = /** @type {HTMLElement | null} */ (document.querySelector("#skc .skch.on"));
       if (on) on.focus({ preventScroll: true });
-    } else skShow(+b.dataset.k);
+    } else skShow(Number(b.dataset.k));
   });
   document.addEventListener("keydown", function (e) {
-    var b = e.target.closest && e.target.closest("#skc .skch");
+    var t = /** @type {HTMLElement} */ (e.target),
+      b = t.closest && t.closest("#skc .skch");
     if (!b || !skCache) return;
     var k = skCache.sel,
-      n = { ArrowLeft: k - 1, ArrowRight: k + 1, Home: 0, End: skCache.list.length - 1 }[e.key];
+      /** @type {Record<string, number>} */
+      keys = { ArrowLeft: k - 1, ArrowRight: k + 1, Home: 0, End: skCache.list.length - 1 },
+      n = keys[e.key];
     if (n === undefined) return;
     e.preventDefault();
     skShow(n, true);
   });
   // "Use my location" button on the card
   document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("#skl");
+    var t = /** @type {HTMLElement} */ (e.target),
+      b = t.closest && t.closest("#skl");
     if (!b) return;
     if (!navigator.geolocation) {
       note(menuWords("sankashti").noGeo);
@@ -280,11 +305,16 @@ export function init() {
   });
 }
 
-// Name for a location: { lat, lon, mr, en }, with own = 1 when no listed city is close
+/**
+ * Name for a location: { lat, lon, mr, en }, with own = 1 when no listed city is close
+ * @param {number} lat @param {number} lon @returns {Place}
+ */
 function skNear(lat, lon) {
+  /** @type {[number, number, string, string, number?] | null} */
   var best = null,
     bd = 1e9,
     r = Math.PI / 180;
+  /** @type {[number, number, string, string, number?] | null} */
   var sub = null,
     sd = 1e9;
   SKCITY.forEach(function (c) {
@@ -303,20 +333,25 @@ function skNear(lat, lon) {
   });
   var wm = menuWords("sankashti", "mr"),
     we = menuWords("sankashti", "en");
-  var o = { lat: lat, lon: lon, mr: wm.yourPlace, en: we.yourPlace, own: 1 };
-  if (sub) {
-    o.mr = sub[2];
-    o.en = sub[3];
-  } else if (best && bd <= 40) {
-    o.mr = best[2];
-    o.en = best[3];
-  } else if (best && bd <= 120) {
-    o.mr = wm.near(best[2]);
-    o.en = we.near(best[3]);
+  /** @type {Place} */
+  var o = { lat: lat, lon: lon, mr: wm.yourPlace, en: we.yourPlace, own: 1 },
+    // forEach's callback hides the assignments from the checker, so it reads them as never set
+    s = /** @type {[number, number, string, string, number?] | null} */ (sub),
+    bb = /** @type {[number, number, string, string, number?] | null} */ (best);
+  if (s) {
+    o.mr = s[2];
+    o.en = s[3];
+  } else if (bb && bd <= 40) {
+    o.mr = bb[2];
+    o.en = bb[3];
+  } else if (bb && bd <= 120) {
+    o.mr = wm.near(bb[2]);
+    o.en = we.near(bb[3]);
   }
   return o;
 }
 
+/** The place the card is for: the reader's location, else the time zone's city, else none @returns {Place | null} */
 export function skLoc() {
   if (P.loc && typeof P.loc.lat === "number") return skNear(P.loc.lat, P.loc.lon);
   var z = "";
@@ -327,6 +362,7 @@ export function skLoc() {
   return c ? { lat: c[0], lon: c[1], mr: c[2], en: c[3] } : null;
 }
 
+/** Local midnight of a time (now when none) @param {number} [t] */
 export function skMid(t) {
   var d = t ? new Date(t) : new Date();
   return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -334,6 +370,7 @@ export function skMid(t) {
 
 // Date (with the year when it is not this year) and moonrise text for one Sankashti, in the menu language
 // (js/strings/: sankashti), and the moonrise in English for calendar files (ten)
+/** @param {Sankashti} o */
 export function skFmt(o) {
   var w = menuWords("sankashti"),
     we = menuWords("sankashti", "en"),
@@ -354,6 +391,7 @@ export function skFmt(o) {
 
 // One phrase of the card in the menu language: a span with the language's code as its class and lang, so the card's
 // styles for .mr and .en still apply
+/** @param {string} t @param {string} [cls] */
 function one(t, cls) {
   var l = ui();
   return '<span class="' + (cls ? cls + " " : "") + l + '" lang="' + l + '">' + t + "</span>";
@@ -393,12 +431,13 @@ export function skRender() {
       return;
     }
     skCache = { key: key, list: first, ni: 0, sel: 0, part: 1 };
+    var at = L;
     /** @returns {boolean} whether the card was drawn with them */
     var all = function () {
       if (!skCache || skCache.key !== key) return false;
       try {
         var y = new Date().getFullYear(),
-          list = SK.upcoming(new Date(y - 1, 0, 1).getTime(), L.lat, L.lon, 40).filter(function (o) {
+          list = SK.upcoming(new Date(y - 1, 0, 1).getTime(), at.lat, at.lon, 40).filter(function (/** @type {Sankashti} */ o) {
             return new Date(o.day).getFullYear() <= y + 1;
           }),
           today = skMid();
@@ -420,7 +459,7 @@ export function skRender() {
     now = new Date(),
     chips = "",
     lastY = 0;
-  skCache.list.forEach(function (o, k) {
+  skCache.list.forEach(function (/** @type {Sankashti} */ o, /** @type {number} */ k) {
     var f = skFmt(o),
       d = f.d,
       Y = d.getFullYear();
@@ -558,12 +597,13 @@ export function cardFoldSet() {
   if (!top || !b) return;
   var f = !!P.fold && !(skToday && !foldTouched);
   top.classList.toggle("fold", f);
-  document.getElementById("slim").hidden = !f;
+  /** @type {HTMLElement} */ (document.getElementById("slim")).hidden = !f;
   b.setAttribute("aria-expanded", String(!f));
   b.setAttribute("aria-label", f ? menuWords("card").open : menuWords("card").fold);
 }
 
 // Show one Sankashti in the card and mark its chip in the strip (focus stays where it is)
+/** @param {number} k its place in skCache.list @param {boolean} [focus] move the focus to its chip */
 function skShow(k, focus) {
   var box = document.getElementById("skc"),
     L = skLoc(),
@@ -583,7 +623,7 @@ function skShow(k, focus) {
   // The heading, then the date large (Satish, 2026-10-30: the card in one piece, the picture in its ring beside it).
   // On the day itself the same, the moonrise and the place lit (.hot), the time left before the moonrise after it
   var hot = dd === 0 ? " hot" : "";
-  box.querySelector(".skt").innerHTML =
+  /** @type {HTMLElement} */ (box.querySelector(".skt")).innerHTML =
     '<div class="skh">' +
     one(hd) +
     "</div>" +
@@ -630,23 +670,25 @@ function skShow(k, focus) {
   skRing(k, dd);
   skSlim();
   skCd();
-  box.querySelector("#skb").hidden = k === C.ni;
-  var st = box.querySelector(".sks"),
-    on = null;
+  /** @type {HTMLElement} */ (box.querySelector("#skb")).hidden = k === C.ni;
+  var st = /** @type {HTMLElement | null} */ (box.querySelector(".sks"));
   if (!st) return;
   skOldSet(k);
-  [].forEach.call(st.querySelectorAll(".skch"), function (b, i) {
+  var chips = /** @type {NodeListOf<HTMLElement>} */ (st.querySelectorAll(".skch")),
+    on = chips[k];
+  chips.forEach(function (b, i) {
     b.classList.toggle("on", i === k);
     b.setAttribute("aria-selected", String(i === k));
     b.tabIndex = i === k ? 0 : -1;
-    if (i === k) on = b;
   });
+  if (!on) return;
   st.scrollLeft = on.offsetLeft - (st.clientWidth - on.offsetWidth) / 2;
   if (focus) on.focus({ preventScroll: true });
 }
 
 // Last year's dates (600px and wider, where the dates wrap a row a year): behind "Last year's dates", and shown
 // whenever the date picked is one of them (the arrow keys and Home reach them)
+/** @param {number} k the date picked (its place in skCache.list) */
 function skOldSet(k) {
   var box = document.getElementById("skc"),
     b = document.getElementById("skold"),
@@ -686,6 +728,7 @@ function skRing(k, dd) {
 }
 
 // True within 120 km of Bharatiya Hindu Temple, Powell OH, where the group meets 7:00–8:30 pm
+/** @param {{ lat: number, lon: number }} L */
 export function skTemple(L) {
   var r0 = Math.PI / 180,
     a = Math.sin(((L.lat - 40.2148) * r0) / 2),
@@ -695,7 +738,7 @@ export function skTemple(L) {
 
 // On the day, in the moonrise's chip: " · in 2 h 10 min" until the moon rises; refreshed every minute
 function skCd() {
-  var x = document.querySelector("#skc .skcd"),
+  var x = /** @type {HTMLElement | null} */ (document.querySelector("#skc .skcd")),
     C = skCache,
     L = skLoc();
   if (!x || !C || !L) return;
@@ -713,13 +756,15 @@ function skCd() {
 
 // Calendar: .ics events for the program (7:00–8:30 pm), made on this device.
 // all = every upcoming Sankashti in the strip; otherwise the one shown in the card
+/** @param {boolean} [all] */
 function skIcs(all) {
   var C = skCache,
     L = skLoc();
   if (!C || !L) return;
-  var p2 = function (n) {
+  var p2 = function (/** @type {number} */ n) {
       return ("0" + n).slice(-2);
     },
+    /** @type {(d: Date, t?: number) => string} a date (with its time when t) as an .ics file writes it */
     dt = function (d, t) {
       return d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + (t ? "T" + p2(d.getHours()) + p2(d.getMinutes()) + "00" : "");
     },
@@ -727,7 +772,7 @@ function skIcs(all) {
     loc = skTemple(L) ? "Bharatiya Hindu Temple, 3671 Hyatts Rd, Powell, OH 43065" : L.en,
     today = skMid(),
     items = all
-      ? C.list.filter(function (o) {
+      ? C.list.filter(function (/** @type {Sankashti} */ o) {
           return o.day >= today;
         })
       : [C.list[C.sel]],
@@ -735,6 +780,7 @@ function skIcs(all) {
     L2 = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//sankathara-chaturthi//EN"];
   if (!items.length) return;
   // The group's program runs 7:00–8:30 pm on the day, whatever the moonrise time
+  /** @param {Sankashti} o */
   function ev(o) {
     var f = skFmt(o),
       d = new Date(o.day);
@@ -746,7 +792,7 @@ function skIcs(all) {
       t1: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20, 30),
     };
   }
-  items.forEach(function (o) {
+  items.forEach(function (/** @type {Sankashti} */ o) {
     var v = ev(o);
     L2.push("BEGIN:VEVENT", "UID:sk-" + dt(v.d) + "@sankathara-chaturthi.pages.dev", "DTSTAMP:" + stamp);
     L2.push("DTSTART:" + dt(v.t0, 1), "DTEND:" + dt(v.t1, 1), "SUMMARY:" + v.nm + " pooja");
