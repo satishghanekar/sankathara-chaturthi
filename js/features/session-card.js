@@ -20,7 +20,7 @@ import { loaded } from "../text/load.js";
 import { SESSIONS, sessionAt, stepInSession, textsFor } from "../core/routine.js";
 import { dv, esc, lead, mrLang, nameLang, nameOf, scr, scrKey, second, ui } from "../core/words.js";
 import { iaTitle } from "../text/iast.js";
-import { note, onPiece, pieceEl } from "../core/page.js";
+import { arrange, note, onPiece, pieceEl } from "../core/page.js";
 import { P } from "../core/state.js";
 import { unfold } from "../core/apply.js";
 import { menuWords } from "../core/strings.js";
@@ -289,17 +289,41 @@ function runMark() {
   [].forEach.call(document.querySelectorAll(".ash"), function (/** @type {HTMLElement} */ x) {
     runOne(x);
   });
+  // the session's pieces in its order in the page itself (js/core/page.js), so screen readers and the Tab key meet them
+  // in the order they are seen; back in the Library's order when it ends
+  arrange(
+    run
+      ? run.ids.map(function (x) {
+          return sec[x] || "";
+        })
+      : null,
+  );
   if (run) r.setAttribute("data-run", "1");
   else r.removeAttribute("data-run");
 }
 
-/** A piece in the session being read is marked .inrun (also one built later), with its place in it @param {HTMLElement} x */
+/**
+ * A piece in the session being read is marked .inrun (also one built later), with its place in the session as its
+ * number, as on Home's list: "२." for the second text, not its number in its Library section (.rno, shown in place of
+ * the Library's .no while the session runs: css/10-today.css), as in Nitya Upasana
+ * @param {HTMLElement} x
+ */
 function runOne(x) {
   var id = bySec[x.id],
-    i = run && id ? run.ids.indexOf(id) : -1;
+    i = run && id ? run.ids.indexOf(id) : -1,
+    h = x.querySelector("header h2"),
+    old = h && h.querySelector(".rno");
   x.classList.toggle("inrun", i >= 0);
-  // its place in the session (the page keeps the Library's order)
+  // its place in the session, also for the flex column the session is shown in
   x.style.order = i >= 0 ? String(i + 1) : "";
+  if (old) old.remove();
+  if (i < 0 || !h) return;
+  var no = document.createElement("span");
+  no.className = "no rno";
+  no.innerHTML = '<span class="nm">' + dv(i + 1) + '.</span><span class="ne">' + (i + 1) + ".</span>";
+  h.insertBefore(no, h.firstChild);
+  // in Kannada, Telugu or Gujarati letters, as the rest of the piece (js/render.js), put back with it
+  /** @type {any} */ (window).SCR.add(no);
 }
 
 /** Leave the session: the page shows one text at a time again */
