@@ -20,7 +20,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `02-core.css` | The first full set of rules for the reading page: page, top bar, contents, pieces, language switching, search, phones held sideways, section headings, and the splash shown while the page starts (`#spl`). Also the first print rules. |
 | `03-menus-print-view.css` | Top-bar title, the top bar's Share menu (App, Share, QR, Help), the Print pop-up (`#prm`; the recommended choices' star `.prbest` in `--star`, the hints `.prhint`, a step larger from 760px), Add to Home Screen, the piece header card, and the dhrupad at the top of a piece. |
 | `04-columns-rail.css` | Wide screens: two stanza columns, piece and stanza numbers, both languages side by side, and the left contents menu (`#rail`). |
-| `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament, fade-in, and the dhrupad markers. |
+| `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament and the dhrupad markers. |
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading, folding each piece, fold headings, bigger tap areas, the home card in one piece (the picture in its countdown ring; beside it the date, the month line, the moonrise and the place; the foot with Add all while More dates is open; the dates in a strip on phones, a row a year from 600px and beside the card from 1100px; its last rules) and the reading sheet (Aa). |
 | `08-contents-book.css` | Author lines, and Both languages with English first. |
