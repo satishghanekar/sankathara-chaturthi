@@ -3,7 +3,7 @@
 // Kalnirnay names them.
 import { describe, expect, test } from "vitest";
 import { masaOf } from "../../js/core/panchang.js";
-import { init, SK } from "../../js/features/astronomy.js";
+import { init, SK } from "../../js/core/astronomy.js";
 
 init();
 const COLUMBUS = { lat: 39.96, lon: -83.0 };

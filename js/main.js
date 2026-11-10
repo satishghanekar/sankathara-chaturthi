@@ -25,7 +25,8 @@ import { init as startState } from "./core/state.js";
 import { init as startFeatures } from "./core/features.js";
 import { init as startIast } from "./text/iast.js";
 import { init as startLayout } from "./text/layout.js";
-import { init as startAstronomy } from "./features/astronomy.js";
+import { init as startRail } from "./features/rail.js";
+import { init as startAstronomy } from "./core/astronomy.js";
 import { init as startDateCard } from "./features/date-card.js";
 import { init as startDhrupadMarkers } from "./text/dhrupad-markers.js";
 import { init as startStanzaNumbers } from "./text/stanza-numbers.js";
@@ -44,8 +45,8 @@ import { init as startSessionCard } from "./features/session-card.js";
 import { init as startContentsList } from "./features/contents-list.js";
 import { init as startClicks } from "./features/clicks.js";
 import { init as startPinch } from "./features/pinch.js";
-import { init as startSearch } from "./text/search.js";
-import { init as startStartup } from "./core/startup.js";
+import { init as startSearch } from "./features/search.js";
+import { init as startStartup } from "./features/startup.js";
 import { init as startPictureViewer } from "./features/picture-viewer.js";
 import { init as startHelp } from "./features/help.js";
 import { init as startPrint } from "./features/print.js";
@@ -71,6 +72,7 @@ function start() {
     run(startFeatures); // Features held back for a later release
     run(startIast); // IAST transliteration (Devanagari → Latin with diacritics, Vedic accents as marks)
     run(startLayout); // Layout helpers that run once
+    run(startRail); // The contents rail on wide screens: Home and every text by section
     run(startAstronomy); // Astronomy for the Next Sankathara Chaturthi card
     run(startDateCard); // Next Sankathara Chaturthi card (computed on this device; works offline)
     run(startDhrupadMarkers); // Tappable dhrupad markers (every text with refrain: every-verse)
