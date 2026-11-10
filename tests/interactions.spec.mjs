@@ -1086,3 +1086,36 @@ test("scrolling through a text: every verse on screen is shown at once, with no 
   }
   expect(errors).toEqual([]);
 });
+
+// The top bar names the piece once its heading has scrolled under the bar, but a page over it (the Library) is not
+// that piece: the app's name then (review B6, as in Nitya Upasana, 2026-11-10)
+test("the top bar names the app while the Library is open, and the piece again after @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english, { hash: "#a1" });
+  await page.evaluate(() => scrollBy(0, 600));
+  await expect(page.locator("#bt")).toHaveClass(/\bpc\b/);
+  const piece = await page.locator("#btt").textContent();
+  await page.evaluate(() => /** @type {HTMLElement} */ (document.getElementById("asq")).click());
+  await expect(page.locator("#jump")).toBeVisible();
+  await expect(page.locator("#btt")).toHaveText("Sankathara Chaturthi");
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#jump")).toBeHidden();
+  await expect(page.locator("#btt")).toHaveText(piece);
+});
+
+// The smallest phones: the app's name would show as "संकटहर …", so the picture alone stands for it there (the link
+// keeps its name for screen readers); a piece's title still shows (review B6, 2026-11-10)
+test("at 320px the top bar shows the picture, not a cut name", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await openSite(page, SETUPS.marathi);
+  await expect(page.locator("#bt svg")).toBeVisible();
+  await expect(page.locator("#btt")).toBeHidden();
+  await expect(page.locator("#bt")).toHaveAccessibleName(/संकटहर चतुर्थी/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  await page.evaluate(() => {
+    location.hash = "#a1";
+  });
+  await expect(page.locator("#a1")).toBeVisible();
+  await page.evaluate(() => scrollBy(0, 600));
+  await expect(page.locator("#bt")).toHaveClass(/\bpc\b/);
+  await expect(page.locator("#btt")).toBeVisible();
+});

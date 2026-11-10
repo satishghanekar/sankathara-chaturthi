@@ -56,7 +56,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 
 | Query | What changes |
 |---|---|
-| `(max-width: 359px)` | The smallest phones: Settings tightens |
+| `(max-width: 359px)` | The smallest phones: Settings tightens; the top bar shows the picture without the app's name |
 | `(max-width: 379px)` | Narrow phones: the Print pop-up's hints a step smaller, so each keeps to one line (as in Nitya Upasana) |
 | `(max-width: 399px)` | Phones up to 399px: the bottom bar shows only the arrows of Prev and Next (as in Nitya Upasana) |
 | `(max-width: 439px)` | Phones: the bottom bar's five buttons (Prev, Home, Library, Reading, Next) close their gaps and slim the icon buttons (as in Nitya Upasana); the Print pop-up's font tiles a little narrower at the sides |
