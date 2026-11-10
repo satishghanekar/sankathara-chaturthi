@@ -116,12 +116,6 @@ const UNCHECKED = [
   "js/parts.js",
   "js/print/compose.js",
   "js/render.js",
-  "js/text/autofit.js",
-  "js/text/dhrupad-markers.js",
-  "js/text/iast.js",
-  "js/text/layout.js",
-  "js/text/line-breaks.js",
-  "js/text/stanza-numbers.js",
 ];
 
 test("every script is type-checked, except the files still waiting for it", () => {
