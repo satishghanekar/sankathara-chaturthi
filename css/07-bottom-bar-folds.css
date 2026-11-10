@@ -565,7 +565,8 @@ html[data-asb="1"] {
   #asq,
   #rsb {
     min-width: 52px;
-    padding: 0 2px;
+    /* room between a word ("Library", "Reading") and the border */
+    padding: 0 5px;
   }
   #asc .asx {
     padding: 0 8px;
@@ -1221,5 +1222,19 @@ html[data-asb="1"] {
   }
   .skc .skcw:not(:empty) + #skall {
     border-left: 1px solid var(--hdrl);
+  }
+}
+
+/* The smallest phones: the app's name would be cut ("संकटहर …"), so the picture alone names it there (the link keeps
+   its label); a piece's title (.pc) still shows, as much as fits. The bottom bar's buttons give their words back the
+   room. As in Nitya Upasana. */
+@media (max-width: 359px) {
+  .bar .t.site:not(.pc) #btt {
+    display: none;
+  }
+  #ash,
+  #asq,
+  #rsb {
+    padding: 0 2px;
   }
 }
