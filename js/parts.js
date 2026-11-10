@@ -78,6 +78,7 @@ var SITE_PARTS = (function () {
     "print/compose",
     "print/pages",
     "print/what",
+    "print/write",
     "features/print",
     "features/share",
     "features/more-menu",
