@@ -1,5 +1,5 @@
 // @ts-check
-// Library (#jump): every text by section (वैदिक मंत्र, आरती), with search (js/text/search.js: the box at the foot of
+// Library (#jump): every text by section (वैदिक मंत्र, आरती), with search (js/features/search.js: the box at the foot of
 // the page on phones, and Recent), as in Nitya Upasana. Opened by the book button in the bottom bar (#asq) and at the
 // end of each piece; a title opens its text (js/features/clicks.js), and Back (the button here, the phone's Back, or
 // Escape) returns. Built from the texts themselves (CONTENT, js/text/load.js); Nitya Upasana's Library also has its
