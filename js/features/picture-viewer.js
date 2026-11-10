@@ -1,3 +1,4 @@
+// @ts-check
 // Full-screen picture (#pzv): pinch or double-tap to zoom (1x to 5x), drag to move
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
@@ -7,15 +8,18 @@ import { menuWords } from "../core/strings.js";
 export function init() {
   // Works with fingers and a mouse (scroll wheel zooms). The text-size pinch is off while it is open.
   (function () {
-    var v = document.getElementById("pzv"),
-      im = document.getElementById("pzi"),
-      ib = document.getElementById("iconb"),
-      hint = document.getElementById("pzh");
+    // (typed as found: the line after them stops here if index.html lacks one)
+    var v = /** @type {HTMLElement} */ (document.getElementById("pzv")),
+      im = /** @type {HTMLImageElement} */ (document.getElementById("pzi")),
+      ib = /** @type {HTMLElement} */ (document.getElementById("iconb")),
+      hint = /** @type {HTMLElement} */ (document.getElementById("pzh"));
     if (!v || !im || !ib) return;
     var s = 1,
       tx = 0,
       ty = 0,
+      /** @type {Record<string, { x: number, y: number }>} the fingers down, by pointer id */
       pts = {},
+      /** @type {any} the gesture under way: a drag (x, y, tx, ty) or a pinch (d, s, mx, my) */
       g = null,
       lastTap = 0,
       moved = false;
@@ -35,6 +39,7 @@ export function init() {
       v.classList.toggle("zoomed", s > 1);
     }
     // zoom to scale ns, keeping the screen point (px, py) still
+    /** @param {number} ns @param {number} px @param {number} py */
     function zoomAt(ns, px, py) {
       ns = Math.max(1, Math.min(5, ns));
       var r = v.getBoundingClientRect(),
@@ -48,7 +53,7 @@ export function init() {
     function open() {
       // the full-size picture (140 KB) is fetched on the first open, not with the page (the service worker
       // still keeps a copy for offline use); the small card picture shows until it arrives
-      if (!im.getAttribute("src")) im.src = im.getAttribute("data-src");
+      if (!im.getAttribute("src")) im.src = im.getAttribute("data-src") || "";
       ovPush();
       s = 1;
       tx = ty = 0;
@@ -56,8 +61,9 @@ export function init() {
       hint.textContent = menuWords("pictureViewer").hint;
       v.hidden = false;
       document.documentElement.style.overflow = "hidden";
-      document.getElementById("pzx").focus();
+      /** @type {HTMLElement} */ (document.getElementById("pzx")).focus();
     }
+    /** @param {boolean} [fromPop] */
     function close(fromPop) {
       if (v.hidden) return;
       v.hidden = true;
@@ -71,7 +77,7 @@ export function init() {
       e.stopPropagation();
       open();
     });
-    document.getElementById("pzx").onclick = function () {
+    /** @type {HTMLElement} */ (document.getElementById("pzx")).onclick = function () {
       close();
     };
     addEventListener("popstate", function () {
@@ -84,7 +90,7 @@ export function init() {
       if (e.key === "-") zoomAt(s / 1.5, innerWidth / 2, innerHeight / 2);
     });
     v.addEventListener("pointerdown", function (e) {
-      if (e.target.closest("#pzx")) return;
+      if (/** @type {Element} */ (e.target).closest("#pzx")) return;
       try {
         v.setPointerCapture(e.pointerId);
       } catch (x) {}
@@ -96,7 +102,12 @@ export function init() {
       } else if (k.length === 2) {
         var a = pts[k[0]],
           b = pts[k[1]];
-        g = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: s, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+        g = {
+          d: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+          s: s,
+          mx: (a.x + b.x) / 2,
+          my: (a.y + b.y) / 2,
+        };
         moved = true;
       }
     });
@@ -119,6 +130,7 @@ export function init() {
         }
       }
     });
+    /** @param {PointerEvent} e */
     function up(e) {
       if (!pts[e.pointerId]) return;
       delete pts[e.pointerId];
