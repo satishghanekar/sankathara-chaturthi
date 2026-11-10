@@ -67,7 +67,7 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 // Kannada, Telugu and Gujarati menus, js/strings/kn.js, te.js and gu.js: 163 KB then. Raised 2026-10-30 to 185 KB for
 // the month line on the date card, js/core/panchang.js and panchang-names.js from Nitya Upasana: 178 KB then. Raised
 // 2026-10-31 to 195 KB for the Print pop-up's hints and page count in five languages, js/print/pages.js: 189.2 KB
-// then. Styles
+// then; 200 KB since 2026-11-10: the JSDoc types the type checks need, in every script: 196.8 KB then. Styles
 // raised 2026-10-30 to 55 KB for More dates a row a year on iPads and beside the card on desktops: 52.3 KB then; on
 // 2026-10-31 to 58 KB for Nitya Upasana's three text fonts (their faces in every script, Bold's weights): 55.2 KB then.
 // index.html raised 2026-11-01 to 22 KB, as it had reached 20.0 KB as CI's Node 22 compresses it (some 70 bytes more
@@ -75,7 +75,7 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 test("the scripts, styles and page stay within their size budget", () => {
   const parts = siteParts();
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(195_000);
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(200_000);
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(58_000);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
@@ -90,35 +90,11 @@ test("every file carries the Content-Security-Policy: this site only, no inline 
   }
 });
 
-// Type checks (npm run types) cover only the files that start with "// @ts-check" (tests/tsconfig.json). These are
-// the files still waiting for theirs, one change at a time: the list may only get shorter, and a new file starts
-// with it (CLAUDE.md).
-const UNCHECKED = [
-  "js/features/astronomy.js",
-  "js/features/bars.js",
-  "js/features/bottom-bar.js",
-  "js/features/clicks.js",
-  "js/features/dhrupad-button.js",
-  "js/features/help.js",
-  "js/features/history.js",
-  "js/features/languages.js",
-  "js/features/more-menu.js",
-  "js/features/offline.js",
-  "js/features/overlays.js",
-  "js/features/picture-viewer.js",
-  "js/features/pinch.js",
-  "js/features/print.js",
-  "js/features/reading-sheet.js",
-  "js/features/settings-panel.js",
-  "js/features/share.js",
-  "js/features/wake-lock.js",
-  "js/main.js",
-  "js/parts.js",
-  "js/print/compose.js",
-  "js/render.js",
-];
+// Type checks (npm run types) cover only the files that start with "// @ts-check" (tests/tsconfig.json). Every script
+// has it now; a new file starts with it too (CLAUDE.md). The list of files waiting for it stays empty.
+const UNCHECKED = [];
 
-test("every script is type-checked, except the files still waiting for it", () => {
+test("every script is type-checked", () => {
   const all = readdirSync(new URL("../js/", import.meta.url), { recursive: true })
     .map(String)
     .filter((f) => f.endsWith(".js"))

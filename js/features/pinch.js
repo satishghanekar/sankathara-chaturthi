@@ -1,7 +1,8 @@
+// @ts-check
 // Pinch with two fingers to change the text size (the page itself never zooms)
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
-import { root } from "../core/page.js";
+import { byId, root } from "../core/page.js";
 import { P, change, dfs } from "../core/state.js";
 import { FSA } from "../text/autofit.js";
 import { pn } from "../core/apply.js";
@@ -10,7 +11,26 @@ import { fsTap, szSet } from "./settings-panel.js";
 import { setJ, setP } from "./overlays.js";
 import { menuWords } from "../core/strings.js";
 
-var pz, szTm, szrTm, szaT, szt, szr, pzF, wz, wzT;
+/** @type {{ d: number, fs: number, at: any } | null} the pinch under way: the fingers' first distance, the size then, the
+ * place kept between them (anchorAt()) */
+var pz;
+// the timers: the bubble, the Default size button, the spoken size, the trackpad pinch
+/** @type {any} */
+var szTm;
+/** @type {any} */
+var szrTm;
+/** @type {any} */
+var szaT;
+/** @type {any} */
+var wzT;
+/** @type {HTMLElement} the size bubble */
+var szt;
+/** @type {HTMLElement} the Default size button */
+var szr;
+/** @type {number} the frame that puts the size in */
+var pzF;
+/** @type {number} the trackpad pinch's size so far */
+var wz;
 // Where a pinch does nothing (neither resizes the text nor zooms): the home page
 var NO_PINCH = "#home";
 
@@ -19,8 +39,8 @@ export function init() {
   szTm = 0;
   szrTm = 0;
   szaT = 0;
-  szt = document.getElementById("szt");
-  szr = document.getElementById("szr");
+  szt = byId("szt");
+  szr = byId("szr");
   szr.onclick = function () {
     szr.hidden = true;
     change({ fsu: 0, fs: dfs() }, apply);
@@ -36,15 +56,20 @@ export function init() {
   document.addEventListener(
     "touchstart",
     function (e) {
-      if (e.touches.length === 2 && document.getElementById("pzv").hidden) {
+      if (e.touches.length === 2 && byId("pzv").hidden) {
         if (e.cancelable) e.preventDefault();
-        if (e.target.closest && e.target.closest(NO_PINCH)) {
+        var t = /** @type {Element | null} */ (e.target);
+        if (t && t.closest && t.closest(NO_PINCH)) {
           pz = null;
           return;
         }
         szr.hidden = true;
         // the words between the fingers stay between them as the text grows or shrinks
-        pz = { d: dist(e) || 1, fs: P.fs, at: anchorAt((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2) };
+        pz = {
+          d: dist(e) || 1,
+          fs: P.fs,
+          at: anchorAt((e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2),
+        };
       }
     },
     { passive: false },
@@ -53,7 +78,7 @@ export function init() {
     "touchmove",
     function (e) {
       // a two-finger move that is not resizing the text (it began on the home page) is stopped too
-      if (!pz && e.touches.length === 2 && e.cancelable && document.getElementById("pzv").hidden) e.preventDefault();
+      if (!pz && e.touches.length === 2 && e.cancelable && byId("pzv").hidden) e.preventDefault();
       if (pz && e.touches.length === 2) {
         if (e.cancelable) e.preventDefault();
         var v = Math.max(14, Math.min(52, Math.round((pz.fs * dist(e)) / pz.d)));
@@ -125,7 +150,7 @@ export function init() {
   // Keep the size bubble and the Default size button where the reader can see them while either is up
   if (window.visualViewport)
     ["scroll", "resize"].forEach(function (n) {
-      visualViewport.addEventListener(n, function () {
+      /** @type {VisualViewport} */ (window.visualViewport).addEventListener(n, function () {
         if (szt.classList.contains("on")) inView(szt);
         if (!szr.hidden) inView(szr);
       });
@@ -135,7 +160,7 @@ export function init() {
   addEventListener(
     "wheel",
     function (e) {
-      if (!e.ctrlKey || !document.getElementById("pzv").hidden) return;
+      if (!e.ctrlKey || !byId("pzv").hidden) return;
       e.preventDefault();
       wz = (wz || P.fs) * Math.exp(-e.deltaY * 0.01);
       clearTimeout(wzT);
@@ -149,7 +174,7 @@ export function init() {
     { passive: false },
   );
   document.addEventListener("keydown", function (e) {
-    if (!(e.ctrlKey || e.metaKey) || e.altKey || !document.getElementById("pzv").hidden) return;
+    if (!(e.ctrlKey || e.metaKey) || e.altKey || !byId("pzv").hidden) return;
     var k = e.key;
     if (k === "+" || k === "=") deskSz(P.fs + 2, 1);
     else if (k === "-" || k === "_") deskSz(P.fs - 2, 1);
@@ -226,6 +251,7 @@ function keepAt(a) {
   window.scrollBy(0, dy);
 }
 
+/** @param {TouchEvent} e */
 function dist(e) {
   var a = e.touches[0],
     b = e.touches[1];
@@ -239,7 +265,7 @@ function showSz() {
   // the size is announced once, when the fingers (or the wheel) stop
   clearTimeout(szaT);
   szaT = setTimeout(function () {
-    document.getElementById("sza").textContent = m;
+    byId("sza").textContent = m;
   }, 700);
   inView(szt);
   szt.classList.add("on");
@@ -254,6 +280,7 @@ function showSz() {
 // while a pinch the browser could not stop has the page zoomed), so they could end up out of view or out of
 // reach. They are placed in the visible part of the page instead (the same place when the two agree).
 // The distance from the top comes from the CSS (below the top bar, and below the notch on iPhones).
+/** @param {HTMLElement} el */
 function inView(el) {
   var vv = window.visualViewport;
   el.style.top = el.style.left = "";
@@ -267,10 +294,11 @@ function unzoom() {
   var vv = window.visualViewport,
     vm = document.querySelector('meta[name="viewport"]');
   if (!vv || !vm || vv.scale < 1.01) return;
-  var c = vm.getAttribute("content");
-  vm.setAttribute("content", c + ",maximum-scale=1");
+  var meta = vm,
+    c = vm.getAttribute("content") || "";
+  meta.setAttribute("content", c + ",maximum-scale=1");
   setTimeout(function () {
-    vm.setAttribute("content", c);
+    meta.setAttribute("content", c);
   }, 300);
 }
 
@@ -278,7 +306,7 @@ function unzoom() {
 // the text size the same way a pinch does on a phone, instead of zooming the whole page
 // (here, as Nitya Upasana does for a pinch on a phone, the place in the text stays where it was: under the pointer for
 // a trackpad pinch, in the middle of the screen for the keys)
-/** @param {number} v @param {number} fsu @param {number} [x] @param {number} [y] */
+/** @param {number} v @param {0 | 1} fsu @param {number} [x] @param {number} [y] */
 function deskSz(v, fsu, x, y) {
   v = Math.max(14, Math.min(52, v));
   if (!pn.hidden) return fsTap(v, fsu);
