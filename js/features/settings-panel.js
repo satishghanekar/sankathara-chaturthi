@@ -5,7 +5,7 @@
 
 import { fitPreview } from "./languages.js";
 import { FSA } from "../text/autofit.js";
-import { flash, note } from "../core/page.js";
+import { warn } from "../core/page.js";
 import { P, dfs, change } from "../core/state.js";
 import { trSet } from "../text/iast.js";
 import { refit } from "../text/autofit.js";
@@ -163,13 +163,7 @@ export function trPick(v) {
       }
     });
     if (bad.length) {
-      note(menuWords("settings").failed(bad.join("; ")));
-      var zt = document.getElementById("fl");
-      zt.classList.add("err");
-      clearTimeout(flash.t);
-      flash.t = setTimeout(function () {
-        zt.classList.remove("on", "err");
-      }, 9000);
+      warn(menuWords("settings").failed(bad.join("; ")));
     }
     apply();
   }
