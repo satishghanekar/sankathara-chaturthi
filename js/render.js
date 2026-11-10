@@ -1,8 +1,19 @@
+// @ts-check
 // Builds the HTML of a piece from CONTENT (made from the text files in content/texts/ by js/text/content.js), for the
 // reading page (js/core/page.js), as in Nitya Upasana.
 // Each line keeps its two languages side by side in the data; this file decides how they are shown.
+/**
+ * @typedef {import("./text/content.js").Piece} Piece
+ * @typedef {import("./text/content.js").Item} Item
+ * @typedef {import("./text/content.js").Content} Content
+ * @typedef {{ mr: string, en: string }} Pair
+ * @typedef {{ mr: string, en: string, l?: string, rf?: true }} Line  a line of a stanza, or of the dhrupad (no l)
+ */
 (function () {
   "use strict";
+  // what this script hands the page script (SCR, renderPiece, the print hand-over) lives on window
+  /** @type {any} */
+  var W = window;
   var ICON_PREV =
     '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
   var ICON_NEXT =
@@ -13,16 +24,19 @@
     '<div class="pnq"><a class="pnh" href="./" aria-label="Home"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 5.5c.5-1.9 1.8-3.1 3.4-3.7 1.6.6 2.9 1.8 3.4 3.7"/><path d="M8.4 5.6h7.2"/><path d="M8.4 5.6c-.4 3.6.6 6.3 2.4 7.4.1 3.3 0 6.3 1.9 7.6 1.6 1 3.5 0 3.2-1.8-.2-1-1.3-1.3-1.8-.6"/><path d="M15.6 5.6c.4 3.6-.6 6.2-2.6 7.2"/><path d="M8.4 5.6C5.6 4.5 2.4 6 2.8 9.6c.3 2.6 2.4 3.7 4.8 3"/><path d="M15.6 5.6c2.8-1.1 6 .4 5.6 4-.3 2.6-2.4 3.7-4.8 3"/><path d="M12 7v1.8"/><path d="M9.3 13.6l-.9 1.6"/></svg></a><button type="button" class="pns" aria-label="Library" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5.5C5.6 4.6 8.9 4.9 12 7c3.1-2.1 6.4-2.4 9.5-1.5v13.3c-3.1-.9-6.4-.6-9.5 1.5-3.1-2.1-6.4-2.4-9.5-1.5z"/><path d="M12 7v13.3"/></svg></button></div>';
 
   // A pair of spans: the original text, then English
+  /** @param {Pair} t */
   function two(t) {
     return '<span class="mr">' + t.mr + '</span><span class="en" lang="en">' + t.en + "</span>";
   }
+  /** @param {Line[]} list @param {"mr" | "en"} lang @param {string} pad */
   function lines(list, lang, pad) {
     return list
-      .map(function (x) {
+      .map(function (/** @type {Line} */ x) {
         return pad + "<p" + (x.rf ? ' class="rf"' : "") + (x.l ? ' data-l="' + x.l + '"' : "") + ">" + x[lang] + "</p>\n";
       })
       .join("");
   }
+  /** @param {Line[]} list @param {string} pad @param {boolean} [bold] */
   function verse(list, pad, bold) {
     return (
       pad +
@@ -43,6 +57,7 @@
       "</div>\n"
     );
   }
+  /** @param {Item} x */
   function item(x) {
     // the dhrupad's marker (↻ ध्रुपद) or a note of the text's own (nt: Phalashruti, ↻ ३ वेळा); the English gets the ↻ when
     // the original has one, so a note that is a heading (फलश्रुति) does not look like a repeat
@@ -59,14 +74,23 @@
         "</span></div>\n"
       );
     }
-    return '      <div class="item' + (x.kind ? " " + x.kind : "") + (x.para ? " para" : "") + '">\n' + verse(x.lines, "        ", x.bold) + "      </div>\n";
+    return (
+      '      <div class="item' +
+      (x.kind ? " " + x.kind : "") +
+      (x.para ? " para" : "") +
+      '">\n' +
+      verse(/** @type {Line[]} */ (x.lines), "        ", x.bold) +
+      "      </div>\n"
+    );
   }
+  /** @param {string} cls @param {Piece | null} p @param {Pair} label @param {boolean} iconFirst */
   function navLink(cls, p, label, iconFirst) {
     if (!p) return "      <span></span>\n";
     var small = iconFirst ? ICON_PREV + two(label) : two(label) + ICON_NEXT;
     // ("./#a3", not "#a3": the piece may not be built yet, js/core/page.js, and a bare "#a3" would point at nothing)
     return '      <a class="' + cls + '" href="./#' + p.id + '" data-go="' + p.id + '"><small>' + small + "</small>" + two(p.title) + "</a>\n";
   }
+  /** @param {Piece} p @param {Piece | null} prev @param {Piece | null} next @param {{ prev: Pair, next: Pair }} ui */
   function piece(p, prev, next, ui) {
     var h =
       '  <section id="' +
@@ -109,10 +133,23 @@
   // same. The choice is read from the saved settings here, before the page script runs, so every later step (search,
   // English spelling, printing) sees the new text.
   // To add another script, give it an entry in SCRIPTS (and its fonts: css/00-fonts.css, css/09-settings-page.css).
+  /** @type {Record<string, { off: number, sp: Record<string, string>, back: [RegExp, string][] }>} */
   var SCRIPTS = {
-    kn: { off: 0x380, sp: { ॐ: "ಓಂ", ऱ: "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", ऑ: "ಆ", ॲ: "ಅ" }, back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]] },
-    te: { off: 0x300, sp: { ॐ: "ఓం", ऱ: "ర", "ॅ": "్యా", "ॉ": "ా", ऑ: "ఆ", ॲ: "అ" }, back: [[/ఓం(?![ఀ-౿])/g, "ॐ"]] },
-    gu: { off: 0x180, sp: { ऱ: "ર", ऴ: "ળ", ॲ: "અ", "᳚": "॑॑" }, back: [[/॑॑/g, "᳚"]] },
+    kn: {
+      off: 0x380,
+      sp: { ॐ: "ಓಂ", ऱ: "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", ऑ: "ಆ", ॲ: "ಅ" },
+      back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]],
+    },
+    te: {
+      off: 0x300,
+      sp: { ॐ: "ఓం", ऱ: "ర", "ॅ": "్యా", "ॉ": "ా", ऑ: "ఆ", ॲ: "అ" },
+      back: [[/ఓం(?![ఀ-౿])/g, "ॐ"]],
+    },
+    gu: {
+      off: 0x180,
+      sp: { ऱ: "ર", ऴ: "ળ", ॲ: "અ", "᳚": "॑॑" },
+      back: [[/॑॑/g, "᳚"]],
+    },
   };
   var KEEP = /[॒॑।॥᳚]/;
   // ---- Print handed over from the iPhone Home Screen app (js/features/print.js, "Open in Safari") ----
@@ -131,7 +168,7 @@
       // (js/core/state.js) must not reset them
       if (!prefs.sv) prefs.sv = 6;
       localStorage.setItem("aarti2-prefs", JSON.stringify(prefs));
-      window.PRQ = q[1] === "two" ? "as" : q[1]; // two columns (no longer offered): a link from before
+      W.PRQ = q[1] === "two" ? "as" : q[1]; // two columns (no longer offered): a link from before
       history.replaceState(null, "", location.pathname + location.hash);
     }
   } catch (e) {}
@@ -140,20 +177,23 @@
     ind = JSON.parse(localStorage.getItem("aarti2-prefs") || "{}").ind || "";
   } catch (e) {}
   var S = SCRIPTS[ind],
-    OLD = [], // [node, "", text] or [element, attribute, value]: what SCR.page() changed
+    /** @type {[any, string, string | null][]} [node, "", text] or [element, attribute, value]: what SCR.page() changed */
+    OLD = [],
     ROOTS = ".ash, #home .hl1, #home h1, #btt",
     LATER = "#rail, #jl, #tsc"; // built by the site script (js/text/layout.js, js/features/contents-list.js, js/features/session-card.js) from the texts, already in the chosen script
-  window.SCR = {
+  var SCR = {
     k: S ? ind : "", // "" while the text is shown as written
     // Devanagari → the chosen script
+    /** @param {string} t */
     to: function (t) {
       return !S
         ? t
-        : t.replace(/[ऀ-ॿ᳚]/g, function (c) {
+        : t.replace(/[ऀ-ॿ᳚]/g, function (/** @type {string} */ c) {
             return S.sp[c] || (KEEP.test(c) ? c : String.fromCharCode(c.charCodeAt(0) + S.off));
           });
     },
     // and back, for the English spelling (IAST) and search
+    /** @param {string} t */
     from: function (t) {
       if (!S) return t;
       S.back.forEach(function (b) {
@@ -161,7 +201,7 @@
       });
       var lo = 0x900 + S.off,
         hi = lo + 0x7f;
-      return t.replace(/[ঀ-෿]/g, function (c) {
+      return t.replace(/[ঀ-෿]/g, function (/** @type {string} */ c) {
         var n = c.charCodeAt(0);
         return n >= lo && n <= hi ? String.fromCharCode(n - S.off) : c;
       });
@@ -171,27 +211,29 @@
     page: function () {
       if (!S) return;
       document.documentElement.setAttribute("data-scr", ind);
-      [].forEach.call(document.querySelectorAll(ROOTS), function (r) {
+      document.querySelectorAll(ROOTS).forEach(function (r) {
         SCR.el(r, OLD);
       });
     },
     // A piece just built on the reading page (js/core/page.js): in the chosen script, put back by SCR.set like the rest
+    /** @param {Element} r */
     add: function (r) {
       SCR.el(r, OLD);
     },
     // Rewrite one element (a piece, a heading) in the chosen script. old: where to note what was there, so
     // SCR.set can put it back (the page's own copy); a printout's copy (js/print/compose.js) passes none.
+    /** @param {Element} r @param {[any, string, string | null][]} [old] */
     el: function (r, old) {
       if (!S) return;
       var OLD = old || [];
       var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT),
         n;
-      while ((n = w.nextNode()))
+      while ((n = /** @type {Text | null} */ (w.nextNode())))
         if (/[ऀ-ॿ]/.test(n.data)) {
           OLD.push([n, "", n.data]);
           n.data = SCR.to(n.data);
         }
-      [].forEach.call(r.querySelectorAll("[title], [aria-label]"), function (e) {
+      r.querySelectorAll("[title], [aria-label]").forEach(function (e) {
         ["title", "aria-label"].forEach(function (a) {
           var v = e.getAttribute(a);
           if (v && /[ऀ-ॿ]/.test(v)) {
@@ -201,30 +243,34 @@
         });
       });
       // the language of the text, for screen readers (the English parts keep lang="en")
-      [].forEach.call((r.matches(".ash[lang]") ? [r] : []).concat([].slice.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])"))), function (e) {
+      /** @type {HTMLElement[]} */ (
+        (r.matches(".ash[lang]") ? [r] : []).concat(Array.prototype.slice.call(r.querySelectorAll(".mr, .ash [lang]:not([lang='en'])")))
+      ).forEach(function (e) {
         OLD.push([e, "lang", e.getAttribute("lang")]);
         e.lang = ind;
       });
       // Poet links: the Kannada Wikipedia page when there is one, else the English page beside it
-      [].forEach.call(r.querySelectorAll(".cr"), function (c) {
+      r.querySelectorAll(".cr").forEach(function (c) {
         var en = c.querySelectorAll(".en a[href]"),
-          W = (window.CONTENT && CONTENT.wiki && CONTENT.wiki[ind]) || {};
-        [].forEach.call(c.querySelectorAll(".mr a[href]"), function (a, i) {
-          var h = decodeURI(a.getAttribute("href")),
-            to = W[h] || (en[i] && en[i].getAttribute("href"));
+          /** @type {Record<string, string>} */
+          wk = (W.CONTENT && W.CONTENT.wiki && W.CONTENT.wiki[ind]) || {};
+        /** @type {NodeListOf<HTMLAnchorElement>} */ (c.querySelectorAll(".mr a[href]")).forEach(function (a, i) {
+          var h = decodeURI(a.getAttribute("href") || ""),
+            to = wk[h] || (en[i] && en[i].getAttribute("href"));
           if (!to) return;
           ["href", "hreflang", "aria-label"].forEach(function (x) {
             OLD.push([a, x, a.getAttribute(x)]);
           });
           a.href = to;
-          a.hreflang = W[h] ? ind : "en";
+          a.hreflang = wk[h] ? ind : "en";
           var l = a.getAttribute("aria-label") || "";
-          a.setAttribute("aria-label", l.replace(/ — .*$/, "") + (W[h] ? " — ವಿಕಿಪೀಡಿಯ" : " — Wikipedia (English)") + " ↗");
+          a.setAttribute("aria-label", l.replace(/ — .*$/, "") + (wk[h] ? " — ವಿಕಿಪೀಡಿಯ" : " — Wikipedia (English)") + " ↗");
         });
       });
     },
     // Switch scripts in place (Settings → Main language): put the Devanagari back, then rewrite it in the new script.
     // Parts built later from the converted text (the contents lists) are turned back letter by letter.
+    /** @param {string} k */
     set: function (k) {
       if (k === (S ? ind : "")) return;
       for (var i = OLD.length - 1; i >= 0; i--) {
@@ -235,10 +281,10 @@
       }
       OLD = [];
       if (S)
-        [].forEach.call(document.querySelectorAll(LATER), function (r) {
+        document.querySelectorAll(LATER).forEach(function (r) {
           var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT),
             n;
-          while ((n = w.nextNode())) n.data = SCR.from(n.data);
+          while ((n = /** @type {Text | null} */ (w.nextNode()))) n.data = SCR.from(n.data);
         });
       document.documentElement.removeAttribute("data-scr");
       ind = k;
@@ -246,18 +292,20 @@
       SCR.k = S ? k : "";
       if (S) {
         SCR.page();
-        [].forEach.call(document.querySelectorAll(LATER), function (r) {
+        document.querySelectorAll(LATER).forEach(function (r) {
           var w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT),
             n;
-          while ((n = w.nextNode())) if (/[ऀ-ॿ]/.test(n.data)) n.data = SCR.to(n.data);
+          while ((n = /** @type {Text | null} */ (w.nextNode()))) if (/[ऀ-ॿ]/.test(n.data)) n.data = SCR.to(n.data);
         });
       }
     },
   };
+  W.SCR = SCR;
 
   // One piece: for the reading page (js/core/page.js), with the pieces before and after it in reading order for its
   // Previous / Next
-  window.renderPiece = function (p, C, prev, next) {
+  /** @param {Piece} p @param {Content} C @param {Piece} [prev] @param {Piece} [next] */
+  W.renderPiece = function (p, C, prev, next) {
     return piece(p, prev || null, next || null, C.ui);
   };
 })();

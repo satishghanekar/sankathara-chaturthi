@@ -1,3 +1,4 @@
+// @ts-check
 // Overlays: everything that opens over the page, listed once, as in Nitya Upasana.
 // - The two pages: Settings (#panel, setP) and the Library (#jump, setJ). One is open at a time: opening one closes
 //   the other. They share one way of opening and closing (page() below); what is particular to each is in PAGES.
@@ -74,7 +75,8 @@ export function closeForBack() {
     if (!l.back || !shown(l.id)) return;
     /** @type {HTMLElement} */ (document.getElementById(l.id)).hidden = true;
     shut = true;
-    if (l.id === "rsh") /** @type {HTMLElement} */ (document.getElementById("rsb")).setAttribute("aria-expanded", "false");
+    if (l.id === "rsh")
+      /** @type {HTMLElement} */ (document.getElementById("rsb")).setAttribute("aria-expanded", "false");
   });
   return shut;
 }
