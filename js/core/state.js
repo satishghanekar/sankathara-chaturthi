@@ -1,3 +1,4 @@
+// @ts-check
 // Settings (P), loaded from this device
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
@@ -7,8 +8,12 @@ import { migratePrefs } from "../store/migrate.js";
 // (js/features/bars.js, setLead()), read by the auto-fit and print.
 export var LEAD = "mr";
 
+/** @type {import("../store/migrate.js").Prefs} */
 export var P;
-var K, DESK;
+/** @type {string} */
+var K;
+/** @type {boolean} */
+var DESK;
 
 // The settings, upgraded from whichever version saved them (js/store/migrate.js keeps the defaults and the steps, as
 // in Nitya Upasana)
@@ -17,7 +22,7 @@ export function init() {
   // the menus' sizes (css/01-theme.css, --ts) follow the reader's own text size, as the text does (as in Nitya Upasana)
   document.documentElement.style.setProperty("--ts", String(textScale()));
   // A computer (no touch screen): the screen is kept on only if the reader turns it on
-  DESK = !!(window.matchMedia && !matchMedia("(any-pointer:coarse)").matches);
+  DESK = !!(typeof window.matchMedia === "function" && !matchMedia("(any-pointer:coarse)").matches);
   var saved = null;
   try {
     saved = JSON.parse(localStorage.getItem(K) || "null");
@@ -34,7 +39,7 @@ export function init() {
 // own text size (textScale()). (As in Nitya Upasana; it replaces the phones' 110% of the fit, 2026-10-25.)
 export function dfs() {
   var s = Math.min(screen.width || innerWidth, screen.height || innerHeight),
-    co = window.matchMedia && matchMedia("(pointer:coarse)").matches,
+    co = typeof window.matchMedia === "function" && matchMedia("(pointer:coarse)").matches,
     b = co ? (s >= 600 ? 28 : s < 360 ? 20 : 22) : (screen.width || innerWidth) >= 1600 ? 26 : 24;
   return Math.round(b * textScale());
 }

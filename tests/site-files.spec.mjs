@@ -94,11 +94,6 @@ test("every file carries the Content-Security-Policy: this site only, no inline 
 // only get shorter, as each file is typed (in Nitya Upasana first, for the files the two apps share). A new file, or
 // one taken off the list, fails here until it has the line.
 const UNCHECKED = [
-  "core/apply.js",
-  "core/features.js",
-  "core/page.js",
-  "core/startup.js",
-  "core/state.js",
   "features/astronomy.js",
   "features/bars.js",
   "features/bottom-bar.js",
