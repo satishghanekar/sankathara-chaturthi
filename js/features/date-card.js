@@ -6,14 +6,14 @@ import { note } from "../core/page.js";
 import { menuWords } from "../core/strings.js";
 import { esc, lead, mrLang, nameOf, num, second, ui } from "../core/words.js";
 import { P, change } from "../core/state.js";
-import { SK } from "./astronomy.js";
+import { SK } from "../core/astronomy.js";
 import { masaOf } from "../core/panchang.js";
 import { ADHIKA, PAKSHA, TITHI } from "../core/panchang-names.js";
 
 /**
  * A place for the moonrise, with own = 1 when no listed city is close (the reader's own location)
  * @typedef {{ lat: number, lon: number, mr: string, en: string, own?: number }} Place
- * A Sankashti (js/features/astronomy.js SK.upcoming): its day (local midnight), moonrise and when the chaturthi starts
+ * A Sankashti (js/core/astronomy.js SK.upcoming): its day (local midnight), moonrise and when the chaturthi starts
  * @typedef {{ day: number, rise: number | null, start: number }} Sankashti
  */
 /** @type {Record<string, [number, number, string, string]>} default place for each time zone (set by init()) */
