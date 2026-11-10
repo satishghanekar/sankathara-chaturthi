@@ -1,3 +1,4 @@
+// @ts-check
 // Print: the pieces to print, built from the texts (CONTENT) rather than copied from the reading page
 // (As in Nitya Upasana, where the categories come from its Library, js/features/library.js; here the sections.)
 // Called by js/features/print.js each time it builds the print view. The reading page shows one text at a time
@@ -82,7 +83,9 @@ export function compose(ids, lang, ordered) {
           .map(function (/** @type {any} */ p, /** @type {number} */ i) {
             // its number in this printout (the copy only: CONTENT keeps the Library's)
             var n = i + 1;
-            return Object.assign({}, p, { no: { mr: dv(n) + ".", en: n + "." } });
+            return Object.assign({}, p, {
+              no: { mr: dv(n) + ".", en: n + "." },
+            });
           }),
       },
     ];

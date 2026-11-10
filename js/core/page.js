@@ -144,3 +144,16 @@ export function warn(text) {
   note(text, 9000);
   /** @type {HTMLElement} */ (document.getElementById("fl")).classList.add("err");
 }
+
+/** An element index.html always has, by its id (for the type checks: never null)
+ * @param {string} id @returns {HTMLElement} */
+export function byId(id) {
+  return /** @type {HTMLElement} */ (document.getElementById(id));
+}
+
+/** The data-v of the button a click landed in, if any (the choice rows in Settings and the sheets) @param {Event} e */
+export function btnV(e) {
+  var t = /** @type {Element | null} */ (e.target),
+    b = t && t.closest ? /** @type {HTMLElement | null} */ (t.closest("button")) : null;
+  return b ? b.dataset.v : undefined;
+}

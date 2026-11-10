@@ -1,3 +1,4 @@
+// @ts-check
 // The files the site is built from, listed once. Read by:
 // - js/features/offline.js: "Check for updates" compares them with the saved copy, and the offline badge waits for them;
 // - sw.js (importScripts): the files saved on the phone for offline use;
@@ -130,5 +131,13 @@ var SITE_PARTS = (function () {
   // The pictures and icons kept for offline use: the app's picture, small (home card, splash) and full size
   // (full-screen view), the tab icon and the installed app icons. Not in "all": "Check for updates" compares text files only.
   var images = ["picture-360.webp", "picture.webp", "icon-32.png", "icon-180.png", "icon-192.png", "icon-maskable-192.png"];
-  return { css: css, scripts: scripts, modules: modules, content: content, fonts: fonts, images: images, all: css.concat(scripts, modules, content) };
+  return {
+    css: css,
+    scripts: scripts,
+    modules: modules,
+    content: content,
+    fonts: fonts,
+    images: images,
+    all: css.concat(scripts, modules, content),
+  };
 })();

@@ -1,3 +1,4 @@
+// @ts-check
 // Bottom bar (#asc): ‹ Prev, Home, Library (#asq here, #hm in Nitya Upasana; js/features/history.js), Aa (the reading
 // sheet), Next ›; on Home only Library and Aa. Print is in the top bar. Nitya Upasana's file.
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
@@ -10,20 +11,24 @@ import { sessionStep } from "./session-card.js";
 import { menuWords } from "../core/strings.js";
 import { nameLang, ui } from "../core/words.js";
 
+/** @type {HTMLElement} */
 export var asc;
+// the piece Prev and Next were last named for (asShow()); undefined: name them again
+/** @type {string | undefined} */
+var shownId;
 
 export function init() {
   // The bottom bar is the footer menu on every page. Its parts share the "as" prefix (asc, asv, ash, asn)
   // because it began as the autoscroll bar (Autoscroll and Tilt to scroll were removed for now on 2026-10-21; they
   // are in git history up to v1.20).
-  asc = document.getElementById("asc");
-  document.getElementById("asv").onclick = function () {
+  asc = /** @type {HTMLElement} */ (document.getElementById("asc"));
+  /** @type {HTMLElement} */ (document.getElementById("asv")).onclick = function () {
     asGo(".prev");
   };
-  document.getElementById("asn").onclick = function () {
+  /** @type {HTMLElement} */ (document.getElementById("asn")).onclick = function () {
     asGo(".next");
   };
-  document.getElementById("ash").onclick = function () {
+  /** @type {HTMLElement} */ (document.getElementById("ash")).onclick = function () {
     goHomeNav();
   };
   // The bar is always there, like the top bar (data-asb leaves room for it under the text).
@@ -52,7 +57,7 @@ export function init() {
   // a session started on the Today card (Home's session card here): Prev and Next now follow it, even on the piece already on screen; and
   // another text opened (js/features/history.js solo()), which may leave the page where it was, with no scroll
   function again() {
-    asShow.id = undefined;
+    shownId = undefined;
     asShow();
   }
   document.addEventListener("nitya-session", again);
@@ -79,7 +84,7 @@ export function asLabel() {
     ["asv", w.prev, ".prev"],
     ["asn", w.next, ".next"],
   ].forEach(function (x) {
-    var b = document.getElementById(x[0]),
+    var b = /** @type {HTMLButtonElement} */ (document.getElementById(x[0])),
       // from the home page, Next opens the first text in the Library (asGo)
       a = c ? c.querySelector(".pn " + x[2]) : x[2] === ".next" ? document.querySelector("#jl a[data-go]") : null,
       t = c && a && a.querySelector(mr ? ":scope > .mr" : ":scope > .en"),
@@ -113,8 +118,8 @@ function asGo(sel) {
 export function asShow() {
   var c = cur(),
     id = c ? c.id : "";
-  if (id !== asShow.id) {
-    asShow.id = id;
+  if (id !== shownId) {
+    shownId = id;
     asLabel();
   }
 }

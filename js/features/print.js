@@ -1,3 +1,4 @@
+// @ts-check
 // Print
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 //
@@ -15,7 +16,7 @@
 // "about 12 pages" is counted apart, in a hidden frame, by the same rules (js/print/pages.js); the printout waits for
 // nothing of it.
 
-import { note as message, pieceEl, root } from "../core/page.js";
+import { byId, note as message, pieceEl, root } from "../core/page.js";
 import { LEAD, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
 import { FEAT_SW } from "../core/features.js";
@@ -30,19 +31,19 @@ var CHOICE = { one: { page: "up" }, both: { page: "land" } };
 
 export function init() {
   (function () {
-    var pm = document.getElementById("prm"),
-      pv = /** @type {HTMLElement} */ (document.getElementById("pv")),
-      b1 = document.getElementById("pr1"),
-      b2 = document.getElementById("pr2"),
-      bgo = document.getElementById("prgo"),
-      bpr = document.getElementById("prgp"),
-      po = pm.querySelector(".pro"),
-      pw = document.getElementById("prw"),
-      pv2 = document.getElementById("prv"),
-      bsf = document.getElementById("prsf"),
-      bcp = document.getElementById("prcp"),
+    var pm = byId("prm"),
+      pv = /** @type {HTMLElement} */ (byId("pv")),
+      b1 = byId("pr1"),
+      b2 = byId("pr2"),
+      bgo = byId("prgo"),
+      bpr = /** @type {HTMLButtonElement} */ (byId("prgp")),
+      po = /** @type {HTMLElement} */ (pm.querySelector(".pro")),
+      pw = byId("prw"),
+      pv2 = byId("prv"),
+      bsf = byId("prsf"),
+      bcp = byId("prcp"),
       last = "as", // the layout last chosen, carried to Safari
-      pn = pm.querySelector(".prn:not(#prw):not(#prv)"),
+      pn = /** @type {HTMLElement} */ (pm.querySelector(".prn:not(#prw):not(#prv)")),
       busy = false,
       /** @type {{ m: string, ids: string[] | null } | null} the printout being made from the builder */
       job = null,
@@ -122,8 +123,8 @@ export function init() {
       el.normalize();
       var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT),
         n;
-      while ((n = w.nextNode()))
-        n.data = n.data.replace(/\S+(?: +(?:[।॥|]+|[0-9०-९೦-೯]+(?= +[॥|])))+/g, function (run) {
+      while ((n = /** @type {Text | null} */ (w.nextNode())))
+        n.data = n.data.replace(/\S+(?: +(?:[।॥|]+|[0-9०-९೦-೯]+(?= +[॥|])))+/g, function (/** @type {string} */ run) {
           return run.replace(/ +/g, "\u00a0");
         });
     }
@@ -134,8 +135,9 @@ export function init() {
     // Returns its parts in order, each with its role.
     /** @param {HTMLElement} sec @returns {{ el: HTMLElement, role: string }[]} */
     function parts(sec) {
-      var once = pref() === 1,
-        out = [];
+      var once = pref() === 1;
+      /** @type {{ el: HTMLElement, role: string }[]} */
+      var out = [];
       // in the page's order: [once] lines and [note]s before the dhrupad at the top come first (.items.lead)
       [].forEach.call(sec.querySelectorAll(".rftop, .items > .item, .items > .rmk"), function (/** @type {HTMLElement} */ u) {
         var role = "";
@@ -144,7 +146,7 @@ export function init() {
           // a note of the text's own: "↻ ३ वेळा" (repeat the lines above) belongs to what is before it, a heading such
           // as फलश्रुति to what follows. With the dhrupad after every verse, lines already written out again (the
           // repeats after the first, refrain lines) need no "3 times" too, or it reads as nine.
-          var rep = /^\s*↻/.test((u.querySelector(".mr") || u).textContent),
+          var rep = /^\s*↻/.test((u.querySelector(".mr") || u).textContent || ""),
             prev = out[out.length - 1];
           role = !rep ? "before" : !once && prev && prev.el.querySelector(".verse p.rf") ? "" : "after";
         } else if (u.classList.contains("rmk"))
@@ -166,8 +168,11 @@ export function init() {
     // or a "3 times" with the stanza before it; the dhrupad at the top with the first stanza
     /** @param {{ el: HTMLElement, role: string }[]} ps @returns {HTMLElement[][]} */
     function group(ps) {
+      /** @type {HTMLElement[][]} */
       var out = [],
+        /** @type {HTMLElement[]} */
         head = [],
+        /** @type {HTMLElement | null} */
         top = null;
       ps.forEach(function (x) {
         var last = out[out.length - 1];
@@ -180,7 +185,9 @@ export function init() {
           top = null;
         }
       });
-      if (head.length || top) out.push((top ? [top] : []).concat(head));
+      // (set in the loop above, which the type checks cannot follow)
+      var last = /** @type {HTMLElement | null} */ (top);
+      if (head.length || last) out.push((last ? [last] : []).concat(head));
       return out;
     }
     // The lines of a part (a stanza, the dhrupad, a line said once) in a language: each as written, with the stanza
@@ -196,7 +203,10 @@ export function init() {
           return pref() !== 1 || !p.classList.contains("rf") || !!u.closest(".norf");
         })
         .map(function (/** @type {HTMLElement} */ p) {
-          return { html: p.innerHTML, rf: p.classList.contains("rf") || u.classList.contains("rf") };
+          return {
+            html: p.innerHTML,
+            rf: p.classList.contains("rf") || u.classList.contains("rf"),
+          };
         });
     }
     // how a part prints: the dhrupad at the top and a [dhrupad bold] block bold, a repeated dhrupad lighter
@@ -238,7 +248,9 @@ export function init() {
     // of the text's own (फलश्रुति) between them
     /** @param {HTMLElement[]} units @returns {HTMLElement[][]} */
     function paras(units) {
+      /** @type {HTMLElement[][]} */
       var gs = [],
+        /** @type {HTMLElement[] | null} */
         cur = null;
       units.forEach(function (u) {
         if (u.classList.contains("rmk")) {
@@ -252,7 +264,7 @@ export function init() {
           cur = [];
           gs.push(cur);
         }
-        cur.push(u);
+        /** @type {HTMLElement[]} */ (cur).push(u);
         if (dh) cur = null;
       });
       return gs;
@@ -260,9 +272,11 @@ export function init() {
     // One language, a Vedic text: running paragraphs, as in a printed booklet (a line of verse runs on after the last)
     /** @param {HTMLElement[]} g @param {string} k */
     function proseBlock(g, k) {
-      if (g[0].classList.contains("rmk")) return mk("div", "pvk", "").appendChild(inLang("p", "pvnote", k, note(g[0], k))).parentNode;
+      if (g[0].classList.contains("rmk"))
+        return /** @type {HTMLElement} */ (mk("div", "pvk", "").appendChild(inLang("p", "pvnote", k, note(g[0], k))).parentNode);
       // the lines run on as one text, not a span each: Safari printed the space between two such spans so narrow that
       // the words ran together. (pvLines: the lines, for the tests)
+      /** @type {string[]} */
       var ls = [];
       g.forEach(function (u) {
         linesOf(u, k).forEach(function (l) {
@@ -318,7 +332,7 @@ export function init() {
       function across(x, cls) {
         var tr = mk("tr", cls),
           td = mk("td");
-        td.colSpan = 2;
+        /** @type {HTMLTableCellElement} */ (td).colSpan = 2;
         order.forEach(function (k, i) {
           var h = cls === "pvnoterow" ? note(x, k) : part(x, k);
           if (!h) return;
@@ -344,7 +358,7 @@ export function init() {
           body.appendChild(tr);
         });
       });
-      return mk("div", flow ? "pvk pvflow" : "pvk pvst").appendChild(t).parentNode;
+      return /** @type {HTMLElement} */ (mk("div", flow ? "pvk pvflow" : "pvk pvst").appendChild(t).parentNode);
     }
 
     // Build the print view (#pv): contents (when more than one text prints), then the texts chosen, in reading order.
@@ -364,7 +378,7 @@ export function init() {
     /** @param {string} id */
     function textOf(id) {
       /** @type {any} */
-      var C = window.CONTENT,
+      var C = /** @type {any} */ (window).CONTENT,
         t = id;
       (C ? C.categories : []).forEach(function (/** @type {any} */ g) {
         g.pieces.forEach(function (/** @type {any} */ p) {
@@ -396,7 +410,7 @@ export function init() {
     /** @param {HTMLElement} into @param {any} src */
     function contents(into, src) {
       var cov = mk("section", "pvcov");
-      cov.appendChild(title("h1", "pvh", SCR.to("संकटहर चतुर्थी"), "Sankathara Chaturthi"));
+      cov.appendChild(title("h1", "pvh", /** @type {any} */ (window).SCR.to("संकटहर चतुर्थी"), "Sankathara Chaturthi"));
       src.groups.forEach(function (/** @type {any} */ g) {
         if (!g.secs.length) return;
         var nm = mk("div");
@@ -408,13 +422,14 @@ export function init() {
         // its first row are one such box too (.pvhead), so a heading never ends a page alone.
         var rows = mk("div", "pvtocw"),
           head = rows.appendChild(mk("div", "pvhead")),
+          /** @type {HTMLElement | null} */
           ol = null;
         head.appendChild(title("h3", "pvcat", part(nm, "mr"), part(nm, "en")));
-        g.secs.forEach(function (/** @type {HTMLElement} */ sec, i) {
+        g.secs.forEach(function (/** @type {HTMLElement} */ sec, /** @type {number} */ i) {
           var li = titleOf(sec, "li", "");
           li.setAttribute("data-sid", sec.id);
           if (i % 2 === 0) ol = (i ? rows : head).appendChild(mk("ol", "pvtoc pvtr"));
-          ol.appendChild(li);
+          /** @type {HTMLElement} */ (ol).appendChild(li);
         });
         cov.appendChild(rows);
       });
@@ -573,14 +588,20 @@ export function init() {
     // On a phone one step at a time (data-step on #prm: Next, and ‹ What to print back); from 760px side by side
     // (css/03-menus-print-view.css). The bottom bar keeps the running total and Next or Print.
     // The shelves: the reading page's sections (वैदिक मंत्र, आरती) and their texts, in reading order
+    /** @returns {{ category: { id: string, name: any }, texts: { id: string, sec: string, title: string, titleEn: string, language: string }[] }[]} */
     function shelves() {
-      /** @type {any} */
-      var C = window.CONTENT;
+      var C = /** @type {any} */ (window).CONTENT;
       return (C ? C.categories : []).map(function (/** @type {any} */ g) {
         return {
           category: { id: g.id, name: g.name },
           texts: g.pieces.map(function (/** @type {any} */ p) {
-            return { id: p.id, sec: p.id, title: p.title.mr, titleEn: p.title.en, language: p.lang || "mr" };
+            return {
+              id: p.id,
+              sec: p.id,
+              title: p.title.mr,
+              titleEn: p.title.en,
+              language: p.lang || "mr",
+            };
           }),
         };
       });
@@ -612,7 +633,7 @@ export function init() {
         },
       }),
       bnx = /** @type {HTMLElement} */ (document.getElementById("prnx")),
-      wide = window.matchMedia ? matchMedia("(min-width: 760px)") : null;
+      wide = typeof window.matchMedia === "function" ? matchMedia("(min-width: 760px)") : null;
     // the texts ticked (their piece ids), or null for every text
     function chosen() {
       return what.pick();
@@ -896,7 +917,7 @@ export function init() {
         n = count(null),
         side = plang() === "both",
         up = !land("one"),
-        other = LEAD === "en" ? pw.langs[olang()] : pw.langs.en;
+        other = LEAD === "en" ? /** @type {Record<string, string>} */ (pw.langs)[olang()] : pw.langs.en;
       /** @param {{ ref?: number, land?: boolean }} o */
       function more(o) {
         var a = n > 0 ? count(o) : -1;
@@ -969,6 +990,7 @@ export function init() {
       rows();
       refresh();
     };
+    /** @type {Record<string, string>} */
     var FAM = { classic: "SC Classic", bold: "SC Bold" };
     // the sample: the first words of the first verse, in each language printed (the main one first), in the
     // printout's font. Set here: the page's own font rules follow the text font
@@ -1014,9 +1036,11 @@ export function init() {
       refresh();
     };
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
+    /** @type {string} the site's CSS for the printer, worked out once */
+    var pcssT = "";
     /** @returns {string} */
     function pcss() {
-      if (pcss.t) return pcss.t;
+      if (pcssT) return pcssT;
       /** @type {string[]} */
       var out = [];
       /** @param {CSSRuleList} rules */
@@ -1034,10 +1058,8 @@ export function init() {
           walk(sh.cssRules);
         } catch (e) {}
       });
-      return (pcss.t = out.join("\n"));
+      return (pcssT = out.join("\n"));
     }
-    /** @type {string} */
-    pcss.t = "";
     // the page's own attributes as the printout has them (its font and dhrupad), for a copy of it in a frame
     function attrs() {
       var at = "";
@@ -1056,7 +1078,7 @@ export function init() {
     // (nothing is measured), so Print opens it from the same tap; should a browser still ignore it, the pop-up comes
     // back with one button, Print now, whose own tap opens the dialog.
     var iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1),
-      standalone = /** @type {any} */ (navigator).standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+      standalone = /** @type {any} */ (navigator).standalone || (typeof window.matchMedia === "function" && matchMedia("(display-mode: standalone)").matches);
     // the page choice as chosen, and Safari's Landscape note with it
     function pages1() {
       var up = !land("one");
@@ -1203,7 +1225,7 @@ export function init() {
       // both languages shown the main one comes first (left, or on top)
       var pw = menuWords("print"),
         en = pw.langs.en,
-        or = pw.langs[olang()],
+        or = /** @type {Record<string, string>} */ (pw.langs)[olang()],
         l1 = LEAD === "en" ? en : or,
         l2 = LEAD === "en" ? or : en;
       // the page: Portrait or Landscape (one language), a tap picks it; both languages: Landscape, side by side
