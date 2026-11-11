@@ -1,6 +1,7 @@
 // Layout across screen sizes: from the smallest phones to large monitors, in portrait and landscape.
 // Checks the things that break first on an unfamiliar screen: a sideways scroll, a bar that is off
 // screen, text that is too small to read, and controls too small to tap.
+import { readdirSync, readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { openSite, hasSidewaysScroll, SETUPS, readText, settingsTab } from "./helpers.mjs";
 
@@ -118,3 +119,11 @@ for (const [name, size] of [
     for (const f of await page.locator('iframe[title="Preview"], iframe[title="Pages"]').all())
       expect(await f.evaluate((x) => x.contentDocument.querySelectorAll("base").length)).toBe(0);
   });
+
+// A line too long for its row wraps with the rest of it at the left edge, not indented (an indented rest looked like
+// stray spaces on a phone, Satish 2026-11-10): no stylesheet indents the rest of a wrapped line, on screen or printed
+test("no text's wrapped line is indented, on screen or printed", () => {
+  const dir = new URL("../css/", import.meta.url);
+  const hanging = readdirSync(dir).filter((f) => f.endsWith(".css") && /text-indent:\s*-/.test(readFileSync(new URL(f, dir), "utf8")));
+  expect(hanging).toEqual([]);
+});
