@@ -19,13 +19,18 @@ const SNAP_ENV = process.env.SNAPSHOT_ENV || "ci";
 
 const exe = process.env.PW_CHROMIUM_PATH;
 const chromiumLaunch = exe ? { launchOptions: { executablePath: exe } } : {};
+// Which suites each engine runs, as in Nitya Upasana (2026-11-11): every engine the ones about how the page is drawn
+// and printed (ENGINE); WebKit also the reading flows (FLOWS), as most readers are on iPhones; the iPhone every @mobile
+// test; the rest (the Library's list, the texts' words, the site's files) is plain JavaScript, run once in Chromium.
+const ENGINE = /(smoke|layout|text-size|edge|compat|print-view|fonts)\.spec\.mjs$/;
+const FLOWS = /(smoke|layout|text-size|edge|compat|print-view|fonts|interactions|a11y|offline)\.spec\.mjs$/;
 const all = {
   chromium: { use: { ...devices["Desktop Chrome"], ...chromiumLaunch } },
-  firefox: { use: { ...devices["Desktop Firefox"] }, grepInvert: /@chromium-only/ },
-  webkit: { use: { ...devices["Desktop Safari"] }, grepInvert: /@chromium-only/ },
+  firefox: { use: { ...devices["Desktop Firefox"] }, grepInvert: /@chromium-only/, testMatch: ENGINE },
+  webkit: { use: { ...devices["Desktop Safari"] }, grepInvert: /@chromium-only/, testMatch: FLOWS },
   iphone: { use: { ...devices["iPhone 13"] }, grep: /@mobile/ },
-  ipad: { use: { ...devices["iPad (gen 7)"] }, grep: /@mobile/ },
-  pixel: { use: { ...devices["Pixel 7"], ...chromiumLaunch }, grep: /@mobile/ },
+  ipad: { use: { ...devices["iPad (gen 7)"] }, grep: /@mobile/, testMatch: FLOWS },
+  pixel: { use: { ...devices["Pixel 7"], ...chromiumLaunch }, grep: /@mobile/, testMatch: /(smoke|layout|text-size|edge|compat|interactions)\.spec\.mjs$/ },
 };
 const wanted = (process.env.PW_PROJECTS || (process.env.CI ? Object.keys(all).join(",") : "chromium")).split(",");
 
