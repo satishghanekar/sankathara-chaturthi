@@ -22,8 +22,7 @@ export function init() {
   asking = false;
   last = Date.now();
   tm = 0;
-  if (!("wakeLock" in navigator))
-    /** @type {HTMLElement} */ (document.getElementById("twrow")).hidden = true;
+  if (!("wakeLock" in navigator)) /** @type {HTMLElement} */ (document.getElementById("twrow")).hidden = true;
   /** @type {HTMLElement} */ (document.getElementById("tw")).onclick = function (e) {
     var b = /** @type {HTMLElement} */ (e.target).closest("button");
     if (!b) return;

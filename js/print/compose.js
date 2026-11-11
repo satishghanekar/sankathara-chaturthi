@@ -83,9 +83,7 @@ export function compose(ids, lang, ordered) {
           .map(function (/** @type {any} */ p, /** @type {number} */ i) {
             // its number in this printout (the copy only: CONTENT keeps the Library's)
             var n = i + 1;
-            return Object.assign({}, p, {
-              no: { mr: dv(n) + ".", en: n + "." },
-            });
+            return Object.assign({}, p, { no: { mr: dv(n) + ".", en: n + "." } });
           }),
       },
     ];

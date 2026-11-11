@@ -75,8 +75,7 @@ export function closeForBack() {
     if (!l.back || !shown(l.id)) return;
     /** @type {HTMLElement} */ (document.getElementById(l.id)).hidden = true;
     shut = true;
-    if (l.id === "rsh")
-      /** @type {HTMLElement} */ (document.getElementById("rsb")).setAttribute("aria-expanded", "false");
+    if (l.id === "rsh") /** @type {HTMLElement} */ (document.getElementById("rsb")).setAttribute("aria-expanded", "false");
   });
   return shut;
 }

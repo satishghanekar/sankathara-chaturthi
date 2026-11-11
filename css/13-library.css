@@ -29,6 +29,7 @@
 #res li.rt .rl {
   font-weight: 600;
 }
+
 /* ==== The search box at the foot of the Library (#qbar), within thumb reach (Satish, 2026-10-27). On phones and
    tablets the Library reaches the foot of the screen and does not scroll itself: everything above the box scrolls in
    .libsc, and the box sits under it, outside any scroll. (A box fixed inside the scroll was clipped away on an iPhone;
@@ -90,6 +91,7 @@
     margin: 0;
   }
 }
+
 /* ==== Recent (#rcn): the last places gone to from here, as search results look, each with × to take it away ==== */
 .rch {
   display: flex;
@@ -178,6 +180,7 @@
     color: var(--accent);
   }
 }
+
 /* ==== Tablets held upright: the categories in two columns ==== */
 @media screen and (min-width: 600px) and (max-width: 1023px) and (orientation: portrait) {
   #jump {
@@ -191,6 +194,7 @@
     break-inside: avoid;
   }
 }
+
 /* ==== The list follows the text size (Satish, 2026-10-21) ====
    A pinch (or Ctrl + / −) on the Library makes its list bigger or smaller, by the same share as the reading page
    (one setting, P.fs): 17px at the automatic size here (--fsa, set by js/text/autofit.js; Nitya Upasana's is 15px,
@@ -229,10 +233,12 @@
     font-size: 0.9em;
   }
 }
+
 /* the search box on a line of its own, so the text size can't move it (an inline box sits on a line as tall as the text) */
 #jump #q {
   display: block;
 }
+
 /* A two-finger pinch anywhere on the Library (or its categories sheet) resizes the list (js/features/pinch.js),
    never zooms the whole page: the Library scrolls on its own, so the page's own touch-action (02-core.css) does
    not reach inside it, as on the Settings preview (09-settings-page.css) */
