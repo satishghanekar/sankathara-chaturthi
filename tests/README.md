@@ -26,7 +26,7 @@ npm run sister                       # still in line with the sister app (Nitya 
 
 `npm test` starts a small static server (`serve.mjs`, port 4173) by itself. On a failure, `npx playwright show-report` opens the details, with a trace of every step.
 
-On GitHub every pull request and every push to `main` runs everything (`.github/workflows/tests.yml`, in the `mcr.microsoft.com/playwright:v1.64.1-noble` image, kept in step with `@playwright/test` in `package.json`): lint, Chromium, Firefox, WebKit (Safari's engine), iPhone, iPad and Pixel emulation, and Lighthouse.
+On GitHub every pull request and every push to `main` runs everything (`.github/workflows/tests.yml`, in the `mcr.microsoft.com/playwright:v1.64.1-noble` image, kept in step with `@playwright/test` in `package.json`): lint, Chromium, Firefox, WebKit (Safari's engine), iPhone, iPad and Pixel emulation, and Lighthouse. **Not every suite runs in every engine** (`playwright.config.mjs`, as in Nitya Upasana, 2026-11-11): Chromium runs them all, in two jobs; the suites where engines differ, how the page is drawn and printed (smoke, layout, text size, edge cases, compatibility, print view, fonts), run in every engine; interactions, accessibility and offline in WebKit too, as most readers are on iPhones; the iPhone runs every `@mobile` test; the Library's list, the texts' words and the site's files, plain JavaScript, run once. A new suite goes into `ENGINE` or `FLOWS` there if an engine could change what it checks. That is 803 runs a pass, from 961.
 
 ## The suites
 
