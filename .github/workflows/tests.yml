@@ -46,8 +46,15 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.64.1-noble
     strategy:
       fail-fast: false
+      # (Chromium, which runs every suite, in two halves: alone it was the slowest job; each other engine runs only the
+      # suites it can change, tests/playwright.config.mjs, 2026-11-11)
       matrix:
-        projects: [chromium, firefox, webkit, "iphone,ipad,pixel"]
+        include:
+          - { projects: chromium, shard: 1/2 }
+          - { projects: chromium, shard: 2/2 }
+          - { projects: webkit, shard: 1/1 }
+          - { projects: firefox, shard: 1/1 }
+          - { projects: "iphone,ipad,pixel", shard: 1/1 }
     defaults:
       run:
         working-directory: tests
@@ -59,8 +66,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
       - run: npm ci
-      - run: npx playwright test
+      - run: npx playwright test --shard=${{ matrix.shard }}
         env:
           PW_PROJECTS: ${{ matrix.projects }}
       - uses: actions/upload-artifact@v7
