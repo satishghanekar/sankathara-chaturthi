@@ -183,6 +183,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 | `layout` | `prose` prints the text as running paragraphs, like a booklet (the Atharvashirsha). `lines` sets a Vedic chant line by line, as its booklet does, on screen and paper; a long verse reference (॥ ९.००१.०६ ॥) shows on a phone as just the verse (॥ ६ ॥). |
 | `credit`, `credit-en` | The author line in each language. `[name](address)` becomes a Wikipedia link that opens in a new tab, with its ↗. |
 | `credit-note`, `credit-note-en` | A second, smaller author line (Vitthal Aarti: "also credited to Sant Namdev"). |
+| `recording` | A recording to hear, YouTube only, shown under the credit: `[who](https://www.youtube.com/watch?v=…&t=90)`, with `&t=` and the second the text starts at when that is not at once; two or more separated by `, `. Link only a recording checked against the text (as in Nitya Upasana). |
 
 **The blocks**, after `---`, separated by one blank line. Each starts with its name in brackets, then its lines, **always in pairs: the original line, then its everyday English line**. An English line where the original belongs (or the other way round) stops the text from loading, and the test names the file and line.
 

@@ -916,7 +916,6 @@ h2[tabindex="-1"]:focus {
 .ash[data-lang="both"] header h2 .en {
   margin-top: 2px;
 }
-
 @media (orientation: landscape) and (max-height: 520px) {
   .ash header {
     margin: 14px 0 10px;

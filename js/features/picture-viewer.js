@@ -102,12 +102,7 @@ export function init() {
       } else if (k.length === 2) {
         var a = pts[k[0]],
           b = pts[k[1]];
-        g = {
-          d: Math.hypot(a.x - b.x, a.y - b.y) || 1,
-          s: s,
-          mx: (a.x + b.x) / 2,
-          my: (a.y + b.y) / 2,
-        };
+        g = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, s: s, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
         moved = true;
       }
     });

@@ -110,7 +110,8 @@
 /* ==== Bars tuck away while reading (phones and tablets without the side menu) ====
    Scrolling down slides the top and bottom bars out of view, leaving a slim strip with the piece name;
    scrolling up or reaching the end of the page (once the page stops moving: js/features/bars.js showSoon()), or
-   tapping a blank part of the page brings them back. The script sets data-tuck on <html>. */
+   tapping a blank part of the page brings them back.
+   The script sets data-tuck on <html>. */
 #tuck {
   position: fixed;
   top: 0;
@@ -168,6 +169,7 @@
   visibility: visible;
 }
 /* ==== Folding the home contents list and each piece (the Contents button's look is in "Fold headings" below) ==== */
+
 .ash header {
   position: relative;
   padding-inline: 56px;
