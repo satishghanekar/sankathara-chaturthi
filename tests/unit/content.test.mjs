@@ -31,7 +31,12 @@ describe("CONTENT from the text files", () => {
   // (each [note] is now marked as one, nt, which the old file did not have: Ghalin Lotangan's ↻ ३ वेळा, and each piece
   // carries its text's id, text, as in Nitya Upasana. The Dnyaneshwar and Vitthal Aartis' entries follow their files
   // as written in Nitya Upasana, 2026-10-28)
-  const SAME = { ui: C.ui, wiki: C.wiki, pieces: pieces(C).map(({ text, ...p }) => ({ ...p, items: p.items.map(({ nt, ...i }) => i) })) }; // eslint-disable-line no-unused-vars
+  // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's)
+  const SAME = {
+    ui: C.ui,
+    wiki: C.wiki,
+    pieces: pieces(C).map(({ text, ...p }) => ({ ...p, credit: p.credit.replace(/<span class="rec".*$/, ""), items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
+  };
   const WAS = { ui: OLD.ui, wiki: OLD.wiki, pieces: pieces(OLD) };
   test("is identical to the old content/pieces.js: the same pieces, in the same order", () => {
     expect(SAME).toStrictEqual(WAS);
@@ -154,4 +159,10 @@ describe("content checks", () => {
   test("categories: Vedic Chant, Aarti, Stotra, Ashtak", () => {
     expect(categories.map((c) => c.id)).toEqual(["vedic-chant", "aarti", "stotra", "ashtak"]);
   });
+});
+
+// The Atharvashirsha's recording, as in Nitya Upasana (the same text word for word): the Challakere Brothers'
+// Rudradhyaya video from 1:30, after the album's invocation
+test("the Atharvashirsha links its recording, from where the text starts", () => {
+  expect(parseText(files["vedic-chant-atharvashirsha"], "a").recording).toBe("[Challakere Brothers](https://www.youtube.com/watch?v=OQhyYdoKW1k&t=90)");
 });

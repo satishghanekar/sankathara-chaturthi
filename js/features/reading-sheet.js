@@ -89,9 +89,7 @@ export function rsOpen(o) {
     // the sheet sits on the bottom bar, which stays in sight under the dimmed page
     rsh.style.setProperty("--rsb", Math.round(innerHeight - byId("asc").getBoundingClientRect().top) + "px");
     rsSet();
-    /** @type {HTMLElement} */ (rsh.querySelector(".rsc")).focus({
-      preventScroll: true,
-    });
+    /** @type {HTMLElement} */ (rsh.querySelector(".rsc")).focus({ preventScroll: true });
   } else {
     try {
       rsb.focus({ preventScroll: true });

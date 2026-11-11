@@ -381,11 +381,7 @@ function upmInit(opener) {
             '" aria-pressed="' +
             (k === dev) +
             '">' +
-            /** @type {Record<string, string>} */ ({
-              iphone: "iPhone",
-              ipad: "iPad",
-              mac: "Mac",
-            })[k] +
+            /** @type {Record<string, string>} */ ({ iphone: "iPhone", ipad: "iPad", mac: "Mac" })[k] +
             "</button>"
           );
         })
