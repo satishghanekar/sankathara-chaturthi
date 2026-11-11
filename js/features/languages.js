@@ -180,11 +180,7 @@ function spPick(w, k) {
     lead = v;
   } else l2 = v;
   /** @type {Record<string, any>} */
-  var ch = {
-    lead: lead,
-    l2: l2,
-    lang: !l2 || role === 1 ? lead : role === 2 ? l2 : "both",
-  };
+  var ch = { lead: lead, l2: l2, lang: !l2 || role === 1 ? lead : role === 2 ? l2 : "both" };
   // Menus in English, or in the language of the letters shown (js/store/migrate.js tidy()): other letters, or English
   // as the main language, put the menus back to English (Satish, 2026-10-30)
   if (P.ui !== "en" && (lead === "en" || P.ui !== ind)) ch.ui = "en";

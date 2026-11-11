@@ -135,21 +135,9 @@
   // To add another script, give it an entry in SCRIPTS (and its fonts: css/00-fonts.css, css/09-settings-page.css).
   /** @type {Record<string, { off: number, sp: Record<string, string>, back: [RegExp, string][] }>} */
   var SCRIPTS = {
-    kn: {
-      off: 0x380,
-      sp: { ॐ: "ಓಂ", ऱ: "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", ऑ: "ಆ", ॲ: "ಅ" },
-      back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]],
-    },
-    te: {
-      off: 0x300,
-      sp: { ॐ: "ఓం", ऱ: "ర", "ॅ": "్యా", "ॉ": "ా", ऑ: "ఆ", ॲ: "అ" },
-      back: [[/ఓం(?![ఀ-౿])/g, "ॐ"]],
-    },
-    gu: {
-      off: 0x180,
-      sp: { ऱ: "ર", ऴ: "ળ", ॲ: "અ", "᳚": "॑॑" },
-      back: [[/॑॑/g, "᳚"]],
-    },
+    kn: { off: 0x380, sp: { ॐ: "ಓಂ", ऱ: "ರ", "ॅ": "್ಯಾ", "ॉ": "ಾ", ऑ: "ಆ", ॲ: "ಅ" }, back: [[/ಓಂ(?![ಀ-೿])/g, "ॐ"]] },
+    te: { off: 0x300, sp: { ॐ: "ఓం", ऱ: "ర", "ॅ": "్యా", "ॉ": "ా", ऑ: "ఆ", ॲ: "అ" }, back: [[/ఓం(?![ఀ-౿])/g, "ॐ"]] },
+    gu: { off: 0x180, sp: { ऱ: "ર", ऴ: "ળ", ॲ: "અ", "᳚": "॑॑" }, back: [[/॑॑/g, "᳚"]] },
   };
   var KEEP = /[॒॑।॥᳚]/;
   // ---- Print handed over from the iPhone Home Screen app (js/features/print.js, "Open in Safari") ----
