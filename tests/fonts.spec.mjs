@@ -29,6 +29,7 @@ const share = (fonts, name) => (fonts[name] || 0) / Object.values(fonts).reduce(
 for (const fnt of ["std", "classic", "bold"])
   for (const script of ["mr", "kn", "te", "gu"])
     test(`${fnt}, ${script} letters with English and IAST: each drawn in its own font, on screen and in print @chromium-only`, async ({ browser }) => {
+      test.setTimeout(180_000);
       for (const tr of ["simple", "iast"]) {
         const c = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
         const page = await c.newPage();
@@ -56,15 +57,21 @@ for (const fnt of ["std", "classic", "bold"])
           const top = await drawn(page, cdp, "#a1 .rftop .mr p");
           expect(share(top, "Noto Serif Devanagari"), `${fnt} dhrupad: ${JSON.stringify(top)}`).toBeGreaterThan(0.6);
         }
-        // in print: the same, but the ↻ marker, which comes from the phone's fonts everywhere
+        // every word on the page: Home's list, the titles, credits, menus and symbols too (a file input, never seen, aside)
+        const all = await drawn(page, cdp, "body *:not(input)");
+        expect(
+          Object.keys(all).filter((k) => k.startsWith("PHONE")),
+          `page ${fnt} ${script} ${tr}: ${JSON.stringify(all)}`,
+        ).toEqual([]);
+        // and every word of the printout: its contents, and the first texts' titles, lines, markers and credits
         await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
         await page.emulateMedia({ media: "print" });
         await page.waitForFunction(() => document.querySelector("#pv .pve"));
         await page.evaluate(() => document.fonts.ready);
-        const pe = await drawn(page, cdp, "#pv .pve:not(:has(.ra))");
+        const pv = await drawn(page, cdp, "#pv .pvtoc *, #pv .pvs:nth-of-type(-n + 3) *");
         expect(
-          Object.keys(pe).filter((k) => k.startsWith("PHONE")),
-          `print ${fnt} ${tr}`,
+          Object.keys(pv).filter((k) => k.startsWith("PHONE")),
+          `print ${fnt} ${script} ${tr}: ${JSON.stringify(pv)}`,
         ).toEqual([]);
         await c.close();
       }
