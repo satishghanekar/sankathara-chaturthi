@@ -127,6 +127,10 @@ var SITE_PARTS = (function () {
     "noto-sans-latin",
     "noto-serif-deva-devanagari",
     "noto-serif-kannada-kannada",
+    // the symbols (↻ ✕ ⋯ …), in none of the fonts above (css/00-fonts.css)
+    "sc-symbols-math",
+    "sc-symbols-2",
+    "sc-symbols",
   ].map(function (f) {
     return "fonts/" + f + ".woff2";
   });
