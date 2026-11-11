@@ -32,6 +32,7 @@ On GitHub every pull request and every push to `main` runs everything (`.github/
 
 | File | What it protects |
 |---|---|
+| `fonts.spec.mjs` | The text fonts as drawn: Chrome's own report of the fonts each element is drawn in, for every text font (Modern, Traditional, Bold), every script and English style, on screen and in print: each column mostly in its font, Traditional's bold dhrupad in its own bold, nothing from the phone's fonts (as in Nitya Upasana). |
 | `smoke.spec.mjs` | The site opens with no script errors in every language set-up. |
 | `content.spec.mjs` | Every line of every piece, exactly, in Marathi, English (both spellings), Kannada and Both; the home page text; every line has a unique id and a partner in the other language. |
 | `print.spec.mjs` | **Print and PDF** (see below). Chromium only: no other engine makes a PDF. |
