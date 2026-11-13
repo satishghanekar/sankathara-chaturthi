@@ -64,7 +64,7 @@ export async function howStep(page) {
 
 export async function printFromButton(page, choice) {
   await page.evaluate(() => scrollTo(0, 0));
-  // Print is in the top bar; on a phone, in its Share menu
+  // Print is in the top bar's Share menu
   await tapPrint(page);
   await page.locator("#prm").waitFor({ state: "visible" });
   await howStep(page);

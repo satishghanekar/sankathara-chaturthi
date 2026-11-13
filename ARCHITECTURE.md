@@ -53,7 +53,7 @@ A word a language lacks is taken from English. `tests/unit/strings.test.mjs` che
 
 ## Printing
 
-Print, a button in the top bar (on a phone, in its Share menu), opens the Print pop-up (`#prm`, `js/features/print.js`). It writes a separate print view (`#pv`) of the texts ticked, laid out as chosen, and prints it. The browser's own Print menu prints every text the same way. Nothing is measured or laid out ahead: the browser breaks the pages, by fixed rules, as in Nitya Upasana, which this follows (Satish, 2026-10-28: the page planner, the line fitting, the page numbers in the contents and the page border were taken out as too complicated).
+Print, in the top bar's Share menu, opens the Print pop-up (`#prm`, `js/features/print.js`). It writes a separate print view (`#pv`) of the texts ticked, laid out as chosen, and prints it. The browser's own Print menu prints every text the same way. Nothing is measured or laid out ahead: the browser breaks the pages, by fixed rules, as in Nitya Upasana, which this follows (Satish, 2026-10-28: the page planner, the line fitting, the page numbers in the contents and the page border were taken out as too complicated).
 
 ### The rules every printout follows
 
