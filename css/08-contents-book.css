@@ -1,5 +1,5 @@
 /* 08-contents-book.css: Author lines, English-first Both
-   Part 9 of 13 of the site styles. index.html loads the parts in number order, and the order
+   Part 9 of 14 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Sections:
    - Author line under the lotus at the end of each piece (who wrote it, with a Wikipedia link)
