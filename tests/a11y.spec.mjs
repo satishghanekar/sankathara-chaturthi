@@ -2,7 +2,7 @@
 // keyboard-only use of every dialog, and accessible names that contain the visible label.
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { openSite, SETUPS, openMore, tapMore } from "./helpers.mjs";
+import { openSite, SETUPS, openMore, tapMore, tapPrint } from "./helpers.mjs";
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
@@ -34,7 +34,7 @@ const STATES = [
   ["Settings open", SETUPS.marathi, (p) => p.locator("#aa").click()],
   ["Settings open, dark", { ...SETUPS.marathi, th: "dark" }, (p) => p.locator("#aa").click()],
   ["Settings open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#aa").click()],
-  ["Print open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => p.locator("#prb").click()],
+  ["Print open, sepia", { ...SETUPS.marathi, th: "sepia" }, (p) => tapPrint(p)],
   [
     "search open",
     SETUPS.marathi,
@@ -46,7 +46,7 @@ const STATES = [
   ["Help open", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
   ["QR open", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
   ["More menu open", SETUPS.marathi, (p) => openMore(p)],
-  ["Print open", SETUPS.marathi, (p) => p.locator("#prb").click()],
+  ["Print open", SETUPS.marathi, (p) => tapPrint(p)],
   ["picture open", SETUPS.marathi, (p) => p.locator("#iconb").click()],
 ];
 

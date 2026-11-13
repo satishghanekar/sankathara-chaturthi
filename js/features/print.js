@@ -20,6 +20,7 @@
 import { byId, note as message, pieceEl, root } from "../core/page.js";
 import { LEAD, P, change } from "../core/state.js";
 import { ovDone, ovDrop, ovPush } from "./history.js";
+import { focusBack } from "./more-menu.js";
 import { FEAT_SW } from "../core/features.js";
 import { createWriter } from "../print/write.js";
 import { countPages } from "../print/pages.js";
@@ -758,8 +759,9 @@ export function init() {
       pagesStop();
       pm.hidden = true;
       ovDrop();
-      // the chosen button has just been hidden: keyboard focus goes back to Print, not to the top of the page
-      /** @type {HTMLElement} */ (document.getElementById("prb")).focus();
+      // the chosen button has just been hidden: keyboard focus goes back to where Print was opened from (its button
+      // in the top bar; on a phone Share, as Print is in its closed menu), not to the top of the page
+      focusBack(byId("prb"));
       busy = true;
       if (mode === "as") mode = "one";
       // every text ticked: the whole printout, as the browser's own Print menu makes it
@@ -845,13 +847,15 @@ export function init() {
         b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === plang()));
       });
     }
-    /** @type {HTMLElement} */ (document.getElementById("prb")).onclick = openPrint;
+    // Print: #prb in the top bar from 760px, #menu-print in the Share menu on a phone (css/03-menus-print-view.css)
+    byId("prb").onclick = openPrint;
+    byId("menu-print").onclick = openPrint;
     function pmClose() {
       pagesStop();
       unready();
       pm.hidden = true;
       ovDone();
-      /** @type {HTMLElement} */ (document.getElementById("prb")).focus();
+      focusBack(byId("prb"));
     }
     /** @type {HTMLElement} */ (document.getElementById("prx")).onclick = pmClose;
     document.addEventListener("keydown", function (e) {
