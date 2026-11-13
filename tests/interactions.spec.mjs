@@ -1152,3 +1152,16 @@ test("at 320px the top bar shows the picture, not a cut name", async ({ page }) 
   await expect(page.locator("#bt")).toHaveClass(/\bpc\b/);
   await expect(page.locator("#btt")).toBeVisible();
 });
+
+// The bottom bar's buttons are icons alone (Satish 2026-11-13, as in Nitya Upasana: the words under them crowded a
+// phone); each word stays in its button for screen readers and voice control, in the menu language
+test("the bottom bar shows icons alone, each still named by its word @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#ash")).toHaveAccessibleName("Home");
+  await expect(page.locator("#asq")).toHaveAccessibleName("Library");
+  await expect(page.locator("#rsb")).toHaveAccessibleName("Reading");
+  for (const b of ["#ash", "#asq", "#rsb"]) expect(await page.locator(b + " .asil").evaluate((e) => getComputedStyle(e).height)).toBe("1px");
+  // and the bar is no taller than its round Prev and Next buttons need
+  expect(await page.locator("#asi").evaluate((e) => e.getBoundingClientRect().height)).toBeLessThanOrEqual(58);
+});

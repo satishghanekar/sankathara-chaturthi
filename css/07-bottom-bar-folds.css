@@ -73,39 +73,23 @@
   display: grid;
   place-items: center;
 }
-/* Home, Library and Reading: the icon with its word under it, in the menu language (the word is the button's name).
-   The button keeps the bar's 44px height. */
+/* Home, Library and Reading: an icon alone, so the bar stays as low as the top bar (as in Nitya Upasana, whose six
+   buttons with words under them crowded a phone, Satish 2026-11-13; a phone on its side had already left the words
+   out). Each word stays in its button for screen readers and voice control, in the menu language: it is the button's
+   name, and Help lists what each icon is. */
 #ash,
 #asq,
 #rsb {
-  align-content: center;
-  row-gap: 1px;
-  min-width: 58px;
+  min-width: 44px;
   padding: 0 6px;
 }
 .asil {
-  font: 600 var(--fz-s)/1 var(--lat);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
-}
-.asil .mr {
-  font-family: var(--body);
-  font-size: var(--fz-s);
-}
-/* a phone on its side: the bar stays as low as it was; the words are kept for screen readers only */
-@media (orientation: landscape) and (max-height: 520px) {
-  .asil {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  #ash,
-  #asq,
-  #rsb {
-    min-width: 44px;
-  }
 }
 /* ==== Bars tuck away while reading (phones and tablets without the side menu) ====
    Scrolling down slides the top and bottom bars out of view, leaving a slim strip with the piece name;
@@ -568,9 +552,8 @@ html[data-asb="1"] {
   #ash,
   #asq,
   #rsb {
-    min-width: 52px;
-    /* room between a word ("Library", "Reading") and the border */
-    padding: 0 5px;
+    min-width: 44px;
+    padding: 0 4px;
   }
   #asc .asx {
     padding: 0 8px;
