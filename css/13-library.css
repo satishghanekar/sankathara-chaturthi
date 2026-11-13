@@ -1,5 +1,5 @@
 /* 13-library.css: The Library, as in Nitya Upasana
-   Part 12 of 13 of the site styles. index.html loads the parts in number order, and the order
+   Part 12 of 14 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    Nitya Upasana's 13-library.css, the parts this site has: the search results' groups (texts, then lines), the search
    box at the foot of the Library on phones (#qbar), Recent (#rcn) and the list following the text size. Left out: its

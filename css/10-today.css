@@ -1,5 +1,5 @@
 /* 10-today.css: Home's session, reading, and the Library page, as in Nitya Upasana
-   Part 11 of 13 of the site styles. index.html loads the parts in number order, and the order
+   Part 11 of 14 of the site styles. index.html loads the parts in number order, and the order
    matters: a later rule for the same element refines an earlier one (see css/README.md).
    The parts of Nitya Upasana's 10-today.css this site has, in the same file: Home's Morning | Afternoon | Evening
    switch (#tss, shown only with two or more sessions here), a session being read (data-run) and one text at a time
