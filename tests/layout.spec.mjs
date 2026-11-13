@@ -3,7 +3,7 @@
 // screen, text that is too small to read, and controls too small to tap.
 import { readdirSync, readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
-import { openSite, hasSidewaysScroll, SETUPS, readText, settingsTab, tapPrint } from "./helpers.mjs";
+import { openSite, hasSidewaysScroll, SETUPS, readText, settingsTab, tapPrint, axeEveryTheme, noViolations } from "./helpers.mjs";
 
 export const SCREENS = [
   { name: "phone-320", width: 320, height: 640, mobile: true },
@@ -127,6 +127,12 @@ for (const s of [
     const end = await page.evaluate(() => document.querySelector("#a1").getBoundingClientRect().bottom);
     expect(end).toBeLessThanOrEqual((await look("#asi")).top);
   });
+
+test("the bars' words keep their contrast on the pills in every theme", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  expect(await axeEveryTheme(page, ["body > .bar", "#asc"])).toEqual(noViolations());
+});
 
 test("tap targets in the top and bottom bars are at least 44px @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
