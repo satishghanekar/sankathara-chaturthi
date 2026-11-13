@@ -3,7 +3,7 @@
 // screen, text that is too small to read, and controls too small to tap.
 import { readdirSync, readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
-import { openSite, hasSidewaysScroll, SETUPS, readText, settingsTab } from "./helpers.mjs";
+import { openSite, hasSidewaysScroll, SETUPS, readText, settingsTab, tapPrint } from "./helpers.mjs";
 
 export const SCREENS = [
   { name: "phone-320", width: 320, height: 640, mobile: true },
@@ -102,7 +102,7 @@ for (const s of [
     expect(strip).toEqual(["rgba(0, 0, 0, 0)", "none"]);
     // a button at rest has no box; Prev and Next are round, and every button is in its pill
     expect((await look("#asq")).bg).toBe("rgba(0, 0, 0, 0)");
-    expect((await look("#prb")).bg).toBe("rgba(0, 0, 0, 0)");
+    expect((await look("#tmb")).bg).toBe("rgba(0, 0, 0, 0)");
     const pill = await look("#asi");
     for (const id of ["#asv", "#asn"]) {
       const b = await look(id);
@@ -177,8 +177,7 @@ for (const [name, size] of [
       expect(r.out, tab).toEqual([]);
     }
     await page.keyboard.press("Escape");
-    if (!(await page.locator("#prb").isVisible())) await page.locator("#slim").click();
-    await page.locator("#prb").click();
+    await tapPrint(page);
     await page.locator("#prm").waitFor({ state: "visible" });
     if (await page.locator("#prnx").isVisible()) await page.locator("#prnx").click();
     await expect(page.locator("#prpa")).toBeVisible();

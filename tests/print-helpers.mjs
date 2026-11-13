@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { test, expect } from "@playwright/test";
-import { openSite } from "./helpers.mjs";
+import { openSite, tapPrint } from "./helpers.mjs";
 
 const DIGITS = {
   "०": 0,
@@ -64,9 +64,8 @@ export async function howStep(page) {
 
 export async function printFromButton(page, choice) {
   await page.evaluate(() => scrollTo(0, 0));
-  // a folded home card hides its buttons: open it first, as a reader would (tap the slim line)
-  if (!(await page.locator("#prb").isVisible())) await page.locator("#slim").click();
-  await page.locator("#prb").click();
+  // Print is in the top bar; on a phone, in its Share menu
+  await tapPrint(page);
   await page.locator("#prm").waitFor({ state: "visible" });
   await howStep(page);
   // the page (Portrait pr1 or Landscape pr2; both languages have only Landscape, so no choice shows), then Print
