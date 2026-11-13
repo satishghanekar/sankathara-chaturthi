@@ -66,15 +66,15 @@ const DIALOGS = [
   ["Settings", "#aa", "#panel"],
   ["Help", "#hlpb", "#help"],
   ["QR", "#qrb", "#qrm"],
-  ["Print", "#prb", "#prm"],
+  ["Print", "#menu-print", "#prm"],
 ];
 for (const [name, opener, dialog] of DIALOGS) {
   test(`keyboard: every control in ${name} is reachable with Tab, and focus stays inside`, async ({ page, browserName }) => {
     // WebKit only tabs to links and form fields unless the "Press Tab to highlight each item" option is on
     test.skip(browserName === "webkit", "Safari's default Tab skips buttons");
     await openSite(page, SETUPS.marathi);
-    // Help and QR are in the ⋯ menu
-    if (opener === "#hlpb" || opener === "#qrb") await openMore(page);
+    // Help, QR and Print are in the Share menu
+    if (opener !== "#aa") await openMore(page);
     await page.locator(opener).focus();
     await page.keyboard.press("Enter");
     await page.waitForTimeout(200);

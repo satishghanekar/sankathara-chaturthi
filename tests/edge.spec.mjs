@@ -368,13 +368,16 @@ test("keyboard only: Tab to Print, choose a layout, print, and focus comes back 
   await stubPrint(page);
   await page.setViewportSize({ width: 1280, height: 800 });
   await openSite(page, SETUPS.both);
-  let found = false;
-  for (let i = 0; i < 60 && !found; i++) {
-    await page.keyboard.press("Tab");
-    found = await page.evaluate(() => document.activeElement.id === "prb");
+  // Print is in the Share menu: Tab to Share, Enter opens it, Tab on to Print
+  for (const id of ["tmb", "menu-print"]) {
+    let found = false;
+    for (let i = 0; i < 60 && !found; i++) {
+      await page.keyboard.press("Tab");
+      found = await page.evaluate((x) => document.activeElement.id === x, id);
+    }
+    expect(found, `Tab never reached #${id}`).toBe(true);
+    await page.keyboard.press("Enter");
   }
-  expect(found, "Tab never reached the Print button").toBe(true);
-  await page.keyboard.press("Enter");
   await expect(page.locator("#prm")).toBeVisible();
   await expect(page.locator("#prgp")).toBeFocused();
   await page.keyboard.press("Enter");
@@ -382,7 +385,8 @@ test("keyboard only: Tab to Print, choose a layout, print, and focus comes back 
   expect(await page.evaluate(() => document.documentElement.getAttribute("data-print"))).toBeTruthy();
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await expect(page.locator("#prm")).toBeHidden();
-  await expect(page.locator("#prb")).toBeFocused();
+  // focus comes back to Share, as Print is in its closed menu
+  await expect(page.locator("#tmb")).toBeFocused();
 });
 
 // ---- Keeping the cascade from getting harder to change (L1, L2) ----------------------------------------
@@ -416,17 +420,17 @@ test("the phone's Back closes QR, Print and the picture and returns focus to the
   await openSite(page, SETUPS.marathi);
   for (const [open, dlg] of [
     ["#qrb", "#qrm"],
-    ["#prb", "#prm"],
+    ["#menu-print", "#prm"],
     ["#iconb", "#pzv"],
   ]) {
-    if (open === "#qrb") await openMore(page);
+    if (open !== "#iconb") await openMore(page);
     await page.locator(open).focus();
     await page.keyboard.press("Enter");
     await expect(page.locator(dlg)).toBeVisible();
     await page.goBack();
     await expect(page.locator(dlg)).toBeHidden();
-    // QR is in the ⋯ menu, closed by then: focus comes back to ⋯
-    expect(await page.evaluate(() => "#" + document.activeElement.id), `focus after Back from ${dlg}`).toBe(open === "#qrb" ? "#tmb" : open);
+    // QR and Print are in the Share menu, closed by then: focus comes back to Share
+    expect(await page.evaluate(() => "#" + document.activeElement.id), `focus after Back from ${dlg}`).toBe(open === "#iconb" ? open : "#tmb");
     expect(await page.evaluate(() => document.documentElement.style.overflow), "page scrolls again").toBe("");
   }
 });

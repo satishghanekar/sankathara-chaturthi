@@ -759,9 +759,9 @@ export function init() {
       pagesStop();
       pm.hidden = true;
       ovDrop();
-      // the chosen button has just been hidden: keyboard focus goes back to where Print was opened from (its button
-      // in the top bar; on a phone Share, as Print is in its closed menu), not to the top of the page
-      focusBack(byId("prb"));
+      // the chosen button has just been hidden: keyboard focus goes back to where Print was opened from (Share, as
+      // Print is in its closed menu), not to the top of the page
+      focusBack(byId("tmb"));
       busy = true;
       if (mode === "as") mode = "one";
       // every text ticked: the whole printout, as the browser's own Print menu makes it
@@ -847,15 +847,14 @@ export function init() {
         b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === plang()));
       });
     }
-    // Print: #prb in the top bar from 760px, #menu-print in the Share menu on a phone (css/03-menus-print-view.css)
-    byId("prb").onclick = openPrint;
+    // Print: #menu-print in the Share menu, on every screen (Satish, 2026-11-13)
     byId("menu-print").onclick = openPrint;
     function pmClose() {
       pagesStop();
       unready();
       pm.hidden = true;
       ovDone();
-      focusBack(byId("prb"));
+      focusBack(byId("tmb"));
     }
     /** @type {HTMLElement} */ (document.getElementById("prx")).onclick = pmClose;
     document.addEventListener("keydown", function (e) {

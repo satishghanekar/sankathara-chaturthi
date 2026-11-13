@@ -5,14 +5,12 @@ import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, setti
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
 
-// The top bar, as in Nitya Upasana: Share and Settings, and Print from 760px; the languages and the dhrupad are in the
-// Aa sheet and in Settings → Reading (Show, Dhrupad); on a phone Print is in the Share menu, so the title has the room
-// (Satish, 2026-11-12)
-test("the top bar has Share and Settings, Print only from 760px, and no language or dhrupad buttons @mobile", async ({ page }) => {
+// The top bar, as in Nitya Upasana: Share and Settings; the languages and the dhrupad are in the
+// Aa sheet and in Settings → Reading (Show, Dhrupad); Print is in the Share menu, so the title has the room
+// (Satish, 2026-11-13)
+test("the top bar has Share and Settings, and no Print, language or dhrupad buttons @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
-  expect(await page.locator(".bar .tools button:visible").evaluateAll((l) => l.map((b) => b.id))).toEqual(
-    page.viewportSize().width >= 760 ? ["prb", "tmb", "aa"] : ["tmb", "aa"],
-  );
+  expect(await page.locator(".bar .tools button:visible").evaluateAll((l) => l.map((b) => b.id))).toEqual(["tmb", "aa"]);
   await expect(page.locator("#home-btn, #rb, #hm")).toHaveCount(0);
 });
 
@@ -185,26 +183,25 @@ test("Settings on a phone held sideways: the tabs, the preview beside the readin
   for (const id of ["#sl1", "#st"]) await expect(page.locator(id)).toBeVisible();
 });
 
-// Share in the top bar, as in Nitya Upasana: App, Share, QR and Help, and on a phone Print; a choice closes it, Escape
+// Share in the top bar, as in Nitya Upasana: App, Share, QR, Print and Help; a choice closes it, Escape
 // closes it with focus on Share
-test("Share opens App, Share, QR and Help (and Print on a phone), and closes cleanly @mobile", async ({ page }) => {
+test("Share opens App, Share, QR, Print and Help, and closes cleanly @mobile", async ({ page }) => {
   await openSite(page, SETUPS.english);
-  const phone = page.viewportSize().width < 760;
   await expect(page.locator("#shr")).toBeHidden();
   await page.locator("#tmb").click();
   await expect(page.locator("#shr")).toBeVisible();
   await expect(page.locator("#tmb")).toHaveAttribute("aria-expanded", "true");
-  expect(await page.locator("#shr button:visible").evaluateAll((l) => l.map((b) => b.id).filter((i) => i !== "inb"))).toEqual(
-    phone ? ["shb", "qrb", "menu-print", "hlpb"] : ["shb", "qrb", "hlpb"],
-  );
+  expect(await page.locator("#shr button:visible").evaluateAll((l) => l.map((b) => b.id).filter((i) => i !== "inb"))).toEqual([
+    "shb",
+    "qrb",
+    "menu-print",
+    "hlpb",
+  ]);
   await expect(page.locator("#shr span.mr:visible")).toHaveCount(0);
-  // Print is here on a phone and not in the bar, named by its word and as tall as a finger needs; from 760px it is
-  // the bar's own button and not here
-  await expect(page.locator(".bar #prb")).toBeVisible({ visible: !phone });
-  if (phone) {
-    await expect(page.locator("#menu-print")).toHaveAccessibleName("Print");
-    expect((await page.locator("#menu-print").boundingBox()).height).toBeGreaterThanOrEqual(44);
-  }
+  // Print is here on every screen and not in the bar, named by its word and as tall as a finger needs
+  await expect(page.locator("#prb")).toHaveCount(0);
+  await expect(page.locator("#menu-print")).toHaveAccessibleName("Print");
+  expect((await page.locator("#menu-print").boundingBox()).height).toBeGreaterThanOrEqual(44);
   await page.keyboard.press("Escape");
   await expect(page.locator("#shr")).toBeHidden();
   await expect(page.locator("#tmb")).toBeFocused();
@@ -214,30 +211,26 @@ test("Share opens App, Share, QR and Help (and Print on a phone), and closes cle
   await page.locator("#qrx").click();
   await expect(page.locator("#tmb")).toBeFocused();
   // the home card has no buttons of its own any more
-  await expect(page.locator("#home #shr, #home #prb")).toHaveCount(0);
+  await expect(page.locator("#home #shr")).toHaveCount(0);
 });
 
-// On a phone Print is a choice in the Share menu (Satish, 2026-11-12): like the others it closes the menu, and focus
-// comes back to Share when the Print pop-up closes; from 760px the bar's own button opens it and takes focus back
-test("Print opens from the Share menu on a phone and from its own button from 760px, and focus comes back there", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await openSite(page, SETUPS.english);
-  await expect(page.locator("#prb")).toBeHidden();
-  await tapMore(page, "#menu-print");
-  await expect(page.locator("#shr")).toBeHidden();
-  await expect(page.locator("#prm")).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.locator("#prm")).toBeHidden();
-  await expect(page.locator("#tmb")).toBeFocused();
-  await page.setViewportSize({ width: 820, height: 1180 });
-  await page.locator("#tmb").click();
-  await expect(page.locator("#menu-print")).toBeHidden();
-  await page.keyboard.press("Escape");
-  await page.locator("#prb").click();
-  await expect(page.locator("#prm")).toBeVisible();
-  await page.keyboard.press("Escape");
-  await expect(page.locator("#prm")).toBeHidden();
-  await expect(page.locator("#prb")).toBeFocused();
+// Print is a choice in the Share menu on every screen (Satish, 2026-11-13): like the others it closes the menu, and
+// focus comes back to Share when the Print pop-up closes
+test("Print opens from the Share menu on a phone, an iPad and a computer, and focus comes back to Share", async ({ page }) => {
+  for (const [width, height] of [
+    [390, 844],
+    [820, 1180],
+    [1440, 900],
+  ]) {
+    await page.setViewportSize({ width, height });
+    await openSite(page, SETUPS.english);
+    await tapMore(page, "#menu-print");
+    await expect(page.locator("#shr"), `menu closed ${width}px`).toBeHidden();
+    await expect(page.locator("#prm"), `pop-up ${width}px`).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.locator("#prm")).toBeHidden();
+    await expect(page.locator("#tmb"), `focus ${width}px`).toBeFocused();
+  }
 });
 
 // The Library (the book in the bottom bar): every text by group, built from the texts; the home page has no contents
