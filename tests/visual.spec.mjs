@@ -4,7 +4,7 @@
 // Help, the dialogs, every theme and every language arrangement.
 // Recorded in Chromium; the site's fonts are its own files, so shots are the same on any Linux machine.
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, openMore, tapMore, readText, MAC_SKIPS_PIXELS } from "./helpers.mjs";
+import { openSite, settle, SETUPS, openMore, tapMore, tapPrint, readText, MAC_SKIPS_PIXELS } from "./helpers.mjs";
 import { printFromButton } from "./print-helpers.mjs";
 
 // (on a Mac these pictures can't match, as its text is drawn a little differently: left to CI, MAC_SKIPS_PIXELS)
@@ -103,7 +103,7 @@ const CASES = [
   ],
   ["help-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#hlpb")],
   ["qr-phone", "phone", SETUPS.marathi, (p) => tapMore(p, "#qrb")],
-  ["print-dialog", "phone", SETUPS.marathi, (p) => p.locator("#prb").click()],
+  ["print-dialog", "phone", SETUPS.marathi, (p) => tapPrint(p)],
 ];
 
 for (const [name, size, prefs, prep] of CASES) {
