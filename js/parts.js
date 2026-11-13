@@ -21,6 +21,7 @@ var SITE_PARTS = (function () {
     "10-today",
     "13-library",
     "15-print",
+    "16-floating-bars",
     "99-fallbacks",
   ].map(function (f) {
     return "css/" + f + ".css";

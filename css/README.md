@@ -28,6 +28,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
 | `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
 | `15-print.css` | The printout: the whole look of the print view (`#pv`) and the rules by which the browser breaks its pages (from Nitya Upasana). |
+| `16-floating-bars.css` | The top bar and the bottom bar as floating pills: one rounded, solid pill each (`--pill`, `css/01-theme.css`) with a shadow, their buttons without boxes, Prev and Next round, Home's three buttons in a pill only as wide as they need, the text fading out before it reaches a pill (`body::before`, `body::after`), and the room the bottom pill takes at the page's foot (`--pill-foot`). Only the look: what the bars do is in `02-core.css` and `07-bottom-bar-folds.css`. The same file in both apps. |
 | `99-fallbacks.css` | Plain colours for browsers without `color-mix()` (iOS 15). **Keep it last**, because it replaces colours set in every file above. |
 
 ## Switches the styles read
