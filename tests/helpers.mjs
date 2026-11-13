@@ -138,7 +138,7 @@ export function siteParts() {
   return ctx.SITE_PARTS;
 }
 
-/** The Share menu in the top bar (App, Share, QR, Help, and Print on a phone), as in Nitya Upasana: open it, or tap one
+/** The Share menu in the top bar (App, Share, QR, Print, Help), as in Nitya Upasana: open it, or tap one
  * of its items */
 export async function openMore(page) {
   if (!(await page.locator("#shr").isVisible())) await page.locator("#tmb").click();
@@ -148,10 +148,9 @@ export async function tapMore(page, id) {
   await page.locator(id).click();
 }
 
-/** Print: its own button in the top bar from 760px; on a phone it is in the Share menu (css/03-menus-print-view.css) */
+/** Print: a choice in the Share menu, on every screen */
 export async function tapPrint(page) {
-  if (await page.locator("#prb").isVisible()) await page.locator("#prb").click();
-  else await tapMore(page, "#menu-print");
+  await tapMore(page, "#menu-print");
 }
 
 /** A text is read by opening it, here from the Library (as a reader would), as in Nitya Upasana's tests */
