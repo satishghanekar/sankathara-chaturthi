@@ -77,8 +77,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
   expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(200_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
-  // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(58_500);
+  // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
+  // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(60_500);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
 
