@@ -276,6 +276,12 @@ function startAt(id) {
   openText(id);
 }
 
+/** The texts of the session being read, by their id in content/library.json, or null: Go to lists them
+ * (js/features/where.js), as in Nitya Upasana */
+export function runIds() {
+  return run ? run.ids.slice() : null;
+}
+
 /** The reading page shows the session's texts in session order (data-run on <html>), or one text at a time */
 function runMark() {
   var r = document.documentElement;
