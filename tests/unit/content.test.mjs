@@ -114,7 +114,7 @@ describe("content checks", () => {
   // library.json, categories.json and the text files are written exactly as in Nitya Upasana, so a text can be
   // copied from one site to the other as it is (so is content/routines.json, with this site's one session)
   test("library.json has Nitya Upasana's shape: the same parts, each text's entry the same fields", () => {
-    expect(Object.keys(lib)).toEqual(["texts", "pageLanguage", "languages", "refrain", "ui", "wiki"]);
+    expect(Object.keys(lib)).toEqual(["texts", "pageLanguage", "languages", "refrain", "outline", "ui", "wiki"]);
     for (const t of lib.texts) expect(Object.keys(t)).toEqual(["id", "file", "title", "titleEn", "category", "language", "lines"]);
   });
   test("every text's id, and so its file name, starts with its category", () => {

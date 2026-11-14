@@ -1165,3 +1165,62 @@ test("the bottom bar shows icons alone, each still named by its word @mobile", a
   // and the bar is no taller than its round Prev and Next buttons need
   expect(await page.locator("#asi").evaluate((e) => e.getBoundingClientRect().height)).toBeLessThanOrEqual(58);
 });
+
+// Go to (js/features/where.js, as in Nitya Upasana, Satish 2026-11-14): in a long text or a session the top bar's title says
+// where the reading is and opens a sheet of the places to go to, made from the text's own parts and a session's texts
+async function toLine(page, l) {
+  await page.evaluate((l) => {
+    const el = document.querySelector('.wrap > .ash [data-l="' + l + '"]');
+    scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.3);
+  }, l);
+  await page.waitForTimeout(400);
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await page.waitForTimeout(150);
+}
+
+test("Go to in the Atharvashirsha: its parts by number, one tap away; Back returns @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await readText(page, "p1");
+  await toLine(page, "p1l30");
+  await expect(page.locator("#where")).toBeVisible();
+  await expect(page.locator("#bt")).toBeHidden();
+  await expect(page.locator("#wh2")).toHaveText("२");
+  await page.locator("#where").click();
+  await expect(page.locator("#gtl .gt-go")).toHaveCount(5);
+  await expect(page.locator('#gtl [aria-current="location"]')).toHaveText(/२/);
+  await page.locator("#gtl .gt-go").nth(3).click();
+  await expect(page.locator("#wh2")).toHaveText("४");
+  await page.goBack();
+  await expect(page.locator("#wh2")).toHaveText("२");
+});
+
+test("Go to in a session: which text of how many, and the session's texts to go to @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page
+    .locator("a.tgo")
+    .nth(1)
+    .evaluate((a) => a.click());
+  await expect(page.locator("html")).toHaveAttribute("data-run", "1");
+  await page.evaluate(() => scrollBy(0, 300));
+  await page.waitForTimeout(300);
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#wh1")).toHaveText(/^[०-९]+ \/ [०-९]+ · /);
+  await page.locator("#where").click();
+  const rows = page.locator("#gtl .gt-go");
+  expect(await rows.count()).toBe(await page.locator("a.tgo").count());
+  // another text of the session: the page goes to it (its address), and the session goes on
+  const to = (await page.locator("a.tgo").last().getAttribute("href")).split("#")[1];
+  await rows.last().click();
+  await expect(page.locator("#goto")).toBeHidden();
+  await expect(page).toHaveURL(new RegExp("#" + to + "$"));
+  await expect(page.locator("html")).toHaveAttribute("data-run", "1");
+});
+
+test("a short aarti keeps the Home link as its title @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await readText(page, "a1");
+  await page.evaluate(() => scrollBy(0, 400));
+  await page.waitForTimeout(300);
+  await expect(page.locator("#where")).toBeHidden();
+  await expect(page.locator("#bt")).toHaveAttribute("href", "./");
+});
