@@ -2,7 +2,7 @@
 // keyboard-only use of every dialog, and accessible names that contain the visible label.
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { openSite, SETUPS, openMore, tapMore, tapPrint } from "./helpers.mjs";
+import { openSite, SETUPS, openMore, tapMore, tapPrint, readText } from "./helpers.mjs";
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
@@ -99,6 +99,25 @@ for (const [name, opener, dialog] of DIALOGS) {
     expect(missed, `controls Tab never reaches in ${name}`).toEqual([]);
   });
 }
+
+// As in Nitya Upasana (Satish 2026-11-14): a text read on its own keeps the page's one top heading (it was inside Home,
+// hidden with it), the links under a text are targets of 24px at least (WCAG 2.5.8), and Settings' A− and A+ stay 44px
+// wide on the narrowest phone
+test("a text read has the page's top heading, the links under it are 24px targets; A− and A+ 44px wide @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await readText(page, "p1");
+  await page.evaluate(() => scrollTo(0, document.scrollingElement.scrollHeight));
+  await page.waitForTimeout(300);
+  const r = await new AxeBuilder({ page }).withRules(["page-has-heading-one", "target-size"]).analyze();
+  expect(r.violations.map((v) => v.id)).toEqual([]);
+  const small = await page.evaluate(() =>
+    [...document.querySelectorAll(".cr a[href]")].filter((a) => a.getClientRects().length && a.getBoundingClientRect().height < 24).map((a) => a.textContent),
+  );
+  expect(small).toEqual([]);
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.locator("#aa").click();
+  for (const id of ["#sm", "#lg"]) expect((await page.locator(id).boundingBox()).width).toBeGreaterThanOrEqual(44);
+});
 
 test("keyboard: Escape closes Settings and returns focus to its button", async ({ page }) => {
   await openSite(page, SETUPS.marathi);

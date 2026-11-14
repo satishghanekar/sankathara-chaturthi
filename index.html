@@ -6,7 +6,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.14.0">
+<meta name="version" content="aarti-v1.15.0">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -314,6 +314,8 @@
 <nav id="rail" aria-label="Library"></nav>
 <!-- ==== Page: home, then every piece ==== -->
 <main class="wrap" id="main" tabindex="-1">
+  <!-- the page's one top heading, for screen readers: outside Home, so a text read on its own has it too -->
+  <h1 class="sr"><span data-w="page.sankatharaChaturthi">Sankathara Chaturthi</span></h1>
   <!-- ==== Home page ==== -->
   <section id="home" aria-label="Home">
     <div class="top">
@@ -333,7 +335,6 @@
       </div>
       <div id="skx"></div>
     </div>
-    <h1 class="sr"><span data-w="page.sankatharaChaturthi">Sankathara Chaturthi</span></h1>
     </div>
     <!-- The session's texts (js/features/session-card.js, from content/routines.json), as Nitya Upasana's Today card
          lists a session: each title goes to that text in the reading page. Morning | Afternoon | Evening (#tss, Nitya's

@@ -167,7 +167,7 @@
   var S = SCRIPTS[ind],
     /** @type {[any, string, string | null][]} [node, "", text] or [element, attribute, value]: what SCR.page() changed */
     OLD = [],
-    ROOTS = ".ash, #home .hl1, #home h1, #btt",
+    ROOTS = ".ash, #home .hl1, #main > h1, #btt",
     LATER = "#rail, #jl, #tsc"; // built by the site script (js/text/layout.js, js/features/contents-list.js, js/features/session-card.js) from the texts, already in the chosen script
   var SCR = {
     k: S ? ind : "", // "" while the text is shown as written
