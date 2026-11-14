@@ -161,6 +161,11 @@
 [data-rail="1"] {
   --ww: 60rem;
 }
+/* in two columns (a desktop, or the reader's choice) as wide as without the side list: at 60rem a 1080p monitor left a
+   third of the screen empty and squeezed both columns into 960px (Satish 2026-11-13) */
+[data-rail="1"][data-cols="2"] {
+  --ww: 76rem;
+}
 @media screen and (min-width: 1100px) {
   [data-rail="1"] {
     --W: min(var(--ww), calc(var(--vw, 100vw) - 340px));
