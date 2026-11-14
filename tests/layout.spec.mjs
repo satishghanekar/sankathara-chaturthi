@@ -101,7 +101,7 @@ for (const [name, width, height] of ROOM)
         const col = document.querySelector(where === "home" && !root.hasAttribute("data-rail") ? "#home" : "main.wrap");
         const w = col.getBoundingClientRect().width;
         const rem = parseFloat(getComputedStyle(root).fontSize) || 16;
-        const cap = (vw >= 1024 && innerHeight > vw ? 60 : vw >= 600 ? 46 : 34) * rem;
+        const cap = (vw >= 1024 ? 60 : vw >= 600 ? 46 : 34) * rem;
         const lines = [...document.querySelectorAll(".ash:not([hidden]) .verse p")].filter((p) => {
           const r = p.getBoundingClientRect();
           return r.height && r.bottom > 0 && r.top < innerHeight;
@@ -124,6 +124,27 @@ for (const [name, width, height] of ROOM)
     if (text.cols === "2") expect(text.broken, "stanza lines broken in two columns").toBe(0);
     await context.close();
   });
+
+// An iPad held sideways reads as it does upright (Satish 2026-11-14, as in Nitya Upasana): one column across the screen at
+// its own text size, no list beside the text; a computer the same size keeps the list
+test("an iPad held sideways reads as upright; a computer the same size keeps the list beside the text", async ({ browser, browserName }) => {
+  test.skip(browserName === "firefox", "Firefox has no touch emulation");
+  for (const touch of [true, false]) {
+    const context = await browser.newContext({ viewport: { width: 1180, height: 820 }, isMobile: touch, hasTouch: touch, serviceWorkers: "block" });
+    const page = await context.newPage();
+    await openSite(page, SETUPS.marathi);
+    await readText(page, "p1");
+    const m = await page.evaluate(() => ({
+      rail: document.documentElement.hasAttribute("data-rail"),
+      w: document.querySelector("main.wrap").getBoundingClientRect().width,
+    }));
+    if (touch) {
+      expect(m.rail, "no list beside the text on an iPad").toBe(false);
+      expect(m.w, "the column, 60rem").toBeGreaterThanOrEqual(959);
+    } else expect(m.rail, "the list beside the text on a computer").toBe(true);
+    await context.close();
+  }
+});
 
 // Satish, 2026-11-12 (mockup E): the top bar and the bottom bar are each one solid, rounded pill floating over the page
 // (css/16-floating-bars.css), their buttons without boxes; Prev and Next are round buttons of their own

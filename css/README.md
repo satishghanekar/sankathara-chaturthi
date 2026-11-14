@@ -66,9 +66,9 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(min-width: 760px) and (min-height: 521px)`, `(max-width: 759.98px)` | The print builder (as in Nitya Upasana): below, What and How one step at a time (Next and back); from 760px (iPads upright too) side by side, the list scrolling on its own. Settings: below, the tabs; from 760px (iPads upright and sideways, desktops) no tabs: the title beside Back and every group at once, in two columns (`.sp-c1`: the preview and the reading choices; `.sp-c2`: screen and about). A phone held sideways (at most 520px high) keeps the tabs (the 521px height) |
 | `(min-width: 820px)` | Tablets and up: two-column contents, wider spacing |
 | `(min-width: 600px) and (orientation: portrait)` | Tablets held upright, of every size: the Library in two columns (`13-library.css`, as in Nitya Upasana) |
-| `(min-width: 1024px) and (orientation: portrait)` | Large tablets held upright (the 13-inch iPad): the text 60rem wide (as in Nitya Upasana) |
+| `(min-width: 1024px)` | Without the side list (`:not([data-rail])`): large tablets upright (the 13-inch iPad), any iPad held sideways, monitors turned upright: the text 60rem wide (as in Nitya Upasana) |
 | `(min-width: 1024px) and (orientation: landscape)` | With the wide layout on (`data-rail`, 1100px and wider here): the Library's search box at the top, not the foot (`13-library.css`, as in Nitya Upasana) |
-| `(min-width: 1100px)` | Desktop: the left contents menu (`#rail`); the text beside it up to 60rem, or 76rem in two columns (`04-columns-rail.css`) |
+| `(min-width: 1100px)` | A computer: the left contents menu (`#rail`; not on a touch tablet, which reads sideways as upright, `js/features/bars.js`); the text beside it up to 60rem, or 76rem in two columns (`04-columns-rail.css`) |
 | `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers; Settings keeps the phone's tabs, with Reading's preview on the left beside its choices |
 
 The same test keeps the number of `!important` (47) and `:root:root` (11) from growing: they only win over earlier rules, and each new one makes the next change harder.
