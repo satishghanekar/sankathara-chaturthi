@@ -1216,6 +1216,43 @@ test("Go to in a session: which text of how many, and the session's texts to go 
   await expect(page.locator("html")).toHaveAttribute("data-run", "1");
 });
 
+test("with the bars tucked away, the pill at the top says where the reading is and opens Go to, from the top @mobile", async ({ page }) => {
+  // (as in Nitya Upasana, Satish 2026-11-14: the name in view while reading is the one to tap)
+  await openSite(page, SETUPS.marathi);
+  await readText(page, "p1");
+  await toLine(page, "p1l30");
+  await page.evaluate(() => document.documentElement.setAttribute("data-tuck", "1"));
+  const pill = page.locator("#tkb");
+  await expect(page.locator("#tkw")).toHaveText("२");
+  await expect(pill).toHaveAccessibleName(/^Go to: /);
+  const pb = await pill.boundingBox();
+  expect(pb.y).toBeGreaterThanOrEqual(10);
+  expect(pb.height).toBeGreaterThanOrEqual(44);
+  await pill.click();
+  await expect(page.locator("#goto")).toBeVisible();
+  const cb = await page.locator("#goto .rsc").boundingBox();
+  expect(cb.y).toBeLessThan(20);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#goto")).toBeHidden();
+  await expect(pill).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.hasAttribute("data-tuck"))).toBe(true);
+  await pill.click();
+  await page.locator("#gtl .gt-go").nth(3).click();
+  await expect(page.locator("#tkw")).toHaveText("४");
+});
+
+test("a short aarti's tucked pill is its name alone, and a tap on it brings the bars back @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await readText(page, "a1");
+  await page.evaluate(() => scrollBy(0, 400));
+  await page.waitForTimeout(300);
+  await page.evaluate(() => document.documentElement.setAttribute("data-tuck", "1"));
+  await expect(page.locator("#tkw")).toBeEmpty();
+  await expect(page.locator("#tkb svg")).toBeHidden();
+  await page.locator("#tkb").click();
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute("data-tuck"))).toBe(false);
+});
+
 test("a short aarti keeps the Home link as its title @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await readText(page, "a1");
