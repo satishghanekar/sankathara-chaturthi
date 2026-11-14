@@ -273,7 +273,9 @@ a.t {
   top: calc(8px + env(safe-area-inset-top));
 }
 #main:focus,
-h2[tabindex="-1"]:focus {
+h2[tabindex="-1"]:focus,
+/* (a line gone to, which flashes to show where it is) */
+.ash p[tabindex="-1"]:focus {
   outline: none;
 }
 

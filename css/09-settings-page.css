@@ -987,3 +987,7 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
     grid-column: 2;
   }
 }
+/* the text size's A− and A+ stay 44px wide on the narrowest phones too (they were 30px under 360px) */
+.sp .sp-sz button {
+  min-width: 44px;
+}

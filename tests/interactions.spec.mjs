@@ -1194,6 +1194,20 @@ test("Go to in the Atharvashirsha: its parts by number, one tap away; Back retur
   await expect(page.locator("#wh2")).toHaveText("२");
 });
 
+test("after Go to, focus is on the line gone to, and the tab names the text @mobile", async ({ page }) => {
+  // (as in Nitya Upasana, Satish 2026-11-14: a screen reader began again at the text's title after a jump)
+  await openSite(page, SETUPS.marathi);
+  await expect(page).toHaveTitle("Sankathara Chaturthi");
+  await readText(page, "p1");
+  await toLine(page, "p1l30");
+  await expect(page).toHaveTitle(/ · Sankathara Chaturthi$/);
+  await page.locator("#where").click();
+  const to = page.locator("#gtl .gt-go").nth(3);
+  const line = await to.getAttribute("data-line");
+  await to.click();
+  expect(await page.evaluate(() => document.activeElement.tagName + " " + document.activeElement.getAttribute("data-l"))).toBe("P " + line);
+});
+
 test("Go to in a session: which text of how many, and the session's texts to go to @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await page
