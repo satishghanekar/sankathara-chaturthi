@@ -6,12 +6,12 @@ vedic-chant-atharvashirsha
   part s0.p5: ५ / 5 @ p1l79
   14 verses: 1 … 14
 aarti-sukhkarta: none
-aarti-shendur-lal-chadhayo: none
-aarti-durge-durghat-bhari: none
-aarti-lavathavati-vikrala: none
-aarti-trigunatmak-traimurti: none
-aarti-dnyanaraja: none
-aarti-yei-o-vitthale: none
+aarti-shendur-laal-chadhayo: none
+aarti-devi: none
+aarti-shankar: none
+aarti-dattatreya: none
+aarti-dnyaneshwar: none
+aarti-vitthal: none
 aarti-ghalin-lotangan: none
 aarti-jai-ganesh-deva: none
 aarti-jai-jagdish-hare: none

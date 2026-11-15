@@ -128,12 +128,12 @@ Each piece is one file in `content/texts/`. Its `legacy-id` is the id of its `<s
 |---|---|---|
 | `vedic-chant-atharvashirsha.txt` | `p1` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
 | `aarti-sukhkarta.txt` | `a1` | Aarti 1. सुखकर्ता दुःखहर्ता |
-| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
-| `aarti-durge-durghat-bhari.txt` | `a3` | Aarti 3. देवीची आरती |
-| `aarti-lavathavati-vikrala.txt` | `a4` | Aarti 4. शंकराची आरती |
-| `aarti-trigunatmak-traimurti.txt` | `a5` | Aarti 5. दत्ताची आरती |
-| `aarti-dnyanaraja.txt` | `a6` | Aarti 6. ज्ञानेश्वरांची आरती |
-| `aarti-yei-o-vitthale.txt` | `a7` | Aarti 7. विठ्ठलाची आरती |
+| `aarti-shendur-laal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
+| `aarti-devi.txt` | `a3` | Aarti 3. देवीची आरती |
+| `aarti-shankar.txt` | `a4` | Aarti 4. शंकराची आरती |
+| `aarti-dattatreya.txt` | `a5` | Aarti 5. दत्ताची आरती |
+| `aarti-dnyaneshwar.txt` | `a6` | Aarti 6. ज्ञानेश्वरांची आरती |
+| `aarti-vitthal.txt` | `a7` | Aarti 7. विठ्ठलाची आरती |
 | `aarti-ghalin-lotangan.txt` | `a8` | Aarti 8. घालीन लोटांगण |
 | `aarti-jai-ganesh-deva.txt` | `a9` | Aarti 9. आरती जय गणेश देवा |
 | `aarti-jai-jagdish-hare.txt` | `a10` | Aarti 10. आरती जय जगदीश हरे |
