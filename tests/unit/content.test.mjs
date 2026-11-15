@@ -31,13 +31,15 @@ describe("CONTENT from the text files", () => {
   // (each [note] is now marked as one, nt, which the old file did not have: Ghalin Lotangan's ↻ ३ वेळा, and each piece
   // carries its text's id, text, as in Nitya Upasana. The Dnyaneshwar and Vitthal Aartis' entries follow their files
   // as written in Nitya Upasana, 2026-10-28)
-  // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's)
+  // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's; and a credit's link opens the person's
+  // Wikipedia page in the reader's language since 2026-11-15, so its words are compared, not where it goes:
+  // tests/unit/wiki.test.mjs checks the links)
+  const words = (html) => html.replace(/<a [^>]*>/g, "<a>");
   const SAME = {
     ui: C.ui,
-    wiki: C.wiki,
-    pieces: pieces(C).map(({ text, ...p }) => ({ ...p, credit: p.credit.replace(/<span class="rec".*$/, ""), items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
+    pieces: pieces(C).map(({ text, ...p }) => ({ ...p, credit: words(p.credit.replace(/<span class="rec".*$/, "")), items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
   };
-  const WAS = { ui: OLD.ui, wiki: OLD.wiki, pieces: pieces(OLD) };
+  const WAS = { ui: OLD.ui, pieces: pieces(OLD).map((p) => ({ ...p, credit: words(p.credit) })) };
   test("is identical to the old content/pieces.js: the same pieces, in the same order", () => {
     expect(SAME).toStrictEqual(WAS);
     // and in the same key order, so even the order the page meets things in is unchanged
@@ -116,7 +118,7 @@ describe("content checks", () => {
   test("library.json and site.json have Nitya Upasana's shape: the categories with their texts; what every text shares", () => {
     expect(Object.keys(LIBRARY)).toEqual(["categories"]);
     for (const c of LIBRARY.categories) expect(Object.keys(c)).toEqual(["id", "name", "texts"]);
-    expect(Object.keys(lib)).toEqual(["pageLanguage", "languages", "refrain", "outline", "ui", "wiki"]);
+    expect(Object.keys(lib)).toEqual(["pageLanguage", "languages", "refrain", "outline", "ui"]);
   });
   test("every text's id, and so its file name, starts with the category the library lists it in", () => {
     for (const t of TEXTS) expect(t.id.startsWith(t.category + "-"), t.id).toBe(true);

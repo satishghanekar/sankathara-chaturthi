@@ -416,4 +416,15 @@ export default {
     downloadedOne: "Calendar file downloaded; open it to add the event",
     downloadedAll: "Calendar file downloaded; open it to add the events",
   },
+  // Wikipedia, named for screen readers in this language, by the Wikipedia's language: a link's spoken name says which
+  // one it opens (js/core/wiki.js wikiLabel)
+  wiki: {
+    mr: "Marathi Wikipedia",
+    hi: "Hindi Wikipedia",
+    en: "Wikipedia",
+    kn: "Kannada Wikipedia",
+    te: "Telugu Wikipedia",
+    gu: "Gujarati Wikipedia",
+    tab: "opens in a new tab",
+  },
 };

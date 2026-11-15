@@ -402,4 +402,14 @@ export default {
     downloadedOne: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",
     downloadedAll: "कॅलेंडर फाइल डाउनलोड झाली; ती उघडा",
   },
+  // Wikipedia, named for screen readers (js/core/wiki.js wikiLabel)
+  wiki: {
+    mr: "विकिपीडिया",
+    hi: "हिंदी विकिपीडिया",
+    en: "इंग्रजी विकिपीडिया",
+    kn: "कन्नड विकिपीडिया",
+    te: "तेलुगू विकिपीडिया",
+    gu: "गुजराती विकिपीडिया",
+    tab: "नवीन टॅबमध्ये उघडेल",
+  },
 };

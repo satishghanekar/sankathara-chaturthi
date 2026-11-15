@@ -44,6 +44,7 @@ var SITE_PARTS = (function () {
     "strings/te",
     "strings/gu",
     "core/strings",
+    "core/wiki",
     "store/migrate",
     "core/features",
     "text/iast",
@@ -95,6 +96,7 @@ var SITE_PARTS = (function () {
   var content = [
     "library.json",
     "site.json",
+    "wiki.json",
     "routines.json",
     "texts/vedic-chant-atharvashirsha.txt",
     "texts/aarti-sukhkarta.txt",

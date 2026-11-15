@@ -29,6 +29,7 @@ What a reader sees and can do is described in the site's own **Help** (Share in 
 | `js/main.js` and `js/core/`, `js/text/`, `js/features/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
 | `content/texts/` | The texts, one plain-text file each (`aarti-sukhkarta.txt`, …): each line in Marathi/Hindi/Sanskrit with its everyday English line under it, the title and the author line. **Edit the texts here** (see *How to add a text*). |
 | `content/library.json`, `content/site.json` | The library: the categories (Vedic Chant, Aarti, Stotra, Ashtak), each with its texts' ids in reading order; and what every text shares (language names, the dhrupad label). Everything about a text is in its own file. Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
+| `content/wiki.json` | Written by `npm run wiki` (in `tests/`), never by hand, as in Nitya Upasana: each page a credit links to, by the name the links use, with its Wikidata item and its title on each Wikipedia the site opens. The site never asks Wikipedia anything itself. |
 | `content/routines.json` | The routine Home lists, written as in Nitya Upasana: `{"evening": {"mode": "fixed", "texts": […]}}` (and `morning`, `afternoon` when they have texts; a session with none is not shown). A session is read in the order it lists its texts, which may differ from the Library's (the checks hold it to texts of the Library, each once). The reading page's sections (वैदिक मंत्र, आरती), their order and the piece numbers come from `content/library.json`, as in Nitya Upasana. |
 | `js/text/format.js`, `js/text/content.js`, `js/text/load.js` | Read the text files, turn them into the pieces' data and put them into the page when it opens. |
 | `js/render.js` | Builds each piece's HTML from that data. |
@@ -152,8 +153,8 @@ language: mr
 legacy-id: a1
 line-ids: s1l
 refrain: every-verse
-credit: रचना : [समर्थ रामदास](https://mr.wikipedia.org/wiki/सुखकर्ता_दुःखहर्ता) (१६०८–१६८२)
-credit-en: By [Samarth Ramdas](https://en.wikipedia.org/wiki/Sukhakarta_Dukhaharta) (1608–1682)
+credit: रचना : [समर्थ रामदास](wiki:Samarth_Ramdas) (१६०८–१६८२)
+credit-en: By [Samarth Ramdas](wiki:Samarth_Ramdas) (1608–1682)
 ---
 [dhrupad]
 जय देव जय देव, जय मंगल मूर्ती ।
@@ -180,8 +181,8 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 | `refrain-before-first` | `yes` when the dhrupad is also sung before the first stanza (Vitthal Aarti, Jai Ganesh Deva). |
 | `layout` | `prose` prints the text as running paragraphs, like a booklet (the Atharvashirsha). `lines` sets a Vedic chant line by line, as its booklet does, on screen and paper; a long verse reference (॥ ९.००१.०६ ॥) shows on a phone as just the verse (॥ ६ ॥). |
 | `part-name` | What the text's parts (its `[para]` blocks) are called, in both languages (`अनुवाकः | Anuvaka`), for Go to: the top bar's title in a long text names them so, counted from 1 under each heading. Without it a part is named by the reference its first verse ends with, or by its number. As in Nitya Upasana. |
-| `credit`, `credit-en` | The author line in each language. `[name](address)` becomes a Wikipedia link that opens in a new tab, with its ↗. |
-| `credit-note`, `credit-note-en` | A second, smaller author line (Vitthal Aarti: "also credited to Sant Namdev"). |
+| `credit`, `credit-en` | The author line in each language, as in Nitya Upasana. `[name](wiki:Samarth_Ramdas)` links the name to the person's Wikipedia page (or, for a source, the source's), named by its English Wikipedia page as in its address (`wiki:Q…`, its Wikidata item, where that can't be used); both lines name the same pages. The page opens in the reader's own Wikipedia where there is one (Marathi, then Hindi, then English; in Kannada, Telugu or Gujarati letters, that language's first), else the nearest, in a new tab with its ↗. Run `npm run wiki` (in `tests/`) after adding or changing a link: it writes each page's Wikidata item and its titles into `content/wiki.json`. |
+| `credit-note`, `credit-note-en` | A second, smaller author line (Vitthal Aarti: "also credited to Sant Namdev"), its links written the same way. |
 | `recording` | A recording to hear, YouTube only, shown under the credit: `[who](https://www.youtube.com/watch?v=…&t=90)`, with `&t=` and the second the text starts at when that is not at once; two or more separated by `, `. Link only a recording checked against the text (as in Nitya Upasana). |
 
 **The blocks**, after `---`, separated by one blank line. Each starts with its name in brackets, then its lines, **always in pairs: the original line, then its everyday English line**. An English line where the original belongs (or the other way round) stops the text from loading, and the test names the file and line.
