@@ -456,7 +456,7 @@ sva̱sti no̱ bṛha̱spati̍rdadhātu ||
 Sukhakartā Duḥkhahartā
 ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)Refrain (sung after every verse)
 
-जय देव जय देव, जय मंगल मूर्ती ।
+जय देव जय देव, ​जय मंगल मूर्ती ।
 
 दर्शनमात्रे मनःकामना पूर्ती ।
 
@@ -468,7 +468,7 @@ darśanamātre manaḥkāmanā pūrtī |
 
 jaya deva jaya deva || dhṛ. ||
 
-सुखकर्ता दुःखहर्ता, वार्ता विघ्नाची ।
+सुखकर्ता दुःखहर्ता, ​वार्ता विघ्नाची ।
 
 नुरवी पुरवी प्रेम कृपा जयाची ।
 
@@ -862,57 +862,57 @@ Jñāneśvarāṃcī Āratī
 āratī jñānarājā || dhṛ. ||
 
 आरती ज्ञानराजा ।​
-हो महाकैवल्यतेजा, कैवल्यतेजा ।
+हो महाकैवल्यतेजा, ​कैवल्यतेजा ।
 
 सेविती साधुसंत ।​
-हो मनु वेधला माझा, वेधला माझा ॥ १ ॥
+हो मनु वेधला माझा, ​वेधला माझा ॥ १ ॥
 
-āratī jñānarājā |​
+āratī jñānarājā |
 ho mahākaivalyatejā, kaivalyatejā |
 
-sevitī sādhusanta |​
+sevitī sādhusanta |
 ho manu vedhalā mājhā, vedhalā mājhā || 1 ||
 
 ↻ ध्रुपदRefrain
 
 लोपलें ज्ञान जगीं ।​
-हित नेणती कोणी, नेणती कोणी ।
+हित नेणती कोणी, ​नेणती कोणी ।
 
 अवतार पांडुरंग ।​
-नाम ठेविलें ज्ञानी, ठेविलें ज्ञानी ॥ २ ॥
+नाम ठेविलें ज्ञानी, ​ठेविलें ज्ञानी ॥ २ ॥
 
-lopaleṃ jñāna jagīṃ |​
+lopaleṃ jñāna jagīṃ |
 hita neṇatī koṇī, neṇatī koṇī |
 
-avatāra pāṇḍuraṅga |​
+avatāra pāṇḍuraṅga |
 nāma ṭhevileṃ jñānī, ṭhevileṃ jñānī || 2 ||
 
 ↻ ध्रुपदRefrain
 
 कनकाचें ताट करीं ।​
-उभ्या गोपिका नारी, गोपिका नारी ।
+उभ्या गोपिका नारी, ​गोपिका नारी ।
 
 नारद तुंबरु हो ।​
-साम गायन करी, गायन करी ॥ ३ ॥
+साम गायन करी, ​गायन करी ॥ ३ ॥
 
-kanakāceṃ tāṭa karīṃ |​
+kanakāceṃ tāṭa karīṃ |
 ubhyā gopikā nārī, gopikā nārī |
 
-nārada tumbaru ho |​
+nārada tumbaru ho |
 sāma gāyana karī, gāyana karī || 3 ||
 
 ↻ ध्रुपदRefrain
 
 प्रगट गुह्य बोले ।​
-विश्व ब्रह्मची केलें, ब्रह्मची केलें ।
+विश्व ब्रह्मची केलें, ​ब्रह्मची केलें ।
 
 रामा जनार्दनी ।​
-पायीं मस्तक ठेविलें, मस्तक ठेविलें ॥ ४ ॥
+पायीं मस्तक ठेविलें, ​मस्तक ठेविलें ॥ ४ ॥
 
-pragaṭa guhya bole |​
+pragaṭa guhya bole |
 viśva brahmacī keleṃ, brahmacī keleṃ |
 
-rāmā janārdanī |​
+rāmā janārdanī |
 pāyīṃ mastaka ṭhevileṃ, mastaka ṭhevileṃ || 4 ||
 
 ↻ ध्रुपदRefrain
@@ -927,7 +927,7 @@ Viṭhṭhalācī Āratī
 येई ओ विठ्ठले माझी माऊली ये ।​
 येई ओ विठ्ठले माझी माऊली ये ॥ धृ. ॥
 
-yeī o viṭhṭhale mājhī māūlī ye |​
+yeī o viṭhṭhale mājhī māūlī ye |
 yeī o viṭhṭhale mājhī māūlī ye || dhṛ. ||
 
 ↻ ध्रुपदRefrain
@@ -936,7 +936,7 @@ yeī o viṭhṭhale mājhī māūlī ye || dhṛ. ||
 
 हो देवा वाट मी पाहे ॥ १ ॥
 
-niḍhaḷāvarī kara, ​niḍhaḷāvarī kara ṭhevunī vāṭa mī pāhe |
+niḍhaḷāvarī kara, niḍhaḷāvarī kara ṭhevunī vāṭa mī pāhe |
 
 ho devā vāṭa mī pāhe || 1 ||
 
@@ -954,7 +954,7 @@ ho devā vāṭa mī pāhe || 1 ||
 
 āliyā gelīyā hātīṃ dhāḍī niropa |
 
-paṇḍharapurī āhe, ​paṇḍharapurī āhe mājhā māyabāpa |
+paṇḍharapurī āhe, paṇḍharapurī āhe mājhā māyabāpa |
 
 ho mājhā māyabāpa || 2 ||
 
@@ -972,7 +972,7 @@ pivaḷā pītāmbara kaisā gaganī jhaḷakalā |
 
 pivaḷā pītāmbara kaisā gaganī jhaḷakalā |
 
-garuḍāvarī baisonī, ​garuḍāvarī baisonī mājhā kaivārī ālā |
+garuḍāvarī baisonī, garuḍāvarī baisonī mājhā kaivārī ālā |
 
 ho mājhā kaivārī ālā || 3 ||
 
@@ -990,7 +990,7 @@ viṭhobāce rāja āmhāṃ nitya dipavāḷī |
 
 viṭhobāce rāja āmhāṃ nitya dipavāḷī |
 
-viṣṇudāsa nāmā, ​viṣṇudāsa nāmā jīvebhāve ovāḷī |
+viṣṇudāsa nāmā, viṣṇudāsa nāmā jīvebhāve ovāḷī |
 
 ho jīvebhāve ovāḷī || 4 ||
 
@@ -1041,10 +1041,10 @@ tvameva sarvaṃ mama devadeva || 2 ||
 करोमि यद्यत्सकलं परस्मै ।​
 नारायणायेति समर्पयामि ॥ ३ ॥
 
-kāyena vācā manasendriyairvā |​
+kāyena vācā manasendriyairvā |
 buddhyātmanā vā prakṛtisvabhāvāt |
 
-karomi yadyatsakalaṃ parasmai |​
+karomi yadyatsakalaṃ parasmai |
 nārāyaṇāyeti samarpayāmi || 3 ||
 
 अच्युतं केशवं रामनारायणं ।​
@@ -1053,10 +1053,10 @@ nārāyaṇāyeti samarpayāmi || 3 ||
 श्रीधरं माधवं गोपिकावल्लभं ।​
 जानकीनायकं रामचंद्रं भजे ॥ ४ ॥
 
-acyutaṃ keśavaṃ rāmanārāyaṇaṃ |​
+acyutaṃ keśavaṃ rāmanārāyaṇaṃ |
 kṛṣṇadāmodaraṃ vāsudevaṃ harim |
 
-śrīdharaṃ mādhavaṃ gopikāvallabhaṃ |​
+śrīdharaṃ mādhavaṃ gopikāvallabhaṃ |
 jānakīnāyakaṃ rāmacandraṃ bhaje || 4 ||
 
 हरे राम हरे रामराम राम हरे हरे ।
@@ -1076,9 +1076,9 @@ hare kṛṣṇa hare kṛṣṇakṛṣṇa kṛṣṇa hare hare ||
 Āratī Jaya Gaṇeśa Devā
 ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)Refrain (sung after every verse)
 
-जय गणेश जय गणेश, जय गणेश देवा ।
+जय गणेश जय गणेश, ​जय गणेश देवा ।
 
-माता जाकी पार्वती, पिता महादेवा ॥
+माता जाकी पार्वती, ​पिता महादेवा ॥
 
 jaya gaṇeśa jaya gaṇeśa, jaya gaṇeśa devā |
 
@@ -1086,13 +1086,13 @@ mātā jākī pārvatī, pitā mahādevā ||
 
 ↻ ध्रुपदRefrain
 
-एकदंत दयावंत, चार भुजा धारी ।
+एकदंत दयावंत, ​चार भुजा धारी ।
 
-माथे सिंदूर सोहे, मूसे की सवारी ॥
+माथे सिंदूर सोहे, ​मूसे की सवारी ॥
 
-पान चढ़े फूल चढ़े, और चढ़े मेवा ।
+पान चढ़े फूल चढ़े, ​और चढ़े मेवा ।
 
-लड्डुअन का भोग लगे, संत करें सेवा ॥ १ ॥
+लड्डुअन का भोग लगे, ​संत करें सेवा ॥ १ ॥
 
 ekadanta dayāvanta, cāra bhujā dhārī |
 
@@ -1104,13 +1104,13 @@ laḍḍuana kā bhoga lage, santa kareṃ sevā || 1 ||
 
 ↻ ध्रुपदRefrain
 
-अंधे को आँख देत, कोढ़ी को काया ।
+अंधे को आँख देत, ​कोढ़ी को काया ।
 
-बाँझन को पुत्र देत, निर्धन को माया ॥
+बाँझन को पुत्र देत, ​निर्धन को माया ॥
 
-सूर श्याम शरण आए, सफल कीजे सेवा ।
+सूर श्याम शरण आए, ​सफल कीजे सेवा ।
 
-माता जाकी पार्वती, पिता महादेवा ॥ २ ॥
+माता जाकी पार्वती, ​पिता महादेवा ॥ २ ॥
 
 andhe ko ām̐kha deta, koṛhī ko kāyā |
 
@@ -1130,109 +1130,109 @@ mātā jākī pārvatī, pitā mahādevā || 2 ||
 
 ॐ जय जगदीश हरे, ​स्वामी जय जगदीश हरे ।
 
-भक्तजनों के संकट, ​दासजनों के संकट, क्षण में दूर करे ।
+भक्तजनों के संकट, ​दासजनों के संकट, ​क्षण में दूर करे ।
 
 ॐ जय जगदीश हरे ॥
 
-om̐ jaya jagadīśa hare, ​svāmī jaya jagadīśa hare |
+om̐ jaya jagadīśa hare, svāmī jaya jagadīśa hare |
 
-bhaktajanoṃ ke saṅkaṭa, ​dāsajanoṃ ke saṅkaṭa, kṣaṇa meṃ dūra kare |
+bhaktajanoṃ ke saṅkaṭa, dāsajanoṃ ke saṅkaṭa, kṣaṇa meṃ dūra kare |
 
 om̐ jaya jagadīśa hare ||
 
-जो ध्यावे फल पावे, दुःख बिनसे मन का, ​स्वामी दुःख बिनसे मन का ।
+जो ध्यावे फल पावे, ​दुःख बिनसे मन का, ​स्वामी दुःख बिनसे मन का ।
 
-सुख सम्पति घर आवे, ​सुख सम्पति घर आवे, कष्ट मिटे तन का ।
+सुख सम्पति घर आवे, ​सुख सम्पति घर आवे, ​कष्ट मिटे तन का ।
 
 ॐ जय जगदीश हरे ॥ १ ॥
 
-jo dhyāve phala pāve, duḥkha binase mana kā, ​svāmī duḥkha binase mana kā |
+jo dhyāve phala pāve, duḥkha binase mana kā, svāmī duḥkha binase mana kā |
 
-sukha sampati ghara āve, ​sukha sampati ghara āve, kaṣṭa miṭe tana kā |
+sukha sampati ghara āve, sukha sampati ghara āve, kaṣṭa miṭe tana kā |
 
 om̐ jaya jagadīśa hare || 1 ||
 
-मातपिता तुम मेरे, शरण गहूँ किसकी, ​स्वामी शरण गहूँ किसकी ।
+मातपिता तुम मेरे, ​शरण गहूँ किसकी, ​स्वामी शरण गहूँ किसकी ।
 
-तुम बिन और न दूजा, ​प्रभु बिन और न दूजा, आस करूँ जिसकी ।
+तुम बिन और न दूजा, ​प्रभु बिन और न दूजा, ​आस करूँ जिसकी ।
 
 ॐ जय जगदीश हरे ॥ २ ॥
 
-mātapitā tuma mere, śaraṇa gahūm̐ kisakī, ​svāmī śaraṇa gahūm̐ kisakī |
+mātapitā tuma mere, śaraṇa gahūm̐ kisakī, svāmī śaraṇa gahūm̐ kisakī |
 
-tuma bina aura na dūjā, ​prabhu bina aura na dūjā, āsa karūm̐ jisakī |
+tuma bina aura na dūjā, prabhu bina aura na dūjā, āsa karūm̐ jisakī |
 
 om̐ jaya jagadīśa hare || 2 ||
 
-तुम पूरण परमात्मा, ​तुम अन्तर्यामी, स्वामी तुम अन्तर्यामी ।
+तुम पूरण परमात्मा, ​तुम अन्तर्यामी, ​स्वामी तुम अन्तर्यामी ।
 
-पार ब्रह्म परमेश्वर, ​पार ब्रह्म परमेश्वर, तुम सबके स्वामी ।
+पार ब्रह्म परमेश्वर, ​पार ब्रह्म परमेश्वर, ​तुम सबके स्वामी ।
 
 ॐ जय जगदीश हरे ॥ ३ ॥
 
-tuma pūraṇa paramātmā, ​tuma antaryāmī, svāmī tuma antaryāmī |
+tuma pūraṇa paramātmā, tuma antaryāmī, svāmī tuma antaryāmī |
 
-pāra brahma parameśvara, ​pāra brahma parameśvara, tuma sabake svāmī |
+pāra brahma parameśvara, pāra brahma parameśvara, tuma sabake svāmī |
 
 om̐ jaya jagadīśa hare || 3 ||
 
-तुम करुणा के सागर, तुम पालन कर्ता, ​स्वामी तुम पालन कर्ता ।
+तुम करुणा के सागर, ​तुम पालन कर्ता, ​स्वामी तुम पालन कर्ता ।
 
-मैं मूरख खल कामी, ​मैं सेवक तुम स्वामी, कृपा करो भर्ता ।
+मैं मूरख खल कामी, ​मैं सेवक तुम स्वामी, ​कृपा करो भर्ता ।
 
 ॐ जय जगदीश हरे ॥ ४ ॥
 
-tuma karuṇā ke sāgara, tuma pālana kartā, ​svāmī tuma pālana kartā |
+tuma karuṇā ke sāgara, tuma pālana kartā, svāmī tuma pālana kartā |
 
-maiṃ mūrakha khala kāmī, ​maiṃ sevaka tuma svāmī, kṛpā karo bhartā |
+maiṃ mūrakha khala kāmī, maiṃ sevaka tuma svāmī, kṛpā karo bhartā |
 
 om̐ jaya jagadīśa hare || 4 ||
 
-तुम हो एक अगोचर, सबके प्राणपति, ​स्वामी सबके प्राणपति ।
+तुम हो एक अगोचर, ​सबके प्राणपति, ​स्वामी सबके प्राणपति ।
 
-किस विधि मिलूँ दयामय, ​किस विधि मिलूँ दयामय, तुमको मैं कुमति ।
+किस विधि मिलूँ दयामय, ​किस विधि मिलूँ दयामय, ​तुमको मैं कुमति ।
 
 ॐ जय जगदीश हरे ॥ ५ ॥
 
-tuma ho eka agocara, sabake prāṇapati, ​svāmī sabake prāṇapati |
+tuma ho eka agocara, sabake prāṇapati, svāmī sabake prāṇapati |
 
-kisa vidhi milūm̐ dayāmaya, ​kisa vidhi milūm̐ dayāmaya, tumako maiṃ kumati |
+kisa vidhi milūm̐ dayāmaya, kisa vidhi milūm̐ dayāmaya, tumako maiṃ kumati |
 
 om̐ jaya jagadīśa hare || 5 ||
 
-दीनबन्धु दुःख हर्ता, तुम रक्षक मेरे, ​स्वामी तुम रक्षक मेरे ।
+दीनबन्धु दुःख हर्ता, ​तुम रक्षक मेरे, ​स्वामी तुम रक्षक मेरे ।
 
-अपने हाथ उठाओ, अपने शरण लगाओ, ​द्वार पड़ा तेरे ।
+अपने हाथ उठाओ, ​अपने शरण लगाओ, ​द्वार पड़ा तेरे ।
 
 ॐ जय जगदीश हरे ॥ ६ ॥
 
-dīnabandhu duḥkha hartā, tuma rakṣaka mere, ​svāmī tuma rakṣaka mere |
+dīnabandhu duḥkha hartā, tuma rakṣaka mere, svāmī tuma rakṣaka mere |
 
-apane hātha uṭhāo, apane śaraṇa lagāo, ​dvāra paṛā tere |
+apane hātha uṭhāo, apane śaraṇa lagāo, dvāra paṛā tere |
 
 om̐ jaya jagadīśa hare || 6 ||
 
-विषय विकार मिटाओ, पाप हरो देवा, ​स्वामी पाप हरो देवा ।
+विषय विकार मिटाओ, ​पाप हरो देवा, ​स्वामी पाप हरो देवा ।
 
-श्रद्धा भक्ति बढ़ाओ, ​श्रद्धा प्रेम बढ़ाओ, सन्तन की सेवा ।
+श्रद्धा भक्ति बढ़ाओ, ​श्रद्धा प्रेम बढ़ाओ, ​सन्तन की सेवा ।
 
 ॐ जय जगदीश हरे ॥ ७ ॥
 
-viṣaya vikāra miṭāo, pāpa haro devā, ​svāmī pāpa haro devā |
+viṣaya vikāra miṭāo, pāpa haro devā, svāmī pāpa haro devā |
 
-śraddhā bhakti baṛhāo, ​śraddhā prema baṛhāo, santana kī sevā |
+śraddhā bhakti baṛhāo, śraddhā prema baṛhāo, santana kī sevā |
 
 om̐ jaya jagadīśa hare || 7 ||
 
 तन मन धन सब है तेरा, ​स्वामी सब कुछ है तेरा ।
 
-तेरा तुझको अर्पण, ​तेरा तुझको अर्पण, क्या लागे मेरा ।
+तेरा तुझको अर्पण, ​तेरा तुझको अर्पण, ​क्या लागे मेरा ।
 
 ॐ जय जगदीश हरे ॥ ८ ॥
 
-tana mana dhana saba hai terā, ​svāmī saba kucha hai terā |
+tana mana dhana saba hai terā, svāmī saba kucha hai terā |
 
-terā tujhako arpaṇa, ​terā tujhako arpaṇa, kyā lāge merā |
+terā tujhako arpaṇa, terā tujhako arpaṇa, kyā lāge merā |
 
 om̐ jaya jagadīśa hare || 8 ||
 
@@ -1242,9 +1242,9 @@ om̐ jaya jagadīśa hare || 8 ||
 
 ॐ जय जगदीश हरे ॥ ९ ॥
 
-śrī jagadīśajī kī āratī jo koī nara gāve, ​svāmī jo koī nara gāve |
+śrī jagadīśajī kī āratī jo koī nara gāve, svāmī jo koī nara gāve |
 
-kahata śivānanda svāmī, ​mana vāñchita phala pāve |
+kahata śivānanda svāmī, mana vāñchita phala pāve |
 
 om̐ jaya jagadīśa hare || 9 ||
 
