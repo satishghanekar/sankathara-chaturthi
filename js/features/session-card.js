@@ -41,7 +41,7 @@ var run = null;
 var sec = {};
 /** @type {Record<string, string>} and back: a section's text */
 var bySec = {};
-/** @type {Record<string, import("../text/content.js").LibraryText>} */
+/** @type {Record<string, import("../text/content.js").TextFacts>} */
 var t = {};
 /** @type {Record<Session, string[]>} each session's texts today, those in the Library */
 var lists = /** @type {any} */ ({});
@@ -60,7 +60,7 @@ function code(l) {
 }
 
 /** A text's title in a reading language: the original in its letters, or English plain or scholarly (IAST)
- * @param {import("../text/content.js").LibraryText} x @param {"mr" | "en"} l */
+ * @param {import("../text/content.js").TextFacts} x @param {"mr" | "en"} l */
 function titleIn(x, l) {
   return l === "mr" ? scr(x.title) : P.tr === "iast" ? iaTitle(x.title) : x.titleEn;
 }
@@ -79,11 +79,10 @@ export function sessionLang() {
 
 export function init() {
   var sc = document.getElementById("tsc"),
-    tabs = document.getElementById("tss"),
-    lib = loaded.library;
+    tabs = document.getElementById("tss");
   /** @type {any} */
   var C = /** @type {any} */ (window).CONTENT;
-  if (!sc || !lib || !C) return;
+  if (!sc || !C) return;
   // each text's section on the page (a1, p1): Nitya Upasana's content.js keeps the text's id beside it
   sec = {};
   bySec = {};
@@ -93,10 +92,8 @@ export function init() {
       bySec[p.id] = p.text;
     });
   });
-  t = {};
-  lib.texts.forEach(function (x) {
-    t[x.id] = x;
-  });
+  // each text's facts, from its own file (CONTENT.texts)
+  t = C.texts;
   /** a session's texts today, those in the Library @param {Session} s */
   function idsFor(s) {
     return textsFor(loaded.routine, new Date().getDay(), s).filter(function (id) {
@@ -191,7 +188,7 @@ function draw() {
     ls = langs(),
     w = menuWords("session"),
     tabs = document.getElementById("tss"),
-    names = /** @type {any} */ (loaded.library).languages,
+    names = /** @type {any} */ (window).CONTENT.languages,
     sc = document.getElementById("tsc");
   drawn = drawnFor();
   // the menu language for the words around the titles (screen readers pick the voice from lang)

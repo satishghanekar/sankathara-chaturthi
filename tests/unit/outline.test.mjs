@@ -1,13 +1,9 @@
 // Go to's outline (js/text/outline.js): every text's places, kept as a snapshot so a change in a text's structure shows
 // in review; and where a position is, the verse a reader types, a session's places.
 import { describe, expect, test } from "vitest";
-import { readFileSync } from "node:fs";
-import { buildContent } from "../../js/text/content.js";
+import { CONTENT as C } from "../content-files.mjs";
 import { outline } from "../../js/text/outline.js";
 
-const read = (p) => readFileSync(new URL("../../" + p, import.meta.url), "utf8");
-const lib = JSON.parse(read("content/library.json"));
-const C = buildContent(lib, Object.fromEntries(lib.texts.map((t) => [t.id, read("content/" + t.file)])), JSON.parse(read("content/categories.json")));
 const pieces = C.categories.flatMap((c) => c.pieces);
 const piece = (id) => pieces.find((p) => p.text === id);
 const of = (id) => outline(piece(id), C.outline);

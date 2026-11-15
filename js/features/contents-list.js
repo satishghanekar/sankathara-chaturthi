@@ -7,7 +7,6 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { setJ } from "./overlays.js";
-import { loaded } from "../text/load.js";
 import { dv, esc, scr as to } from "../core/words.js";
 
 /** The list of texts; search hides it while results are shown */
@@ -43,21 +42,17 @@ export function init() {
 
 // ---- the Library's list (#jl): one .tocg per section, the markup the styles read (as Nitya Upasana's) ----
 function listHtml() {
-  var C = content(),
-    lib = /** @type {any} */ (loaded.library),
-    langs = (lib && lib.languages) || {},
-    /** @type {Record<string, string>} */
-    langOf = {};
+  var C = content();
   if (!C) return "";
-  ((lib && lib.texts) || []).forEach(function (/** @type {any} */ t) {
-    langOf[t.id] = t.language;
-  });
+  // each text's language from its own file (CONTENT.texts), named from content/site.json (CONTENT.languages)
+  var langs = C.languages || {};
   return C.categories
     .map(function (/** @type {any} */ c) {
       // numbered from 1 in each section, as in Nitya Upasana
       var items = c.pieces
         .map(function (/** @type {any} */ p, /** @type {number} */ i) {
-          var lt = langs[langOf[p.text] || ""];
+          var f = C.texts[p.text],
+            lt = langs[(f && f.language) || ""];
           return (
             '<li><a href="./#' +
             p.id +
