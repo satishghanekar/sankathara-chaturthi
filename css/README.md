@@ -23,7 +23,7 @@ Each file starts with a comment that lists its sections. Every section begins wi
 | `05-home-card.css` | The home page "paper sheet", the next Sankashti card, the offline cloud, the lotus ornament and the dhrupad markers. |
 | `06-help-polish.css` | Help, the review rounds after 1.0, folding the Ganesha card, and folding the Pooja / Aarti sections. |
 | `07-bottom-bar-folds.css` | Bottom bar, bars tucking away while reading (the pill left at the top, `#tuck`, `#tkb`, saying where the reading is in a long text and opening Go to, whose card drops from the top), folding each piece, fold headings, bigger tap areas, the home card in one piece (the picture in its countdown ring; beside it the date, the month line, the moonrise and the place; the foot with Add all while More dates is open; the dates in a strip on phones, a row a year from 600px and beside the card from 1100px; its last rules) and the reading sheet (Aa).; Go to: the top bar's title as a button saying where the reading is (`#where`) and its sheet (`#goto`, sharing the reading sheet's card), as in Nitya Upasana |
-| `08-contents-book.css` | Author lines, and Both languages with English first. |
+| `08-contents-book.css` | Author lines, Both languages with English first, and a two-language heading's lines each centred in its card. |
 | `09-settings-page.css` | The Settings page and Kannada, Telugu and Gujarati letters (each script's faces as `--ks`, `--kf`: Noto Sans in Modern, Tiro in Traditional, Noto Serif in Bold).; About's version line (`#upr`: the state under the version, the round button `#upd` with an icon for each state, `.vli`) and Finish the update (`#upm`: a sheet at the foot on phones, a card from 760px); About under the two columns, across both (`.sp-abt`); the preview's lines in the middle of their window; on a phone held sideways a row's label beside its choices on Screen and More; a fade under Back and the tabs as the cards scroll under (`.sp-hd::after`) |
 | `10-today.css` | As in Nitya Upasana's file of the same name, the parts this site has: Home's Morning \| Afternoon \| Evening switch (`#tss`), a session being read (`data-run`) and one text at a time (`.solo`), the bottom bar on Home (`data-home`), and the Library page (`#jump`). |
 | `13-library.css` | As in Nitya Upasana's: the search results' groups, the search box at the foot of the Library on phones (`#qbar`), Recent, and the list following the text size. The rest of the Library's look sits in the same files as Nitya's (02, 03, 06, 07, 08, 10, 99). |
@@ -57,7 +57,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 
 | Query | What changes |
 |---|---|
-| `(max-width: 359px)` | The smallest phones: Settings tightens; the top bar shows the picture without the app's name |
+| `(max-width: 359px)` | The smallest phones: Settings tightens; the top bar shows the picture without the app's name; the bottom bar's Home, Library and Reading are icons alone |
 | `(max-width: 379px)` | Narrow phones: the Print pop-up's hints a step smaller, so each keeps to one line (as in Nitya Upasana) |
 | `(max-width: 399px)` | Phones up to 399px: the bottom bar shows only the arrows of Prev and Next (as in Nitya Upasana) |
 | `(max-width: 439px)` | Phones: the bottom bar's five buttons (Prev, Home, Library, Reading, Next) close their gaps (as in Nitya Upasana); the Print pop-up's font tiles a little narrower at the sides |
@@ -69,7 +69,7 @@ These are the only screen sizes the styles switch at. A test (`tests/edge.spec.m
 | `(min-width: 1024px)` | Without the side list (`:not([data-rail])`): large tablets upright (the 13-inch iPad), any iPad held sideways, monitors turned upright: the text 60rem wide (as in Nitya Upasana) |
 | `(min-width: 1024px) and (orientation: landscape)` | With the wide layout on (`data-rail`, 1100px and wider here): the Library's search box at the top, not the foot (`13-library.css`, as in Nitya Upasana) |
 | `(min-width: 1100px)` | A computer: the left contents menu (`#rail`; not on a touch tablet, which reads sideways as upright, `js/features/bars.js`); the text beside it up to 60rem, or 76rem in two columns (`04-columns-rail.css`) |
-| `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers; Settings keeps the phone's tabs, with Reading's preview on the left beside its choices |
+| `(orientation: landscape) and (max-height: 520px)` | Phones held sideways: tighter line spacing and headers; Settings keeps the phone's tabs, with Reading's preview on the left beside its choices; Settings and the Library take the whole screen (the top bar steps aside); the Library's Back and search box share one row and its list is in two columns; the bottom bar's buttons are words alone |
 
 The same test keeps the number of `!important` (47) and `:root:root` (11) from growing: they only win over earlier rules, and each new one makes the next change harder.
 

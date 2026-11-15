@@ -98,8 +98,10 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 2026-11-14: Go to, the title saying where and its sheet: 61.35 KB then on a Mac; 63 KB since 2026-11-14: the tucked
   // bars' pill, Go to's card from the top and its title in the middle of a tablet's bar: 62.22 KB then on a Mac;
   // 63.5 KB since 2026-11-15: Settings as in Nitya Upasana (the text behind the top pill covered while a page is open,
-  // About under both columns, the preview centred, a sideways phone's rows on one line): 63.22 KB then on a Mac)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(63_500);
+  // About under both columns, the preview centred, a sideways phone's rows on one line): 63.22 KB then on a Mac; 64.5 KB
+  // since 2026-11-15: the phone and iPad review, as in Nitya Upasana: the bottom bar's words, a sideways phone's Library,
+  // the centred two-language title: 64.2 KB then on a Mac)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(64_500);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
 

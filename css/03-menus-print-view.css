@@ -1178,3 +1178,10 @@ ol.toc a {
     font-size: var(--fz-xs);
   }
 }
+
+/* ==== The dhrupad's label where both languages show: the two words alone ("ध्रुपद · Refrain"), one line; how it is
+   sung (.lab-how, "sung after every verse") twice over wrapped it onto two (the review of 2026-11-15). One language
+   alone keeps the whole label ==== */
+[data-lang="both"] .rftop .lab .lab-how {
+  display: none;
+}

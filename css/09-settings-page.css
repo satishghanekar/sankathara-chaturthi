@@ -809,23 +809,6 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
   to {
     transform: rotate(360deg);
   }
-  /* Settings has the whole short screen: the top bar steps aside (it and the tabs took a third of the height, Satish,
-     2026-11-15), unseen but in its place, so the text behind stays put. (Over the script's style.top) */
-  :root[data-menu="panel"] body > .bar {
-    visibility: hidden;
-  }
-  :root[data-menu="panel"] #panel {
-    top: 0 !important;
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-  /* Screen and More lie across the whole screen: a row's label on the left and its choices beside it (Theme's four ran
-     edge to edge, Satish, 2026-11-15); what else the row holds still goes under them */
-  .sp-c2 .sp-stk .sp-l {
-    flex: 1 1 36%;
-  }
-  .sp-c2 .sp-stk .sp-seg {
-    flex: 0 1 58%;
-  }
 }
 
 /* ==== Under Back and the tabs, which stay while the page scrolls: the cards dissolve as they go under, where a
@@ -1021,6 +1004,26 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
   }
   .sp-pvg ~ .sp-grp {
     grid-column: 2;
+  }
+  /* Settings has the whole short screen: the top bar steps aside (it and the tabs took a third of the height, Satish,
+     2026-11-15), unseen but in its place, so the text behind stays put. (Over the script's style.top) */
+  :root:is([data-menu="panel"], [data-menu="jump"], [data-menu="cal"]) body > .bar {
+    visibility: hidden;
+  }
+  /* (the Library and the Vedic calendar too, 13-library.css and 12-calendar.css: one rule for the three) */
+  :root[data-menu="panel"] #panel,
+  :root[data-menu="jump"] #jump,
+  :root[data-menu="cal"] #cal {
+    top: 0 !important;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  /* Screen and More lie across the whole screen: a row's label on the left and its choices beside it (Theme's four ran
+     edge to edge, Satish, 2026-11-15); what else the row holds still goes under them */
+  .sp-c2 .sp-stk .sp-l {
+    flex: 1 1 36%;
+  }
+  .sp-c2 .sp-stk .sp-seg {
+    flex: 0 1 58%;
   }
 }
 /* the text size's A− and A+ stay 44px wide on the narrowest phones too (they were 30px under 360px) */
