@@ -2,7 +2,7 @@
 // Loading the texts: fetches content/library.json (the sections, वैदिक मंत्र and आरती, each with its texts in reading
 // order, and so the piece numbers), content/site.json (the settings every text shares), content/credits.json (who and
 // what the texts come from, each once), content/wiki.json (each page a link
-// names, with its Wikidata item and its title on each Wikipedia: js/core/wiki.js) and every text file the library lists
+// names, with its title on each Wikipedia: js/core/wiki.js) and every text file the library lists
 // (content/texts/), builds CONTENT from them (js/text/content.js, as in Nitya Upasana) and turns the page into Kannada
 // letters when that is the chosen language. js/main.js waits for this before it starts the other parts;
 // js/core/page.js then builds the pieces where index.html keeps their place (#pieces).

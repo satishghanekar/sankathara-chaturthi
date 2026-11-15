@@ -1,7 +1,6 @@
 {
  "pages": {
   "Atharvaveda": {
-   "wikidata": "Q236092",
    "mr": "अथर्ववेद",
    "hi": "अथर्ववेद संहिता",
    "en": "Atharvaveda",
@@ -10,7 +9,6 @@
    "gu": "અથર્વવેદ"
   },
   "Eknath": {
-   "wikidata": "Q2587826",
    "mr": "एकनाथ",
    "hi": "सन्त एकनाथ",
    "en": "Eknath",
@@ -19,7 +17,6 @@
    "gu": "એકનાથ"
   },
   "Namdev": {
-   "wikidata": "Q2602417",
    "mr": "नामदेव",
    "hi": "नामदेव",
    "en": "Namdev",
@@ -28,12 +25,10 @@
    "gu": "નામદેવ"
   },
   "Narahari_Sonar": {
-   "wikidata": "Q16909375",
    "mr": "नरहरी सोनार",
    "en": "Narahari Sonar"
   },
   "Samarth_Ramdas": {
-   "wikidata": "Q55780",
    "mr": "समर्थ रामदास स्वामी",
    "hi": "समर्थ रामदास",
    "en": "Samarth Ramdas",
@@ -41,7 +36,6 @@
    "te": "సమర్థ రామదాసు"
   },
   "Shardha_Ram_Phillauri": {
-   "wikidata": "Q1190887",
    "hi": "श्रद्धाराम शर्मा",
    "en": "Shardha Ram Phillauri",
    "te": "శార్దా రాం పిల్లౌరీ"
