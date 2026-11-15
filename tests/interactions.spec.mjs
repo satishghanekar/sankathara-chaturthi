@@ -91,7 +91,13 @@ test("Settings on a desktop or an iPad: every group at once, in two columns, no 
   const x = async (sel) => (await page.locator(sel).boundingBox()).x;
   expect(await x(".sp-c1")).toBeLessThan(await x(".sp-c2"));
   for (const id of ["#sl1"]) expect(await page.locator(".sp-c1 " + id).count(), id).toBe(1);
-  for (const id of ["#st", "#hlp2", "#upd"]) expect(await page.locator(".sp-c2 " + id).count(), id).toBe(1);
+  for (const id of ["#st"]) expect(await page.locator(".sp-c2 " + id).count(), id).toBe(1);
+  // About under the two columns, across both (Satish, 2026-11-15, as in Nitya Upasana)
+  const [c1, c2, about] = await Promise.all([".sp-c1", ".sp-c2", ".sp-abt"].map((sel) => page.locator(sel).boundingBox()));
+  for (const id of ["#hlp2", "#upd"]) expect(await page.locator(".sp-abt " + id).count(), id).toBe(1);
+  expect(about.y).toBeGreaterThanOrEqual(Math.max(c1.y + c1.height, c2.y + c2.height) - 1);
+  expect(Math.abs(about.x - c1.x)).toBeLessThan(2);
+  expect(Math.abs(about.x + about.width - (c2.x + c2.width))).toBeLessThan(2);
   await page.setViewportSize({ width: 820, height: 1180 });
   await expect(page.locator("#spv")).toBeHidden();
   for (const id of ["#sl1", "#st", "#hlp2"]) await expect(page.locator(id)).toBeVisible();
@@ -100,6 +106,30 @@ test("Settings on a desktop or an iPad: every group at once, in two columns, no 
   await expect(page.locator("#st")).toBeHidden();
   // (the title for screen readers only: a 1px box)
   expect((await page.locator("#spt").boundingBox()).width).toBeLessThanOrEqual(1);
+});
+
+// While a page is open over a text (Settings, the Library, the calendar), the text behind the top pill is covered
+// whole: it showed around the pill, above it on a phone held sideways and under the clock upright (Satish, 2026-11-15)
+test("with Settings open, nothing of the text shows around the top bar @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  const band = () =>
+    page.evaluate(() => {
+      const s = getComputedStyle(document.body, "::before");
+      return {
+        shown: s.display !== "none",
+        fade: s.backgroundImage !== "none",
+        colour: s.backgroundColor,
+        bottom: parseFloat(s.height),
+        bg: getComputedStyle(document.body).backgroundColor,
+      };
+    });
+  expect(await band()).toMatchObject({ shown: true, fade: true });
+  await page.locator("#aa").click();
+  const open = await band();
+  expect(open).toMatchObject({ shown: true, colour: open.bg });
+  expect(open.bottom).toBeGreaterThanOrEqual((await page.locator("#panel").boundingBox()).y);
+  await page.locator("#xc").click();
+  expect(await band()).toMatchObject({ shown: true, fade: true });
 });
 
 // Keep screen on (Satish, 2026-10-30): Off, 15, 30, 45 or 60 minutes after the last touch, key or scroll; the old
