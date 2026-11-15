@@ -201,7 +201,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 
 **Inside a line:**
 
-- `¦` marks a place where a long line may break on a narrow phone (it shows as nothing). Put it after the space: `निढळावरी कर, ¦निढळावरी कर`, so the words keep their space when the line fits on one row. English lines need none: on a phone they break after a single `|` or a comma by themselves.
+- `¦` marks a place where a long line may break on a narrow phone (it shows as nothing). Put it after the space, and after a comma the text has there (the comma stays, as written): `निढळावरी कर, ¦निढळावरी कर`. Give the English line a `¦` at the same place (`Nidhalavari Kar, ¦Nidhalavari Kar`). The printout breaks at the same places.
 - ` // ` (a space, two slashes, a space) always breaks the line there. The spaces belong to the mark: `|  // ` (two spaces) keeps one real space before the break, as in Ghalin Lotangan's English.
 - **Vedic svara marks** (॑ ॒ ᳚) must be kept exactly. A mark that belongs with a visarga goes **after** the ः, otherwise it shows as a dotted circle.
 - **Only the original line and the everyday English line are typed.** The scholarly English (IAST) is made from the original line, so a spelling fix there fixes the scholarly English too.
