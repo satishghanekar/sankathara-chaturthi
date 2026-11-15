@@ -50,6 +50,8 @@ export default {
     both: "రెండూ",
     second: "+ రెండవ భాష",
     none: "ఏదీ వద్దు",
+    simple: "సరళం",
+    scholarly: "శాస్త్రీయం",
     refrain: "↻ పల్లవి",
     close: "మూసివేయి",
     reset: "అక్షర పరిమాణాన్ని మొదటికి తెచ్చు",
@@ -250,7 +252,6 @@ export default {
     traditional: "సాంప్రదాయ",
     modern: "ఆధునిక",
     bold: "బోల్డ్",
-    verses: "పద్యాలు",
     dhrupad: "ధ్రుపదం",
     once: "ఒకసారి",
     everyVerse: "ప్రతి పద్యం",
@@ -421,7 +422,8 @@ export default {
   },
   // The words the site adds to a text (js/strings/en.js)
   text: {
-    refrainLabel: "ధ్రువపదం (ప్రతి చరణం తర్వాత పాడండి)",
+    refrainWord: "ధ్రువపదం",
+    refrainHow: "(ప్రతి చరణం తర్వాత పాడండి)",
     version: "పాఠభేదం",
     refrainNote: "↻ ధ్రువపదం",
     prev: "మునుపటి",

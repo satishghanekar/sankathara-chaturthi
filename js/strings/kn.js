@@ -50,6 +50,8 @@ export default {
     both: "ಎರಡೂ",
     second: "+ ಎರಡನೇ ಭಾಷೆ",
     none: "ಯಾವುದೂ ಇಲ್ಲ",
+    simple: "ಸರಳ",
+    scholarly: "ಶಾಸ್ತ್ರೀಯ",
     refrain: "↻ ಪಲ್ಲವಿ",
     close: "ಮುಚ್ಚಿ",
     reset: "ಅಕ್ಷರದ ಗಾತ್ರ ಮರುಹೊಂದಿಸಿ",
@@ -256,7 +258,6 @@ export default {
     traditional: "ಸಾಂಪ್ರದಾಯಿಕ",
     modern: "ಆಧುನಿಕ",
     bold: "ದಪ್ಪ",
-    verses: "ಪದ್ಯಗಳು",
     dhrupad: "ಧ್ರುಪದ",
     once: "ಒಮ್ಮೆ",
     everyVerse: "ಪ್ರತಿ ಪದ್ಯ",
@@ -427,7 +428,8 @@ export default {
   },
   // The words the site adds to a text (js/strings/en.js)
   text: {
-    refrainLabel: "ಧ್ರುಪದ (ಪ್ರತಿ ಚರಣದ ನಂತರ ಹೇಳಿ)",
+    refrainWord: "ಧ್ರುಪದ",
+    refrainHow: "(ಪ್ರತಿ ಚರಣದ ನಂತರ ಹೇಳಿ)",
     version: "ಪಾಠಭೇದ",
     refrainNote: "↻ ಧ್ರುಪದ",
     prev: "ಹಿಂದಿನ",

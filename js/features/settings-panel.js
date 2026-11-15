@@ -44,6 +44,9 @@ export function spTab(v) {
   [].forEach.call(pn.querySelectorAll(".sp-grp"), function (/** @type {HTMLElement} */ g) {
     g.classList.toggle("sp-one", on === 1);
   });
+  // the maker's line under About only, where the tabs are (it stood under every tab; Satish, 2026-11-15)
+  var by = /** @type {HTMLElement | null} */ (pn.querySelector(".sp-by"));
+  if (by) by.hidden = !WIDE.matches && v !== "more";
   pn.scrollTop = 0;
 }
 

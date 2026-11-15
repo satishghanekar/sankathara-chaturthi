@@ -50,6 +50,8 @@ export default {
     both: "બંને",
     second: "+ બીજી ભાષા",
     none: "કોઈ નહીં",
+    simple: "સરળ",
+    scholarly: "શાસ્ત્રીય",
     refrain: "↻ ધ્રુવપદ",
     close: "બંધ કરો",
     reset: "અક્ષરનું કદ મૂળ કરો",
@@ -245,7 +247,6 @@ export default {
     traditional: "પરંપરાગત",
     modern: "આધુનિક",
     bold: "ઘાટા",
-    verses: "કડીઓ",
     dhrupad: "ધ્રુપદ",
     once: "એક વાર",
     everyVerse: "દરેક કડી",
@@ -416,7 +417,8 @@ export default {
   },
   // The words the site adds to a text (js/strings/en.js)
   text: {
-    refrainLabel: "ધ્રુપદ (દરેક કડી પછી ગાવું)",
+    refrainWord: "ધ્રુપદ",
+    refrainHow: "(દરેક કડી પછી ગાવું)",
     version: "પાઠભેદ",
     refrainNote: "↻ ધ્રુપદ",
     prev: "પાછલું",

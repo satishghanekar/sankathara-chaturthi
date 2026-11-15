@@ -46,6 +46,8 @@ export default {
     both: "दोन्ही",
     second: "+ दुसरी भाषा",
     none: "काहीही नाही",
+    simple: "सोपे",
+    scholarly: "शास्त्रीय",
     refrain: "↻ ध्रुपद",
     close: "बंद करा",
     reset: "मूळ आकार",
@@ -238,7 +240,6 @@ export default {
     traditional: "पारंपरिक",
     modern: "आधुनिक",
     bold: "ठळक",
-    verses: "कडवी",
     dhrupad: "ध्रुपद",
     once: "एकदा",
     everyVerse: "प्रत्येक कडव्यानंतर",
@@ -414,7 +415,8 @@ export default {
   },
   // The words the site adds to a text (js/strings/en.js)
   text: {
-    refrainLabel: "ध्रुपद (प्रत्येक कडव्यानंतर म्हणावे)",
+    refrainWord: "ध्रुपद",
+    refrainHow: "(प्रत्येक कडव्यानंतर म्हणावे)",
     version: "पाठभेद",
     refrainNote: "↻ ध्रुपद",
     prev: "मागील",
