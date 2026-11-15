@@ -28,8 +28,8 @@ What a reader sees and can do is described in the site's own **Help** (Share in 
 | `js/parts.js` | The list of the site's style, script and font files, shared by the page and the service worker. |
 | `js/main.js` and `js/core/`, `js/text/`, `js/features/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
 | `content/texts/` | The texts, one plain-text file each (`aarti-sukhkarta.txt`, …): each line in Marathi/Hindi/Sanskrit with its everyday English line under it, the title and the author line. **Edit the texts here** (see *How to add a text*). |
-| `content/library.json`, `content/categories.json` | The list of texts, with the few words the app adds (language tags, the dhrupad label); the categories (Vedic Chant, Aarti, Stotra, Ashtak). Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
-| `content/routines.json` | The routine Home lists, written as in Nitya Upasana: `{"evening": {"mode": "fixed", "texts": […]}}` (and `morning`, `afternoon` when they have texts; a session with none is not shown). A session is read in the order it lists its texts, which may differ from the Library's (the checks hold it to texts of the Library, each once). The reading page's sections (वैदिक मंत्र, आरती), their order and the piece numbers come from `content/categories.json` and `library.json`, as in Nitya Upasana. |
+| `content/library.json`, `content/site.json` | The library: the categories (Vedic Chant, Aarti, Stotra, Ashtak), each with its texts' ids in reading order; and what every text shares (language names, the dhrupad label). Everything about a text is in its own file. Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
+| `content/routines.json` | The routine Home lists, written as in Nitya Upasana: `{"evening": {"mode": "fixed", "texts": […]}}` (and `morning`, `afternoon` when they have texts; a session with none is not shown). A session is read in the order it lists its texts, which may differ from the Library's (the checks hold it to texts of the Library, each once). The reading page's sections (वैदिक मंत्र, आरती), their order and the piece numbers come from `content/library.json`, as in Nitya Upasana. |
 | `js/text/format.js`, `js/text/content.js`, `js/text/load.js` | Read the text files, turn them into the pieces' data and put them into the page when it opens. |
 | `js/render.js` | Builds each piece's HTML from that data. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
@@ -148,7 +148,6 @@ A text is one plain-text file in `content/texts/`, named after its id (`aarti-su
 id: aarti-sukhkarta
 title: सुखकर्ता दुःखहर्ता
 title-en: Sukhkarta Dukhharta
-category: aarti
 language: mr
 legacy-id: a1
 line-ids: s1l
@@ -173,8 +172,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 |---|---|
 | `id` | Required. Lower case and hyphens, the same as the file name, starting with the category (`aarti-sukhkarta`). |
 | `title`, `title-en` | Required. The title in the original language and in English. |
-| `category` | Required. One of the ids in `content/categories.json`: `vedic-chant`, `aarti`, `stotra`, `ashtak`. |
-| `language` | Required. `mr` (Marathi), `hi` (Hindi), `sa` (Sanskrit); `te`, `kn`, `ta` later. The page shows the language name from `content/library.json`. |
+| `language` | Required. `mr` (Marathi), `hi` (Hindi), `sa` (Sanskrit); `te`, `kn`, `ta` later. The page shows the language name from `content/site.json`. |
 | `legacy-id` | The piece's id on the page (`a1`) and in links. Without it, the `id`. |
 | `line-ids` | What each line's id starts with (`s1l`: the lines are `s1l1`, `s1l2`, …, counted as the page shows them, repeated dhrupads included). Without it, the `id` and a dot (`aarti-sukhkarta.1`). |
 | `line-id-exceptions` | Only for the old Vitthal Aarti, whose 4th line has always been `s7l4r`: `s7l4=s7l4r`. |
@@ -209,15 +207,15 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 ### Adding it to the site
 
 1. Write the file in `content/texts/`.
-2. In `content/library.json`, add it to `"texts"` (its `id`, `file`, `title`, `titleEn`, `category`, `language` and `lines`, the number of line pairs in the file), after the texts of its category (Vedic Chant or Aarti), and add its `id` at the same place in `content/routines.json`'s evening list. The piece number (१. 1.) and Previous / Next come from that order.
+2. Run `npm run texts` (in `tests/`): it writes the text's `lines` into its header. In `content/library.json`, add its id to its category's `"texts"` (Vedic Chant or Aarti), and add it at the same place in `content/routines.json`'s evening list. The piece number (१. 1.) and Previous / Next come from that order.
 3. In `js/parts.js`, add `texts/<id>.txt` to the `content` list, so the text is kept for offline use.
-4. Run the checks (`cd tests && npm run unit`): they read every text, check `library.json` and `js/parts.js` against the files and name any mistake with its line number. Then look at it on the site (see *Checking a change*), commit and push (change the version if this is a new release).
+4. Run the checks (`cd tests && npm run unit`): they read every text, check that `library.json` lists every file once, that each header's `lines` is up to date and that `js/parts.js` has every file, and name any mistake with its line number. Then look at it on the site (see *Checking a change*), commit and push (change the version if this is a new release).
 
 ### Taking a text from Nitya Upasana
 
-The text files, `content/library.json` and `content/categories.json` are written exactly as in Nitya Upasana (https://github.com/satishghanekar/nitya-upasana), and the checks hold both sites to it. To take a text from there: copy its file from Nitya's `content/texts/` into this site's, copy its entry from Nitya's `content/library.json` into this one's `"texts"` as it is, then do steps 2–4 above for `routines.json` and `js/parts.js`. A text from here goes to Nitya the same way (there, a place in a routine of its own).
+The text files, `content/library.json` and `content/site.json` are written exactly as in Nitya Upasana (https://github.com/satishghanekar/nitya-upasana), and the checks hold both sites to it. To take a text from there: copy its file from Nitya's `content/texts/` into this site's as it is (its `lines` and `letters` come with it), add its id to its category in this one's `content/library.json`, then do steps 2–4 above for `routines.json` and `js/parts.js`. A text from here goes to Nitya the same way (there, a place in a routine of its own).
 
-When **editing** a text, only the file changes, unless a title or the number of lines changes (then update `content/library.json` too; the checks say so). Line ids follow the order of the lines, so a fix within a line keeps them; adding or removing a line renumbers the lines after it (a highlighted line saved on a phone may then point at its neighbour).
+When **editing** a text, only the file changes; run `npm run texts` afterwards, which brings its `lines` up to date (the checks name a file whose count is out of date). Line ids follow the order of the lines, so a fix within a line keeps them; adding or removing a line renumbers the lines after it (a highlighted line saved on a phone may then point at its neighbour).
 
 ## How the scholarly English is made
 

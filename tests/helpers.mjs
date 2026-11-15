@@ -7,6 +7,7 @@
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { createRequire } from "node:module";
+import { IDS } from "./content-files.mjs";
 
 export const PREFS_KEY = "aarti2-prefs";
 
@@ -24,7 +25,7 @@ export const FIXED_NOW = new Date("2026-10-15T10:00:00-04:00");
 // Settings that make a run repeatable: current settings version (so no migration runs), screen
 // wake off, no saved reading position (the reading position lives under its own key and is cleared).
 // How many texts the site can build (one section.ash each, when it is opened): every text in content/library.json
-export const TEXT_COUNT = JSON.parse(readFileSync(new URL("../content/library.json", import.meta.url), "utf8")).texts.length;
+export const TEXT_COUNT = IDS.length;
 
 export const BASE_PREFS = { sv: 6, wake: 0 };
 

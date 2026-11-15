@@ -6,6 +6,7 @@ import { test, expect } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { siteParts } from "./helpers.mjs";
+import { IDS } from "./content-files.mjs";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const parts = siteParts();
@@ -45,8 +46,7 @@ test("every file in js/parts.js exists", () => {
 });
 
 test("js/parts.js lists the texts in content/library.json, so every text is kept for offline use", () => {
-  const lib = JSON.parse(readFileSync(new URL("../content/library.json", import.meta.url), "utf8"));
-  expect(parts.content).toEqual(["content/library.json", "content/categories.json", "content/routines.json", ...lib.texts.map((t) => "content/" + t.file)]);
+  expect(parts.content).toEqual(["content/library.json", "content/site.json", "content/routines.json", ...IDS.map((id) => "content/texts/" + id + ".txt")]);
   for (const f of parts.content) expect(parts.all).toContain(f);
 });
 
@@ -78,7 +78,9 @@ test("js/parts.js keeps every picture the page shows for offline use", () => {
 test("the scripts, styles and page stay within their size budget", () => {
   const parts = siteParts();
   const gz = (files) => files.reduce((n, f) => n + gzipSync(readFileSync(new URL("../" + f, import.meta.url))).length, 0);
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(212_500);
+  // (213 KB since 2026-11-15: the shared js/text/content.js and js/text/load.js read the library as categories with their
+  // texts and each text's facts from its own file, 212.7 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(213_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since

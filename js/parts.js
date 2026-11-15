@@ -89,11 +89,12 @@ var SITE_PARTS = (function () {
   ].map(function (f) {
     return "js/" + f + ".js";
   });
-  // The texts: the list of texts, the categories (the reading page's sections) and the evening routine, then one file per text, as listed in content/library.json
-  // (js/text/load.js reads them; tests/site-files.spec.mjs checks this list against library.json)
+  // The texts: the library (the reading page's sections, each with its texts), the site's settings and the evening
+  // routine, then one file per text, as listed in content/library.json (js/text/load.js reads them;
+  // tests/site-files.spec.mjs checks this list against it)
   var content = [
     "library.json",
-    "categories.json",
+    "site.json",
     "routines.json",
     "texts/vedic-chant-atharvashirsha.txt",
     "texts/aarti-sukhkarta.txt",
