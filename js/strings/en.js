@@ -258,7 +258,6 @@ export default {
     traditional: "Traditional",
     modern: "Modern",
     bold: "Bold",
-    verses: "Verses",
     dhrupad: "Dhrupad",
     once: "Once",
     everyVerse: "Every verse",

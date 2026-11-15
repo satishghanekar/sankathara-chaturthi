@@ -247,7 +247,6 @@ export default {
     traditional: "પરંપરાગત",
     modern: "આધુનિક",
     bold: "ઘાટા",
-    verses: "કડીઓ",
     dhrupad: "ધ્રુપદ",
     once: "એક વાર",
     everyVerse: "દરેક કડી",

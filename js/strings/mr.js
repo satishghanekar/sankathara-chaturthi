@@ -240,7 +240,6 @@ export default {
     traditional: "पारंपरिक",
     modern: "आधुनिक",
     bold: "ठळक",
-    verses: "कडवी",
     dhrupad: "ध्रुपद",
     once: "एकदा",
     everyVerse: "प्रत्येक कडव्यानंतर",

@@ -1,7 +1,0 @@
-@@ -1,5 +1,5 @@
- // @ts-check
--// Settings panel. Its tabs, Reading | Screen | More (#spv, Satish, 2026-10-25; Reading has the languages too), beside Back as on the
-+// Settings panel. Its tabs, Reading | Screen | You (#spv, Satish, 2026-10-25; Reading has the languages too), beside Back as on the
- // Library and the calendar pages: one tab's groups at a time (each .sp-grp says its tab, data-tab); Settings opens
- // on Reading each time, or on the tab its opener asks for (js/features/reading-sheet.js). On desktops (WIDE) there
- // are no tabs: every group at once, in two columns (css/09-settings-page.css; Satish, 2026-10-30).

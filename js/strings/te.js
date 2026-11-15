@@ -252,7 +252,6 @@ export default {
     traditional: "సాంప్రదాయ",
     modern: "ఆధునిక",
     bold: "బోల్డ్",
-    verses: "పద్యాలు",
     dhrupad: "ధ్రుపదం",
     once: "ఒకసారి",
     everyVerse: "ప్రతి పద్యం",

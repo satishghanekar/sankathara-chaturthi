@@ -258,7 +258,6 @@ export default {
     traditional: "ಸಾಂಪ್ರದಾಯಿಕ",
     modern: "ಆಧುನಿಕ",
     bold: "ದಪ್ಪ",
-    verses: "ಪದ್ಯಗಳು",
     dhrupad: "ಧ್ರುಪದ",
     once: "ಒಮ್ಮೆ",
     everyVerse: "ಪ್ರತಿ ಪದ್ಯ",
