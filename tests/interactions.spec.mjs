@@ -1006,7 +1006,7 @@ test("a session in another order than the Library's: Home lists it so, and Next 
 // another order than the Library's is moved into it in the page, numbered as on Home, as in Nitya Upasana
 test("a session's texts are in session order in the page itself, numbered by the session, for screen readers and Tab @mobile", async ({ page }) => {
   await page.route("**/content/routines.json", (r) =>
-    r.fulfill({ json: { evening: { mode: "fixed", texts: ["aarti-shendur-lal-chadhayo", "vedic-chant-atharvashirsha", "aarti-sukhkarta"] } } }),
+    r.fulfill({ json: { evening: { mode: "fixed", texts: ["aarti-shendur-laal-chadhayo", "vedic-chant-atharvashirsha", "aarti-sukhkarta"] } } }),
   );
   await openSite(page, SETUPS.marathi);
   await page.locator('#tsl a[href="./#a2"]').click();

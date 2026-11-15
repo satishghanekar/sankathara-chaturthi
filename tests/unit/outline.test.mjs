@@ -2,11 +2,11 @@
 // in review; and where a position is, the verse a reader types, a session's places.
 import { describe, expect, test } from "vitest";
 import { CONTENT as C } from "../content-files.mjs";
-import { outline } from "../../js/text/outline.js";
+import { OUTLINE, outline } from "../../js/text/outline.js";
 
 const pieces = C.categories.flatMap((c) => c.pieces);
 const piece = (id) => pieces.find((p) => p.text === id);
-const of = (id) => outline(piece(id), C.outline);
+const of = (id) => outline(piece(id));
 
 /** An outline as lines of text: each place, indented under the one it is in, and the text's verses in short */
 function written(o) {
@@ -25,16 +25,16 @@ function written(o) {
 test("every text's outline, or none for a short text", async () => {
   const all = pieces
     .map((p) => {
-      const o = outline(p, C.outline);
+      const o = outline(p);
       return o ? `${p.text}\n${written(o)}` : `${p.text}: none`;
     })
     .join("\n");
   await expect(all + "\n").toMatchFileSnapshot("__snapshots__/outlines.txt");
 });
 
-test("the thresholds come from content/library.json, and a short aarti has none", () => {
-  expect(C.outline).toEqual({ minLines: 60, group: 25 });
-  expect(outline(piece("aarti-sukhkarta"), C.outline)).toBeNull();
+test("the thresholds are the code's, one place (js/text/outline.js OUTLINE), and a short aarti has none", () => {
+  expect(OUTLINE).toEqual({ minLines: 60, group: 25 });
+  expect(outline(piece("aarti-sukhkarta"))).toBeNull();
 });
 
 test("the Atharvashirsha's parts, by number", () => {

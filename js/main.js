@@ -111,9 +111,10 @@ function start() {
 
 // The texts first (the parts read them from the page), then the parts. If the texts can't be loaded, the parts
 // still start, so the home page, Settings and Help work.
-// (the credits' links are named for screen readers in the menu words, which only this part can give the texts)
-loadTexts(function (/** @type {string} */ l) {
-  return /** @type {Record<string, string>} */ (menuWords("wiki", l));
+// (the site's words around a text, its credit's and Wikipedia's names are the menu words, which only this part can give
+// the texts)
+loadTexts(function (/** @type {string} */ part, /** @type {string} */ l) {
+  return menuWords(/** @type {any} */ (part), l);
 })
   .catch(function (e) {
     console.error(e);

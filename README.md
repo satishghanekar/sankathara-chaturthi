@@ -28,8 +28,9 @@ What a reader sees and can do is described in the site's own **Help** (Share in 
 | `js/parts.js` | The list of the site's style, script and font files, shared by the page and the service worker. |
 | `js/main.js` and `js/core/`, `js/text/`, `js/features/` | All the behaviour (settings, dates, search, print, offline…), one file per topic (see `js/README.md`). |
 | `content/texts/` | The texts, one plain-text file each (`aarti-sukhkarta.txt`, …): each line in Marathi/Hindi/Sanskrit with its everyday English line under it, the title and the author line. **Edit the texts here** (see *How to add a text*). |
-| `content/library.json`, `content/site.json` | The library: the categories (Vedic Chant, Aarti, Stotra, Ashtak), each with its texts' ids in reading order; and what every text shares (language names, the dhrupad label). Everything about a text is in its own file. Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
-| `content/wiki.json` | Written by `npm run wiki` (in `tests/`), never by hand, as in Nitya Upasana: each page a credit links to, by the name the links use, with its Wikidata item and its title on each Wikipedia the site opens. The site never asks Wikipedia anything itself. |
+| `content/library.json` | The library: the categories (Vedic Chant, Aarti, Stotra, Ashtak), each with its texts' ids in reading order. (The page's language is `index.html`'s `<html lang>` and the code's `PAGE_LANGUAGE`, `js/text/content.js`; when a text has Go to, `js/text/outline.js`'s `OUTLINE`.) The words the site adds to a text (language names, the dhrupad's label, Previous / Next, the credit's words) are the menu words', `text` in `js/strings/`, in each language's own words. Everything about a text is in its own file. Written exactly as in Nitya Upasana, so texts move between the two sites (see *Taking a text from Nitya Upasana*). |
+| `content/credits.json` | Who and what the texts come from, each written once, as in Nitya Upasana: the people (their name in Marathi and English, their time, their English Wikipedia page) and the sources. A text's header names them by their key. |
+| `content/wiki.json` | Written by `npm run wiki` (in `tests/`), never by hand, as in Nitya Upasana: each page a person or source links to, by the name the links use, with its title on each Wikipedia the site opens. The site never asks Wikipedia anything itself. |
 | `content/routines.json` | The routine Home lists, written as in Nitya Upasana: `{"evening": {"mode": "fixed", "texts": […]}}` (and `morning`, `afternoon` when they have texts; a session with none is not shown). A session is read in the order it lists its texts, which may differ from the Library's (the checks hold it to texts of the Library, each once). The reading page's sections (वैदिक मंत्र, आरती), their order and the piece numbers come from `content/library.json`, as in Nitya Upasana. |
 | `js/text/format.js`, `js/text/content.js`, `js/text/load.js` | Read the text files, turn them into the pieces' data and put them into the page when it opens. |
 | `js/render.js` | Builds each piece's HTML from that data. |
@@ -127,12 +128,12 @@ Each piece is one file in `content/texts/`. Its `legacy-id` is the id of its `<s
 |---|---|---|
 | `vedic-chant-atharvashirsha.txt` | `p1` | Pooja 1. गणपत्यथर्वशीर्षोपनिषत् (Ganapati Atharvashirsha) |
 | `aarti-sukhkarta.txt` | `a1` | Aarti 1. सुखकर्ता दुःखहर्ता |
-| `aarti-shendur-lal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
-| `aarti-durge-durghat-bhari.txt` | `a3` | Aarti 3. देवीची आरती |
-| `aarti-lavathavati-vikrala.txt` | `a4` | Aarti 4. शंकराची आरती |
-| `aarti-trigunatmak-traimurti.txt` | `a5` | Aarti 5. दत्ताची आरती |
-| `aarti-dnyanaraja.txt` | `a6` | Aarti 6. ज्ञानेश्वरांची आरती |
-| `aarti-yei-o-vitthale.txt` | `a7` | Aarti 7. विठ्ठलाची आरती |
+| `aarti-shendur-laal-chadhayo.txt` | `a2` | Aarti 2. शेंदुर लाल चढ़ायो |
+| `aarti-devi.txt` | `a3` | Aarti 3. देवीची आरती |
+| `aarti-shankar.txt` | `a4` | Aarti 4. शंकराची आरती |
+| `aarti-dattatreya.txt` | `a5` | Aarti 5. दत्ताची आरती |
+| `aarti-dnyaneshwar.txt` | `a6` | Aarti 6. ज्ञानेश्वरांची आरती |
+| `aarti-vitthal.txt` | `a7` | Aarti 7. विठ्ठलाची आरती |
 | `aarti-ghalin-lotangan.txt` | `a8` | Aarti 8. घालीन लोटांगण |
 | `aarti-jai-ganesh-deva.txt` | `a9` | Aarti 9. आरती जय गणेश देवा |
 | `aarti-jai-jagdish-hare.txt` | `a10` | Aarti 10. आरती जय जगदीश हरे |
@@ -153,8 +154,7 @@ language: mr
 legacy-id: a1
 line-ids: s1l
 refrain: every-verse
-credit: रचना : [समर्थ रामदास](wiki:Samarth_Ramdas) (१६०८–१६८२)
-credit-en: By [Samarth Ramdas](wiki:Samarth_Ramdas) (1608–1682)
+credit: author samarth-ramdas
 ---
 [dhrupad]
 जय देव जय देव, जय मंगल मूर्ती ।
@@ -173,7 +173,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 |---|---|
 | `id` | Required. Lower case and hyphens, the same as the file name, starting with the category (`aarti-sukhkarta`). |
 | `title`, `title-en` | Required. The title in the original language and in English. |
-| `language` | Required. `mr` (Marathi), `hi` (Hindi), `sa` (Sanskrit); `te`, `kn`, `ta` later. The page shows the language name from `content/site.json`. |
+| `language` | Required. `mr` (Marathi), `hi` (Hindi), `sa` (Sanskrit); `te`, `kn`, `ta` later. The page names it in the site's words (`js/strings/`, `text`). |
 | `legacy-id` | The piece's id on the page (`a1`) and in links. Without it, the `id`. |
 | `line-ids` | What each line's id starts with (`s1l`: the lines are `s1l1`, `s1l2`, …, counted as the page shows them, repeated dhrupads included). Without it, the `id` and a dot (`aarti-sukhkarta.1`). |
 | `line-id-exceptions` | Only for the old Vitthal Aarti, whose 4th line has always been `s7l4r`: `s7l4=s7l4r`. |
@@ -181,8 +181,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 | `refrain-before-first` | `yes` when the dhrupad is also sung before the first stanza (Vitthal Aarti, Jai Ganesh Deva). |
 | `layout` | `prose` prints the text as running paragraphs, like a booklet (the Atharvashirsha). `lines` sets a Vedic chant line by line, as its booklet does, on screen and paper; a long verse reference (॥ ९.००१.०६ ॥) shows on a phone as just the verse (॥ ६ ॥). |
 | `part-name` | What the text's parts (its `[para]` blocks) are called, in both languages (`अनुवाकः | Anuvaka`), for Go to: the top bar's title in a long text names them so, counted from 1 under each heading. Without it a part is named by the reference its first verse ends with, or by its number. As in Nitya Upasana. |
-| `credit`, `credit-en` | The author line in each language, as in Nitya Upasana. `[name](wiki:Samarth_Ramdas)` links the name to the person's Wikipedia page (or, for a source, the source's), named by its English Wikipedia page as in its address (`wiki:Q…`, its Wikidata item, where that can't be used); both lines name the same pages. The page opens in the reader's own Wikipedia where there is one (Marathi, then Hindi, then English; in Kannada, Telugu or Gujarati letters, that language's first), else the nearest, in a new tab with its ↗. Run `npm run wiki` (in `tests/`) after adding or changing a link: it writes each page's Wikidata item and its titles into `content/wiki.json`. |
-| `credit-note`, `credit-note-en` | A second, smaller author line (Vitthal Aarti: "also credited to Sant Namdev"), its links written the same way. |
+| `credit` | As in Nitya Upasana: who or what the text comes from, in one line: its role, then the key of a person or a source in `content/credits.json` (lower case and hyphens), then, if any, what only this text says, `\| Marathi \| English`. `author samarth-ramdas` ("रचना : समर्थ रामदास (१६०८–१६८२)" / "By Samarth Ramdas (1608–1682)"); `attributed adi-shankara` ("आदि शंकराचार्य यांचे मानले जाते" / "Attributed to Adi Shankaracharya"); `source rigveda \| मण्डल ९ \| Mandala 9` ("ऋग्वेद (मण्डल ९)": the detail in brackets after the name, in place of a person's time; `author tulsidas \| रामचरितमानस, उत्तरकाण्ड \| Ramcharitmanas, Uttarakanda` too); `compiled namdev \| व संस्कृत स्तोत्रे \| and Sanskrit verses` ("संकलन : संत नामदेव व संस्कृत स्तोत्रे": in a compilation the detail goes on from the name); `author vishnudas-nama, also namdev` (under the credit, smaller, "(also credited to Sant Namdev)"; `also` goes only with `author`); or `traditional` ("पारंपरिक" / "Traditional"). The role and the detail are the text's; the person's or source's name, time and Wikipedia page are written once, in `content/credits.json` (add one there first). The site writes the credit lines in both languages; the words around the names are its own (`js/strings/`, `text`), in Kannada, Telugu or Gujarati letters that language's. A name with a Wikipedia page links to it in the reader's own Wikipedia. |
 | `recording` | A recording to hear, YouTube only, shown under the credit: `[who](https://www.youtube.com/watch?v=…&t=90)`, with `&t=` and the second the text starts at when that is not at once; two or more separated by `, `. Link only a recording checked against the text (as in Nitya Upasana). |
 
 **The blocks**, after `---`, separated by one blank line. Each starts with its name in brackets, then its lines, **always in pairs: the original line, then its everyday English line**. An English line where the original belongs (or the other way round) stops the text from loading, and the test names the file and line.
@@ -214,7 +213,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 
 ### Taking a text from Nitya Upasana
 
-The text files, `content/library.json` and `content/site.json` are written exactly as in Nitya Upasana (https://github.com/satishghanekar/nitya-upasana), and the checks hold both sites to it. To take a text from there: copy its file from Nitya's `content/texts/` into this site's as it is (its `lines` and `letters` come with it), add its id to its category in this one's `content/library.json`, then do steps 2–4 above for `routines.json` and `js/parts.js`. A text from here goes to Nitya the same way (there, a place in a routine of its own).
+The text files and `content/library.json` are written exactly as in Nitya Upasana (https://github.com/satishghanekar/nitya-upasana), and the checks hold both sites to it. To take a text from there: copy its file from Nitya's `content/texts/` into this site's as it is (its `lines` and `letters` come with it), add its id to its category in this one's `content/library.json`, then do steps 2–4 above for `routines.json` and `js/parts.js`. A text from here goes to Nitya the same way (there, a place in a routine of its own).
 
 When **editing** a text, only the file changes; run `npm run texts` afterwards, which brings its `lines` up to date (the checks name a file whose count is out of date). Line ids follow the order of the lines, so a fix within a line keeps them; adding or removing a line renumbers the lines after it (a highlighted line saved on a phone may then point at its neighbour).
 
