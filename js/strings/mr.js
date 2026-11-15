@@ -46,6 +46,8 @@ export default {
     both: "दोन्ही",
     second: "+ दुसरी भाषा",
     none: "काहीही नाही",
+    simple: "सोपे",
+    scholarly: "शास्त्रीय",
     refrain: "↻ ध्रुपद",
     close: "बंद करा",
     reset: "मूळ आकार",

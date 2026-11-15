@@ -50,6 +50,8 @@ export default {
     both: "બંને",
     second: "+ બીજી ભાષા",
     none: "કોઈ નહીં",
+    simple: "સરળ",
+    scholarly: "શાસ્ત્રીય",
     refrain: "↻ ધ્રુવપદ",
     close: "બંધ કરો",
     reset: "અક્ષરનું કદ મૂળ કરો",

@@ -50,6 +50,8 @@ export default {
     both: "రెండూ",
     second: "+ రెండవ భాష",
     none: "ఏదీ వద్దు",
+    simple: "సరళం",
+    scholarly: "శాస్త్రీయం",
     refrain: "↻ పల్లవి",
     close: "మూసివేయి",
     reset: "అక్షర పరిమాణాన్ని మొదటికి తెచ్చు",

@@ -51,6 +51,9 @@ export default {
     both: "Both",
     second: "+ Second language",
     none: "None",
+    // English's two spellings in the language list: English · Simple (Sukhkarta), English · Scholarly (sukhakartā)
+    simple: "Simple",
+    scholarly: "Scholarly",
     refrain: "↻ Refrain",
     close: "Close",
     reset: "Reset text size",

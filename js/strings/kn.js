@@ -50,6 +50,8 @@ export default {
     both: "ಎರಡೂ",
     second: "+ ಎರಡನೇ ಭಾಷೆ",
     none: "ಯಾವುದೂ ಇಲ್ಲ",
+    simple: "ಸರಳ",
+    scholarly: "ಶಾಸ್ತ್ರೀಯ",
     refrain: "↻ ಪಲ್ಲವಿ",
     close: "ಮುಚ್ಚಿ",
     reset: "ಅಕ್ಷರದ ಗಾತ್ರ ಮರುಹೊಂದಿಸಿ",
