@@ -54,6 +54,7 @@ import { init as startPrint } from "./features/print.js";
 import { init as startShare } from "./features/share.js";
 import { init as startMoreMenu } from "./features/more-menu.js";
 import { init as startOffline } from "./features/offline.js";
+import { menuWords } from "./core/strings.js";
 
 // One part that fails to start is reported and passed over, so the parts after it still start (a part that needs
 // it may then fail too, but no more than that)
@@ -110,7 +111,10 @@ function start() {
 
 // The texts first (the parts read them from the page), then the parts. If the texts can't be loaded, the parts
 // still start, so the home page, Settings and Help work.
-loadTexts()
+// (the credits' links are named for screen readers in the menu words, which only this part can give the texts)
+loadTexts(function (/** @type {string} */ l) {
+  return /** @type {Record<string, string>} */ (menuWords("wiki", l));
+})
   .catch(function (e) {
     console.error(e);
   })
