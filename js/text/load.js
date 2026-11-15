@@ -1,6 +1,7 @@
 // @ts-check
 // Loading the texts: fetches content/library.json (the sections, वैदिक मंत्र and आरती, each with its texts in reading
-// order, and so the piece numbers), content/site.json (what every text shares), content/wiki.json (each page a link
+// order, and so the piece numbers), content/site.json (the settings every text shares), content/credits.json (who and
+// what the texts come from, each once), content/wiki.json (each page a link
 // names, with its Wikidata item and its title on each Wikipedia: js/core/wiki.js) and every text file the library lists
 // (content/texts/), builds CONTENT from them (js/text/content.js, as in Nitya Upasana) and turns the page into Kannada
 // letters when that is the chosen language. js/main.js waits for this before it starts the other parts;
@@ -29,9 +30,9 @@ function get(url) {
   });
 }
 
-/** @param {(lang: string) => Record<string, string>} [wikiWords]  each language's "wiki" menu words, for the credits'
- *   links (given by js/main.js, as in Nitya Upasana) @returns {Promise<void>} */
-export function load(wikiWords) {
+/** @param {(part: string, lang: string) => any} [words]  the menu words (menuWords): the site's words around a text and
+ *   Wikipedia's names, in each language (given by js/main.js, as in Nitya Upasana) @returns {Promise<void>} */
+export function load(words) {
   /** @param {string} url */
   var json = function (url) {
     return get(url).then(function (r) {
@@ -52,7 +53,12 @@ export function load(wikiWords) {
     console.warn(e);
     return null;
   });
-  var texts = Promise.all([json("content/library.json"), json("content/site.json"), wiki]).then(function (both) {
+  // (without the credits, the texts show none)
+  var credits = json("content/credits.json").catch(function (/** @type {unknown} */ e) {
+    console.warn(e);
+    return null;
+  });
+  var texts = Promise.all([json("content/library.json"), json("content/site.json"), wiki, credits]).then(function (both) {
     /** @type {import("./content.js").Library} */
     var lib = both[0];
     /** @type {import("./content.js").Site} */
@@ -79,7 +85,7 @@ export function load(wikiWords) {
       });
       /** @type {any} */
       var w = window;
-      w.CONTENT = buildContent(lib, site, files, both[2], wikiWords);
+      w.CONTENT = buildContent(lib, site, files, { wiki: both[2], credits: both[3], words: words || null });
       // the page shows only the sections that have texts (Nitya Upasana's library also lists the empty ones)
       w.CONTENT.categories = w.CONTENT.categories.filter(function (/** @type {{ pieces: unknown[] }} */ c) {
         return c.pieces.length;

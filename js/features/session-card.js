@@ -18,7 +18,7 @@
 
 import { loaded } from "../text/load.js";
 import { SESSIONS, sessionAt, stepInSession, textsFor } from "../core/routine.js";
-import { dv, esc, lead, mrLang, nameLang, nameOf, scr, scrKey, second, ui } from "../core/words.js";
+import { dv, esc, lead, mrLang, nameLang, scr, scrKey, second, ui } from "../core/words.js";
 import { iaTitle } from "../text/iast.js";
 import { arrange, note, onPiece, pieceEl } from "../core/page.js";
 import { P } from "../core/state.js";
@@ -188,7 +188,8 @@ function draw() {
     ls = langs(),
     w = menuWords("session"),
     tabs = document.getElementById("tss"),
-    names = /** @type {any} */ (window).CONTENT.languages,
+    // a text's language in the menu language's own words (js/strings/, "text": ಸಂಸ್ಕೃತ with Kannada menus)
+    names = /** @type {Record<string, string>} */ (menuWords("text").lang),
     sc = document.getElementById("tsc");
   drawn = drawnFor();
   // the menu language for the words around the titles (screen readers pick the voice from lang)
@@ -223,7 +224,7 @@ function draw() {
           })
           .join("") +
         "</span>" +
-        (l ? '<span class="ttg">' + esc(nameOf(l)) + "</span>" : "") +
+        (l ? '<span class="ttg">' + esc(l) + "</span>" : "") +
         "</a></li>"
       );
     })

@@ -97,6 +97,7 @@ var SITE_PARTS = (function () {
     "library.json",
     "site.json",
     "wiki.json",
+    "credits.json",
     "routines.json",
     "texts/vedic-chant-atharvashirsha.txt",
     "texts/aarti-sukhkarta.txt",

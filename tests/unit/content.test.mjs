@@ -10,7 +10,8 @@ import vm from "node:vm";
 import { parseText } from "../../js/text/format.js";
 import { buildContent, toPiece } from "../../js/text/content.js";
 import { factsOf } from "../tools/texts.mjs";
-import { FILES as files, IDS, LIBRARY, SITE as lib, TEXTS } from "../content-files.mjs";
+import { CONTENT, FILES as files, IDS, LIBRARY, SITE as lib, TEXTS } from "../content-files.mjs";
+import { menuWords } from "../../js/core/strings.js";
 import { SESSIONS, textsFor } from "../../js/core/routine.js";
 
 const read = (p) => readFileSync(new URL("../../" + p, import.meta.url), "utf8");
@@ -27,19 +28,18 @@ const pieces = (C) => (C.categories || C.groups).flatMap((g) => g.pieces);
 const allLines = (C) => pieces(C).flatMap((p) => [...(p.refrain ? p.refrain.lines : []), ...p.items.flatMap((i) => i.lines || [])]);
 
 describe("CONTENT from the text files", () => {
-  const C = buildContent(LIBRARY, lib, files);
+  const C = CONTENT;
   // (each [note] is now marked as one, nt, which the old file did not have: Ghalin Lotangan's ↻ ३ वेळा, and each piece
   // carries its text's id, text, as in Nitya Upasana. The Dnyaneshwar and Vitthal Aartis' entries follow their files
   // as written in Nitya Upasana, 2026-10-28)
-  // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's; and a credit's link opens the person's
-  // Wikipedia page in the reader's language since 2026-11-15, so its words are compared, not where it goes:
-  // tests/unit/wiki.test.mjs checks the links)
-  const words = (html) => html.replace(/<a [^>]*>/g, "<a>");
+  // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's; and since 2026-11-15 a credit is
+  // written by the site from content/credits.json, each person and source once: tests/unit/credits.test.mjs checks the
+  // credits)
   const SAME = {
     ui: C.ui,
-    pieces: pieces(C).map(({ text, ...p }) => ({ ...p, credit: words(p.credit.replace(/<span class="rec".*$/, "")), items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
+    pieces: pieces(C).map(({ text, credit, ...p }) => ({ ...p, items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
   };
-  const WAS = { ui: OLD.ui, pieces: pieces(OLD).map((p) => ({ ...p, credit: words(p.credit) })) };
+  const WAS = { ui: OLD.ui, pieces: pieces(OLD).map(({ credit, ...p }) => p) }; // eslint-disable-line no-unused-vars
   test("is identical to the old content/pieces.js: the same pieces, in the same order", () => {
     expect(SAME).toStrictEqual(WAS);
     // and in the same key order, so even the order the page meets things in is unchanged
@@ -118,7 +118,7 @@ describe("content checks", () => {
   test("library.json and site.json have Nitya Upasana's shape: the categories with their texts; what every text shares", () => {
     expect(Object.keys(LIBRARY)).toEqual(["categories"]);
     for (const c of LIBRARY.categories) expect(Object.keys(c)).toEqual(["id", "name", "texts"]);
-    expect(Object.keys(lib)).toEqual(["pageLanguage", "languages", "refrain", "outline", "ui"]);
+    expect(Object.keys(lib)).toEqual(["pageLanguage", "outline"]);
   });
   test("every text's id, and so its file name, starts with the category the library lists it in", () => {
     for (const t of TEXTS) expect(t.id.startsWith(t.category + "-"), t.id).toBe(true);
@@ -149,7 +149,8 @@ describe("content checks", () => {
     expect(t.lines).toBe(f.lines);
     // (an app without times, as this one, does not count letters)
     if (f.letters !== undefined) expect(t.letters).toBe(f.letters);
-    expect(lib.languages[t.language]).toBeTruthy();
+    // its language named in the site's words, in every menu language (js/strings/, "text")
+    for (const l of ["mr", "en", "kn", "te", "gu"]) expect(menuWords("text", l).lang[t.language], l).toBeTruthy();
   });
   test.each(IDS.map((id) => [id]))("%s is not changed by Unicode normalisation", (id) => {
     const raw = files[id];

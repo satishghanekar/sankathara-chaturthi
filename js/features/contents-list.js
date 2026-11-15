@@ -7,7 +7,8 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { setJ } from "./overlays.js";
-import { dv, esc, scr as to } from "../core/words.js";
+import { dv, esc, scr as to, scrKey } from "../core/words.js";
+import { menuWords } from "../core/strings.js";
 
 /** The list of texts; search hides it while results are shown */
 /** @type {HTMLElement} */
@@ -44,15 +45,19 @@ export function init() {
 function listHtml() {
   var C = content();
   if (!C) return "";
-  // each text's language from its own file (CONTENT.texts), named from content/site.json (CONTENT.languages)
-  var langs = C.languages || {};
+  // each text's language from its own file (CONTENT.texts), named in the reading languages' own words (js/strings/,
+  // "text": in Kannada letters Kannada's ಸಂಸ್ಕೃತ, never Marathi's संस्कृत in them; marked, data-tw, so js/render.js puts the
+  // script's own word in when the letters change)
+  var lmr = /** @type {Record<string, string>} */ (menuWords("text", scrKey() || "mr").lang),
+    len = /** @type {Record<string, string>} */ (menuWords("text", "en").lang);
   return C.categories
     .map(function (/** @type {any} */ c) {
       // numbered from 1 in each section, as in Nitya Upasana
       var items = c.pieces
         .map(function (/** @type {any} */ p, /** @type {number} */ i) {
           var f = C.texts[p.text],
-            lt = langs[(f && f.language) || ""];
+            code = (f && f.language) || "",
+            lt = lmr[code] ? { mr: lmr[code], en: len[code] } : null;
           return (
             '<li><a href="./#' +
             p.id +
@@ -68,7 +73,15 @@ function listHtml() {
             '</span><span class="en" lang="en">' +
             esc(p.title.en) +
             "</span></span>" +
-            (lt ? '<span class="lt"><span class="mr">' + esc(to(lt.mr)) + '</span><span class="en" lang="en">' + esc(lt.en) + "</span></span>" : "") +
+            (lt
+              ? '<span class="lt"><span class="mr" data-tw="lang.' +
+                code +
+                '">' +
+                esc(lt.mr) +
+                '</span><span class="en" lang="en">' +
+                esc(lt.en) +
+                "</span></span>"
+              : "") +
             "</a></li>"
           );
         })
