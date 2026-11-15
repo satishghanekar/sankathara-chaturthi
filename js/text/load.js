@@ -1,9 +1,8 @@
 // @ts-check
 // Loading the texts: fetches content/library.json (the sections, वैदिक मंत्र and आरती, each with its texts in reading
-// order, and so the piece numbers), content/site.json (the settings every text shares), content/credits.json (who and
-// what the texts come from, each once), content/wiki.json (each page a link
-// names, with its title on each Wikipedia: js/core/wiki.js) and every text file the library lists
-// (content/texts/), builds CONTENT from them (js/text/content.js, as in Nitya Upasana) and turns the page into Kannada
+// order, and so the piece numbers), content/credits.json (who and what the texts come from, each once),
+// content/wiki.json (each page a link names, with its title on each Wikipedia: js/core/wiki.js) and every text file
+// the library lists (content/texts/), builds CONTENT from them (js/text/content.js, as in Nitya Upasana) and turns the page into Kannada
 // letters when that is the chosen language. js/main.js waits for this before it starts the other parts;
 // js/core/page.js then builds the pieces where index.html keeps their place (#pieces).
 // It also fetches content/routines.json, the evening routine the home page lists (js/features/session-card.js), at the
@@ -12,12 +11,11 @@
 import { buildContent } from "./content.js";
 
 /**
- * What was loaded, for the parts that need it after start-up: the library (content/library.json), the site's settings
- * (content/site.json) and the routine (content/routines.json; null when it could not be loaded), as in Nitya Upasana
- * @type {{ library: import("./content.js").Library | null, site: import("./content.js").Site | null,
- *   routine: import("../core/routine.js").Routine | null }}
+ * What was loaded, for the parts that need it after start-up: the library (content/library.json) and the routine
+ * (content/routines.json; null when it could not be loaded), as in Nitya Upasana
+ * @type {{ library: import("./content.js").Library | null, routine: import("../core/routine.js").Routine | null }}
  */
-export const loaded = { library: null, site: null, routine: null };
+export const loaded = { library: null, routine: null };
 
 /**
  * @param {string} url
@@ -58,13 +56,10 @@ export function load(words) {
     console.warn(e);
     return null;
   });
-  var texts = Promise.all([json("content/library.json"), json("content/site.json"), wiki, credits]).then(function (both) {
+  var texts = Promise.all([json("content/library.json"), wiki, credits]).then(function (both) {
     /** @type {import("./content.js").Library} */
     var lib = both[0];
-    /** @type {import("./content.js").Site} */
-    var site = both[1];
     loaded.library = lib;
-    loaded.site = site;
     // every text the library lists, each from its own file
     /** @type {string[]} */
     var ids = [];
@@ -85,7 +80,7 @@ export function load(words) {
       });
       /** @type {any} */
       var w = window;
-      w.CONTENT = buildContent(lib, site, files, { wiki: both[2], credits: both[3], words: words || null });
+      w.CONTENT = buildContent(lib, files, { wiki: both[1], credits: both[2], words: words || null });
       // the page shows only the sections that have texts (Nitya Upasana's library also lists the empty ones)
       w.CONTENT.categories = w.CONTENT.categories.filter(function (/** @type {{ pieces: unknown[] }} */ c) {
         return c.pieces.length;

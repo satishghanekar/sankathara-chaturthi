@@ -95,7 +95,6 @@ var SITE_PARTS = (function () {
   // tests/site-files.spec.mjs checks this list against it)
   var content = [
     "library.json",
-    "site.json",
     "wiki.json",
     "credits.json",
     "routines.json",
