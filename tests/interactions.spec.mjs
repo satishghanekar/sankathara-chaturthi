@@ -1522,3 +1522,34 @@ test("a computer's top bar in Marathi at 1100px, where the wide layout starts he
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await axeEveryTheme(page, ["body > .bar", "#asc"])).toEqual(noViolations());
 });
+
+// At a place in a long text of the session, the small line starts with the title, without its number, the part that
+// gives way; the count stays whole after it (last, the title was cut off down to its number; Nitya Upasana, 2026-11-15)
+test("Go to in a session at a place in a long text: the title first in the small line, the count whole @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.marathi);
+  await page
+    .locator("a.tgo")
+    .first()
+    .evaluate((a) => a.click());
+  await expect(page.locator("html")).toHaveAttribute("data-run", "1");
+  // (its section, from the link: the Atharvashirsha, the session's first text)
+  const id = (await page.locator("a.tgo").first().getAttribute("href")).split("#")[1];
+  await page.evaluate((id) => {
+    const shown = [...document.querySelectorAll("#" + id + " [data-l]")].filter((e) => e.getClientRects().length);
+    const el = shown[shown.length - 12];
+    scrollTo(0, el.getBoundingClientRect().top + scrollY - innerHeight * 0.3);
+  }, id);
+  await page.waitForTimeout(400);
+  await page.evaluate(() => scrollBy(0, 40));
+  await page.waitForTimeout(400);
+  await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
+  await expect(page.locator("#wh2 .wh-at")).toBeVisible();
+  const parts = page.locator("#wh1 > span:not(.wh-dot)");
+  await expect(parts).toHaveCount(2);
+  await expect(parts.nth(0)).toHaveClass("wh-in");
+  await expect(parts.nth(0)).not.toHaveText(/^\s*[0-9०-९]+\./);
+  await expect(parts.nth(1)).toHaveText(/^[०-९]+ \/ [०-९]+$/);
+  const whole = await page.locator("#wh1 .wh-n").evaluate((s) => s.getBoundingClientRect().right <= s.closest("#wh1").getBoundingClientRect().right + 1);
+  expect(whole).toBe(true);
+  expect(await parts.nth(0).evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
+});

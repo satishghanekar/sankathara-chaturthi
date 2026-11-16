@@ -248,26 +248,36 @@ export function whereMark(c, onText, l, title) {
   if (key === said) return;
   said = key;
   // The large line is what is being read: the place in a long text, or else the text's own title. The small line over
-  // it: in a session which text of how many, then (when the large line is a place) the title; with neither, "Go to",
+  // it: in a session (when the large line is a place) the title, then which text of how many; with neither, "Go to",
   // what a tap does (as in Nitya Upasana, where the large line said "Go to" in a session's short texts; 2026-11-15)
   var w1 = byId("wh1"),
     w2 = byId("wh2");
   w1.textContent = "";
   w1.lang = tl();
-  /** @type {[string, string][]} its parts: words, language */
+  /** @type {[string, string, string][]} its parts: words, language, class */
   var small = [];
-  if (count) small.push([count, tl()]);
-  if (path.length) small.push([title, tl()]);
-  if (!small.length) small.push([menuWords("goto").title, ui()]);
+  // (in a session the small line's "५ / ८" numbers it already: the title without its own number, so more of it fits)
+  var named = count ? title.replace(/^\s*[0-9०-९]+\.\s*/, "") : title;
+  // The title first when the large line is a place, the only part that gives way (…): last, after the count, it was
+  // the part cut off, down to its own number (as in Nitya Upasana, 2026-11-15)
+  if (path.length) small.push([named, tl(), "wh-in"]);
+  if (count) small.push([count, tl(), "wh-n"]);
+  if (!small.length) small.push([menuWords("goto").title, ui(), "wh-in"]);
   small.forEach(function (x, k) {
     var sp = document.createElement("span");
     sp.textContent = x[0];
     sp.lang = x[1];
-    if (k) w1.appendChild(document.createTextNode(" · "));
+    sp.className = x[2];
+    if (k) {
+      // (its own part, kept whole: a space alone at the edge of a part of a flex line is dropped)
+      var dot = document.createElement("span");
+      dot.className = "wh-dot";
+      dot.textContent = " · ";
+      w1.appendChild(dot);
+    }
     w1.appendChild(sp);
   });
-  // (in a session the small line's "५ / ८" numbers it already: the title without its own number, so more of it fits)
-  placeIn(w2, path, count ? title.replace(/^\s*[0-9०-९]+\.\s*/, "") : title);
+  placeIn(w2, path, named);
   w2.lang = tl();
   var tkw = byId("tkw");
   placeIn(tkw, path, "");
