@@ -91,8 +91,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 222 KB since 2026-11-15: a text's credit in one line, checked by js/text/format.js, and the page's language in the
   // code (PAGE_LANGUAGE), 220.2 KB then; 223 KB since 2026-11-15: a text's versions (the shared parts) and English's
   // two spellings named in five languages, 222.15 KB then on a Mac; 224 KB since 2026-11-15: the keyboard's / and ← → and the dhrupad's label in two
-  // parts, as in Nitya Upasana: 223.2 KB then on a Mac)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(224_000);
+  // parts, as in Nitya Upasana: 223.2 KB then on a Mac; 225 KB since 2026-11-15: as in Nitya Upasana, on a
+  // computer Home, Library and Reading moved into the top bar, and the session title's two lines: 224.46 KB then on a Mac)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(225_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -101,8 +102,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 63.5 KB since 2026-11-15: Settings as in Nitya Upasana (the text behind the top pill covered while a page is open,
   // About under both columns, the preview centred, a sideways phone's rows on one line): 63.22 KB then on a Mac; 64.5 KB
   // since 2026-11-15: the phone and iPad review, as in Nitya Upasana: the bottom bar's words, a sideways phone's Library,
-  // the centred two-language title: 64.2 KB then on a Mac)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(64_500);
+  // the centred two-language title: 64.2 KB then on a Mac; 66 KB since 2026-11-15: as in Nitya Upasana, a
+  // computer's top bar holding Home, Library and Reading, and Prev and Next at the text's sides: 65.59 KB then on a Mac)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(66_000);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
 
