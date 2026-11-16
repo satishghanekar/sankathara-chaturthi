@@ -1,6 +1,6 @@
 // Interactions: what readers do, checked in every browser engine (and on phone emulation for @mobile).
 import { test, expect } from "@playwright/test";
-import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, settingsTab, langMismatches } from "./helpers.mjs";
+import { openSite, settle, SETUPS, PREFS_KEY, tapMore, buildAll, readText, settingsTab, langMismatches, axeEveryTheme, noViolations } from "./helpers.mjs";
 
 const prefs = (page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k)), PREFS_KEY);
 const rootAttr = (page, a) => page.evaluate((a) => document.documentElement.getAttribute(a), a);
@@ -1198,7 +1198,13 @@ test("the bottom bar shows each icon with its word under it @mobile", async ({ p
       const r = e.getBoundingClientRect(),
         w = e.querySelector(".asil").getBoundingClientRect(),
         i = e.querySelector("svg").getBoundingClientRect();
-      return { tap: r.width >= 44 && r.height >= 44, wordIn: w.left >= r.left && w.right <= r.right && w.bottom <= r.bottom, under: w.top >= i.bottom };
+      // (on a computer the three are in the top bar, the word beside its icon)
+      const rail = document.documentElement.hasAttribute("data-rail");
+      return {
+        tap: r.width >= 44 && r.height >= 44,
+        wordIn: w.left >= r.left && w.right <= r.right && w.bottom <= r.bottom,
+        under: rail ? w.left >= i.right : w.top >= i.bottom,
+      };
     });
     expect(fit, b).toEqual({ tap: true, wordIn: true, under: true });
   }
@@ -1305,7 +1311,10 @@ test("Go to in a session: which text of how many, and the session's texts to go 
   await page.evaluate(() => scrollBy(0, 300));
   await page.waitForTimeout(300);
   await page.evaluate(() => document.documentElement.removeAttribute("data-tuck"));
-  await expect(page.locator("#wh1")).toHaveText(/^[०-९]+ \/ [०-९]+ · /);
+  // the small line: which text of how many; the large line: the text's title, without the number the small line gives
+  await expect(page.locator("#wh1")).toHaveText(/^[०-९]+ \/ [०-९]+$/);
+  await expect(page.locator("#wh2")).not.toHaveText(/^[०-९0-9]+\./);
+  await expect(page.locator("#wh2")).not.toHaveText("");
   await page.locator("#where").click();
   const rows = page.locator("#gtl .gt-go");
   expect(await rows.count()).toBe(await page.locator("a.tgo").count());
@@ -1441,4 +1450,75 @@ test("two columns: a last stanza with none beside it is centred across both", as
   expect(at.odd, "Sukhkarta has three stanzas").toBe(1);
   expect(at.first, "the first two side by side").toBe(true);
   expect(at.off, "the last one centred").toBeLessThanOrEqual(2);
+});
+
+// As in Nitya Upasana (board 3 of the desktop mock-ups, Satish, 2026-11-15): on a computer Home, Library and Reading stand in the
+// top bar with their words, a stand-in for the search box beside them; the bottom bar is only Prev and Next, at the
+// two sides of the text. The buttons themselves move, and move back when the window narrows
+test("on a computer Home, Library and Reading are in the top bar, and go back to the bottom bar on a narrow window", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  const ids = (sel) => page.locator(sel).evaluateAll((l) => l.filter((b) => b.getClientRects().length).map((b) => b.id));
+  expect(await ids("body > .bar button, body > .bar a")).toEqual(["bt", "ash", "asq", "rsb", "bar-find", "tmb", "aa"]);
+  expect(await ids("#asi button")).toEqual(["asv", "asn"]);
+  // each with its word showing, on one line, and nothing wider than the bar
+  for (const b of ["#ash", "#asq", "#rsb"]) {
+    await expect(page.locator(b + " .asil")).toBeVisible();
+    expect(await page.locator(b).evaluate((e) => e.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+  }
+  await expect(page.locator("#asq")).toHaveAccessibleName("Library");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  // Prev and Next: at the two sides of the text's area, clear of the text's lines
+  const side = await page.evaluate(() => {
+    const r = (/** @type {string} */ s) => /** @type {Element} */ (document.querySelector(s)).getBoundingClientRect();
+    const line = document.createRange();
+    line.selectNodeContents(/** @type {Element} */ (document.querySelector("#a1 .items p")));
+    const t = line.getBoundingClientRect();
+    return { prev: r("#asv").right <= t.left, next: r("#asn").left >= t.right, far: r("#asn").left - r("#asv").right > 400 };
+  });
+  expect(side).toEqual({ prev: true, next: true, far: true });
+  // the keys still work the buttons, wherever they stand
+  await page.locator("#asn").click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe("#a2");
+  // the stand-in says what the box says, and opens the Library with the box ready
+  await expect(page.locator("#bar-find")).toHaveAccessibleName("Find a text or a line");
+  await page.locator("#bar-find").click();
+  await expect(page.locator("#jump")).toBeVisible();
+  await expect(page.locator("#q")).toBeFocused();
+  await page.keyboard.press("Escape");
+  // Reading's sheet drops from the bar, under its button
+  await page.locator("#rsb").click();
+  const sheet = await page.evaluate(() => {
+    const r = (/** @type {string} */ s) => /** @type {Element} */ (document.querySelector(s)).getBoundingClientRect();
+    return { under: r("#rsh .rsc").top >= r("body > .bar").bottom - 1 && r("#rsh .rsc").top < 120, at: Math.abs(r("#rsh .rsc").left - r("#rsb").left) };
+  });
+  expect(sheet.under).toBe(true);
+  expect(sheet.at).toBeLessThanOrEqual(2);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#rsh")).toBeHidden();
+  // on Home the same buttons in the same places (Home among them), and no bottom bar's buttons at all
+  const lib = await page.locator("#asq").evaluate((e) => e.getBoundingClientRect().left);
+  await page.locator("#ash").click();
+  await expect(page.locator("html")).toHaveAttribute("data-home", "1");
+  await expect(page.locator("#ash")).toBeVisible();
+  expect(await page.locator("#asq").evaluate((e) => e.getBoundingClientRect().left)).toBe(lib);
+  expect(await ids("#asi button")).toEqual([]);
+  // a narrow window: back in the bottom bar, in their order
+  await page.setViewportSize({ width: 820, height: 1000 });
+  await expect(page.locator("#bar-nav")).toBeHidden();
+  await expect(page.locator("#bar-find")).toBeHidden();
+  expect(await page.locator("#asi button").evaluateAll((l) => l.map((b) => b.id))).toEqual(["asv", "ash", "asq", "rsb", "asn"]);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect.poll(() => page.locator("#bar-nav button").evaluateAll((l) => l.map((b) => b.id))).toEqual(["ash", "asq", "rsb"]);
+});
+
+test("a computer's top bar in Marathi at 1100px, where the wide layout starts here: every word whole, and readable in every theme", async ({ page }) => {
+  await page.setViewportSize({ width: 1100, height: 700 });
+  await openSite(page, SETUPS["marathi-menus"], { hash: "#a1" });
+  const cut = await page.locator("#bar-nav button, #tmb").evaluateAll((l) => l.filter((b) => b.scrollWidth > b.clientWidth + 1).map((b) => b.id));
+  expect(cut).toEqual([]);
+  await expect(page.locator("#bar-find")).toBeVisible();
+  expect(await page.locator("#bar-find").evaluate((e) => e.getBoundingClientRect().width)).toBeGreaterThanOrEqual(44);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await axeEveryTheme(page, ["body > .bar", "#asc"])).toEqual(noViolations());
 });
