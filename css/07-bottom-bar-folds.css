@@ -1565,10 +1565,17 @@ html[data-asb="1"] {
 }
 /* Where the reading is, in the title and the pill: the headings give way before the place itself (js/features/where.js
    placeIn()), so a small phone shows "तृतीयो… ९.४८" rather than "तृतीयोऽ…" */
+#wh1,
 #wh2,
 #tkw {
   display: flex;
   min-width: 0;
+}
+/* The small line's count and its dots kept whole; the title before them gives way (js/features/where.js) */
+.wh-n,
+.wh-dot {
+  flex: none;
+  white-space: pre;
 }
 .wh-in {
   min-width: 0;
