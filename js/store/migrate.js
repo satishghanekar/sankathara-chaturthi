@@ -40,6 +40,7 @@ export function defaults(env) {
     fnt: "classic", // text font: classic Traditional | std Modern | bold Bold (Settings → Text font, as in Nitya Upasana)
     pref: "", // dhrupad in the printout, picked in the Print pop-up: "" as on the page (ref) | 0 after every verse | 1 once
     pfn: "", // font of the printout, picked in the Print pop-up: "" the text font above | classic | std | bold
+    pcov: 1, // a printout of more than one text: 1 with its cover and closing page (js/print/write.js) | 0 without
     plang: "", // language of the printout: "" as the page shows it | mr (the original) | en | both
     ppr: "", // paper of the printout: "" as the device's region suggests (Letter in the US and Canada) | letter | a4
     pskip: [], // texts left out of the printout (their piece ids: a1, p1 …), unticked under What to print; a new text prints
@@ -136,6 +137,7 @@ export function tidy(P) {
   // the three text fonts of Nitya Upasana since 2026-10-31 (Handwritten dropped: it had no Vedic marks)
   if (["std", "classic", "bold"].indexOf(P.fnt) < 0) P.fnt = "classic";
   if (["std", "classic", "bold"].indexOf(P.pfn) < 0) P.pfn = "";
+  if (P.pcov !== 0) P.pcov = 1;
   if (["mr", "en", "both"].indexOf(P.plang) < 0) P.plang = "";
   if (["letter", "a4"].indexOf(P.ppr) < 0) P.ppr = "";
   if (P.tr !== "iast") P.tr = "simple";

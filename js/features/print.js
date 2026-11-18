@@ -58,7 +58,15 @@ export function init() {
       return ["mr", "en", "both"].indexOf(P.plang) >= 0 ? P.plang : P.lang;
     }
     // Writing the print view (js/print/write.js), with the printout's language and dhrupad as chosen here
-    var writer = createWriter({ pv: pv, plang: plang, pref: pref }),
+    var writer = createWriter({
+        pv: pv,
+        plang: plang,
+        pref: pref,
+        extras: extras,
+        land: function () {
+          return land("one");
+        },
+      }),
       IND = writer.IND,
       indAt = writer.indAt,
       olang = writer.olang,
@@ -99,6 +107,25 @@ export function init() {
     function pfn() {
       return FONTS.indexOf(P.pfn) >= 0 ? P.pfn : FONTS.indexOf(P.fnt) >= 0 ? P.fnt : "classic";
     }
+    // What the writer adds around a printout of more than one text (js/print/write.js, as in Nitya Upasana): the cover
+    // and the closing page (unless turned off here, P.pcov) and the site's QR code. This site works out no chanting times
+    // and has no Vedic calendar, so the contents and the cover give none, and the cover no panchang
+    /** @returns {import("../print/write.js").Extras} */
+    function extras() {
+      return {
+        cover: P.pcov !== 0,
+        time: function () {
+          return "";
+        },
+        panchang: function () {
+          return "";
+        },
+        qr: function () {
+          var q = document.querySelector("#qrm .qri svg");
+          return q ? /** @type {Element} */ (q.cloneNode(true)) : null;
+        },
+      };
+    }
     // The printout's dhrupad (once, or after every verse) likewise: picked in the pop-up, else as the page shows it
     function pref() {
       if (alt && alt.ref !== undefined) return alt.ref;
@@ -109,12 +136,16 @@ export function init() {
     function fontsAhead() {
       if (!document.fonts || !document.fonts.load) return;
       var f = pfn(),
-        want =
+        // (the printout's English is EB Garamond in Traditional and Bold, and the page number is in it in every font:
+        // css/15-print.css; Chrome drew the number's dashes as nothing without it)
+        ebg = ['400 16px "EB Garamond"', 'italic 400 16px "EB Garamond"', '600 16px "EB Garamond"'],
+        want = (
           f === "classic"
             ? ['400 16px "SC Classic"', '700 16px "SC Bold"', '400 16px "Tiro Devanagari Sanskrit"']
             : f === "bold"
               ? ['600 16px "SC Bold"', '800 16px "SC Bold"']
-              : ['400 16px "SC Sans"', '700 16px "SC Sans"'];
+              : ['400 16px "SC Sans"', '700 16px "SC Sans"']
+        ).concat(ebg);
       if (IND[olang()]) want.push('400 16px "' + IND[olang()][indAt(f)] + '"');
       want.forEach(function (x) {
         try {
@@ -313,7 +344,8 @@ export function init() {
       try {
         var m = dm(),
           c = chosen();
-        return [m, c ? c.join(",") : "*", plang(), LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter()].join("|");
+        // (P.pcov: the cover and closing page are two pages more)
+        return [m, c ? c.join(",") : "*", plang(), LEAD, pref(), P.tr, P.ind, pfn(), land(m), letter(), P.pcov].join("|");
       } finally {
         alt = null;
       }
@@ -421,6 +453,7 @@ export function init() {
       var round = ++cnow;
       summary();
       hints();
+      coverRow();
       if (pm.hidden || !what.total().texts) return;
       cwait = setTimeout(function () {
         wants().forEach(function (o) {
@@ -590,6 +623,18 @@ export function init() {
       rows();
       refresh();
     };
+    // Cover and closing page: a printout of more than one text (not a routine's, whose page 1 is its own), on unless
+    // turned off; remembered for the next printout (P.pcov)
+    var cv = /** @type {HTMLInputElement} */ (byId("prcv"));
+    cv.onchange = function () {
+      change({ pcov: cv.checked ? 1 : 0 });
+      refresh();
+    };
+    function coverRow() {
+      if (!cv) return; // (before the pop-up is set up)
+      cv.checked = P.pcov !== 0;
+      byId("prcvr").hidden = what.total().texts < 2;
+    }
     // the site's CSS as the printer sees it: print rules on, screen-only rules off, no @page
     /** @type {string} the site's CSS for the printer, worked out once */
     var pcssT = "";
@@ -679,7 +724,7 @@ export function init() {
     function link(mode) {
       /** @type {Record<string, any>} */
       var s = {};
-      ["lang", "lead", "l2", "ui", "ind", "ref", "pref", "fnt", "pfn", "plang", "ppr", "tr", "por", "pskip"].forEach(function (k) {
+      ["lang", "lead", "l2", "ui", "ind", "ref", "pref", "fnt", "pfn", "plang", "ppr", "tr", "por", "pskip", "pcov"].forEach(function (k) {
         s[k] = P[k];
       });
       return location.origin + location.pathname + "?print=" + mode + "&s=" + encodeURIComponent(JSON.stringify(s));
@@ -904,6 +949,9 @@ export function init() {
           return P.pskip.indexOf(id) < 0;
         }),
       );
+      // (the printout's fonts asked for first, EB Garamond among them: nothing on the page uses them, so fonts.ready
+      // would not wait for them, and the printout would come out in another font)
+      fontsAhead();
       (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () {
         setTimeout(function () {
           go(mode);

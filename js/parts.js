@@ -137,6 +137,9 @@ var SITE_PARTS = (function () {
     "sc-symbols-math",
     "sc-symbols-2",
     "sc-symbols",
+    // the printout's English (css/15-print.css), so printing works offline from the first time
+    "eb-garamond-latin",
+    "eb-garamond-italic-latin",
   ].map(function (f) {
     return "fonts/" + f + ".woff2";
   });

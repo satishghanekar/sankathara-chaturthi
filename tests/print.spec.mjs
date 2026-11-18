@@ -819,3 +819,82 @@ test("print builder: English as the main language lists English first @chromium-
   await expect(page.locator("#prlg [aria-pressed=true]")).toHaveText("English");
   await context.close();
 });
+
+// ---- The printout as a book (as in Nitya Upasana, 2026-11-17): a cover and a closing page around a printout of more
+// than one text, ornaments and headings, EB Garamond for the English ----
+const SKIP_ALL_BUT = (keep) => ["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"].filter((id) => !keep.includes(id));
+
+test("more than one text: a cover, the contents, the texts, a closing page @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, { ...SETUPS.marathi, pskip: SKIP_ALL_BUT(["p1", "a1", "a3"]) }, { hash: "?print=as" });
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 20_000 });
+  await page.emulateMedia({ media: "print" });
+  const got = await page.evaluate(() => {
+    const pv = document.getElementById("pv");
+    return {
+      order: [...pv.children].map((s) => (s.classList.contains("pvs") ? "text" : s.className)),
+      cover: pv.querySelector(".pvcover").textContent,
+      frameTall: pv.querySelector(".pvframe").getBoundingClientRect().height,
+      sources: [...pv.querySelectorAll(".pvclose .pvsl li")].map((e) => e.getAttribute("data-sid")),
+      qr: !!pv.querySelector(".pvclose .pvqr svg"),
+      url: pv.querySelector(".pvclose .pvurl").textContent,
+      rules: pv.querySelectorAll(".pvs .pvtitle .pvorn-rule").length,
+      ends: pv.querySelectorAll(".pvs .pvorn-end").length,
+      ebg: document.fonts.check('16px "EB Garamond"'),
+    };
+  });
+  expect(got.order).toEqual(["pvcover", "pvcov", "text", "text", "text", "pvclose"]);
+  expect(got.cover).toContain("संकटहर चतुर्थी");
+  expect(got.cover).toContain("३ पाठ");
+  // as tall as what is in it, never the page (Safari scales the printout)
+  expect(got.frameTall).toBeLessThan(700);
+  expect(got.sources).toEqual(["p1", "a1", "a3"]);
+  expect(got.qr).toBe(true);
+  expect(got.url).toBe("sankathara-chaturthi.pages.dev");
+  expect(got.rules).toBe(3);
+  expect(got.ends).toBe(3);
+  expect(got.ebg).toBe(true);
+  const pdf = await pdfPages(page, "Letter");
+  expect(pdf.pages[pdf.pages.length - 1]).toContain("sankathara-chaturthi.pages.dev");
+});
+
+test("the cover and closing page can be turned off, and a single text never has them @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, { ...SETUPS.marathi, pcov: 0, pskip: SKIP_ALL_BUT(["a1", "a3"]) }, { hash: "?print=as" });
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 20_000 });
+  expect(await page.evaluate(() => [...document.getElementById("pv").children].map((s) => (s.classList.contains("pvs") ? "text" : s.className)))).toEqual([
+    "pvcov",
+    "text",
+    "text",
+  ]);
+});
+
+test("the pop-up's Cover and closing page: shown for more than one text, remembered @chromium-only", async ({ page }) => {
+  await stubPrint(page);
+  await openSite(page, SETUPS.english);
+  await tapPrint(page);
+  await howStep(page);
+  const box = page.locator("#prcv");
+  await expect(box).toBeVisible();
+  await expect(box).toBeChecked();
+  await expect(box).toHaveAccessibleName("Cover and closing page");
+  expect((await page.locator("#prcvr .prchk").boundingBox()).height).toBeGreaterThanOrEqual(44);
+  await page.locator("#prcvr .prchk").click();
+  await expect(box).not.toBeChecked();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pcov)).toBe(0);
+  await page.locator("#prgp").click();
+  await page.waitForFunction(() => window.__printed > 0, null, { timeout: 15_000 });
+  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvcover, #pv .pvclose").length)).toBe(0);
+});
+
+// Safari leaves backgrounds off the paper unless the reader asks for them: every line and ornament on paper is a border
+// or a drawing, never a background
+test("the printout draws nothing with a background colour @chromium-only", async () => {
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("../css/15-print.css", import.meta.url), "utf8");
+  const bgs = [...css.matchAll(/([^{}]+)\{[^}]*\bbackground(?:-color)?:\s*([^;]+);/g)].map((m) => m[1].trim().split("\n").pop().trim() + " → " + m[2]);
+  expect(
+    bgs.every((b) => /#fff|#f2efea/.test(b)),
+    bgs.join(", "),
+  ).toBe(true);
+});

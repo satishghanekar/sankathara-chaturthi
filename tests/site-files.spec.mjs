@@ -92,8 +92,10 @@ test("the scripts, styles and page stay within their size budget", () => {
   // code (PAGE_LANGUAGE), 220.2 KB then; 223 KB since 2026-11-15: a text's versions (the shared parts) and English's
   // two spellings named in five languages, 222.15 KB then on a Mac; 224 KB since 2026-11-15: the keyboard's / and ← → and the dhrupad's label in two
   // parts, as in Nitya Upasana: 223.2 KB then on a Mac; 225 KB since 2026-11-15: as in Nitya Upasana, on a
-  // computer Home, Library and Reading moved into the top bar, and the session title's two lines: 224.46 KB then on a Mac)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(225_000);
+  // computer Home, Library and Reading moved into the top bar, and the session title's two lines: 224.46 KB then on a Mac;
+  // 230 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, its cover, closing page and ornaments, and
+  // their words in five languages: 229.19 KB then on a Mac)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(230_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -103,8 +105,10 @@ test("the scripts, styles and page stay within their size budget", () => {
   // About under both columns, the preview centred, a sideways phone's rows on one line): 63.22 KB then on a Mac; 64.5 KB
   // since 2026-11-15: the phone and iPad review, as in Nitya Upasana: the bottom bar's words, a sideways phone's Library,
   // the centred two-language title: 64.2 KB then on a Mac; 66 KB since 2026-11-15: as in Nitya Upasana, a
-  // computer's top bar holding Home, Library and Reading, and Prev and Next at the text's sides: 65.59 KB then on a Mac)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(66_000);
+  // computer's top bar holding Home, Library and Reading, and Prev and Next at the text's sides: 65.59 KB then on a Mac;
+  // 69 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, css/15-print.css, and the Print pop-up's Cover
+  // switch: 68.08 KB then on a Mac)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(69_000);
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
 });
 
