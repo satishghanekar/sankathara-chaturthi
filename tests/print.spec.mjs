@@ -119,7 +119,11 @@ test("browser menu print gives every text @chromium-only", async ({ browser }) =
   // the site's own handler has built the print view
   await addMarkers(page, "beforeprint");
   const pdf = await pdfPages(page, "Letter");
-  // afterprint (fired when page.pdf finished) puts the page back to normal
+  // afterprint (fired when page.pdf finished) leaves the printout in place: Safari on a Mac sends it as its print sheet
+  // opens and lays the page out again while the sheet is open (as in Nitya Upasana, 2026-11-17: "From" out of range, the
+  // sheet stuck); the reader back on the page (a tap) puts it back to normal
+  expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(true);
+  await page.locator("body").dispatchEvent("pointerdown");
   expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
   const at = markerPages(pdf.pages);
   const pieces = await page.evaluate(() => [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid));
@@ -777,9 +781,12 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
       window.dispatchEvent(new Event("beforeprint"));
       const f = document.documentElement.getAttribute("data-font");
       window.dispatchEvent(new Event("afterprint"));
-      return [f, document.documentElement.getAttribute("data-font")];
+      // (still the printout's while Safari's print sheet may be open; the reader's own back at their first tap)
+      const sheet = document.documentElement.getAttribute("data-font");
+      document.dispatchEvent(new PointerEvent("pointerdown"));
+      return [f, sheet, document.documentElement.getAttribute("data-font")];
     }),
-  ).toEqual(["bold", "classic"]);
+  ).toEqual(["bold", "bold", "classic"]);
   // the dhrupad likewise: every verse in the printout, once on the reading page
   await page.locator('#prdg [data-v="0"]').click();
   await expect(page.locator("#prdg [aria-pressed=true]")).toHaveText("Every verse", { useInnerText: true });
@@ -792,6 +799,7 @@ test("print pop-up shows the dhrupad and font settings @chromium-only", async ({
       window.dispatchEvent(new Event("beforeprint"));
       const f = r();
       window.dispatchEvent(new Event("afterprint"));
+      document.dispatchEvent(new PointerEvent("pointerdown"));
       return [was, f, r()];
     }),
   ).toEqual(["1", "0", "1"]);
