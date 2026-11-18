@@ -94,8 +94,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // parts, as in Nitya Upasana: 223.2 KB then on a Mac; 225 KB since 2026-11-15: as in Nitya Upasana, on a
   // computer Home, Library and Reading moved into the top bar, and the session title's two lines: 224.46 KB then on a Mac;
   // 230 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, its cover, closing page and ornaments, and
-  // their words in five languages: 229.19 KB then on a Mac)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(230_000);
+  // their words in five languages: 229.19 KB then on a Mac; 232 KB since 2026-11-18: as in Nitya Upasana, Check for
+  // updates waiting for the new version and saying why one could not be saved, in five languages: 230.57 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(232_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
