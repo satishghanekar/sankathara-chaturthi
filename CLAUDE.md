@@ -77,6 +77,9 @@ private.
 ## Tests, the sister app and releases
 - While working: `cd tests && npm test` (Chromium) or one suite. Before a merge: `npm run full`. Every change comes
   with a test, new or updated.
+- A change to the printout (`css/15-print.css`, `js/print/`, `js/features/print.js`) or a new or changed text: also
+  `npm run print-pages` (no text may take a page more; `-- --update` when meant) and, on a Mac with Safari's remote
+  automation on, `npm run safari-print` (tests/README.md, "Print tests").
 - Nitya Upasana (the folder beside this one) shares most scripts, styles and tests, and leads: a change in Sankathara
   follows how Nitya does it. After changing a shared file: `npm run sister`, then bring the same change to the other
   app.

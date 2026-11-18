@@ -36,7 +36,8 @@ On GitHub every pull request and every push to `main` runs everything (`.github/
 | `smoke.spec.mjs` | The site opens with no script errors in every language set-up. |
 | `content.spec.mjs` | Every line of every piece, exactly, in Marathi, English (both spellings), Kannada and Both; the home page text; every line has a unique id and a partner in the other language. |
 | `print.spec.mjs` | **Print and PDF** (see below). Chromium only: no other engine makes a PDF. |
-| `print-view.spec.mjs` | The printout in every engine (Firefox and WebKit too): after Print, in print media only the print view shows, with every text and its contents, each text on a new page and no block left splittable. |
+| `print-view.spec.mjs` | The printout in every engine (Firefox and WebKit too): after Print, in print media only the print view shows, with every text and its contents, each long text on a new page, a short one kept as one inline box, and no block left splittable. |
+| `print-pages.spec.mjs` | Every text's page count, alone, in nine combinations, against `tools/print-pages.json` (`npm run print-pages`, on a Mac only: skipped unless `PRINT_PAGES` is set; see Print tests). |
 | `layout.spec.mjs` | 13 screens from a 320 px phone to a 2560 px monitor, portrait and landscape, × 3 language set-ups: no sideways scroll, bars on screen, readable text, no line wider than the screen; 44 px tap targets; the bars' words keep their contrast on the pills in every theme. |
 | `visual.spec.mjs` | 42 screenshots compared pixel by pixel: home, pieces, two columns on wide screens, side menu, Settings, search, Help, dialogs, every theme, font and language arrangement, and the print layouts. |
 | `interactions.spec.mjs` | Go to (the title saying where in the Atharvashirsha and a session, its sheet, Back; a short aarti keeps the Home link), the top bar (Share, Settings), the Share menu (Print is in it), Settings' tabs and Show / Dhrupad, the Library, search (Marathi and English letters, forgiving spelling), Settings (theme, contrast, font, size, languages, IAST), folds remembered, line highlight, Prev / Next, dialogs, picture viewer, date card, reopening where you were. The version line: its state under the version and the 44px round button beside them. |
@@ -64,6 +65,13 @@ The grid is every **Portrait** printout (Marathi, English) × every **text font*
 - the page count matches the recorded baseline;
 - the print builder (as in Nitya Upasana): What then How on a phone, side by side on a wide screen; only the texts ticked print, one alone without contents, none ticked waits; a group's Select all and Clear; Marathi menus; the printout's language; the preview and the paper; the star on the recommended choices, the hints under Dhrupad and Page, and "about N pages", which must be the pages of the PDF (the count's rules are unit-tested in `unit/pages.test.mjs`); Open in Safari carries the texts ticked.
 
+
+The book printout (2026-11-18, as in Nitya Upasana): a printout of more than one text has a cover, the contents and a closing page (where each text comes from, the site's QR code), in that order; "Cover and closing page" leaves them out; the print CSS draws nothing with a background colour (Safari leaves backgrounds off the paper); and every page keeps a 25mm left margin for punching holes (`checkPages`).
+
+#### Two more checks, run by hand on a Mac after any change to the printout
+
+- **`npm run print-pages`** prints every text alone in nine combinations and compares each page count with `tools/print-pages.json`: a text that takes a page more fails; `npm run print-pages -- --update` records new counts (commit the file). Chrome's counts on a Mac, so CI doesn't run it.
+- **`npm run safari-print`** has real Safari (`safaridriver`) print five combinations from the Print pop-up, with its dialog stubbed out, and saves each part of the printout in `tests/safari-prints/`; it fails on a script error, parts out of order, or EB Garamond not loaded. Once on the Mac: Safari → Settings → Advanced → "Show features for web developers", Settings → Developer → "Allow remote automation", and `safaridriver --enable`.
 ## Baselines
 
 Text, screenshots and print summaries are kept in `__snapshots__/`. They are the accepted look of the site (first recorded before the 2026-10 refactor, to prove it changed nothing a reader can see). When you change something on purpose (a new line, a new colour), update them and check the diff in the pull request. The text snapshots can be updated on your computer; on a Mac the pictures and print summaries are skipped, so this leaves them alone (they come from CI, below):

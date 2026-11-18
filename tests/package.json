@@ -15,7 +15,9 @@
     "texts": "node tools/texts.mjs",
     "wiki": "node tools/wiki.mjs",
     "types": "tsc -p tsconfig.json",
-    "sister": "node tools/sister-check.mjs"
+    "sister": "node tools/sister-check.mjs",
+    "print-pages": "node tools/print-pages.mjs",
+    "safari-print": "node tools/safari-print.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
