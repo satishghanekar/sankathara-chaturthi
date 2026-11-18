@@ -882,14 +882,17 @@ export function init() {
         t,
         function () {
           again = null;
+          if (!busy && root.hasAttribute("data-print")) poff();
         },
         true,
       );
     });
+    // The printout stays until the reader is back (a tap or a key, above): a Mac's Safari sends afterprint as its print
+    // sheet opens and counts the pages again while it is open; a page range then fell outside the page on screen, and
+    // the sheet stuck (Satish 2026-11-17, in Nitya Upasana)
     window.addEventListener("afterprint", function () {
       if (busy) again = job;
       busy = false;
-      poff();
     });
     // Opened by the Home Screen app's Open in Safari (see js/render.js): lay the printout out once the fonts
     // are in, then Print now asks for the tap that Safari needs
