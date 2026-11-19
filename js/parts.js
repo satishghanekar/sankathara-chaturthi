@@ -84,6 +84,8 @@ var SITE_PARTS = (function () {
     "print/what",
     "print/write",
     "features/print",
+    "core/install-kind",
+    "features/install-page",
     "features/share",
     "features/more-menu",
     "features/offline",
