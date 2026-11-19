@@ -195,10 +195,6 @@ export default {
     doneHow: "ત્યાંથી ખોલો: ઇન્ટરનેટ વિના પણ ચાલે છે.",
     added: "મેં ઉમેર્યું",
     addedHow: "હવે હોમ સ્ક્રીન પરના તેના ચિહ્નથી ખોલો: ઇન્ટરનેટ વિના પણ ચાલે છે.",
-    // the label beside the arrow, with the browser's button drawn in: in English in every language (Satish, 2026-11-19)
-    tip: "Tap this",
-    tipAddress: "Tap this in the address bar",
-    tipEither: "Tap whichever you see, at the bottom",
     later: "હમણાં નહીં, બ્રાઉઝરમાં જ વાંચો",
     close: "બંધ કરો",
   },
