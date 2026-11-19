@@ -215,10 +215,6 @@ export default {
     doneHow: "అక్కడి నుండి తెరవండి: ఇంటర్నెట్ లేకపోయినా పనిచేస్తుంది.",
     added: "జోడించాను",
     addedHow: "ఇప్పుడు హోమ్ స్క్రీన్‌లోని దాని గుర్తు నుండి తెరవండి: ఇంటర్నెట్ లేకపోయినా పనిచేస్తుంది.",
-    // the label beside the arrow, with the browser's button drawn in: in English in every language (Satish, 2026-11-19)
-    tip: "Tap this",
-    tipAddress: "Tap this in the address bar",
-    tipEither: "Tap whichever you see, at the bottom",
     later: "ఇప్పుడు వద్దు, బ్రౌజర్‌లోనే చదవండి",
     close: "మూసివేయండి",
   },

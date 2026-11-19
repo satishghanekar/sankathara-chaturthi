@@ -211,10 +211,6 @@ export default {
     doneHow: "ಅಲ್ಲಿಂದ ತೆರೆಯಿರಿ: ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
     added: "ಸೇರಿಸಿದ್ದೇನೆ",
     addedHow: "ಈಗ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನ ಅದರ ಚಿಹ್ನೆಯಿಂದ ತೆರೆಯಿರಿ: ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
-    // the label beside the arrow, with the browser's button drawn in: in English in every language (Satish, 2026-11-19)
-    tip: "Tap this",
-    tipAddress: "Tap this in the address bar",
-    tipEither: "Tap whichever you see, at the bottom",
     later: "ಈಗ ಬೇಡ, ಬ್ರೌಸರ್‌ನಲ್ಲೇ ಓದಿ",
     close: "ಮುಚ್ಚಿ",
   },
