@@ -370,9 +370,9 @@ export function skMid(t) {
 
 // Date (with the year when it is not this year) and moonrise text for one Sankashti, in the menu language
 // (js/strings/: sankashti), and the moonrise in English for calendar files (ten)
-/** @param {Sankashti} o */
-export function skFmt(o) {
-  var w = menuWords("sankashti"),
+/** @param {Sankashti} o @param {string} [lang] the language: the menu language, or English for Share */
+export function skFmt(o, lang) {
+  var w = menuWords("sankashti", lang),
     we = menuWords("sankashti", "en"),
     d = new Date(o.day),
     yr = d.getFullYear() !== new Date().getFullYear(),

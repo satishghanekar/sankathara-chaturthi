@@ -44,10 +44,11 @@ export function init() {
     function shareText(sep) {
       var C = skCache,
         L = skLoc(),
-        w = menuWords("share");
+        // in English whatever the menu language: the people it is sent to may read no Marathi (Satish, 2026-11-19)
+        w = menuWords("share", "en");
       if (!C || !L) return w.plain(title) + (sep ? "" : "\n" + url) + w.tip;
       var o = C.list[C.sel].day >= skMid() ? C.list[C.sel] : C.list[C.ni],
-        f = skFmt(o),
+        f = skFmt(o, "en"),
         t = skTemple(L),
         ang = f.ang ? "Angaraki " : ""; // with the name, which is always English
       return w.next(ang, f.day, t ? w.temple : "", o.rise ? f.time : "") + (sep ? "" : w.link(url)) + w.tip;
