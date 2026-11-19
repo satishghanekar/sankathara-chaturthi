@@ -1583,6 +1583,10 @@ test("the first opening of the day shows the next Chaturthi's date, then lights 
   await expect(spl.locator(".splh .splwd")).not.toBeEmpty();
   await expect(spl.locator(".splh")).toContainText("Columbus, OH");
   await expect(spl.locator(".splh")).toContainText("Moonrise");
+  // who made the site and the version, small at its foot
+  const version = (await page.locator('meta[name="version"]').getAttribute("content")).replace(/^aarti-v/, "");
+  await expect(spl.locator(".spl-by")).toContainText("A volunteer offering by Satish Ghanekar");
+  await expect(spl.locator(".spl-ver")).toHaveText("Version " + version);
   // the date first, then the letters
   await expect(spl.locator(".splwd")).toHaveClass(/on/);
   await expect(spl).toHaveClass(/go/, { timeout: 3000 });
@@ -1599,6 +1603,25 @@ test("on a Sankathara Chaturthi the launch animation says today and the time to 
   const spl = page.locator("#spl");
   await expect(spl.locator(".splh")).toContainText("Sankathara Chaturthi today");
   await expect(spl.locator(".splh")).toContainText("Moonrise 8:23 pm · in 3 h 23 min");
+});
+
+// An iPhone keeps the scripts it has in memory until the app is closed, so after an update the new launch part can
+// meet the last version's date card and words. It must still start, and the app with it (2026-11-19, Nitya Upasana:
+// a name it imported was missing, every script stopped, and the app stayed on its splash).
+test("the launch animation starts with the last version's date card and words, and so does the app @mobile", async ({ page }) => {
+  // the files as the last version had them: without the parts this one added
+  await page.route(/\/js\/(features\/date-card|strings\/(en|mr))\.js$/, async (route) => {
+    const body = (await (await route.fetch()).text())
+      .replace("export function launchLines(", "function launchLines(")
+      .replace(/\n  launch: \{\n    skip: [^\n]*\n  \},/, "");
+    await route.fulfill({ contentType: "text/javascript", body });
+  });
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl).toHaveClass(/launch/);
+  await expect(spl.locator(".splh > *")).toHaveCount(0);
+  await expect(spl).toBeHidden({ timeout: 7000 });
+  await expect(page.locator("#skc")).toBeVisible();
 });
 
 test("a tap ends the launch animation, and there is none for less motion @mobile", async ({ page }) => {

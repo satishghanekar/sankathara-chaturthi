@@ -2,6 +2,7 @@
 // offline copy), but the page itself loads files from its own <link> and <script> tags. These checks keep
 // the two in step, so a new style or script file is never missing from the offline copy.
 // Also the size budget: what a first visit downloads.
+import { firstDownload, mb } from "./tools/download-size.mjs";
 import { test, expect } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -196,4 +197,16 @@ test("CI's test jobs fit in the jobs run at once, and each browser's shards cove
         .sort((a, b) => a - b),
       p,
     ).toEqual(Array.from({ length: n }, (_, i) => i + 1));
+});
+
+// DOWNLOAD-SIZE.md and Help say how much a phone downloads (tests/tools/download-size.mjs, npm run sizes): still true,
+// within 5%, so a change that makes the site much bigger or smaller says so there too
+test("DOWNLOAD-SIZE.md and Help still give the download size", () => {
+  const { total } = firstDownload();
+  const written = readFileSync(new URL("../DOWNLOAD-SIZE.md", import.meta.url), "utf8");
+  const md = Number((/## The first time: about ([\d.]+) MB/.exec(written) || [])[1]);
+  expect(Math.abs(md * 1e6 - total) / total, "DOWNLOAD-SIZE.md is out of date: cd tests && npm run sizes").toBeLessThan(0.05);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const help = Number((/<span data-size="first">([\d.]+)<\/span>/.exec(html) || [])[1]);
+  expect(Math.abs(help * 1e6 - total) / total, "Help's download size (index.html, data-size) is out of date: " + mb(total) + " MB").toBeLessThan(0.05);
 });

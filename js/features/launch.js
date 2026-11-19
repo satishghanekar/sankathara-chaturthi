@@ -10,7 +10,11 @@
 
 import { ui } from "../core/words.js";
 import { menuWords } from "../core/strings.js";
-import { launchLines } from "./date-card.js";
+// (as a whole, not by name: an iPhone keeps the scripts it has in memory until the app is closed, so after an update
+// this new part can meet the last version's date card, which has no launchLines yet; a name that is missing breaks
+// every script on the page, and Nitya Upasana stayed on its splash, 2026-11-19. A missing property only leaves the
+// lines out.)
+import * as dateCard from "./date-card.js";
 
 // When each part comes (ms from the page being ready): the lines one after another, the letters (css/02-core.css
 // staggers them, 80 ms apart, 20 letters), and the picture into the ring
@@ -32,7 +36,7 @@ export function init() {
   var lines = document.createElement("div");
   lines.className = "splh";
   try {
-    lines.innerHTML = launchLines();
+    if (typeof dateCard.launchLines === "function") lines.innerHTML = dateCard.launchLines();
   } catch (e) {
     // without its lines it still ends as it should
     console.warn(e);
@@ -41,7 +45,8 @@ export function init() {
   var skip = document.createElement("div");
   skip.className = "splskip";
   skip.lang = ui();
-  skip.textContent = menuWords("launch").skip;
+  // (the words in memory may be the last version's, without these: then none, as above)
+  skip.textContent = (menuWords("launch") || { skip: "" }).skip;
   sp.appendChild(skip);
   // from now on a tap or a key ends it at once (js/splash.js marks one made before the page was ready: .skip)
   sp.addEventListener("click", end);
@@ -61,7 +66,21 @@ export function init() {
     var to = document.querySelector("#iconb img"),
       a = box.getBoundingClientRect(),
       b = to ? to.getBoundingClientRect() : null;
-    if (b && b.width && a.width) box.style.transform = "translate(" + (b.left - a.left) + "px," + (b.top - a.top) + "px) scale(" + b.width / a.width + ")";
+    // (an animation, not a changed style: browsers count a moved box as a layout shift, never an animated transform)
+    if (b && b.width && a.width)
+      box.animate(
+        [
+          { transform: "none" },
+          {
+            transform: "translate(" + (b.left - a.left) + "px," + (b.top - a.top) + "px) scale(" + b.width / a.width + ")",
+          },
+        ],
+        {
+          duration: 550,
+          easing: "cubic-bezier(0.5, 0, 0.2, 1)",
+          fill: "forwards",
+        },
+      );
     setTimeout(end, 380);
   }, FLY_AT);
 }

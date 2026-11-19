@@ -25,6 +25,10 @@
   var found = document.getElementById("spl");
   if (!found) return;
   var sp = /** @type {HTMLElement} */ (found);
+  // the version, small at the foot, on a line of its own under who made the site (from <meta name="version">, as Settings → About shows it)
+  var ver = sp.querySelector(".spl-ver"),
+    meta = document.querySelector('meta[name="version"]');
+  if (ver && meta) ver.textContent = "Version " + (meta.getAttribute("content") || "").replace(/^aarti-v/, "");
   var box = /** @type {HTMLElement} */ (sp.querySelector(".splm")),
     img = sp.querySelector("img");
   if (!box || !img) return;
@@ -86,6 +90,8 @@
     };
     sp.addEventListener("click", skip);
     document.addEventListener("keydown", skip, { once: true });
+    // set up: its picture may show now (css/02-core.css)
+    sp.setAttribute("data-set", "");
     return;
   }
   // a glow on each lamp, lit in turn
@@ -97,4 +103,5 @@
     glow.style.animationDelay = (i * 0.22).toFixed(2) + "s";
     box.appendChild(glow);
   });
+  sp.setAttribute("data-set", "");
 })();
