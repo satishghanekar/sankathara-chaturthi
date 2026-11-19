@@ -201,6 +201,10 @@ export default {
     doneHow: "Open it from there: it works without internet.",
     added: "I've added it",
     addedHow: "Now open it from its icon on your Home Screen: it works without internet.",
+    // the label beside the arrow, with the browser's button drawn in: in English in every language (Satish, 2026-11-19)
+    tip: "Tap this",
+    tipAddress: "Tap this in the address bar",
+    tipEither: "Tap whichever you see, at the bottom",
     later: "Not now, read in the browser",
     close: "Close",
   },

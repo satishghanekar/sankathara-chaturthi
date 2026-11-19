@@ -97,8 +97,8 @@ test("the scripts, styles and page stay within their size budget", () => {
   // their words in five languages: 229.19 KB then on a Mac; 232 KB since 2026-11-18: as in Nitya Upasana, Check for
   // updates waiting for the new version and saying why one could not be saved, in five languages: 230.57 KB then; 239 KB
   // since 2026-11-19: as in Nitya Upasana, the install page (the one way to install for each device and browser) and its
-  // words in five languages: 238.16 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(239_000);
+  // words in five languages: 238.16 KB then; 240 KB since 2026-11-19: the label beside its arrow, 239.02 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(240_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
