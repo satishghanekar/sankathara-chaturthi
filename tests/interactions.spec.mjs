@@ -1602,7 +1602,8 @@ test("on a Sankathara Chaturthi the launch animation says today and the time to 
   await openSite(page, {}, { launch: true, now: new Date("2026-11-27T17:00:00-05:00") });
   const spl = page.locator("#spl");
   await expect(spl.locator(".splh")).toContainText("Sankathara Chaturthi today");
-  await expect(spl.locator(".splh")).toContainText("Moonrise 8:23 pm · in 3 h 23 min");
+  // (counted from when the lines are written, a moment after 17:00)
+  await expect(spl.locator(".splh")).toContainText(/Moonrise 8:23 pm · in 3 h 2[34] min/);
 });
 
 // An iPhone keeps the scripts it has in memory until the app is closed, so after an update the new launch part can
