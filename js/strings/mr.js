@@ -366,6 +366,10 @@ export default {
     fontThemeLayout: "अक्षरशैली, रंगसंगती, मांडणी",
     defaultSize: "↺ मूळ आकार",
   },
+  // The launch animation (js/features/launch.js): the first opening of the day
+  launch: {
+    skip: "पुढे जाण्यासाठी टॅप करा",
+  },
   language: {
     name: "मराठी",
   },

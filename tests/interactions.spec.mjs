@@ -1572,3 +1572,67 @@ test("Go to in a session at a place in a long text: the title first in the small
   expect(whole).toBe(true);
   expect(await parts.nth(0).evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
 });
+
+// The launch animation (js/splash.js, js/features/launch.js): the first opening of the day, the next Chaturthi's lines
+// first, then the words round the picture lit letter by letter, then Home. Once a day: opened again, the plain splash.
+test("the first opening of the day shows the next Chaturthi's date, then lights the letters, then Home @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl).toHaveClass(/launch/);
+  await expect(spl.locator(".splg")).toHaveCount(20);
+  await expect(spl.locator(".splh .splwd")).not.toBeEmpty();
+  await expect(spl.locator(".splh")).toContainText("Columbus, OH");
+  await expect(spl.locator(".splh")).toContainText("Moonrise");
+  // who made the site and the version, small at its foot
+  const version = (await page.locator('meta[name="version"]').getAttribute("content")).replace(/^aarti-v/, "");
+  await expect(spl.locator(".spl-by")).toContainText("A volunteer offering by Satish Ghanekar");
+  await expect(spl.locator(".spl-ver")).toHaveText("Version " + version);
+  // the date first, then the letters
+  await expect(spl.locator(".splwd")).toHaveClass(/on/);
+  await expect(spl).toHaveClass(/go/, { timeout: 3000 });
+  await expect(spl).toBeHidden({ timeout: 7000 });
+  await expect(page.locator("#skc")).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("sankathara-launch"))).toBe("2026-10-15");
+  await page.reload();
+  await settle(page);
+  await expect(spl).not.toHaveClass(/launch/);
+});
+
+test("on a Sankathara Chaturthi the launch animation says today and the time to the moonrise @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true, now: new Date("2026-11-27T17:00:00-05:00") });
+  const spl = page.locator("#spl");
+  await expect(spl.locator(".splh")).toContainText("Sankathara Chaturthi today");
+  // (counted from when the lines are written, a moment after 17:00)
+  await expect(spl.locator(".splh")).toContainText(/Moonrise 8:23 pm · in 3 h 2[34] min/);
+});
+
+// An iPhone keeps the scripts it has in memory until the app is closed, so after an update the new launch part can
+// meet the last version's date card and words. It must still start, and the app with it (2026-11-19, Nitya Upasana:
+// a name it imported was missing, every script stopped, and the app stayed on its splash).
+test("the launch animation starts with the last version's date card and words, and so does the app @mobile", async ({ page }) => {
+  // the files as the last version had them: without the parts this one added
+  await page.route(/\/js\/(features\/date-card|strings\/(en|mr))\.js$/, async (route) => {
+    const body = (await (await route.fetch()).text())
+      .replace("export function launchLines(", "function launchLines(")
+      .replace(/\n  launch: \{\n    skip: [^\n]*\n  \},/, "");
+    await route.fulfill({ contentType: "text/javascript", body });
+  });
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl).toHaveClass(/launch/);
+  await expect(spl.locator(".splh > *")).toHaveCount(0);
+  await expect(spl).toBeHidden({ timeout: 7000 });
+  await expect(page.locator("#skc")).toBeVisible();
+});
+
+test("a tap ends the launch animation, and there is none for less motion @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl.locator(".splskip")).toHaveText("Tap to skip");
+  await spl.click();
+  await expect(spl).toBeHidden({ timeout: 1000 });
+  const calm = await page.context().newPage();
+  await calm.emulateMedia({ reducedMotion: "reduce" });
+  await openSite(calm, {}, { launch: true });
+  await expect(calm.locator("#spl")).not.toHaveClass(/launch/);
+});

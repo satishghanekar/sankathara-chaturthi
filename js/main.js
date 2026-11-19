@@ -55,6 +55,7 @@ import { init as startShare } from "./features/share.js";
 import { init as startInstallPage } from "./features/install-page.js";
 import { init as startMoreMenu } from "./features/more-menu.js";
 import { init as startOffline } from "./features/offline.js";
+import { init as startLaunch } from "./features/launch.js";
 import { menuWords } from "./core/strings.js";
 
 // One part that fails to start is reported and passed over, so the parts after it still start (a part that needs
@@ -105,6 +106,7 @@ function start() {
     run(startInstallPage); // The install page (#install-page): the shared link (?add), App in the Share menu, Add to Home Screen in Settings
     run(startMoreMenu); // Share in the top bar: App, Share, QR, Print and Help in a small menu
     run(startOffline); // Offline use: home-screen app details and the service worker (sw.js)
+    run(startLaunch); // The launch animation, the first opening of the day: the next date, then the letters (last: it reads Home)
   } finally {
     // Show the page (see "data-ready" in css/02-core.css), even if a part failed to start
     document.documentElement.setAttribute("data-ready", "");

@@ -727,6 +727,48 @@ function skRing(k, dd) {
     .join("");
 }
 
+/**
+ * The launch animation's lines (js/features/launch.js), as the card has them: how far the next Chaturthi is in the
+ * reading languages ("८ दिवस", "8 days"; "आज" on the day) with the card's heading, its date and month, the moonrise and
+ * the place (on the day, the time left before the moonrise); "" when no place is known
+ */
+export function launchLines() {
+  var L = skLoc(),
+    C = skCache;
+  if (!L || !C || !C.list[C.ni]) return "";
+  var o = C.list[C.ni],
+    f = skFmt(o),
+    w = menuWords("card"),
+    dd = Math.round((o.day - skMid()) / 86400000),
+    hd = dd === 0 ? w.heads.today : dd === 1 ? w.heads.tomorrow : w.heads.next,
+    counts = [lead(), second()].filter(Boolean).map(function (l) {
+      var c = l === "en" ? "en" : mrLang(),
+        lw = menuWords("card", c);
+      return '<span lang="' + c + '">' + esc(dd === 0 ? lw.ringToday : dd === 1 ? lw.ringTomorrow : lw.ringDays(dd)) + "</span>";
+    }),
+    left = "";
+  if (f.ang) hd = w.angaraki(hd);
+  if (dd === 0 && o.rise && Date.now() < o.rise) {
+    var mins = Math.ceil((o.rise - Date.now()) / 60000);
+    left = " · " + w.moonLeft(Math.floor(mins / 60), mins % 60);
+  }
+  return (
+    '<div class="splwd">' +
+    counts[0] +
+    "</div>" +
+    '<div class="splsm">' +
+    (counts[1] ? counts[1] + " · " : "") +
+    one(esc(hd)) +
+    "</div>" +
+    '<div class="splti">' +
+    one(esc(menuWords("sankashti").day(f.d.getDay(), f.d.getDate(), f.d.getMonth(), 0) + " · " + nameOf(skMasa(o)))) +
+    "</div>" +
+    '<div class="splsm">' +
+    one(w.moonrise(esc(f.time)) + esc(left) + " · " + esc(nameOf(L))) +
+    "</div>"
+  );
+}
+
 // True within 120 km of Bharatiya Hindu Temple, Powell OH, where the group meets 7:00–8:30 pm
 /** @param {{ lat: number, lon: number }} L */
 export function skTemple(L) {

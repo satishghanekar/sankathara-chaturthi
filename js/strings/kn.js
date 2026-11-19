@@ -382,6 +382,10 @@ export default {
     fontThemeLayout: "ಅಕ್ಷರಶೈಲಿ, ಥೀಮ್, ವಿನ್ಯಾಸ",
     defaultSize: "↺ ಮೂಲ ಗಾತ್ರ",
   },
+  // The launch animation (js/features/launch.js): the first opening of the day
+  launch: {
+    skip: "ಮುಂದೆ ಹೋಗಲು ಟ್ಯಾಪ್ ಮಾಡಿ",
+  },
   // The language's own name, in its own letters: Settings → Menus and buttons (js/features/settings-panel.js)
   language: {
     name: "ಕನ್ನಡ",

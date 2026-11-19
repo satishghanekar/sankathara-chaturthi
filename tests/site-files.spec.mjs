@@ -2,6 +2,7 @@
 // offline copy), but the page itself loads files from its own <link> and <script> tags. These checks keep
 // the two in step, so a new style or script file is never missing from the offline copy.
 // Also the size budget: what a first visit downloads.
+import { firstDownload, mb } from "./tools/download-size.mjs";
 import { test, expect } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { gzipSync } from "node:zlib";
@@ -97,8 +98,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // their words in five languages: 229.19 KB then on a Mac; 232 KB since 2026-11-18: as in Nitya Upasana, Check for
   // updates waiting for the new version and saying why one could not be saved, in five languages: 230.57 KB then; 239 KB
   // since 2026-11-19: as in Nitya Upasana, the install page (the one way to install for each device and browser) and its
-  // words in five languages: 238.16 KB then; 240 KB since 2026-11-19: the label beside its arrow, 239.02 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(240_000);
+  // words in five languages: 238.16 KB then; 240 KB since 2026-11-19: the label beside its arrow, 239.02 KB then; 243 KB
+  // since 2026-11-19: the launch animation, js/features/launch.js and the splash's part, 242.5 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(243_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -110,8 +112,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // the centred two-language title: 64.2 KB then on a Mac; 66 KB since 2026-11-15: as in Nitya Upasana, a
   // computer's top bar holding Home, Library and Reading, and Prev and Next at the text's sides: 65.59 KB then on a Mac;
   // 69 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, css/15-print.css, and the Print pop-up's Cover
-  // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(70_000);
+  // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then; 71 KB
+  // since 2026-11-19: the launch animation and the maker and version at the splash's foot, 70.19 KB then)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(71_000);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then)
   expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_500);
 });
@@ -196,4 +199,16 @@ test("CI's test jobs fit in the jobs run at once, and each browser's shards cove
         .sort((a, b) => a - b),
       p,
     ).toEqual(Array.from({ length: n }, (_, i) => i + 1));
+});
+
+// DOWNLOAD-SIZE.md and Help say how much a phone downloads (tests/tools/download-size.mjs, npm run sizes): still true,
+// within 5%, so a change that makes the site much bigger or smaller says so there too
+test("DOWNLOAD-SIZE.md and Help still give the download size", () => {
+  const { total } = firstDownload();
+  const written = readFileSync(new URL("../DOWNLOAD-SIZE.md", import.meta.url), "utf8");
+  const md = Number((/## The first time: about ([\d.]+) MB/.exec(written) || [])[1]);
+  expect(Math.abs(md * 1e6 - total) / total, "DOWNLOAD-SIZE.md is out of date: cd tests && npm run sizes").toBeLessThan(0.05);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  const help = Number((/<span data-size="first">([\d.]+)<\/span>/.exec(html) || [])[1]);
+  expect(Math.abs(help * 1e6 - total) / total, "Help's download size (index.html, data-size) is out of date: " + mb(total) + " MB").toBeLessThan(0.05);
 });

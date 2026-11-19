@@ -138,6 +138,11 @@ test("the splash shows the picture and its lamps until the page is ready, then g
   });
   await page.clock.setFixedTime(FIXED_NOW);
   await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify({ ...BASE_PREFS, th: "dark" })]);
+  // (opened today already: the plain splash, not the launch animation)
+  await page.addInitScript(
+    (d) => localStorage.setItem("sankathara-launch", d),
+    FIXED_NOW.getFullYear() + "-" + (FIXED_NOW.getMonth() + 1) + "-" + FIXED_NOW.getDate(),
+  );
   // the site script is held back, so the page is still starting
   await page.goto("./", { waitUntil: "commit" });
   const spl = page.locator("#spl");
