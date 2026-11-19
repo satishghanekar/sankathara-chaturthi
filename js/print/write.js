@@ -562,7 +562,8 @@ export function createWriter(o) {
     if (q) site.appendChild(mk("div", "pvqr")).appendChild(q);
     var at = site.appendChild(mk("div", "pvat"));
     at.appendChild(title("p", "pvsn", /** @type {any} */ (window).SCR.to("संकटहर चतुर्थी"), "Sankathara Chaturthi"));
-    if (url) at.appendChild(mk("p", "pvurl pve", "")).textContent = url.replace(/^https?:\/\/|\/$/g, "");
+    // (the QR code's address carries ?add, the install page's mark: the printed address is the site's own)
+    if (url) at.appendChild(mk("p", "pvurl pve", "")).textContent = url.replace(/^https?:\/\/|\/?(?:\?add)?$/g, "");
     at.appendChild(own("p", "pvdate", menuWords("print", L).printed(dateText(L))));
     var pn = ex.panchang();
     if (pn && k !== "en") at.appendChild(inLang("p", "pvpan", "mr", "")).textContent = pn;
