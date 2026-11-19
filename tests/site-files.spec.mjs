@@ -112,7 +112,8 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 69 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, css/15-print.css, and the Print pop-up's Cover
   // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then)
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(70_000);
-  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_000);
+  // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then)
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_500);
 });
 
 // The Content-Security-Policy in _headers (Cloudflare Pages sends it; tests/serve.mjs too, so every test runs under it):
