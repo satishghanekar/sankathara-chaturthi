@@ -81,6 +81,10 @@ These hold for every text, so a new text prints correctly as soon as its file ex
 - **Print font:** the pop-up's font picker sets `P.pfn`, the printout's font only (empty: the text font). The page takes it as `data-font` just while it prints (`pon()`/`poff()`), and `css/15-print.css` sets each language's face from it. Print dhrupad: `P.pref` works the same way, through `data-ref`.
 - **Tests:** `tests/print.spec.mjs` prints every layout × font to PDF (Portrait on Letter and A4, Landscape on Letter or A4 by turns) and checks the PDF: every text printed, listed in the contents and starting on a new page; no block split; every English line of every text on paper, read against the texts themselves (`sourceLines`); the footers; nothing screen-only. It also checks What to print, the pop-up and the iPhone paths.
 
+## Putting it on the home screen (the install page)
+
+As in Nitya Upasana (its `ARCHITECTURE.md` says how it works). Share and the QR code send `https://sankathara-chaturthi.pages.dev/?add`; `?add` opens the install page (`#install-page`, `js/features/install-page.js`, the way for each device from `js/core/install-kind.js`) and is taken out of the address at once. App in the Share menu (`#inb`) and Add to Home Screen in Settings (`#inb2`) open the same page until the site is opened from its icon. Chrome, Edge and Samsung Internet: the browser's own Install, with the menu's steps until Chrome offers it; Safari on an iPhone or an iPad and the other browsers that can't install from a button: the steps, with an arrow at the browser's button; an app's own browser: Open in Safari or Open in Chrome, and Copy link; a computer: the QR code too. `manifest.json` has a description and screenshots (`screenshots/`) for Chrome's install box.
+
 ## Offline use and updates
 
 - `sw.js` keeps the page, every file in `js/parts.js` (styles, scripts, texts, the fonts, the picture and icons) in a cache named after the version (`aarti-v1.2`).

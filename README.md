@@ -35,7 +35,8 @@ What a reader sees and can do is described in the site's own **Help** (Share in 
 | `js/text/format.js`, `js/text/content.js`, `js/text/load.js` | Read the text files, turn them into the pieces' data and put them into the page when it opens. |
 | `js/render.js` | Builds each piece's HTML from that data. |
 | `sw.js` | The service worker. It keeps a copy of the site on each phone so it opens without internet. |
-| `manifest.json` | Name, colours and icons used when someone adds the site to their home screen. |
+| `manifest.json` | Name, description, colours, icons and screenshots used when the site is installed (Chrome shows the description and screenshots in its install box). |
+| `screenshots/` | The screenshots `manifest.json` names: three of a phone (`narrow`) and one of a computer (`wide`). Taken from the site; take them again when Home changes a lot. |
 | `icon-180.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-192.png`, `icon-maskable-512.png`, `icon-32.png`, `apple-touch-icon.png`, `apple-touch-icon-precomposed.png` | App icons (Ganesha artwork): 180 for iPhone, 192/512 rounded tile, maskable versions with extra margin for Android, 32 for the browser tab. The two `apple-touch-icon` files are copies of `icon-180.png` at the site root, where iPhone also looks when it adds the site to the Home Screen. |
 | `tests/` | The automated tests (see *Checking a change*). Not part of the site, though Cloudflare serves the folder too. |
 | `.github/workflows/` | The test run GitHub does on every pull request and every push to `main`, and the job that refreshes its screenshots. |

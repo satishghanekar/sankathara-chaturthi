@@ -3,7 +3,7 @@
 // - The two pages: Settings (#panel, setP) and the Library (#jump, setJ). One is open at a time: opening one closes
 //   the other. They share one way of opening and closing (page() below); what is particular to each is in PAGES.
 //   (Nitya Upasana has two more, its Vedic calendar and routine builder.)
-// - The dialogs and sheets (Help, QR, Print, Add to Home Screen, the full-screen picture, the reading sheet): each
+// - The dialogs and sheets (Help, QR, Print, the install page, the full-screen picture, the reading sheet): each
 //   part opens and closes its own. LAYERS says which keep Tab inside and which the phone's Back closes;
 //   js/features/history.js and js/features/bottom-bar.js read it.
 // A new page or dialog is added to PAGES and LAYERS, and the Back button, Tab, the bottom bar and the other pages follow.
@@ -29,7 +29,7 @@ export const LAYERS = [
   { id: "help", trap: true },
   { id: "qrm", trap: true, back: true },
   { id: "prm", trap: true, back: true },
-  { id: "inm", trap: true, back: true },
+  { id: "install-page", trap: true, back: true },
   { id: "upm", trap: true },
   { id: "pzv", trap: true, back: true },
   { id: "rsh", trap: true, back: true, opener: "rsb" },
