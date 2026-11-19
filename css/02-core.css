@@ -5,6 +5,7 @@
    Sections:
    - Page, top bar and buttons
    - Splash
+   - The launch animation
    - Home page contents list
    - Pieces: header, verses, previous / next links
    - Language switching: .mr and .en parts shown according to data-lang
@@ -62,7 +63,9 @@ html:not([data-ready]) #spl {
     visibility: hidden;
   }
 }
-html[data-ready] #spl {
+html[data-ready] #spl:not(.launch),
+html[data-ready] #spl.skip,
+#spl.done {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -110,6 +113,118 @@ html[data-ready] #spl {
     opacity: 0;
     transform: scale(0.8);
   }
+}
+/* ==== The launch animation (#spl.launch: js/splash.js starts it, js/features/launch.js runs it) ====
+   The first opening of the day, about 4 s once the page is ready (Satish, 2026-11-19): the picture larger, the next
+   Chaturthi's lines under it first (so the date is read at once), then (.go) the words written round the picture,
+   SANKATAHARA and CHATURTHI, lighting up letter by letter (each a small soft window onto a brighter copy of the
+   picture) and a warm light behind Ganesha; then the picture settles into the card's ring as Home shows. A tap or a
+   key ends it (.skip); it goes by itself after 8 s whatever happens. */
+#spl.launch {
+  justify-content: flex-start;
+  padding-top: max(16vh, 60px);
+  animation: spl-out 0s 8s both;
+}
+#spl.launch .spln {
+  display: none;
+}
+#spl.launch .splm {
+  width: 240px;
+  height: 240px;
+  transform-origin: 0 0;
+  transition: transform 0.55s cubic-bezier(0.5, 0, 0.2, 1);
+}
+.splg {
+  position: absolute;
+  width: 12%;
+  height: 12%;
+  margin: -6% 0 0 -6%;
+  background-size: 833.33%;
+  mask: radial-gradient(closest-side, #000 55%, transparent);
+  opacity: 0;
+}
+#spl.go .splg {
+  animation: spl-letter 0.9s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+@keyframes spl-letter {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+    filter: brightness(2.2) saturate(1.4);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: brightness(2.2) saturate(1.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: brightness(1.6) saturate(1.25);
+  }
+}
+.splo {
+  position: absolute;
+  left: 30%;
+  top: 22%;
+  width: 40%;
+  height: 52%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 200 110 / 0.55), transparent);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+#spl.go .splo {
+  animation: spl-halo 0.8s 1.7s both;
+}
+@keyframes spl-halo {
+  to {
+    opacity: 1;
+  }
+}
+/* the lines (js/features/launch.js), each coming up in turn (.on) */
+.splh {
+  max-width: 22rem;
+  padding: 0 16px;
+  text-align: center;
+  color: var(--ink);
+}
+.splh > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.45s,
+    transform 0.45s;
+}
+.splh > .on {
+  opacity: 1;
+  transform: none;
+}
+.splh.out {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.splwd {
+  font-family: var(--head);
+  font-size: calc(var(--fz-xxl) * 1.6);
+  line-height: 1.2;
+  color: var(--accent);
+}
+.splsm {
+  font-size: var(--fz-m);
+  color: var(--muted);
+}
+.splti {
+  margin-top: 12px;
+  font-family: var(--head);
+  font-size: var(--fz-xl);
+}
+#spl.launch > .splskip {
+  position: absolute;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  font-size: var(--fz-s);
+  color: var(--muted);
+  opacity: 0.8;
 }
 body {
   /* no gap above the top bar, so it stays in one place when the page scrolls under it */

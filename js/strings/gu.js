@@ -366,6 +366,10 @@ export default {
     fontThemeLayout: "અક્ષર શૈલી, થીમ, ગોઠવણ",
     defaultSize: "↺ મૂળ કદ",
   },
+  // The launch animation (js/features/launch.js): the first opening of the day
+  launch: {
+    skip: "આગળ વધવા ટૅપ કરો",
+  },
   // The language's own name, in its own letters: Settings → Menus and buttons (js/features/settings-panel.js)
   language: {
     name: "ગુજરાતી",

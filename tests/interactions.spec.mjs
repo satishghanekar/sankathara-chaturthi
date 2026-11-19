@@ -1572,3 +1572,43 @@ test("Go to in a session at a place in a long text: the title first in the small
   expect(whole).toBe(true);
   expect(await parts.nth(0).evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
 });
+
+// The launch animation (js/splash.js, js/features/launch.js): the first opening of the day, the next Chaturthi's lines
+// first, then the words round the picture lit letter by letter, then Home. Once a day: opened again, the plain splash.
+test("the first opening of the day shows the next Chaturthi's date, then lights the letters, then Home @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl).toHaveClass(/launch/);
+  await expect(spl.locator(".splg")).toHaveCount(20);
+  await expect(spl.locator(".splh .splwd")).not.toBeEmpty();
+  await expect(spl.locator(".splh")).toContainText("Columbus, OH");
+  await expect(spl.locator(".splh")).toContainText("Moonrise");
+  // the date first, then the letters
+  await expect(spl.locator(".splwd")).toHaveClass(/on/);
+  await expect(spl).toHaveClass(/go/, { timeout: 3000 });
+  await expect(spl).toBeHidden({ timeout: 7000 });
+  await expect(page.locator("#skc")).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("sankathara-launch"))).toBe("2026-10-15");
+  await page.reload();
+  await settle(page);
+  await expect(spl).not.toHaveClass(/launch/);
+});
+
+test("on a Sankathara Chaturthi the launch animation says today and the time to the moonrise @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true, now: new Date("2026-11-27T17:00:00-05:00") });
+  const spl = page.locator("#spl");
+  await expect(spl.locator(".splh")).toContainText("Sankathara Chaturthi today");
+  await expect(spl.locator(".splh")).toContainText("Moonrise 8:23 pm · in 3 h 23 min");
+});
+
+test("a tap ends the launch animation, and there is none for less motion @mobile", async ({ page }) => {
+  await openSite(page, {}, { launch: true });
+  const spl = page.locator("#spl");
+  await expect(spl.locator(".splskip")).toHaveText("Tap to skip");
+  await spl.click();
+  await expect(spl).toBeHidden({ timeout: 1000 });
+  const calm = await page.context().newPage();
+  await calm.emulateMedia({ reducedMotion: "reduce" });
+  await openSite(calm, {}, { launch: true });
+  await expect(calm.locator("#spl")).not.toHaveClass(/launch/);
+});

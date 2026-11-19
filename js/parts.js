@@ -89,6 +89,7 @@ var SITE_PARTS = (function () {
     "features/share",
     "features/more-menu",
     "features/offline",
+    "features/launch",
   ].map(function (f) {
     return "js/" + f + ".js";
   });
