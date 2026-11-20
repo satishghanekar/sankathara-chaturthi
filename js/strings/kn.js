@@ -343,6 +343,8 @@ export default {
     afterLastTouch: "ಕೊನೆಯ ಸ್ಪರ್ಶದ ನಂತರ, ನಿಮಿಷಗಳು",
     off: "ಆಫ್",
     about: "ಕುರಿತು",
+    contact: "ಸಂಪರ್ಕ",
+    termsOfUse: "ಬಳಕೆಯ ನಿಯಮಗಳು",
     helpAndHowToUse: "ಸಹಾಯ ಮತ್ತು ಬಳಸುವ ವಿಧಾನ",
     addToHomeScreen: "ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ",
     sankatharaChaturthi: "ಸಂಕಟಹರ ಚತುರ್ಥಿ",

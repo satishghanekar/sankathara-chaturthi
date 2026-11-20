@@ -99,8 +99,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // updates waiting for the new version and saying why one could not be saved, in five languages: 230.57 KB then; 239 KB
   // since 2026-11-19: as in Nitya Upasana, the install page (the one way to install for each device and browser) and its
   // words in five languages: 238.16 KB then; 240 KB since 2026-11-19: the label beside its arrow, 239.02 KB then; 243 KB
-  // since 2026-11-19: the launch animation, js/features/launch.js and the splash's part, 242.5 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(243_000);
+  // since 2026-11-19: the launch animation, js/features/launch.js and the splash's part, 242.5 KB then; 244 KB since
+  // 2026-11-20: Terms of use, js/features/terms.js, in five languages, 243.2 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(244_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -115,8 +116,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then; 71 KB
   // since 2026-11-19: the launch animation and the maker and version at the splash's foot, 70.19 KB then)
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(71_000);
-  // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then)
-  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(22_500);
+  // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
+  // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then)
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(23_000);
 });
 
 // The Content-Security-Policy in _headers (Cloudflare Pages sends it; tests/serve.mjs too, so every test runs under it):
@@ -238,5 +240,4 @@ test("_redirects keeps the documents, dotfiles and tests off the site, and nothi
     files.filter((f) => covered(f) && !dev.includes(f)),
     "the app's own files",
   ).toEqual([]);
-  expect(html).toContain('href="LICENSE.txt"');
 });

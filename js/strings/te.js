@@ -347,6 +347,8 @@ export default {
     afterLastTouch: "చివరి స్పర్శ తర్వాత, నిమిషాలు",
     off: "ఆఫ్",
     about: "గురించి",
+    contact: "సంప్రదించండి",
+    termsOfUse: "వినియోగ నిబంధనలు",
     helpAndHowToUse: "సహాయం, వాడే విధానం",
     addToHomeScreen: "హోమ్ స్క్రీన్‌కు జోడించు",
     sankatharaChaturthi: "సంకటహర చతుర్థి",
