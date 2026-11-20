@@ -4,13 +4,13 @@ The texts our group recites at Sankathara (Sankashti) Chaturthi puja: the Ganapa
 
 **Live site:** https://sankathara-chaturthi.pages.dev (the earlier site, https://sankashti-chaturthi.pages.dev, stays as it was)
 
-**Version:** shown in Settings → More → About, on the line that checks for updates (see *The version*).
+**Version:** shown in Settings → About, on the line that checks for updates (see *The version*).
 
 ## What the site does
 
 Everything runs on the phone or computer. Nothing is sent anywhere, and the site works offline once opened.
 
-What a reader sees and can do is described in the site's own **Help** (Share in the top bar → Help, or Settings → More → About). Its text is in `index.html`, in the `<template id="hlpc">`; keep it up to date with every change a reader can see. Most of the site is Nitya Upasana's code (see *Taking a text from Nitya Upasana* and `npm run sister`); what differs is the card and the evening. In short:
+What a reader sees and can do is described in the site's own **Help** (Share in the top bar → Help, or Settings → About). Its text is in `index.html`, in the `<template id="hlpc">`; keep it up to date with every change a reader can see. Most of the site is Nitya Upasana's code (see *Taking a text from Nitya Upasana* and `npm run sister`); what differs is the card and the evening. In short:
 
 - **The card** (`js/features/date-card.js`): the next Sankathara Chaturthi and its moonrise for the reader's place (a built-in list of cities and Columbus suburbs, or the phone's location, worked out on the phone), beside the app's picture in a ring that fills as the day comes nearer. Under the date its month (कार्तिक वद्य चतुर्थी, from Nitya's `js/core/panchang.js`), the moonrise and the place. The foot has **Add to calendar** (an `.ics` event for the group's 7:00–8:30 pm pooja at Bharatiya Hindu Temple, Powell, when within 120 km of it, with moonrise in the notes and a 2-hour reminder) and **More dates**: today's date and every date of this year and next (a strip on phones, a row a year from 600px, always beside the card from 1100px), where Add to calendar becomes **Add all**. On the day itself (`#home.pday`) the moonrise and the place are lit, with the time left. The card folds to one line, remembered, and opens by itself on the day.
 - **The evening** (`js/features/session-card.js`, `content/routines.json`): the texts recited every Sankathara Chaturthi evening, listed under the card. A title reads the evening from there in one scroll (`data-run`), Next › going on through it and Home after the last; a text opened from the Library or search shows on its own (`.solo`).
@@ -91,9 +91,9 @@ Use a plain-text editor that saves UTF-8 (VS Code, Sublime Text, TextEdit in pla
 
 ### The version
 
-Phones keep a saved copy of the site and always open from it, without asking the network, so the site starts quickly even on a weak connection. Phones download files again only when the version changes: opening the site online notices the new `sw.js`, which saves a whole new copy in the background (the fonts are carried over), and the next launch opens the new version. So a change reaches phones only with a new version. **Check for updates** (the round button beside the version in Settings → More → About) compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
+Phones keep a saved copy of the site and always open from it, without asking the network, so the site starts quickly even on a weak connection. Phones download files again only when the version changes: opening the site online notices the new `sw.js`, which saves a whole new copy in the background (the fonts are carried over), and the next launch opens the new version. So a change reaches phones only with a new version. **Check for updates** (the round button beside the version in Settings → About) compares each of those files on the phone with the live one, so it finds changes even when the version stays the same.
 
-The version is what Settings → More → About shows. It appears in **two** places, and both must always be the **same**:
+The version is what Settings → About shows. It appears in **two** places, and both must always be the **same**:
 
 1. `sw.js`, near the top:
    ```js
