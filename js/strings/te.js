@@ -76,10 +76,10 @@ export default {
   pictureViewer: {
     hint: "పెద్దగా చూడడానికి రెండు వేళ్లతో విడదీయండి లేదా రెండుసార్లు నొక్కండి",
   },
-  // Offline use and Check for updates (js/features/offline.js): Settings → More → About
+  // Offline use and Check for updates (js/features/offline.js): Settings → About
   offline: {
     state: { idle: "ఆఫ్‌లైన్‌కు సిద్ధం", save: "ఆఫ్‌లైన్ కోసం సేవ్ అవుతోంది…", off: "సేవ్ చేసిన ప్రతి వాడుకలో ఉంది" },
-    // the version line in Settings → More → About: what Check for updates found (under the version), and the round
+    // the version line in Settings → About: what Check for updates found (under the version), and the round
     // button's name in each state
     update: {
       check: "అప్‌డేట్‌ల కోసం చూడు",

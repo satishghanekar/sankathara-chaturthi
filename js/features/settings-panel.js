@@ -1,7 +1,7 @@
 // @ts-check
-// Settings panel. Its tabs, Reading | Screen | More (#spv), beside Back, as in Nitya Upasana: one tab's groups at a time
-// (each .sp-grp says its tab, data-tab); Settings opens on Reading each time. On iPads and desktops (WIDE) there are no
-// tabs: every group at once, in two columns (css/09-settings-page.css; Satish, 2026-10-30).
+// Settings panel. Its tabs, Reading | Screen | About (#spv), beside Back, as in Nitya Upasana: one tab's groups at a
+// time (each .sp-grp says its tab, data-tab); Settings opens on Reading each time. The same tabs on every screen
+// (Satish, 2026-11-20); on iPads and desktops a tab's groups sit in two columns (css/09-settings-page.css).
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { fitPreview } from "./languages.js";
@@ -18,35 +18,29 @@ import { esc } from "../core/words.js";
 
 /** @type {ReturnType<typeof setTimeout> | number} */
 var fsT;
-/** The tab last chosen, kept for when a desktop window is narrowed to tabs again */
-var tab = "read";
-/** iPads (upright or sideways) and desktops: no tabs, every group (as the min-width: 760px rules in the CSS). A phone
- * held sideways is as wide but too short for it: the tabs */
-var WIDE = window.matchMedia("(min-width: 760px) and (min-height: 521px)");
 
 /**
  * Show one tab of Settings
- * @param {"read" | "screen" | "more"} v
+ * @param {"read" | "screen" | "about"} v
  */
 export function spTab(v) {
   var tb = document.getElementById("spv");
   if (!tb) return;
-  tab = v;
   [].forEach.call(tb.querySelectorAll("button"), function (/** @type {HTMLElement} */ b) {
     b.setAttribute("aria-pressed", String(b.dataset.v === v));
   });
   var on = 0;
   [].forEach.call(pn.querySelectorAll(".sp-grp"), function (/** @type {HTMLElement} */ g) {
-    g.hidden = !WIDE.matches && g.dataset.tab !== v;
+    g.hidden = g.dataset.tab !== v;
     if (!g.hidden) on++;
   });
   // a tab with one group: its heading is the tab's name, for screen readers only
   [].forEach.call(pn.querySelectorAll(".sp-grp"), function (/** @type {HTMLElement} */ g) {
     g.classList.toggle("sp-one", on === 1);
   });
-  // the maker's line under About only, where the tabs are (it stood under every tab; Satish, 2026-11-15)
+  // the maker's line under About only (it stood under every tab; Satish, 2026-11-15)
   var by = /** @type {HTMLElement | null} */ (pn.querySelector(".sp-by"));
-  if (by) by.hidden = !WIDE.matches && v !== "more";
+  if (by) by.hidden = v !== "about";
   pn.scrollTop = 0;
 }
 
@@ -58,11 +52,6 @@ export function init() {
       if (b) spTab(/** @type {any} */ (b.dataset.v));
     });
   spTab("read");
-  // a window made wider or narrower across 760px, or a phone turned: every group, or the tab chosen
-  if (WIDE.addEventListener)
-    WIDE.addEventListener("change", function () {
-      spTab(/** @type {any} */ (tab));
-    });
   // Text size: the Settings page and its preview change at once; the long page under it is laid out
   // again once the taps stop (or when Settings closes). Laying it out on every tap made A−/A+ feel stuck on phones.
   fsT = 0;

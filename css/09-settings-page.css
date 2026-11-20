@@ -6,7 +6,7 @@
    - Kannada letters: the original text when it is shown in Kannada letters (html[data-scr="kn"], set by …
 */
 
-/* ==== Settings page (option A, 2026-10-15): under the top bar while open; Back and the tabs Reading | Screen | More in
+/* ==== Settings page (option A, 2026-10-15): under the top bar while open; Back and the tabs Reading | Screen | About in
    one row, as in Nitya Upasana, with one tab's rounded cards of rows at a time, like phone settings. The main and second language are dropdowns.
    Centred, at most 640px wide, on wide screens. ==== */
 html[data-sp] {
@@ -82,7 +82,7 @@ html[data-sp] {
   outline: 2px solid var(--ink);
   outline-offset: 0;
 }
-/* the tabs Reading | Screen | More (as Nitya Upasana's #spv, 13-library.css) */
+/* the tabs Reading | Screen | About (as Nitya Upasana's #spv, 13-library.css) */
 #spv {
   display: grid;
   flex: 1;
@@ -392,8 +392,8 @@ html[data-sp] {
 }
 
 /* ==== Wider screens (iPads and desktops): a tab's groups in two columns. Reading: its choices on the left and the
-   preview beside them on the right, staying in view while the choices scroll; a tab with one group (Screen, More)
-   across both ==== */
+   preview beside them on the right, staying in view while the choices scroll; a tab with one group (Screen, About)
+   in the middle, at a comfortable width (Satish, 2026-11-20) ==== */
 @media screen and (min-width: 760px) and (min-height: 521px) {
   .sp-pg {
     max-width: 1000px;
@@ -406,6 +406,9 @@ html[data-sp] {
   }
   #sp-home .sp-grp.sp-one {
     grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: 640px;
   }
   #sp-home .sp-pvg {
     position: sticky;
@@ -413,7 +416,7 @@ html[data-sp] {
     grid-column: 2;
     grid-row: 1 / span 2;
   }
-  #sp-home .sp-pvg ~ .sp-grp {
+  #sp-home .sp-pvg:not([hidden]) ~ .sp-grp {
     grid-column: 1;
   }
 }
@@ -593,11 +596,9 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
   font-family: var(--ks), var(--body);
 }
 
-/* ==== The page's title and its two columns (index.html .sp-ttl, .sp-c1, .sp-c2). Phones and tablets: the tabs, the
-   title for screen readers only, and the columns as if not there, so the groups lie as the rules above place them.
-   iPads (upright or sideways) and desktops: the title beside Back, no tabs, and every group at once
-   (js/features/settings-panel.js WIDE): the preview and the reading choices it shows on the left; the screen
-   and about on the right (Satish, 2026-10-30) ==== */
+/* ==== The page's title (index.html .sp-ttl). Phones: for screen readers only, the tabs beside Back saying where you
+   are. iPads (upright or sideways) and desktops: the title beside Back, and the same tabs at the other end of the row
+   (Satish, 2026-11-20: every group at once looked unorganized) ==== */
 .sp-ttl {
   position: absolute;
   width: 1px;
@@ -606,10 +607,6 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
-.sp-c1,
-.sp-c2 {
-  display: contents;
-}
 @media screen and (min-width: 760px) and (min-height: 521px) {
   .sp-pg {
     max-width: 1080px;
@@ -617,9 +614,9 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
   .sp-hd {
     align-items: center;
   }
-  /* (above the tabs' own look, css/13-library.css, which comes later) */
   .sp-hd > #spv {
-    display: none;
+    flex: 0 1 420px;
+    margin-left: auto;
   }
   .sp-ttl {
     position: static;
@@ -635,15 +632,7 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
     font-family: var(--head);
   }
   #sp-home .sp-body {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 28px;
-    align-items: start;
-  }
-  #sp-home .sp-c1,
-  #sp-home .sp-c2 {
-    display: block;
-    min-width: 0;
   }
   /* every heading shown (a group alone in a tab hides it on smaller screens) */
   #sp-home .sp-grp > .sp-h,
@@ -654,14 +643,6 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
     overflow: visible;
     clip: auto;
     white-space: normal;
-  }
-  #sp-home .sp-pvg {
-    position: static;
-  }
-  /* About under the two columns, across both: with it in the right column that one ran a screen further than the
-     left, which ended at the dhrupad (Satish, 2026-11-15) */
-  #sp-home .sp-abt {
-    grid-column: 1 / -1;
   }
 }
 
@@ -1002,7 +983,7 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
     grid-row: 1 / span 2;
     grid-column: 1;
   }
-  .sp-pvg ~ .sp-grp {
+  .sp-pvg:not([hidden]) ~ .sp-grp {
     grid-column: 2;
   }
   /* Settings has the whole short screen: the top bar steps aside (it and the tabs took a third of the height, Satish,
@@ -1017,12 +998,12 @@ html[data-scr][data-font]:not([data-font="std"]) .sp-pw :is([lang="kn"], [lang="
     top: 0 !important;
     padding-top: env(safe-area-inset-top, 0px);
   }
-  /* Screen and More lie across the whole screen: a row's label on the left and its choices beside it (Theme's four ran
+  /* Screen and About lie across the whole screen: a row's label on the left and its choices beside it (Theme's four ran
      edge to edge, Satish, 2026-11-15); what else the row holds still goes under them */
-  .sp-c2 .sp-stk .sp-l {
+  .sp-grp:is([data-tab="screen"], [data-tab="about"]) .sp-stk .sp-l {
     flex: 1 1 36%;
   }
-  .sp-c2 .sp-stk .sp-seg {
+  .sp-grp:is([data-tab="screen"], [data-tab="about"]) .sp-stk .sp-seg {
     flex: 0 1 58%;
   }
 }

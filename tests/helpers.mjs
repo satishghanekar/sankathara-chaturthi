@@ -166,11 +166,9 @@ export async function readText(page, sec) {
   await page.locator(`#${sec}`).waitFor({ state: "visible" });
 }
 
-/** Settings → one tab (Reading, Screen, More) on phones; on iPads and desktops every group shows at once and there are
- * no tabs, so nothing to tap (js/features/settings-panel.js WIDE) @param {"read" | "screen" | "more"} v */
+/** Settings → one tab (Reading, Screen, About), on every screen @param {"read" | "screen" | "about"} v */
 export async function settingsTab(page, v) {
-  const b = page.locator(`#spv button[data-v="${v}"]`);
-  if (await b.isVisible()) await b.click();
+  await page.locator(`#spv button[data-v="${v}"]`).click();
 }
 
 // Accessibility (axe-core, WCAG 2.2 A/AA + best practice). A theme changes only colours (and high contrast's text

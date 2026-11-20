@@ -49,12 +49,12 @@ test("Settings → Dhrupad switches between once and after every verse @mobile",
   expect(await rootAttr(page, "data-ref")).toBe("1");
 });
 
-// Settings on phones, as in Nitya Upasana: Reading | Screen | More, one tab at a time, opening on Reading each time
-test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobile", async ({ page }) => {
+// Settings on phones, as in Nitya Upasana: Reading | Screen | About, one tab at a time, opening on Reading each time
+test("Settings has the tabs Reading, Screen and About, and opens on Reading @mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openSite(page, SETUPS.english);
   await page.locator("#aa").click();
-  await expect(page.locator("#spv button")).toHaveText(["Reading", "Screen", "More"], { useInnerText: true });
+  await expect(page.locator("#spv button")).toHaveText(["Reading", "Screen", "About"], { useInnerText: true });
   await expect(page.locator('#spv [data-v="read"]')).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("#sl1")).toBeVisible();
   await expect(page.locator("#st")).toBeHidden();
@@ -62,9 +62,10 @@ test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobi
   await expect(page.locator("#st")).toBeVisible();
   await expect(page.locator("#tw")).toBeVisible();
   await expect(page.locator("#sl1")).toBeHidden();
-  await page.locator('#spv [data-v="more"]').click();
+  await page.locator('#spv [data-v="about"]').click();
   await expect(page.locator("#hlp2")).toBeVisible();
   await expect(page.locator("#upd")).toBeVisible();
+  await expect(page.locator(".sp-by")).toBeVisible();
   // under the top bar, which stays in view
   const top = await page.locator("#panel").evaluate((e) => e.getBoundingClientRect().top);
   const bar = await page
@@ -77,35 +78,44 @@ test("Settings has the tabs Reading, Screen and More, and opens on Reading @mobi
   await expect(page.locator('#spv [data-v="read"]')).toHaveAttribute("aria-pressed", "true");
 });
 
-// Settings on iPads and desktops, as in Nitya Upasana: no tabs, the title beside Back, every group at once in two
-// columns: the preview and the reading choices on the left, the screen and about on the right (Satish, 2026-10-30);
-// an iPad upright too; narrowed to a phone, the tabs are back
-test("Settings on a desktop or an iPad: every group at once, in two columns, no tabs", async ({ page }) => {
+// Settings on iPads and desktops, as in Nitya Upasana: the same three tabs as on a phone, at the end of the row beside
+// the title; Reading's choices on the left and the preview on the right, a tab with one card in the middle (Satish,
+// 2026-11-20); an iPad upright too
+test("Settings on a desktop or an iPad: the three tabs, Reading in two columns", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openSite(page, SETUPS.marathi);
   await page.locator("#aa").click();
-  await expect(page.locator("#spv")).toBeHidden();
+  await expect(page.locator("#spv")).toBeVisible();
   await expect(page.locator("#spt")).toBeVisible();
   await expect(page.locator("#spt")).toHaveText("Settings");
-  for (const id of ["#sl1", "#st", "#tw", "#hlp2", "#upd"]) await expect(page.locator(id)).toBeVisible();
-  const x = async (sel) => (await page.locator(sel).boundingBox()).x;
-  expect(await x(".sp-c1")).toBeLessThan(await x(".sp-c2"));
-  for (const id of ["#sl1"]) expect(await page.locator(".sp-c1 " + id).count(), id).toBe(1);
-  for (const id of ["#st"]) expect(await page.locator(".sp-c2 " + id).count(), id).toBe(1);
-  // About under the two columns, across both (Satish, 2026-11-15, as in Nitya Upasana)
-  const [c1, c2, about] = await Promise.all([".sp-c1", ".sp-c2", ".sp-abt"].map((sel) => page.locator(sel).boundingBox()));
-  for (const id of ["#hlp2", "#upd"]) expect(await page.locator(".sp-abt " + id).count(), id).toBe(1);
-  expect(about.y).toBeGreaterThanOrEqual(Math.max(c1.y + c1.height, c2.y + c2.height) - 1);
-  expect(Math.abs(about.x - c1.x)).toBeLessThan(2);
-  expect(Math.abs(about.x + about.width - (c2.x + c2.width))).toBeLessThan(2);
+  const tab = (v) => page.locator(`#spv button[data-v="${v}"]`);
+  const box = async (sel) => await page.locator(sel).boundingBox();
+  expect((await box("#spv")).x).toBeGreaterThan((await box("#spt")).x + (await box("#spt")).width);
+  await expect(tab("read")).toHaveAttribute("aria-pressed", "true");
+  for (const id of ["#sl1"]) await expect(page.locator(id)).toBeVisible();
+  for (const id of ["#st", "#hlp2"]) await expect(page.locator(id)).toBeHidden();
+  const [choices, prev] = await Promise.all([".sp-grp:has(#sl1)", ".sp-pvg"].map((sel) => box(sel)));
+  expect(prev.x).toBeGreaterThan(choices.x + choices.width - 1);
+  expect(Math.abs(prev.y - choices.y)).toBeLessThan(2);
+  // Screen and About: their one card in the middle, at a comfortable width
+  for (const [v, id] of [
+    ["screen", "#st"],
+    ["about", "#upd"],
+  ]) {
+    await tab(v).click();
+    await expect(page.locator(id)).toBeVisible();
+    await expect(page.locator("#sl1")).toBeHidden();
+    const [card, body] = await Promise.all([`.sp-grp[data-tab="${v}"]`, "#sp-home .sp-body"].map((sel) => box(sel)));
+    expect(card.width, v).toBeLessThanOrEqual(641);
+    expect(Math.abs(card.x - body.x - (body.x + body.width - card.x - card.width)), v).toBeLessThan(4);
+  }
+  await expect(page.locator(".sp-by")).toBeVisible();
   await page.setViewportSize({ width: 820, height: 1180 });
-  await expect(page.locator("#spv")).toBeHidden();
-  for (const id of ["#sl1", "#st", "#hlp2"]) await expect(page.locator(id)).toBeVisible();
-  await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator("#spv")).toBeVisible();
-  await expect(page.locator("#st")).toBeHidden();
-  // (the title for screen readers only: a 1px box)
-  expect((await page.locator("#spt").boundingBox()).width).toBeLessThanOrEqual(1);
+  await expect(page.locator("#upd")).toBeVisible();
+  await page.locator("#xc").click();
+  await page.locator("#aa").click();
+  await expect(tab("read")).toHaveAttribute("aria-pressed", "true");
 });
 
 // While a page is open over a text (Settings, the Library, the calendar), the text behind the top pill is covered
@@ -205,12 +215,12 @@ test("Settings on a phone held sideways: the tabs, the preview beside the readin
   await page.locator('#spv [data-v="screen"]').click();
   await expect(page.locator("#st")).toBeVisible();
   await expect(page.locator("#sl1")).toBeHidden();
-  // turned upright, and an iPad held sideways, as before
+  // turned upright, and an iPad held sideways: the tabs still
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator("#spv")).toBeVisible();
   await page.setViewportSize({ width: 1180, height: 820 });
-  await expect(page.locator("#spv")).toBeHidden();
-  for (const id of ["#sl1", "#st"]) await expect(page.locator(id)).toBeVisible();
+  await expect(page.locator("#spv")).toBeVisible();
+  await expect(page.locator("#st")).toBeVisible();
 });
 
 // Share in the top bar, as in Nitya Upasana: App, Share, QR, Print and Help; a choice closes it, Escape
@@ -404,7 +414,7 @@ test("Settings opens, changes theme, high contrast and font, and closes with Bac
   await openSite(page, SETUPS.marathi);
   await page.locator("#aa").click();
   await expect(page.locator("#panel")).toBeVisible();
-  // the theme and contrast are on the Screen tab, the font on Reading (no tabs on desktops: every group at once)
+  // the theme and contrast are on the Screen tab, the font on Reading
   await settingsTab(page, "screen");
   await page.locator('#st button[data-v="dark"]').click();
   expect(await rootAttr(page, "data-pref")).toBe("dark");
@@ -1077,7 +1087,7 @@ test("the version line: the version, its state under it, and the round Check for
   await page.setViewportSize({ width: 390, height: 844 });
   await openSite(page, SETUPS.english);
   await page.locator("#aa").click();
-  await settingsTab(page, "more");
+  await settingsTab(page, "about");
   await expect(page.locator("#upr .sp-l > span").first()).toHaveText(/^Version \d/);
   await expect(page.locator("#upd")).toHaveAccessibleName("Check for updates");
   await expect(page.locator("#uph")).toBeHidden();

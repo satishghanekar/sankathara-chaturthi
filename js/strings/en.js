@@ -78,10 +78,10 @@ export default {
   pictureViewer: {
     hint: "Pinch or double-tap to zoom",
   },
-  // Offline use and Check for updates (js/features/offline.js): Settings → More → About
+  // Offline use and Check for updates (js/features/offline.js): Settings → About
   offline: {
     state: { idle: "Offline ready", save: "Saving for offline…", off: "Saved copy in use" },
-    // the version line in Settings → More → About: what Check for updates found (under the version), and the round
+    // the version line in Settings → About: what Check for updates found (under the version), and the round
     // button's name in each state
     update: {
       check: "Check for updates",
