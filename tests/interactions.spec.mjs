@@ -66,6 +66,9 @@ test("Settings has the tabs Reading, Screen and About, and opens on Reading @mob
   await expect(page.locator("#hlp2")).toBeVisible();
   await expect(page.locator("#upd")).toBeVisible();
   await expect(page.locator(".sp-by")).toBeVisible();
+  // the maker's line: the copyright and the terms of use (LICENSE.txt)
+  await expect(page.locator(".sp-by")).toContainText("All rights reserved.");
+  await expect(page.locator('.sp-by a[href="LICENSE.txt"]')).toHaveText("Terms of use");
   // under the top bar, which stays in view
   const top = await page.locator("#panel").evaluate((e) => e.getBoundingClientRect().top);
   const bar = await page

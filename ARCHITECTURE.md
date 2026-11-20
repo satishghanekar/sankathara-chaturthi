@@ -2,7 +2,7 @@
 
 This is for anyone changing the code. To change a piece's text, see `README.md` instead.
 
-The site is one page, `index.html`, plus plain CSS and JavaScript files. **There is no build step.** Cloudflare Pages serves the files exactly as they are in the repository, so an edit made on the GitHub website goes live as written.
+The site is one page, `index.html`, plus plain CSS and JavaScript files. **There is no build step.** Cloudflare Pages serves the files exactly as they are in the repository, so an edit made on the GitHub website goes live as written. The documents, dotfiles and `tests/` are kept off the site by `_redirects` (each sends the visitor to the app); `LICENSE.txt` is the terms of use, linked from Settings → About.
 
 ## What happens when the page opens
 
