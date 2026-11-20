@@ -212,3 +212,31 @@ test("DOWNLOAD-SIZE.md and Help still give the download size", () => {
   const help = Number((/<span data-size="first">([\d.]+)<\/span>/.exec(html) || [])[1]);
   expect(Math.abs(help * 1e6 - total) / total, "Help's download size (index.html, data-size) is out of date: " + mb(total) + " MB").toBeLessThan(0.05);
 });
+
+// The developer files are not handed out by the site (Satish, 2026-11-20): Cloudflare Pages serves every file in the
+// repository, so each document, dotfile and test is sent to the app by _redirects, and nothing the app loads is
+const repoFiles = (dir = "") =>
+  readdirSync(new URL("../" + dir, import.meta.url), { withFileTypes: true }).flatMap((e) => {
+    const p = dir + e.name;
+    if (e.name === ".git" || e.name === ".DS_Store" || p === "tests") return p === "tests" ? ["tests/"] : [];
+    return e.isDirectory() ? repoFiles(p + "/") : [p];
+  });
+test("_redirects keeps the documents, dotfiles and tests off the site, and nothing the app uses", () => {
+  const rules = readFileSync(new URL("../_redirects", import.meta.url), "utf8")
+    .split("\n")
+    .filter((l) => l.trim() && !l.startsWith("#"))
+    .map((l) => l.trim().split(/\s+/));
+  for (const r of rules) expect(r.slice(1), r[0]).toEqual(["/", "301"]);
+  const covered = (p) => rules.some(([from]) => (from.endsWith("/*") ? p.startsWith(from.slice(1, -1)) : p === from.slice(1)));
+  const files = repoFiles();
+  const dev = files.filter((f) => f.endsWith(".md") || /(^|\/)\./.test(f) || f === "tests/");
+  expect(
+    dev.filter((f) => !covered(f)),
+    "not in _redirects",
+  ).toEqual([]);
+  expect(
+    files.filter((f) => covered(f) && !dev.includes(f)),
+    "the app's own files",
+  ).toEqual([]);
+  expect(html).toContain('href="LICENSE.txt"');
+});
