@@ -28,6 +28,7 @@ import { clearSearch } from "./contents-list.js";
 export const LAYERS = [
   { id: "help", trap: true },
   { id: "qrm", trap: true, back: true },
+  { id: "terms", trap: true, back: true, opener: "terms-open" },
   { id: "prm", trap: true, back: true },
   { id: "install-page", trap: true, back: true },
   { id: "upm", trap: true },

@@ -337,6 +337,8 @@ export default {
     afterLastTouch: "Minutes after the last touch",
     off: "Off",
     about: "About",
+    contact: "Contact",
+    termsOfUse: "Terms of use",
     helpAndHowToUse: "Help and how to use",
     addToHomeScreen: "Add to Home Screen",
     sankatharaChaturthi: "Sankathara Chaturthi",

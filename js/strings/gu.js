@@ -327,6 +327,8 @@ export default {
     afterLastTouch: "છેલ્લા સ્પર્શ પછી, મિનિટ",
     off: "બંધ",
     about: "વિશે",
+    contact: "સંપર્ક",
+    termsOfUse: "ઉપયોગની શરતો",
     helpAndHowToUse: "મદદ અને વાપરવાની રીત",
     addToHomeScreen: "હોમ સ્ક્રીન પર ઉમેરો",
     sankatharaChaturthi: "સંકટહર ચતુર્થી",

@@ -66,9 +66,25 @@ test("Settings has the tabs Reading, Screen and About, and opens on Reading @mob
   await expect(page.locator("#hlp2")).toBeVisible();
   await expect(page.locator("#upd")).toBeVisible();
   await expect(page.locator(".sp-by")).toBeVisible();
-  // the maker's line: the copyright and the terms of use (LICENSE.txt)
-  await expect(page.locator(".sp-by")).toContainText("All rights reserved.");
-  await expect(page.locator('.sp-by a[href="LICENSE.txt"]')).toHaveText("Terms of use");
+  // the maker's line, as in Nitya Upasana: the app's name, the offering, Contact (an email) and Terms of use, which
+  // opens in the app (the offline copy answers a page the app opens with the app itself, so a link showed nothing)
+  await expect(page.locator(".sp-by p")).toHaveText(["Sankathara Chaturthi", "A volunteer offering by Satish Ghanekar"]);
+  await expect(page.locator(".sp-by-button")).toHaveText(["Contact", "Terms of use"]);
+  await expect(page.locator(".sp-by a")).toHaveAttribute("href", "mailto:satishghanekar1@gmail.com");
+  for (const b of await page.locator(".sp-by-button").all()) expect((await b.boundingBox()).height).toBeGreaterThanOrEqual(44);
+  await page.locator("#terms-open").click();
+  await expect(page.locator("#terms")).toBeVisible();
+  await expect(page.locator("#terms-title")).toBeFocused();
+  await expect(page.locator("#terms .terms-text")).toContainText("needs his written permission");
+  await expect(page.locator("#terms .terms-text")).toContainText("© 2026 Satish Ghanekar. All rights reserved.");
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#terms")).toBeHidden();
+  await expect(page.locator("#terms-open")).toBeFocused();
+  // closed with its button too, Settings stays open under it
+  await page.locator("#terms-open").click();
+  await page.locator("#terms-close").click();
+  await expect(page.locator("#terms")).toBeHidden();
+  await expect(page.locator("#panel")).toBeVisible();
   // under the top bar, which stays in view
   const top = await page.locator("#panel").evaluate((e) => e.getBoundingClientRect().top);
   const bar = await page
