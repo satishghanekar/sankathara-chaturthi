@@ -8,7 +8,7 @@
 <title>Sankathara Chaturthi</title>
 <meta name="theme-color" content="#7b1113">
 <!-- The site version: the offline copy's name. Change it here and in sw.js on a new release -->
-<meta name="version" content="aarti-v1.26">
+<meta name="version" content="aarti-v1.27">
 <!-- Fonts are served from this site (fonts/), so nothing is fetched from Google and they work offline -->
 <link rel="preload" href="fonts/tiro-marathi-devanagari.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/noto-sans-deva-devanagari.woff2" as="font" type="font/woff2" crossorigin>
@@ -109,12 +109,46 @@
 <link rel="modulepreload" href="js/features/terms.js">
 <link rel="modulepreload" href="js/features/more-menu.js">
 <link rel="modulepreload" href="js/features/offline.js">
+<link rel="modulepreload" href="js/features/welcome.js">
 <link rel="modulepreload" href="js/features/launch.js">
 </head>
 
 <body>
 <!-- The splash: the app's picture and name, from the first paint until the page is ready (js/splash.js sets it up;
      css/02-core.css, "Splash") -->
+<!-- Welcome (js/features/welcome.js; Satish, 2026-11-21, as in Nitya Upasana): once, on a new phone, two full-screen
+     steps over Home. First what the app is and the first reading language (English the second); then the town the
+     moonrise is worked out for: the one guessed from the time zone, the phone's location, or a city picked. Not when the
+     site opens at a text (a shared link) or to print. Words written in by the script -->
+<form id="wlc" novalidate hidden>
+  <section id="welcome-about" class="welcome-step">
+    <div class="welcome-top">
+      <span class="welcome-dots" aria-hidden="true"><span class="on"></span><span></span></span>
+      <label class="welcome-lang"><span id="welcome-lang-label"></span><select id="welcome-lang"></select><span id="welcome-second"></span></label>
+    </div>
+    <img id="welcome-picture" src="picture-360.webp" alt="" width="360" height="360">
+    <p id="welcome-om" lang="mr">॥ श्री गणेशाय नमः ॥</p>
+    <h1 id="welcome-title" tabindex="-1"><span lang="mr">संकटहर चतुर्थी</span><span id="welcome-sub"></span></h1>
+    <ul id="welcome-points"></ul>
+    <ul id="welcome-facts"></ul>
+    <div class="welcome-go">
+      <button type="button" id="welcome-next" class="welcome-main"></button>
+    </div>
+  </section>
+  <section id="welcome-place" class="welcome-step" hidden>
+    <div class="welcome-top">
+      <button type="button" id="welcome-back" class="cnav"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <span class="welcome-dots" aria-hidden="true"><span></span><span class="on"></span></span>
+    </div>
+    <h2 id="welcome-place-title" tabindex="-1"></h2>
+    <p id="welcome-place-note" class="welcome-note"></p>
+    <div id="welcome-town" role="status"><strong id="welcome-town-name"></strong><span id="welcome-town-next"></span></div>
+    <button type="button" id="welcome-mine" class="welcome-option"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span><span id="welcome-mine-name"></span><span id="welcome-mine-note"></span></span></button>
+    <label class="welcome-city"><span id="welcome-city-label"></span><select id="welcome-city"></select></label>
+    <div id="welcome-change"><strong id="welcome-change-title"></strong><p id="welcome-change-tip"></p></div>
+    <button type="submit" id="wlcs" class="welcome-main"></button>
+  </section>
+</form>
 <div id="spl" aria-hidden="true"><div class="splm"><img alt="" width="152" height="152"></div><div class="spln">संकटहर चतुर्थी</div><div class="spl-by" lang="en">A volunteer offering by Satish Ghanekar<span class="spl-ver"></span></div></div>
 <script src="js/splash.js"></script>
 <!-- Keyboard users: the first Tab shows this link, which skips the top bar and the contents menu -->
@@ -451,6 +485,7 @@
         <li>Shows the next Sankathara Chaturthi and its <b>moonrise time</b> for where you are, beside Ganesha's picture in a ring that fills as the day comes nearer, with how many days are left under it. Angaraki Sankathara Chaturthi (on a Tuesday) is named so.
         <li>Under the date, its month in the Marathi calendar (<b>Kartik Krishna Chaturthi</b>, कार्तिक वद्य चतुर्थी; अधिक when it is an extra month), then the moonrise and the place.</li>
         <li>The first time you open the app each day, the next Sankathara Chaturthi's date and moonrise come up under Ganesha's picture, then the words <b>Sankathara Chaturthi</b> round the picture light up letter by letter. It takes about 4 seconds; tap anywhere to skip it. Later openings that day show Ganesha's picture for a moment, about 1½ seconds, while the lamps light in turn (tap to skip it); opening a shared link to a text goes straight to it, and every opening goes straight to Home if your phone is set to reduce motion.</li>
+        <li><b>The first time it opens</b>, two short steps say what the app is, let you pick the letters the texts are shown in (English under them), and ask your town for the moonrise: the one guessed from your phone’s time zone, your exact location, or a city from the list.</li>
         <li><b>The place</b> (with its pin, or <b>📍 Use my location</b>): tap to use your phone's location. The town is worked out on the phone; your location is never sent anywhere.</li>
         <li><b>The picture:</b> tap the Ganesha picture on the card to see it full screen. Pinch or double-tap to zoom, drag to look around; ✕, Back or a tap outside closes it.</li>
         <li><b>Fold the card:</b> the round ⌃ button at the top right of the card, or a tap beside the picture, folds it to one line (Ganesha, the next date and moonrise); ⌄ or a tap on that line opens it again. Your phone remembers this. On Sankashti day the card opens by itself.</li>

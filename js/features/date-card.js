@@ -287,22 +287,65 @@ export function init() {
     var t = /** @type {HTMLElement} */ (e.target),
       b = t.closest && t.closest("#skl");
     if (!b) return;
-    if (!navigator.geolocation) {
-      note(menuWords("sankashti").noGeo);
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      function (p) {
-        change({ loc: { lat: Math.round(p.coords.latitude * 100) / 100, lon: Math.round(p.coords.longitude * 100) / 100 } });
-        skCache = null;
-        skRender();
-      },
-      function () {
-        note(menuWords("sankashti").noPlace);
-      },
-      { timeout: 15000, maximumAge: 86400000 },
-    );
+    skAskPlace();
   });
+}
+
+/** A place picked (a city at the welcome, or the phone's location): the card worked out again for it
+ * @param {number} lat @param {number} lon */
+export function skSetPlace(lat, lon) {
+  change({ loc: { lat: lat, lon: lon } });
+  skCache = null;
+  skRender();
+}
+
+/** The phone's location asked for, as the card's place button does: the town is worked out on the phone, nothing is
+ * sent anywhere @param {() => void} [done] told once the place is set */
+export function skAskPlace(done) {
+  if (!navigator.geolocation) {
+    note(menuWords("sankashti").noGeo);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    function (p) {
+      skSetPlace(Math.round(p.coords.latitude * 100) / 100, Math.round(p.coords.longitude * 100) / 100);
+      if (done) done();
+    },
+    function () {
+      note(menuWords("sankashti").noPlace);
+    },
+    { timeout: 15000, maximumAge: 86400000 },
+  );
+}
+
+/** The cities a place can be picked from at the welcome (js/features/welcome.js): each time zone's, once each
+ * @returns {Place[]} */
+export function skCities() {
+  /** @type {Place[]} */
+  var out = [];
+  Object.keys(SKTZ).forEach(function (z) {
+    var c = SKTZ[z];
+    if (
+      !out.some(function (o) {
+        return o.en === c[3];
+      })
+    )
+      out.push({ lat: c[0], lon: c[1], mr: c[2], en: c[3] });
+  });
+  return out;
+}
+
+/** The next Sankathara Chaturthi for a place, as the card writes it: its day and moonrise, or null
+ * @param {Place} L @returns {{ day: string, time: string } | null} */
+export function skNextFor(L) {
+  try {
+    var o = SK.upcoming(Date.now(), L.lat, L.lon, 1)[0];
+    if (!o) return null;
+    var f = skFmt(o);
+    return { day: f.day, time: f.time };
+  } catch (e) {
+    return null;
+  }
 }
 
 /**

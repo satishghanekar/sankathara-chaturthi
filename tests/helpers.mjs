@@ -53,14 +53,15 @@ export const SETUPS = {
  * @param {object} [opt]   { hash: "#a1", errors: array that collects page errors, now: a Date other than FIXED_NOW,
  *                          running: true to start the clock at that time and let the test move it (page.clock.runFor),
  *                          launch: true to play the launch animation, as on the first opening of the day,
- *                          brief: true for the short splash of any other opening }
+ *                          brief: true for the short splash of any other opening,
+ *                          welcome: true to show the welcome, as on a new phone }
  */
 export async function openSite(page, prefs = {}, opt = {}) {
   const all = { ...BASE_PREFS, ...prefs };
   if (opt.running) await page.clock.install({ time: opt.now || FIXED_NOW });
   else await page.clock.setFixedTime(opt.now || FIXED_NOW);
   await page.addInitScript(
-    ([k, v, la, br]) => {
+    ([k, v, la, br, wl]) => {
       // only on the first load of this page: a test that reloads keeps what the site saved
       if (sessionStorage.getItem("__seeded")) return;
       sessionStorage.setItem("__seeded", "1");
@@ -71,8 +72,10 @@ export async function openSite(page, prefs = {}, opt = {}) {
       if (!la) localStorage.setItem("sankathara-launch", d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate());
       // nor the short splash of any other opening (js/splash.js #spl.brief) unless a test asks for it: opened already
       if (!br) sessionStorage.setItem("sankathara-opened", "1");
+      // the welcome (js/features/welcome.js) only where a test asks for it: seen, as on a phone in use
+      if (!wl) localStorage.setItem("sankathara-welcome", "2");
     },
-    [PREFS_KEY, JSON.stringify(all), !!opt.launch, !!opt.brief],
+    [PREFS_KEY, JSON.stringify(all), !!opt.launch, !!opt.brief, !!opt.welcome],
   );
   if (opt.errors) {
     page.on("pageerror", (e) => opt.errors.push(e.message));

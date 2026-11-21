@@ -406,6 +406,35 @@ export default {
     noGeo: "Location is not available in this browser",
     noPlace: "Could not get your location",
   },
+  // Welcome: once, on a new phone, two steps over Home (js/features/welcome.js); app: the name under संकटहर चतुर्थी, in
+  // the menu language's letters (not shown with Marathi menus, where the title already is)
+  welcome: {
+    title: "Welcome to Sankathara Chaturthi",
+    app: "Sankathara Chaturthi",
+    points: [
+      "The next Sankashti Chaturthi, and every date ahead",
+      "Moonrise in your town, to end the fast",
+      "The evening’s texts: the Atharvashirsha, stotras and aartis",
+    ],
+    facts: ["Works offline", "Stays on your phone", "No sign-up"],
+    first: "Texts in",
+    second: "and English",
+    next: "Next",
+    back: "Back",
+    place: "Is this your town?",
+    placeNote: "The moonrise, when the fast ends, depends on where you are. We guessed from your phone’s time zone.",
+    noPlace: "No town yet: choose one below.",
+    /** The next date and its moonrise, as the card writes them @param {string} day @param {string} time */
+    nextLine: function (day, time) {
+      return "Next Chaturthi: " + day + " · moonrise " + time;
+    },
+    mine: "Use my exact location",
+    mineNote: "A more exact moonrise. Your phone asks once.",
+    city: "Or choose a city",
+    change: "Change it any time",
+    changeTip: "Tap the town on the Chaturthi card to use your exact location.",
+    start: "Yes, start",
+  },
   // The Sankathara card on Home (js/features/date-card.js)
   card: {
     next: "Next Sankathara Chaturthi",

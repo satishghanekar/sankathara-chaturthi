@@ -231,6 +231,10 @@ function install() {
   });
 }
 
+/** The page was opened by the shared link (?add): the welcome waits (js/features/welcome.js), as Safari keeps the Home
+ * Screen app's data apart and would ask again there (as in Nitya Upasana) */
+export var fromLink = false;
+
 export function init() {
   var ua = navigator.userAgent,
     standalone = /** @type {any} */ (navigator).standalone || (typeof window.matchMedia === "function" && matchMedia("(display-mode: standalone)").matches);
@@ -286,6 +290,7 @@ export function init() {
   });
   window.addEventListener("appinstalled", installed);
   if (marked && kind !== "app") {
+    fromLink = true;
     show(true);
   }
 }
