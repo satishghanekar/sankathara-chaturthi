@@ -22,8 +22,26 @@ const LINE_STEP = 150;
 const LETTERS_AT = 700;
 const FLY_AT = 3700;
 
+/** How long the splash stays on any other opening, from its start (js/splash.js, #spl.brief; as in Nitya Upasana) */
+var BRIEF = 1500;
+
+/**
+ * Any opening but the first of the day: the plain splash stays until BRIEF from its start, then fades (#spl.done). It
+ * waits for the page too (data-ready), so it never leaves the screen blank.
+ * @param {HTMLElement} sp #spl
+ */
+function brief(sp) {
+  var t0 = Number(sp.getAttribute("data-t0")) || 0;
+  var end = function () {
+    if (!document.documentElement.hasAttribute("data-ready")) return setTimeout(end, 50);
+    sp.classList.add("done");
+  };
+  setTimeout(end, Math.max(0, BRIEF - (performance.now() - t0)));
+}
+
 export function init() {
   var found = document.getElementById("spl");
+  if (found && found.classList.contains("brief")) return brief(/** @type {HTMLElement} */ (found));
   if (!found || !found.classList.contains("launch")) return;
   var sp = /** @type {HTMLElement} */ (found),
     boxEl = /** @type {HTMLElement | null} */ (sp.querySelector(".splm"));

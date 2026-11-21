@@ -68,7 +68,7 @@ html:not([data-ready]) #spl {
     visibility: hidden;
   }
 }
-html[data-ready] #spl:not(.launch),
+html[data-ready] #spl:not(.launch):not(.brief),
 html[data-ready] #spl.skip,
 #spl.done {
   visibility: hidden;
@@ -77,6 +77,18 @@ html[data-ready] #spl.skip,
   transition:
     opacity 0.3s,
     visibility 0s 0.3s;
+}
+/* Any other opening (#spl.brief, js/splash.js; as in Nitya Upasana): the plain splash stays about 1.5 s from its start,
+   the lamps still lighting in turn, then fades (js/features/launch.js adds .done; a tap ends it sooner). Should that
+   script never run, it still goes 3 s after the page is ready */
+html[data-ready] #spl.brief {
+  animation: spl-brief-out 0s 3s both;
+}
+@keyframes spl-brief-out {
+  to {
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 .splm {
   position: relative;
