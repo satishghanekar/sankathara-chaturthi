@@ -31,6 +31,10 @@ import { ui } from "../core/words.js";
 // The page each printout is made for: one language upright, both languages side by side on a sideways page
 var CHOICE = { one: { page: "up" }, both: { page: "land" } };
 
+/** A print handed over from the iPhone Home Screen app (Open in Safari, js/render.js): this opening is for printing,
+ * so the welcome waits (js/features/welcome.js reads this) */
+export var handedOver = false;
+
 export function init() {
   (function () {
     var pm = byId("prm"),
@@ -945,6 +949,7 @@ export function init() {
     if (/** @type {any} */ (window).PRQ) {
       var mode = /** @type {any} */ (window).PRQ;
       /** @type {any} */ (window).PRQ = "";
+      handedOver = true;
       what.set(
         allIds().filter(function (id) {
           return P.pskip.indexOf(id) < 0;
