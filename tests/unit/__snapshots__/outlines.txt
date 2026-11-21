@@ -15,4 +15,8 @@ aarti-vitthal: none
 aarti-ghalin-lotangan: none
 aarti-jai-ganesh-deva: none
 aarti-jai-jagdish-hare: none
-bhajan-mahaganesh-pancharatnam: none
+bhajan-vakratunda-mahakaya: none
+bhajan-ganapati-bappa-morya: none
+bhajan-vande-ganapati: none
+bhajan-ganesha-pancharatnam: none
+bhajan-gaiye-ganapati-jagvandan: none

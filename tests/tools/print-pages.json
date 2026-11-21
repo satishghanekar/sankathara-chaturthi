@@ -11,7 +11,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 2
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 3,
+  "bhajan-vande-ganapati": 2,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "both": {
   "p1": 6,
@@ -25,7 +29,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 2
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 3,
+  "bhajan-vande-ganapati": 2,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "english": {
   "p1": 3,
@@ -39,7 +47,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "marathi-a4": {
   "p1": 2,
@@ -53,7 +65,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 1
  },
  "marathi-bold": {
   "p1": 3,
@@ -67,7 +83,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "marathi-every-verse": {
   "p1": 3,
@@ -81,7 +101,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "marathi-landscape": {
   "p1": 3,
@@ -95,7 +119,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 3,
+  "bhajan-vande-ganapati": 2,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "marathi-modern": {
   "p1": 3,
@@ -109,7 +137,11 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  },
  "marathi": {
   "p1": 3,
@@ -123,6 +155,10 @@
   "a8": 1,
   "a9": 1,
   "a10": 2,
-  "bhajan-mahaganesh-pancharatnam": 1
+  "bhajan-vakratunda-mahakaya": 2,
+  "bhajan-ganapati-bappa-morya": 2,
+  "bhajan-vande-ganapati": 1,
+  "bhajan-ganesha-pancharatnam": 2,
+  "bhajan-gaiye-ganapati-jagvandan": 2
  }
 }

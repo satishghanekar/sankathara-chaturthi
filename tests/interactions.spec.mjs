@@ -298,7 +298,7 @@ test("the Library lists every text and jumps to one", async ({ page }) => {
   await expect(page.locator("#home .tocg, #tfr")).toHaveCount(0);
   await page.locator("#asq").click();
   await expect(page.locator("#jump")).toBeVisible();
-  await expect(page.locator("#jl a[data-go]")).toHaveCount(12);
+  await expect(page.locator("#jl a[data-go]")).toHaveCount(16);
   await page.locator('#jl a[data-go="a5"]').click();
   await page.waitForTimeout(400);
   const top = await page.locator("#a5").evaluate((e) => e.getBoundingClientRect().top);
@@ -306,14 +306,32 @@ test("the Library lists every text and jumps to one", async ({ page }) => {
   expect(page.url()).toContain("#a5");
 });
 
-// Home lists the evening (content/routines.json), as Nitya Upasana's Today card lists a session; a title goes to that
-// text in the one scroll, and Next goes on to the next text of the evening
+// Home lists the evening (content/routines.json), as Nitya Upasana's Today card lists a session (the Ganesh
+// bhajans before the first aarti since 2026-11-21); a title goes to that text in the one scroll, and Next goes on
+// to the next text of the evening
 test("home lists the evening's texts; a title opens that text and Next goes on @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);
   await expect(page.locator("#tsh")).toHaveText("संध्याकाळ · Evening");
-  await expect(page.locator("#tsn")).toHaveText("11 texts", { useInnerText: true });
+  await expect(page.locator("#tsn")).toHaveText("16 texts", { useInnerText: true });
   expect(await page.locator("#tsl a").evaluateAll((l) => l.map((a) => a.getAttribute("href")))).toEqual(
-    ["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10"].map((x) => "./#" + x),
+    [
+      "p1",
+      "bhajan-ganesha-pancharatnam",
+      "bhajan-vakratunda-mahakaya",
+      "bhajan-ganapati-bappa-morya",
+      "bhajan-vande-ganapati",
+      "bhajan-gaiye-ganapati-jagvandan",
+      "a1",
+      "a2",
+      "a3",
+      "a4",
+      "a5",
+      "a6",
+      "a7",
+      "a8",
+      "a9",
+      "a10",
+    ].map((x) => "./#" + x),
   );
   await expect(page.locator("#tsl li").first()).toContainText("Ganapati Atharvashirsha");
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("Sanskrit", { useInnerText: true });
@@ -361,7 +379,7 @@ test("Home is on its own; a text shows the reading page, Home and Back bring Hom
 
 test("the evening's list follows the menu language @mobile", async ({ page }) => {
   await openSite(page, { ...SETUPS.marathi, ui: "mr" });
-  await expect(page.locator("#tsn")).toHaveText("११ रचना", { useInnerText: true });
+  await expect(page.locator("#tsn")).toHaveText("१६ रचना", { useInnerText: true });
   await expect(page.locator("#tsl li").first().locator(".ttg")).toHaveText("संस्कृत", { useInnerText: true });
 });
 
@@ -375,7 +393,7 @@ for (const [setup, head, title] of [
   test(`the evening's list is in ${setup} letters when they are chosen @mobile`, async ({ page }) => {
     await openSite(page, SETUPS[setup]);
     await expect(page.locator("#tsh span").first()).toHaveText(head);
-    await expect(page.locator("#tsl .t1").nth(1)).toHaveText(title);
+    await expect(page.locator("#tsl .t1").nth(6)).toHaveText(title);
   });
 
 // The session follows the reading languages (Settings → Reading), as Nitya Upasana's Home card: the main one first,
@@ -385,8 +403,9 @@ test("English as the main language: the session and its titles in English first,
   await openSite(page, SETUPS["english-main-both"]);
   await expect(page.locator("#tsh")).toHaveText("Evening · संध्याकाळ");
   await expect(page.locator("#tsl li").first().locator(".tno")).toHaveText("1.");
-  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("Sukhkarta Dukhharta");
-  await expect(page.locator("#tsl .t1").nth(1)).toHaveAttribute("lang", "en");
+  await expect(page.locator("#tsl .t1").nth(1)).toHaveText("Ganesha Pancharatnam");
+  await expect(page.locator("#tsl .t1").nth(6)).toHaveText("Sukhkarta Dukhharta");
+  await expect(page.locator("#tsl .t1").nth(6)).toHaveAttribute("lang", "en");
   await expect(page.locator("#btt")).toHaveText("Sankathara Chaturthi");
   await expect(page.locator("#btt")).toHaveAttribute("lang", "en");
 });
@@ -991,7 +1010,7 @@ test("Home's session: the evening alone has no switch; with a morning too, the s
   await openSite(page, SETUPS.english);
   await expect(page.locator("#tss")).toBeHidden();
   await expect(page.locator("#tsh")).toContainText("Evening");
-  await expect(page.locator("#tsl li")).toHaveCount(11);
+  await expect(page.locator("#tsl li")).toHaveCount(16);
   // a routine with a morning as well, opened at 9 in the morning
   await page.route("**/content/routines.json", (r) =>
     r.fulfill({
