@@ -80,7 +80,8 @@ function draw() {
   var w = menuWords("welcome");
   card.lang = ui();
   card.setAttribute("aria-label", w.title);
-  el("welcome-sub").textContent = w.app;
+  // (with Marathi menus the title above already says it)
+  el("welcome-sub").textContent = ui() === "mr" ? "" : w.app;
   el("welcome-points").innerHTML = items(w.points);
   el("welcome-facts").innerHTML = items(w.facts);
   el("welcome-lang-label").textContent = w.first;

@@ -407,7 +407,7 @@ export default {
     noPlace: "Could not get your location",
   },
   // Welcome: once, on a new phone, two steps over Home (js/features/welcome.js); app: the name under संकटहर चतुर्थी, in
-  // the menu language's letters (none in Marathi)
+  // the menu language's letters (not shown with Marathi menus, where the title already is)
   welcome: {
     title: "Welcome to Sankathara Chaturthi",
     app: "Sankathara Chaturthi",
