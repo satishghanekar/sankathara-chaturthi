@@ -37,21 +37,32 @@
   // js/features/launch.js runs it once the page is ready): the next Chaturthi's date first, then the words written round
   // the picture, SANKATAHARA and CHATURTHI, lighting up letter by letter. Only on Home (not a link to a text or the
   // install page), never for a reader who asks for less motion, and once a day: the day is kept on this phone
-  // (localStorage "sankathara-launch").
+  // (localStorage "sankathara-launch"). Every other time the app is opened (as in Nitya Upasana, Satish 2026-11-21) the
+  // plain splash stays a moment, about 1.5 s, while the lamps light in turn (#spl.brief; js/features/launch.js ends it):
+  // once a visit, not again when the page reloads (sessionStorage "sankathara-opened", gone when the app or tab closes).
   var now = new Date(),
     key = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate(),
-    full = false;
+    full = false,
+    brief = false;
   try {
-    full =
-      window.top === window &&
-      !location.hash &&
-      !location.search &&
-      !matchMedia("(prefers-reduced-motion: reduce)").matches &&
-      localStorage.getItem("sankathara-launch") !== key;
+    var home = window.top === window && !location.hash && !location.search && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    full = home && localStorage.getItem("sankathara-launch") !== key;
+    brief = home && !full && !sessionStorage.getItem("sankathara-opened");
     if (full) localStorage.setItem("sankathara-launch", key);
+    if (home) sessionStorage.setItem("sankathara-opened", "1");
   } catch (e) {
-    full = false;
+    full = brief = false;
   }
+  // a tap or a key ends either (once the page is ready: css/02-core.css)
+  if (full || brief) {
+    sp.setAttribute("data-t0", String(Math.round(performance.now())));
+    var skip = function () {
+      sp.classList.add("skip");
+    };
+    sp.addEventListener("click", skip);
+    document.addEventListener("keydown", skip, { once: true });
+  }
+  if (brief) sp.classList.add("brief");
   if (full) {
     sp.classList.add("launch");
     // The letters' centres, in % of the picture: SANKATAHARA on an arc over the top, CHATURTHI on one under the
@@ -84,12 +95,6 @@
     var halo = document.createElement("i");
     halo.className = "splo";
     box.appendChild(halo);
-    // a tap or a key ends it (once the page is ready: css/02-core.css)
-    var skip = function () {
-      sp.classList.add("skip");
-    };
-    sp.addEventListener("click", skip);
-    document.addEventListener("keydown", skip, { once: true });
     // set up: its picture may show now (css/02-core.css)
     sp.setAttribute("data-set", "");
     return;
