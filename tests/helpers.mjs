@@ -274,7 +274,7 @@ export async function langMismatches(page, sels) {
     for (const sel of sels)
       for (const root of document.querySelectorAll(sel)) {
         const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-        for (let n; (n = w.nextNode()); ) {
+        for (let n; (n = w.nextNode());) {
           const el = n.parentElement;
           if (!el || !el.getClientRects().length || el.closest("[aria-hidden=true],svg")) continue;
           let top = "",
