@@ -15,3 +15,4 @@ aarti-vitthal: none
 aarti-ghalin-lotangan: none
 aarti-jai-ganesh-deva: none
 aarti-jai-jagdish-hare: none
+bhajan-mahaganesh-pancharatnam: none

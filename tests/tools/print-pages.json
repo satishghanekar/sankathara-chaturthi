@@ -10,7 +10,8 @@
   "a7": 2,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 2
  },
  "both": {
   "p1": 6,
@@ -23,7 +24,8 @@
   "a7": 2,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 2
  },
  "english": {
   "p1": 3,
@@ -36,7 +38,8 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi-a4": {
   "p1": 2,
@@ -49,7 +52,8 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi-bold": {
   "p1": 3,
@@ -62,7 +66,8 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi-every-verse": {
   "p1": 3,
@@ -75,7 +80,8 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi-landscape": {
   "p1": 3,
@@ -88,7 +94,8 @@
   "a7": 2,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi-modern": {
   "p1": 3,
@@ -101,7 +108,8 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  },
  "marathi": {
   "p1": 3,
@@ -114,6 +122,7 @@
   "a7": 1,
   "a8": 1,
   "a9": 1,
-  "a10": 2
+  "a10": 2,
+  "bhajan-mahaganesh-pancharatnam": 1
  }
 }

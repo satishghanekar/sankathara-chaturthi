@@ -25,10 +25,13 @@ const OLD = JSON.parse(JSON.stringify(win.CONTENT));
 const count = (s, re) => (s.match(re) || []).length;
 // (the old file had groups, पूजा and आरती; the texts are now by category, as in Nitya Upasana)
 const pieces = (C) => (C.categories || C.groups).flatMap((g) => g.pieces);
+// The texts added since the old file, which the comparisons with it leave out (each is checked like every text below)
+const ADDED = ["bhajan-mahaganesh-pancharatnam"];
+const migrated = (C) => ({ ...C, categories: (C.categories || C.groups).map((g) => ({ ...g, pieces: g.pieces.filter((p) => !ADDED.includes(p.text)) })) });
 const allLines = (C) => pieces(C).flatMap((p) => [...(p.refrain ? p.refrain.lines : []), ...p.items.flatMap((i) => i.lines || [])]);
 
 describe("CONTENT from the text files", () => {
-  const C = CONTENT;
+  const C = migrated(CONTENT);
   // (each [note] is now marked as one, nt, which the old file did not have: Ghalin Lotangan's ↻ ३ वेळा, and each piece
   // carries its text's id, text, as in Nitya Upasana. The Dnyaneshwar and Vitthal Aartis' entries follow their files
   // as written in Nitya Upasana, 2026-10-28)
@@ -54,6 +57,8 @@ describe("CONTENT from the text files", () => {
       ["vedic-chant", "Vedic Chant", 1],
       ["aarti", "Aarti", 10],
     ]);
+    // and, since 2026-11-20, भजन with the Mahaganesh Pancharatnam
+    expect(CONTENT.categories.filter((c) => c.pieces.length).map((c) => [c.id, c.pieces.map((p) => p.text)])).toContainEqual(["bhajan", ADDED]);
     expect(shown.map((c) => c.pieces.map((p) => p.id))).toEqual(OLD.groups.map((g) => g.pieces.map((p) => p.id)));
   });
   // (60 <br>: the Vitthal Aarti's dhrupad breaks after its first half in English and at the top too, Satish 2026-10-23)
@@ -167,7 +172,7 @@ describe("content checks", () => {
     expect(raw === raw.normalize("NFC")).toBe(true);
   });
   test("categories: Vedic Chant, Aarti, Stotra, Ashtak", () => {
-    expect(LIBRARY.categories.map((c) => c.id)).toEqual(["vedic-chant", "aarti", "stotra", "ashtak"]);
+    expect(LIBRARY.categories.map((c) => c.id)).toEqual(["vedic-chant", "aarti", "stotra", "ashtak", "bhajan"]);
   });
 });
 
