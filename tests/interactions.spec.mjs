@@ -1621,6 +1621,39 @@ test("Go to in a session at a place in a long text: the title first in the small
   expect(await parts.nth(0).evaluate((e) => getComputedStyle(e).textOverflow)).toBe("ellipsis");
 });
 
+// Any other opening (as in Nitya Upasana, 2026-11-21): the plain splash stays about 1.5 s, the lamps lighting in turn,
+// then Home; a tap ends it sooner, and a reload in the same visit does not show it again.
+test("any later opening keeps the splash about 1.5 s, then Home; a tap ends it sooner @mobile", async ({ page }) => {
+  await openSite(page, {}, { brief: true });
+  const spl = page.locator("#spl");
+  await expect(spl).toHaveClass(/brief/);
+  await expect(spl).not.toHaveClass(/launch/);
+  // the page is ready, but the splash is still there
+  await expect(spl).toBeVisible();
+  await expect(spl).toBeHidden({ timeout: 2500 });
+  await expect(page.locator("#skc")).toBeVisible();
+  // reloaded in the same visit: not again
+  await page.reload();
+  await settle(page);
+  await expect(spl).not.toHaveClass(/brief/);
+  await expect(spl).toBeHidden();
+  // a new visit (the app closed and opened again): a tap ends it at once
+  await page.evaluate(() => sessionStorage.removeItem("sankathara-opened"));
+  await page.reload();
+  await settle(page);
+  await expect(spl).toHaveClass(/brief/);
+  await spl.click();
+  await expect(spl).toBeHidden({ timeout: 600 });
+});
+
+// Not for a reader who asks for less motion: the page shows as soon as it is ready.
+test("the short splash is not kept for less motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await openSite(page, {}, { brief: true });
+  await expect(page.locator("#spl")).not.toHaveClass(/brief/);
+  await expect(page.locator("#spl")).toBeHidden();
+});
+
 // The launch animation (js/splash.js, js/features/launch.js): the first opening of the day, the next Chaturthi's lines
 // first, then the words round the picture lit letter by letter, then Home. Once a day: opened again, the plain splash.
 test("the first opening of the day shows the next Chaturthi's date, then lights the letters, then Home @mobile", async ({ page }) => {

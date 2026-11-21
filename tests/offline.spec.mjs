@@ -143,6 +143,8 @@ test("the splash shows the picture and its lamps until the page is ready, then g
     (d) => localStorage.setItem("sankathara-launch", d),
     FIXED_NOW.getFullYear() + "-" + (FIXED_NOW.getMonth() + 1) + "-" + FIXED_NOW.getDate(),
   );
+  // (and opened already in this visit: not the short splash either)
+  await page.addInitScript(() => sessionStorage.setItem("sankathara-opened", "1"));
   // the site script is held back, so the page is still starting
   await page.goto("./", { waitUntil: "commit" });
   const spl = page.locator("#spl");
