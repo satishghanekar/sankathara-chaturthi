@@ -7,11 +7,18 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { FIXED_NOW, PREFS_KEY, BASE_PREFS, TEXT_COUNT, buildAll, settingsTab } from "./helpers.mjs";
 
+/** A phone in use: these settings, and the welcome seen (js/features/welcome.js covers the screen on a new phone)
+ * @param {string[]} kv  the settings' key and value */
+const seenPhone = ([k, v]) => {
+  localStorage.setItem(k, v);
+  localStorage.setItem("sankathara-welcome", "2");
+};
+
 test.use({ serviceWorkers: "allow" });
 
 test("works offline after the first visit @chromium-only", async ({ page, context }) => {
   await page.clock.setFixedTime(FIXED_NOW);
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   await page.goto("./");
   // wait until the service worker controls the page and has saved the site
   await page.evaluate(async () => {
@@ -46,7 +53,7 @@ test("works offline after the first visit @chromium-only", async ({ page, contex
 // it is tried again when the internet is back, and then the badge and the note say ready
 test("offline ready only once every file is saved @chromium-only", async ({ page, context }) => {
   await page.clock.setFixedTime(FIXED_NOW);
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   const block = (r) => r.abort();
   await context.route("**/picture.webp", block);
   await page.goto("./");
@@ -72,7 +79,7 @@ test("offline ready only once every file is saved @chromium-only", async ({ page
 // A weak connection with the site saved: the page and every part come from the saved copy at once, without asking the
 // network, so the page is ready as fast as with a good connection
 test("a weak connection: the saved copy opens the page without asking the network @chromium-only", async ({ page, context }) => {
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -103,7 +110,7 @@ test("a weak connection: the saved copy opens the page without asking the networ
 // Check for updates (Settings → More → About) still finds a file changed under the same version: it saves the new
 // copy over the old one before reloading, since the page opens from the saved copy
 test("Check for updates saves a changed file and reloads with it @chromium-only", async ({ page, context }) => {
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -137,7 +144,7 @@ test("the splash shows the picture and its lamps until the page is ready, then g
     await r.continue();
   });
   await page.clock.setFixedTime(FIXED_NOW);
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify({ ...BASE_PREFS, th: "dark" })]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify({ ...BASE_PREFS, th: "dark" })]);
   // (opened today already: the plain splash, not the launch animation)
   await page.addInitScript(
     (d) => localStorage.setItem("sankathara-launch", d),
@@ -167,7 +174,7 @@ test("the splash shows the picture and its lamps until the page is ready, then g
 test.describe("in Safari", () => {
   test.use({ userAgent: devices["Desktop Safari"].userAgent });
   test("Check for updates saves the changed file and asks to close and reopen the app @chromium-only", async ({ page, context }) => {
-    await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+    await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
     await page.goto("./");
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;
@@ -217,7 +224,7 @@ test.describe("in Safari", () => {
 // updates then has no copy to compare with, and finds the new version from the version the page names (it said "Up to
 // date", stuck on 1.37.3, 2026-10-29)
 test("Check for updates finds a new version installed while the old one is on screen @chromium-only", async ({ page, context }) => {
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -249,7 +256,7 @@ test("Check for updates finds a new version installed while the old one is on sc
 // until a newer version installs. An iPhone stayed on 1.73.0 after every update, which said 1.74.0 (Satish, 2026-11-18).
 /** @param {import("@playwright/test").Page} page @param {string} [url] */
 async function openWithWorker(page, url = "./") {
-  await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
+  await page.addInitScript(seenPhone, [PREFS_KEY, JSON.stringify(BASE_PREFS)]);
   await page.goto(url);
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;

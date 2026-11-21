@@ -23,7 +23,7 @@ const chromiumLaunch = exe ? { launchOptions: { executablePath: exe } } : {};
 // and printed (ENGINE); WebKit also the reading flows (FLOWS), as most readers are on iPhones; the iPhone every @mobile
 // test; the rest (the Library's list, the texts' words, the site's files) is plain JavaScript, run once in Chromium.
 const ENGINE = /(smoke|layout|text-size|edge|compat|print-view|fonts)\.spec\.mjs$/;
-const FLOWS = /(smoke|layout|text-size|edge|compat|print-view|fonts|interactions|a11y|offline)\.spec\.mjs$/;
+const FLOWS = /(smoke|layout|text-size|edge|compat|print-view|fonts|interactions|a11y|offline|welcome)\.spec\.mjs$/;
 const all = {
   chromium: { use: { ...devices["Desktop Chrome"], ...chromiumLaunch } },
   firefox: { use: { ...devices["Desktop Firefox"] }, grepInvert: /@chromium-only/, testMatch: ENGINE },

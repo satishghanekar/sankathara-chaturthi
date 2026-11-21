@@ -90,6 +90,7 @@ var SITE_PARTS = (function () {
     "features/terms",
     "features/more-menu",
     "features/offline",
+    "features/welcome",
     "features/launch",
   ].map(function (f) {
     return "js/" + f + ".js";

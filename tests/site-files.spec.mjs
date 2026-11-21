@@ -100,8 +100,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // since 2026-11-19: as in Nitya Upasana, the install page (the one way to install for each device and browser) and its
   // words in five languages: 238.16 KB then; 240 KB since 2026-11-19: the label beside its arrow, 239.02 KB then; 243 KB
   // since 2026-11-19: the launch animation, js/features/launch.js and the splash's part, 242.5 KB then; 244 KB since
-  // 2026-11-20: Terms of use, js/features/terms.js, in five languages, 243.2 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(244_000);
+  // 2026-11-20: Terms of use, js/features/terms.js, in five languages, 243.2 KB then; 250.5 KB since 2026-11-21: as in
+  // Nitya Upasana, the welcome, js/features/welcome.js, its town step and its words in five languages, 249.6 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(250_500);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -114,11 +115,13 @@ test("the scripts, styles and page stay within their size budget", () => {
   // computer's top bar holding Home, Library and Reading, and Prev and Next at the text's sides: 65.59 KB then on a Mac;
   // 69 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, css/15-print.css, and the Print pop-up's Cover
   // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then; 71 KB
-  // since 2026-11-19: the launch animation and the maker and version at the splash's foot, 70.19 KB then)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(71_000);
+  // since 2026-11-19: the launch animation and the maker and version at the splash's foot, 70.19 KB then; 72 KB since
+  // 2026-11-21: as in Nitya Upasana, the welcome's two full-screen steps, 71.45 KB then)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(72_000);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
-  // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then)
-  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(23_000);
+  // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then; 24 KB since
+  // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then)
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(24_000);
 });
 
 // The Content-Security-Policy in _headers (Cloudflare Pages sends it; tests/serve.mjs too, so every test runs under it):

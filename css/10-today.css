@@ -219,3 +219,270 @@
   outline: 2px solid var(--ink);
   outline-offset: 0;
 }
+
+/* ==== Welcome (#wlc, js/features/welcome.js; as in Nitya Upasana's css/11-profiles.css): once, on a new phone, two
+   full-screen steps over Home and its bars (only the splash is above), each in one column; Home under it does not
+   scroll ==== */
+html[data-welcome] {
+  overflow: hidden;
+}
+#wlc {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow-y: auto;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 var(--fz-m)/1.45 var(--lat);
+}
+#wlc[hidden],
+#wlc [hidden] {
+  display: none;
+}
+#wlc:not([lang="en"]),
+#wlc:not([lang="en"]) button,
+#wlc:not([lang="en"]) select {
+  font-family: var(--body);
+}
+.welcome-step {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: max(20px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+}
+.welcome-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.welcome-dots {
+  display: flex;
+  gap: 6px;
+}
+.welcome-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rule);
+}
+.welcome-dots span.on {
+  width: 22px;
+  background: var(--accent);
+}
+.welcome-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--fz-s);
+}
+#welcome-lang {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--pill);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fz-m);
+}
+#welcome-picture {
+  align-self: center;
+  width: 112px;
+  height: 112px;
+  margin-top: 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 15%);
+}
+#welcome-title {
+  display: grid;
+  justify-items: center;
+  margin: 14px 0 0;
+  color: var(--accent);
+  font: 400 calc(var(--fz-xxl) * 1.4) / 1.2 var(--body);
+}
+#welcome-sub {
+  color: var(--muted);
+  font: 400 var(--fz-l) / 1.4 var(--body);
+}
+#welcome-sub:empty {
+  display: none;
+}
+#welcome-what {
+  margin: 8px auto 0;
+  max-width: 22em;
+  text-align: center;
+  font-size: var(--fz-l);
+}
+#welcome-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: var(--fz-xs);
+}
+#welcome-facts li {
+  padding: 4px 11px;
+  border-radius: 20px;
+  background: var(--surface);
+}
+.welcome-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: var(--fz-s);
+}
+.welcome-go {
+  display: grid;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+.welcome-main {
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--bg);
+  font: 600 var(--fz-l)/1.2 var(--lat);
+  cursor: pointer;
+}
+.welcome-quiet {
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: 600 var(--fz-m)/1.2 var(--lat);
+  cursor: pointer;
+}
+#welcome-place .welcome-dots {
+  margin-right: auto;
+}
+#welcome-om {
+  margin: 14px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font: 400 var(--fz-m) / 1.4 var(--body);
+}
+#welcome-om + #welcome-title {
+  margin-top: 2px;
+}
+#welcome-points {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fz-l);
+}
+#welcome-points li {
+  padding-left: 14px;
+  border-left: 3px solid var(--accent);
+}
+#welcome-place-title {
+  margin: 12px 0 0;
+  color: var(--accent);
+  font: 600 var(--fz-xxl)/1.25 var(--body);
+}
+#welcome-title:focus,
+#welcome-place-title:focus {
+  outline: none;
+}
+#welcome-second {
+  white-space: nowrap;
+}
+#welcome-town {
+  display: grid;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: var(--pill);
+}
+#welcome-town-name {
+  font: 600 var(--fz-xl)/1.3 var(--body);
+}
+#welcome-town-next {
+  color: var(--accent);
+  font-weight: 600;
+}
+#welcome-town-next:empty {
+  display: none;
+}
+#welcome-town.none {
+  border-style: dashed;
+  border-color: var(--rule);
+}
+.welcome-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--rule);
+  border-radius: 14px;
+  background: var(--pill);
+  color: var(--ink);
+  text-align: start;
+  font: inherit;
+  /* (buttons elsewhere keep to one line) */
+  height: auto;
+  white-space: normal;
+  cursor: pointer;
+}
+.welcome-option svg {
+  flex: none;
+  color: var(--accent);
+}
+.welcome-option > span {
+  display: grid;
+}
+#welcome-mine-name {
+  font-weight: 600;
+}
+#welcome-mine-note {
+  color: var(--muted);
+  font-size: var(--fz-s);
+}
+.welcome-city {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  font-weight: 600;
+}
+#welcome-city {
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1.5px solid var(--rule);
+  border-radius: 14px;
+  background: var(--pill);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 400;
+}
+#welcome-change {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: var(--fz-s);
+}
+#welcome-change p {
+  margin: 0;
+}
+#welcome-change + #wlcs {
+  margin-top: 24px;
+}

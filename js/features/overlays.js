@@ -26,6 +26,8 @@ import { clearSearch } from "./contents-list.js";
  * @type {{ id: string, page?: boolean, trap?: boolean, back?: boolean, opener?: string }[]}
  */
 export const LAYERS = [
+  // the welcome on a new phone (js/features/welcome.js): over everything but the splash
+  { id: "wlc", trap: true },
   { id: "help", trap: true },
   { id: "qrm", trap: true, back: true },
   { id: "terms", trap: true, back: true, opener: "terms-open" },
