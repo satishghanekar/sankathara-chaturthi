@@ -127,7 +127,7 @@ test("browser menu print gives every text @chromium-only", async ({ browser }) =
   expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
   const at = markerPages(pdf.pages);
   const pieces = await page.evaluate(() => [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid));
-  expect(pieces).toHaveLength(12);
+  expect(pieces).toHaveLength(16);
   for (const id of pieces) expect(at[id + ":0:s"], `${id} printed`).toBeGreaterThan(0);
   await context.close();
 });
@@ -146,9 +146,9 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await expect(page.locator("#prgp")).toBeHidden();
   await expect(page.locator("#prnx")).toBeFocused();
   const boxes = page.locator("#prwl .tpkl input");
-  await expect(boxes).toHaveCount(12);
+  await expect(boxes).toHaveCount(16);
   expect(await boxes.evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
-  await expect(page.locator("#prsum")).toContainText("12 texts");
+  await expect(page.locator("#prsum")).toContainText("16 texts");
   // the groups of the reading page, in its order
   await expect(page.locator("#prwl .prgr")).toHaveCount(3);
   expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["vedic-chant", "aarti", "bhajan"]);
@@ -185,7 +185,7 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   const pdf = await pdfPages(page, "Letter");
   const at = markerPages(pdf.pages);
   expect(at["a5:0:s"]).toBeGreaterThan(at["p1:0:s"]);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(10);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(14);
   await page.emulateMedia({ media: "screen" });
   // Safari laying the page out again after afterprint (its print sheet) still prints the two
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
@@ -195,7 +195,7 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await page.locator("body").dispatchEvent("pointerdown");
   await page.evaluate(() => dispatchEvent(new Event("beforeprint")));
-  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(12);
+  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(16);
   // and the builder keeps the two ticked
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await tapPrint(page);
@@ -343,7 +343,7 @@ test("print builder: Open in Safari carries the texts ticked @chromium-only", as
     .catch(() => {});
   const to = await page.locator("#prsf").getAttribute("data-to");
   const s = JSON.parse(decodeURIComponent(/&s=([^&]*)/.exec(to)[1]));
-  expect(s.pskip).toHaveLength(11);
+  expect(s.pskip).toHaveLength(15);
   expect(s.pskip).not.toContain("a3");
   // Safari, opened at that address, prints just that text
   const sf = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
@@ -823,7 +823,24 @@ test("print builder: English as the main language lists English first @chromium-
 // ---- The printout as a book (as in Nitya Upasana, 2026-11-17): a cover and a closing page around a printout of more
 // than one text, ornaments and headings, EB Garamond for the English ----
 const SKIP_ALL_BUT = (keep) =>
-  ["p1", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "bhajan-mahaganesh-pancharatnam"].filter((id) => !keep.includes(id));
+  [
+    "p1",
+    "a1",
+    "a2",
+    "a3",
+    "a4",
+    "a5",
+    "a6",
+    "a7",
+    "a8",
+    "a9",
+    "a10",
+    "bhajan-ganesha-pancharatnam",
+    "bhajan-vakratunda-mahakaya",
+    "bhajan-ganapati-bappa-morya",
+    "bhajan-vande-ganapati",
+    "bhajan-gaiye-ganapati-jagvandan",
+  ].filter((id) => !keep.includes(id));
 
 test("more than one text: a cover, the contents, the texts, a closing page @chromium-only", async ({ page }) => {
   await stubPrint(page);

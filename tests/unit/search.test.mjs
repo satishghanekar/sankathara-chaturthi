@@ -85,10 +85,10 @@ describe("ranking", () => {
     expect(r.lines.every((l, i) => i === 0 || r.lines[i - 1].score >= l.score)).toBe(true);
   });
   test("Texts are found by their title, not by what is inside them: those are under Lines", () => {
-    // The Atharvashirsha names Ganesha in its lines (gaṇeśavidyā), but only Jai Ganesh Deva and the Mahaganesh
+    // The Atharvashirsha names Ganesha in its lines (gaṇeśavidyā), but only Jai Ganesh Deva and the Ganesha
     // Pancharatnam have Ganesh in their titles
     const r = search(ix, "ganesh");
-    expect(r.texts.map((t) => t.id).sort()).toEqual(["aarti-jai-ganesh-deva", "bhajan-mahaganesh-pancharatnam"]);
+    expect(r.texts.map((t) => t.id).sort()).toEqual(["aarti-jai-ganesh-deva", "bhajan-ganesha-pancharatnam"]);
     expect(r.lines.map((l) => l.text)).toContain("vedic-chant-atharvashirsha");
     expect(r.texts.every((t) => t.score >= SCORE.titleTypo)).toBe(true);
   });

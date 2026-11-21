@@ -10,7 +10,7 @@ import vm from "node:vm";
 import { parseText } from "../../js/text/format.js";
 import { buildContent, PAGE_LANGUAGE, toPiece } from "../../js/text/content.js";
 import { factsOf } from "../tools/texts.mjs";
-import { CONTENT, FILES as files, IDS, LIBRARY, TEXTS } from "../content-files.mjs";
+import { CONTENT, FILES as files, IDS, LIBRARY, TEXTS, VERSION_IDS } from "../content-files.mjs";
 import { menuWords } from "../../js/core/strings.js";
 import { SESSIONS, textsFor } from "../../js/core/routine.js";
 
@@ -26,7 +26,13 @@ const count = (s, re) => (s.match(re) || []).length;
 // (the old file had groups, पूजा and आरती; the texts are now by category, as in Nitya Upasana)
 const pieces = (C) => (C.categories || C.groups).flatMap((g) => g.pieces);
 // The texts added since the old file, which the comparisons with it leave out (each is checked like every text below)
-const ADDED = ["bhajan-mahaganesh-pancharatnam"];
+const ADDED = [
+  "bhajan-vakratunda-mahakaya",
+  "bhajan-ganapati-bappa-morya",
+  "bhajan-vande-ganapati",
+  "bhajan-ganesha-pancharatnam",
+  "bhajan-gaiye-ganapati-jagvandan",
+];
 const migrated = (C) => ({ ...C, categories: (C.categories || C.groups).map((g) => ({ ...g, pieces: g.pieces.filter((p) => !ADDED.includes(p.text)) })) });
 const allLines = (C) => pieces(C).flatMap((p) => [...(p.refrain ? p.refrain.lines : []), ...p.items.flatMap((i) => i.lines || [])]);
 
@@ -57,7 +63,7 @@ describe("CONTENT from the text files", () => {
       ["vedic-chant", "Vedic Chant", 1],
       ["aarti", "Aarti", 10],
     ]);
-    // and, since 2026-11-20, भजन with the Mahaganesh Pancharatnam
+    // and, since 2026-11-20, भजन with the Ganesh bhajans
     expect(CONTENT.categories.filter((c) => c.pieces.length).map((c) => [c.id, c.pieces.map((p) => p.text)])).toContainEqual(["bhajan", ADDED]);
     expect(shown.map((c) => c.pieces.map((p) => p.id))).toEqual(OLD.groups.map((g) => g.pieces.map((p) => p.id)));
   });
@@ -139,9 +145,10 @@ describe("content checks", () => {
     for (const t of TEXTS) expect(t.id.startsWith(t.category + "-"), t.id).toBe(true);
   });
   const names = readdirSync(new URL("../../content/texts/", import.meta.url)).filter((f) => !f.startsWith("."));
-  test("library.json lists every file in content/texts/, once", () => {
-    expect([...IDS].sort()).toEqual(names.map((f) => f.replace(/\.txt$/, "")).sort());
-    expect(new Set(IDS).size).toBe(IDS.length);
+  test("library.json lists every file in content/texts/, once: in a category, or as another version of a text", () => {
+    const all = IDS.concat(VERSION_IDS);
+    expect([...all].sort()).toEqual(names.map((f) => f.replace(/\.txt$/, "")).sort());
+    expect(new Set(all).size).toBe(all.length);
   });
   // the routine, as Nitya Upasana's: its sessions (Morning, Afternoon, Evening; a session not in it is not shown) list
   // texts of the Library, in the order they are read (js/features/session-card.js), which need not be the Library's
@@ -158,7 +165,7 @@ describe("content checks", () => {
   });
   // Everything about a text is in its own file (Satish, 2026-11-15): its header's lines are written by npm run texts
   // from the text itself; edit a text and forget it, and this names the file
-  test.each(IDS.map((id) => [id]))("%s: its header's lines are up to date (npm run texts)", (id) => {
+  test.each(IDS.concat(VERSION_IDS).map((id) => [id]))("%s: its header's lines are up to date (npm run texts)", (id) => {
     const t = parseText(files[id], id + ".txt");
     const f = factsOf(files[id], id + ".txt");
     expect(t.lines).toBe(f.lines);
@@ -167,7 +174,7 @@ describe("content checks", () => {
     // its language named in the site's words, in every menu language (js/strings/, "text")
     for (const l of ["mr", "en", "kn", "te", "gu"]) expect(menuWords("text", l).lang[t.language], l).toBeTruthy();
   });
-  test.each(IDS.map((id) => [id]))("%s is not changed by Unicode normalisation", (id) => {
+  test.each(IDS.concat(VERSION_IDS).map((id) => [id]))("%s is not changed by Unicode normalisation", (id) => {
     const raw = files[id];
     expect(raw === raw.normalize("NFC")).toBe(true);
   });
