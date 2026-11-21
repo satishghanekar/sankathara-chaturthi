@@ -113,6 +113,7 @@ var SITE_PARTS = (function () {
     "texts/aarti-ghalin-lotangan.txt",
     "texts/aarti-jai-ganesh-deva.txt",
     "texts/aarti-jai-jagdish-hare.txt",
+    "texts/bhajan-mahaganesh-pancharatnam.txt",
   ].map(function (f) {
     return "content/" + f;
   });

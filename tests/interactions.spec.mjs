@@ -298,7 +298,7 @@ test("the Library lists every text and jumps to one", async ({ page }) => {
   await expect(page.locator("#home .tocg, #tfr")).toHaveCount(0);
   await page.locator("#asq").click();
   await expect(page.locator("#jump")).toBeVisible();
-  await expect(page.locator("#jl a[data-go]")).toHaveCount(11);
+  await expect(page.locator("#jl a[data-go]")).toHaveCount(12);
   await page.locator('#jl a[data-go="a5"]').click();
   await page.waitForTimeout(400);
   const top = await page.locator("#a5").evaluate((e) => e.getBoundingClientRect().top);
