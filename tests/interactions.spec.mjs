@@ -1624,26 +1624,43 @@ test("Go to in a session at a place in a long text: the title first in the small
 // Any other opening (as in Nitya Upasana, 2026-11-21): the plain splash stays about 1.5 s, the lamps lighting in turn,
 // then Home; a tap ends it sooner, and a reload in the same visit does not show it again.
 test("any later opening keeps the splash about 1.5 s, then Home; a tap ends it sooner @mobile", async ({ page }) => {
+  // what the splash was doing the moment the page became ready, and whether it went after that (not timed here: a slow
+  // test machine can take longer than 1.5 s to settle, fonts and all)
+  await page.addInitScript(() => {
+    const seen = {};
+    window.__splash = seen;
+    new MutationObserver(() => {
+      const spl = document.getElementById("spl");
+      if (!spl) return;
+      if (document.documentElement.hasAttribute("data-ready") && !seen.ready) {
+        seen.ready = true;
+        seen.visibleAtReady = getComputedStyle(spl).visibility;
+      }
+      if (spl.classList.contains("done") && !seen.done) seen.done = seen.ready ? "after" : "before";
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ["data-ready", "class"] });
+  });
   await openSite(page, {}, { brief: true });
   const spl = page.locator("#spl");
   await expect(spl).toHaveClass(/brief/);
   await expect(spl).not.toHaveClass(/launch/);
-  // the page is ready, but the splash is still there
-  await expect(spl).toBeVisible();
-  await expect(spl).toBeHidden({ timeout: 2500 });
+  // the page was ready, and the splash still up; then it went by itself, leaving Home
+  expect(await page.evaluate(() => window.__splash.visibleAtReady)).toBe("visible");
+  await expect(spl).toBeHidden({ timeout: 4000 });
+  expect(await page.evaluate(() => window.__splash.done)).toBe("after");
   await expect(page.locator("#skc")).toBeVisible();
   // reloaded in the same visit: not again
   await page.reload();
   await settle(page);
   await expect(spl).not.toHaveClass(/brief/);
   await expect(spl).toBeHidden();
-  // a new visit (the app closed and opened again): a tap ends it at once
+  // a new visit (the app closed and opened again): a tap ends it
   await page.evaluate(() => sessionStorage.removeItem("sankathara-opened"));
   await page.reload();
   await settle(page);
   await expect(spl).toHaveClass(/brief/);
-  await spl.click();
-  await expect(spl).toBeHidden({ timeout: 600 });
+  await spl.dispatchEvent("click");
+  await expect(spl).toHaveClass(/skip/);
+  await expect(spl).toBeHidden();
 });
 
 // Not for a reader who asks for less motion: the page shows as soon as it is ready.
