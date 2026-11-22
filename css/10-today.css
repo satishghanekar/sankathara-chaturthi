@@ -16,7 +16,8 @@
    one shown is raised with a line under it; one with nothing set today is greyed (dashed edge, muted words, "Nothing
    set" under its name). Every tab is 52px tall whether or not it has the hint, so picking never moves the page.
    Muted on the switch's background: 5.5:1 light, 6.8:1 dark, 4.8:1 sepia (WCAG AA, 4.5:1) ==== */
-#tss {
+#tss,
+#text-kinds {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
@@ -26,7 +27,8 @@
   border-radius: 14px;
   background: var(--surface);
 }
-#tss [role="tab"] {
+#tss [role="tab"],
+#text-kinds [role="tab"] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45,31 +47,37 @@
   text-align: center;
   cursor: pointer;
 }
-#tss[lang="mr"] [role="tab"] {
+#tss[lang="mr"] [role="tab"],
+#text-kinds[lang="mr"] [role="tab"] {
   font-family: var(--body);
 }
-#tss .tsnm {
+#tss .tsnm,
+#text-kinds .tsnm {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   max-width: 100%;
 }
-#tss .tsw {
+#tss .tsw,
+#text-kinds .tsw {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-#tss .tshn {
+#tss .tshn,
+#text-kinds .tshn {
   color: var(--muted);
   font-size: var(--fz-xs);
   font-weight: 500;
   line-height: 1.2;
 }
-#tss .tshn:empty {
+#tss .tshn:empty,
+#text-kinds .tshn:empty {
   display: none;
 }
-#tss [aria-selected="true"] {
+#tss [aria-selected="true"],
+#text-kinds [aria-selected="true"] {
   background: var(--bg);
   color: var(--accent);
   font-weight: 700;
@@ -77,22 +85,37 @@
     0 1px 3px rgba(0, 0, 0, 0.13),
     inset 0 -3px 0 var(--accent);
 }
-#tss [aria-disabled="true"] {
+#tss [aria-disabled="true"],
+#text-kinds [aria-disabled="true"] {
   border: 1px dashed var(--rule);
   color: var(--muted);
   font-weight: 500;
 }
-#tss [aria-disabled="true"][aria-selected="true"] {
+#tss [aria-disabled="true"][aria-selected="true"],
+#text-kinds [aria-disabled="true"][aria-selected="true"] {
   box-shadow: inset 0 -3px 0 var(--muted);
 }
 /* here a session with no texts is left out, and the switch shows only with two or more (js/features/session-card.js) */
 #tss[hidden],
-#tss [role="tab"][hidden] {
+#text-kinds[hidden],
+#tss [role="tab"][hidden],
+#text-kinds [role="tab"][hidden] {
   display: none;
 }
-#tss [role="tab"]:focus-visible {
+#tss [role="tab"]:focus-visible,
+#text-kinds [role="tab"]:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+}
+
+/* All | Pooja | Bhajan | Aarti (#text-kinds, Satish 2026-11-22): the same switch, four tabs, each its icon above its word so
+   the four fit on a 360px phone at the menus' size (beside it, "Bhajan" was cut short) */
+#text-kinds {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+#text-kinds .tsnm {
+  flex-direction: column;
+  gap: 2px;
 }
 
 /* ==== A session being read (data-run, js/features/session-card.js; as in Nitya Upasana): only its texts (.inrun) are on the reading page,

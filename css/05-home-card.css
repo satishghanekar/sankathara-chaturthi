@@ -586,3 +586,11 @@
     margin-bottom: 0;
   }
 }
+
+/* With the tabs over the evening (#text-kinds, data-kinds on #tsc): the session's name a quiet line above the list, not
+   its heading (Satish, 2026-11-22: the gathering is always in the evening) */
+#tsc[data-kinds] #tsh {
+  font: 600 var(--fz-s)/1.3 var(--lat);
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}

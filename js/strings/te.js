@@ -24,6 +24,7 @@ export default {
   // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
   session: {
     sessions: { morning: "ఉదయం", afternoon: "మధ్యాహ్నం", evening: "సాయంత్రం" },
+    kinds: { all: "అన్నీ", pooja: "పూజ", bhajan: "భజన", aarti: "హారతి" },
     texts: texts,
     ended: "ఈ సమయం ముగిసింది",
   },

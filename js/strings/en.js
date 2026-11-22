@@ -22,6 +22,8 @@ export default {
   // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
   session: {
     sessions: { morning: "Morning", afternoon: "Afternoon", evening: "Evening" },
+    // Home's tabs over the evening's list: every text, the pooja, the bhajans, the aartis (js/features/session-card.js)
+    kinds: { all: "All", pooja: "Pooja", bhajan: "Bhajan", aarti: "Aarti" },
     /** @param {number} n */
     texts: function (n) {
       return n + (n === 1 ? " text" : " texts");
