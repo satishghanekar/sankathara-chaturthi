@@ -67,15 +67,15 @@ test("the reader's own larger text size makes the text and the menus larger by t
   await openSite(page, SETUPS.marathi);
   expect(await page.evaluate(() => document.documentElement.style.getPropertyValue("--ts"))).toBe("1.25");
   expect(await fs(page)).toBe("30px"); // 24px × 1.25
-  // the session's heading, 24px as it comes (--fz-xxl)
-  expect(await page.locator("#tsh").evaluate((e) => getComputedStyle(e).fontSize)).toBe("30px");
+  // the session's name, 13px as it comes (--fz-s: a quiet line over the evening's tabs since 2026-11-22), by the same share
+  expect(await page.locator("#tsh").evaluate((e) => getComputedStyle(e).fontSize)).toBe("16.25px");
 });
 
 test("with the usual text size nothing is scaled", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await openSite(page, SETUPS.marathi);
   expect(await page.evaluate(() => document.documentElement.style.getPropertyValue("--ts"))).toBe("1");
-  expect(await page.locator("#tsh").evaluate((e) => getComputedStyle(e).fontSize)).toBe("24px");
+  expect(await page.locator("#tsh").evaluate((e) => getComputedStyle(e).fontSize)).toBe("13px");
 });
 
 // A line too long for a small phone wraps: its two rows sit closer together than two lines do, so it reads as one

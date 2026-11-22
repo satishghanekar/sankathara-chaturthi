@@ -70,3 +70,36 @@ export function textsFor(routine, day, session) {
   });
   return out;
 }
+
+/**
+ * Home's tabs over the evening's list (Satish, 2026-11-22): every text, then the pooja, the bhajans and the aartis. The
+ * routine is not split: a text's kind comes from its Library category, so a text added to the evening lands in its tab
+ * by itself @type {Kind[]}
+ * @typedef {"all" | "pooja" | "bhajan" | "aarti"} Kind
+ */
+export const KINDS = ["all", "pooja", "bhajan", "aarti"];
+
+/**
+ * A Library category's tab: bhajans and aartis their own; everything else chanted in the pooja (Vedic chant, stotra,
+ * ashtak) is Pooja
+ * @param {string} category  its id in content/library.json
+ * @returns {Kind}
+ */
+export function kindOf(category) {
+  return category === "bhajan" || category === "aarti" ? category : "pooja";
+}
+
+/**
+ * A session's texts on one tab, in the session's order (all: every one)
+ * @param {string[]} ids
+ * @param {Record<string, Kind>} kinds  each text's kind, by its id
+ * @param {Kind} kind
+ * @returns {string[]}
+ */
+export function ofKind(ids, kinds, kind) {
+  return kind === "all"
+    ? ids.slice()
+    : ids.filter(function (id) {
+        return kinds[id] === kind;
+      });
+}

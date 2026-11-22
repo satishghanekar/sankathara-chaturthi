@@ -7,6 +7,10 @@
 // (#tss: Morning | Afternoon | Evening, tabs: arrow keys move between them, Enter or Space picks) shows above the list,
 // with only those sessions; the session of the time of day is shown first (or the next one with texts). No other day
 // and no routine builder.
+// While only one session has texts, tabs over its list instead (#text-kinds, Satish 2026-11-22): All | Pooja | Bhajan |
+// Aarti, each text's tab from its Library category (core/routine.js kindOf()), so the routine itself is never split; a
+// tab's texts are numbered from १ and a title read from it reads that tab's texts (an aarti's Next › is the next aarti).
+// The session's name is then a quiet line above the list (data-kinds on #tsc). It opens on All each time.
 // Reading a session, as in Nitya Upasana: a title starts the session at that text. The reading page then shows the
 // session's texts, in session order, in one scroll (data-run on <html>, .inrun and a CSS order on each of its pieces:
 // css/05-home-card.css), and ‹ Prev / Next › stay in it (sessionStep(), js/features/bottom-bar.js): Next › after the
@@ -17,8 +21,8 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { loaded } from "../text/load.js";
-import { SESSIONS, sessionAt, stepInSession, textsFor } from "../core/routine.js";
-import { dv, esc, lead, mrLang, nameLang, scr, scrKey, second, ui } from "../core/words.js";
+import { KINDS, kindOf, ofKind, SESSIONS, sessionAt, stepInSession, textsFor } from "../core/routine.js";
+import { dv, esc, lead, mrLang, nameLang, num, scr, scrKey, second, ui } from "../core/words.js";
 import { iaTitle } from "../text/iast.js";
 import { arrange, note, onPiece, pieceEl } from "../core/page.js";
 import { P } from "../core/state.js";
@@ -47,6 +51,13 @@ var t = {};
 var lists = /** @type {any} */ ({});
 /** @type {Session[]} the sessions with texts */
 var have = [];
+/** @typedef {import("../core/routine.js").Kind} Kind */
+/** @type {Kind} the tab picked over the list (All each time the app opens) */
+var kind = "all";
+/** @type {Record<string, Kind>} each text's tab, from its Library category */
+var kinds = {};
+/** @type {string[]} the texts on the list now: the session's, or one tab's of them */
+var showing = [];
 
 /** The reading languages the card is in: the main one, and the second when there is one. Show (the main, the second
  * or both) is for the texts; the card keeps both, as Nitya Upasana's does */
@@ -86,10 +97,12 @@ export function init() {
   // each text's section on the page (a1, p1): Nitya Upasana's content.js keeps the text's id beside it
   sec = {};
   bySec = {};
-  C.categories.forEach(function (/** @type {{ pieces: { id: string, text: string }[] }} */ c) {
+  kinds = {};
+  C.categories.forEach(function (/** @type {{ id: string, pieces: { id: string, text: string }[] }} */ c) {
     c.pieces.forEach(function (p) {
       sec[p.text] = p.id;
       bySec[p.id] = p.text;
+      kinds[p.text] = kindOf(c.id);
     });
   });
   // each text's facts, from its own file (CONTENT.texts)
@@ -142,21 +155,37 @@ export function init() {
   document.addEventListener("nitya-home", function () {
     if (run) runEnd();
   });
-  if (!tabs) return;
-  var tb = tabs;
-  tb.style.gridTemplateColumns = "repeat(" + have.length + ", minmax(0, 1fr))";
-  // a tap (or Enter / Space) shows that session's texts; picking the time of day's follows the clock again
+  if (tabs) {
+    tabs.style.gridTemplateColumns = "repeat(" + have.length + ", minmax(0, 1fr))";
+    // a tap (or Enter / Space) shows that session's texts; picking the time of day's follows the clock again
+    tabsOn(tabs, function (b) {
+      var s = /** @type {Session} */ (b.dataset.s);
+      pick = s === sessionAt(new Date()) ? null : s;
+    });
+  }
+  // All | Pooja | Bhajan | Aarti: a tap shows that tab's texts of the session
+  var kt = document.getElementById("text-kinds");
+  if (kt)
+    tabsOn(kt, function (b) {
+      kind = /** @type {Kind} */ (b.dataset.k);
+    });
+}
+
+/**
+ * A row of tabs: a tap (or Enter / Space) picks one and draws the list again; arrow keys, Home and End move between
+ * the tabs shown (focus only: Enter or Space picks, as a button does)
+ * @param {HTMLElement} tb @param {(b: HTMLElement) => void} picked
+ */
+function tabsOn(tb, picked) {
   tb.addEventListener("click", function (e) {
     var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest('[role="tab"]'));
     if (!b) return;
-    var s = /** @type {Session} */ (b.dataset.s);
-    pick = s === sessionAt(new Date()) ? null : s;
+    picked(b);
     draw();
     try {
       b.focus({ preventScroll: true });
     } catch (x) {}
   });
-  // arrow keys, Home and End move between the sessions shown (focus only: Enter or Space picks, as a button does)
   tb.addEventListener("keydown", function (e) {
     var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest('[role="tab"]'));
     if (!b || !/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
@@ -184,7 +213,10 @@ function shown() {
 
 function draw() {
   var s = shown(),
-    ids = lists[s],
+    // the tabs over the list, while only one session has texts
+    byKind = have.length < 2,
+    k = byKind ? kind : "all",
+    ids = ofKind(lists[s], kinds, k),
     ls = langs(),
     w = menuWords("session"),
     tabs = document.getElementById("tss"),
@@ -192,6 +224,7 @@ function draw() {
     names = /** @type {Record<string, string>} */ (menuWords("text").lang),
     sc = document.getElementById("tsc");
   drawn = drawnFor();
+  showing = ids;
   // the menu language for the words around the titles (screen readers pick the voice from lang)
   if (sc) sc.lang = ui();
   // The session's heading and the titles in the reading languages (Settings → Reading): the main one first, the second
@@ -229,6 +262,7 @@ function draw() {
       );
     })
     .join("");
+  kindTabs(byKind, s);
   if (!tabs) return;
   // Morning | Afternoon | Evening: only the sessions with texts, and only when there are two or more
   tabs.hidden = have.length < 2;
@@ -240,7 +274,36 @@ function draw() {
     b.tabIndex = on ? 0 : -1;
     /** @type {HTMLElement} */ (b.querySelector(".tsw")).textContent = w.sessions[x];
   });
-  /** @type {HTMLElement} */ (document.getElementById("tsp")).setAttribute("aria-labelledby", "tss-" + s);
+  if (!byKind) /** @type {HTMLElement} */ (document.getElementById("tsp")).setAttribute("aria-labelledby", "tss-" + s);
+}
+
+/**
+ * All | Pooja | Bhajan | Aarti over the session's list: each tab with its count, a tab with no texts left out; shown
+ * only while one session has texts, and only when the texts are of more than one kind
+ * @param {boolean} on @param {Session} s
+ */
+function kindTabs(on, s) {
+  var kt = document.getElementById("text-kinds"),
+    sc = document.getElementById("tsc");
+  if (!kt || !sc) return;
+  var n = /** @type {Record<string, number>} */ ({}),
+    mixed =
+      KINDS.filter(function (x) {
+        n[x] = ofKind(lists[s], kinds, x).length;
+        return x !== "all" && n[x] > 0;
+      }).length > 1;
+  kt.hidden = !(on && mixed);
+  sc.toggleAttribute("data-kinds", !kt.hidden);
+  if (kt.hidden) return;
+  [].forEach.call(kt.querySelectorAll('[role="tab"]'), function (/** @type {HTMLElement} */ b) {
+    var x = /** @type {Kind} */ (b.dataset.k),
+      picked = x === kind;
+    b.hidden = !n[x];
+    b.setAttribute("aria-selected", String(picked));
+    b.tabIndex = picked ? 0 : -1;
+    /** @type {HTMLElement} */ (b.querySelector(".tshn")).textContent = num(n[x]);
+  });
+  /** @type {HTMLElement} */ (document.getElementById("tsp")).setAttribute("aria-labelledby", "text-kind-" + kind);
 }
 
 // ---- Reading a session (as Nitya Upasana's js/features/today-card.js) ----
@@ -266,7 +329,7 @@ function openText(id) {
 /** Read the session shown from this text on @param {string} id */
 function startAt(id) {
   var s = shown();
-  run = { ids: lists[s].slice(), session: s, day: new Date().toDateString(), at: Date.now() };
+  run = { ids: showing.slice(), session: s, day: new Date().toDateString(), at: Date.now() };
   try {
     sessionStorage.setItem(RUN_KEY, JSON.stringify(run));
   } catch (e) {}

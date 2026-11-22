@@ -21,6 +21,7 @@ export default {
   // The session on Home: its names, how many texts it has, its end (js/features/session-card.js)
   session: {
     sessions: { morning: "सकाळ", afternoon: "दुपार", evening: "संध्याकाळ" },
+    kinds: { all: "सर्व", pooja: "पूजा", bhajan: "भजन", aarti: "आरती" },
     /** @param {number} n */
     texts: function (n) {
       return dv(n) + " रचना";

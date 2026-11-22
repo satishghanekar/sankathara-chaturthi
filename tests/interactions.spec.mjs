@@ -344,6 +344,47 @@ test("home lists the evening's texts; a title opens that text and Next goes on @
   expect(page.url()).toContain("#a4");
 });
 
+// All | Pooja | Bhajan | Aarti over the evening (Satish, 2026-11-22): each text's tab from its Library category, the
+// routine one list; a tab's texts numbered from १, read in that tab's order; the evening a quiet line; All on each opening
+test("the evening's tabs: All, Pooja, Bhajan and Aarti, each with its texts numbered from one, read in that tab @mobile", async ({ page }) => {
+  await openSite(page, SETUPS.english);
+  const tabs = page.locator("#text-kinds [role=tab]");
+  await expect(tabs).toHaveText(["All16", "Pooja1", "Bhajan5", "Aarti10"], { useInnerText: false });
+  await expect(page.locator("#text-kind-all")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsp")).toHaveAttribute("aria-labelledby", "text-kind-all");
+  // the evening is a quiet line above the list, no longer its heading
+  const size = (sel) => page.locator(sel).evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  expect(await size("#tsh")).toBeLessThan(await size("#tsl li:first-child .t1"));
+  await expect(page.locator("#tsh")).toHaveText("संध्याकाळ · Evening");
+  await page.locator("#text-kind-aarti").click();
+  await expect(page.locator("#tsl li")).toHaveCount(10);
+  await expect(page.locator("#tsn")).toHaveText("10 texts", { useInnerText: true });
+  await expect(page.locator("#tsl .tno").first()).toHaveText("१.");
+  await expect(page.locator("#tsl li").first()).toContainText("Sukhkarta Dukhharta");
+  await page.locator("#text-kind-pooja").click();
+  await expect(page.locator("#tsn")).toHaveText("1 text", { useInnerText: true });
+  await expect(page.locator("#tsl li")).toHaveText([/Ganapati Atharvashirsha/]);
+  // arrow keys move between the tabs, Enter picks
+  await page.locator("#text-kind-pooja").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("#text-kind-bhajan")).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#text-kind-bhajan")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsl li")).toHaveCount(5);
+  // a bhajan read from its tab: the last bhajan's Next › goes Home, not on to the first aarti as from All
+  const last = page.locator("#tsl a").last();
+  const id = (await last.getAttribute("href")).replace("./#", "");
+  await last.click();
+  await expect(page.locator("#" + id)).toBeVisible();
+  await expect(page.locator("#a1")).toBeHidden();
+  await page.locator("#asn").click();
+  await expect(page.locator("#tsc")).toBeVisible();
+  // the next opening starts on All again
+  await page.reload();
+  await expect(page.locator("#text-kind-all")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsl li")).toHaveCount(16);
+});
+
 // Home on its own, as in Nitya Upasana: the page ends after the evening's list; while reading, Home is not above the texts
 test("Home is on its own; a text shows the reading page, Home and Back bring Home back @mobile", async ({ page }) => {
   await openSite(page, SETUPS.marathi);

@@ -12,7 +12,7 @@ import { buildContent, PAGE_LANGUAGE, toPiece } from "../../js/text/content.js";
 import { factsOf } from "../tools/texts.mjs";
 import { CONTENT, FILES as files, IDS, LIBRARY, TEXTS, VERSION_IDS } from "../content-files.mjs";
 import { menuWords } from "../../js/core/strings.js";
-import { SESSIONS, textsFor } from "../../js/core/routine.js";
+import { KINDS, kindOf, ofKind, SESSIONS, textsFor } from "../../js/core/routine.js";
 
 const read = (p) => readFileSync(new URL("../../" + p, import.meta.url), "utf8");
 const routines = JSON.parse(read("content/routines.json"));
@@ -162,6 +162,26 @@ describe("content checks", () => {
         const raw = routines[s] && routines[s].mode === "fixed" ? routines[s].texts : [];
         expect(raw.length, s).toBe(got.length);
       }
+  });
+  // Home's tabs (Satish, 2026-11-22): All, Pooja, Bhajan, Aarti over the evening's one list, each text's tab from its
+  // Library category, so the routine is never split; every text of the evening is on exactly one of the three
+  test("the evening's texts fall into Pooja, Bhajan and Aarti by their Library category, in the evening's order", () => {
+    expect(KINDS).toEqual(["all", "pooja", "bhajan", "aarti"]);
+    expect([kindOf("vedic-chant"), kindOf("stotra"), kindOf("ashtak"), kindOf("bhajan"), kindOf("aarti")]).toEqual([
+      "pooja",
+      "pooja",
+      "pooja",
+      "bhajan",
+      "aarti",
+    ]);
+    const kinds = {};
+    for (const c of LIBRARY.categories) for (const id of c.texts) kinds[id] = kindOf(c.id);
+    const evening = textsFor(routines, 5, "evening");
+    expect(ofKind(evening, kinds, "all")).toEqual(evening);
+    expect(ofKind(evening, kinds, "pooja")).toEqual(["vedic-chant-atharvashirsha"]);
+    expect(ofKind(evening, kinds, "bhajan")).toHaveLength(5);
+    expect(ofKind(evening, kinds, "aarti")[0]).toBe("aarti-sukhkarta");
+    expect(["pooja", "bhajan", "aarti"].reduce((n, k) => n + ofKind(evening, kinds, k).length, 0)).toBe(evening.length);
   });
   // Everything about a text is in its own file (Satish, 2026-11-15): its header's lines are written by npm run texts
   // from the text itself; edit a text and forget it, and this names the file
