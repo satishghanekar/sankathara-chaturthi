@@ -10,7 +10,8 @@
 // While only one session has texts, tabs over its list instead (#text-kinds, Satish 2026-11-22): All | Pooja | Bhajan |
 // Aarti, each text's tab from its Library category (core/routine.js kindOf()), so the routine itself is never split; a
 // tab's texts are numbered from १ and a title read from it reads that tab's texts (an aarti's Next › is the next aarti).
-// The session's name is then a quiet line above the list (data-kinds on #tsc). It opens on All each time.
+// The session's name is then a quiet line above the list (data-kinds on #tsc). The tab picked last is kept (P.homeTab,
+// Satish 2026-11-22), so the app opens on it again; All the first time, or when that tab has no texts.
 // Reading a session, as in Nitya Upasana: a title starts the session at that text. The reading page then shows the
 // session's texts, in session order, in one scroll (data-run on <html>, .inrun and a CSS order on each of its pieces:
 // css/05-home-card.css), and ‹ Prev / Next › stay in it (sessionStep(), js/features/bottom-bar.js): Next › after the
@@ -25,7 +26,7 @@ import { KINDS, kindOf, ofKind, SESSIONS, sessionAt, stepInSession, textsFor } f
 import { dv, esc, lead, mrLang, nameLang, num, scr, scrKey, second, ui } from "../core/words.js";
 import { iaTitle } from "../text/iast.js";
 import { arrange, note, onPiece, pieceEl } from "../core/page.js";
-import { P } from "../core/state.js";
+import { change, P } from "../core/state.js";
 import { unfold } from "../core/apply.js";
 import { menuWords } from "../core/strings.js";
 import { jumpTo } from "./history.js";
@@ -52,7 +53,7 @@ var lists = /** @type {any} */ ({});
 /** @type {Session[]} the sessions with texts */
 var have = [];
 /** @typedef {import("../core/routine.js").Kind} Kind */
-/** @type {Kind} the tab picked over the list (All each time the app opens) */
+/** @type {Kind} the tab picked over the list (kept: P.homeTab) */
 var kind = "all";
 /** @type {Record<string, Kind>} each text's tab, from its Library category */
 var kinds = {};
@@ -107,6 +108,8 @@ export function init() {
   });
   // each text's facts, from its own file (CONTENT.texts)
   t = C.texts;
+  // the tab picked last time (All when none, or one this site no longer has)
+  kind = KINDS.indexOf(P.homeTab) >= 0 ? P.homeTab : "all";
   /** a session's texts today, those in the Library @param {Session} s */
   function idsFor(s) {
     return textsFor(loaded.routine, new Date().getDay(), s).filter(function (id) {
@@ -168,6 +171,8 @@ export function init() {
   if (kt)
     tabsOn(kt, function (b) {
       kind = /** @type {Kind} */ (b.dataset.k);
+      // kept, so the app opens on it again
+      change({ homeTab: kind });
     });
 }
 
@@ -214,8 +219,10 @@ function shown() {
 function draw() {
   var s = shown(),
     // the tabs over the list, while only one session has texts
-    byKind = have.length < 2,
-    k = byKind ? kind : "all",
+    byKind = have.length < 2;
+  // a tab kept from before that has no texts now (the routine changed): All
+  if (byKind && kind !== "all" && !ofKind(lists[s], kinds, kind).length) kind = "all";
+  var k = byKind ? kind : "all",
     ids = ofKind(lists[s], kinds, k),
     ls = langs(),
     w = menuWords("session"),

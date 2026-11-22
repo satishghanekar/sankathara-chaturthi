@@ -345,7 +345,7 @@ test("home lists the evening's texts; a title opens that text and Next goes on @
 });
 
 // All | Pooja | Bhajan | Aarti over the evening (Satish, 2026-11-22): each text's tab from its Library category, the
-// routine one list; a tab's texts numbered from १, read in that tab's order; the evening a quiet line; All on each opening
+// routine one list; a tab's texts numbered from १, read in that tab's order; the evening a quiet line; the tab kept
 test("the evening's tabs: All, Pooja, Bhajan and Aarti, each with its texts numbered from one, read in that tab @mobile", async ({ page }) => {
   await openSite(page, SETUPS.english);
   const tabs = page.locator("#text-kinds [role=tab]");
@@ -379,10 +379,29 @@ test("the evening's tabs: All, Pooja, Bhajan and Aarti, each with its texts numb
   await expect(page.locator("#a1")).toBeHidden();
   await page.locator("#asn").click();
   await expect(page.locator("#tsc")).toBeVisible();
-  // the next opening starts on All again
+  // the tab picked last is kept: the app opens on Bhajan again (P.homeTab), and All once it is picked
+  await page.reload();
+  await expect(page.locator("#text-kind-bhajan")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#tsl li")).toHaveCount(5);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).homeTab)).toBe("bhajan");
+  await page.locator("#text-kind-all").click();
   await page.reload();
   await expect(page.locator("#text-kind-all")).toHaveAttribute("aria-selected", "true");
   await expect(page.locator("#tsl li")).toHaveCount(16);
+});
+
+test("a kept tab that has no texts any more opens on All @mobile", async ({ page }) => {
+  // (a phone that kept Bhajan, opened after the evening lost its bhajans)
+  await page.route("**/content/routines.json", (r) =>
+    r.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ evening: { mode: "fixed", texts: ["vedic-chant-atharvashirsha", "aarti-sukhkarta"] } }),
+    }),
+  );
+  await openSite(page, { ...SETUPS.english, homeTab: "bhajan" });
+  await expect(page.locator("#text-kind-all")).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator("#text-kind-bhajan")).toBeHidden();
+  await expect(page.locator("#tsl li")).toHaveCount(2);
 });
 
 // Home on its own, as in Nitya Upasana: the page ends after the evening's list; while reading, Home is not above the texts
