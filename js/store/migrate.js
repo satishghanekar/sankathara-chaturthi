@@ -54,6 +54,7 @@ export function defaults(env) {
     as: 3, // autoscroll speed for an aarti not yet adjusted, 1 (slow) to 10 (fast)
     ason: 0, // show the autoscroll button in the bottom bar (Settings switch)
     asp: {}, // autoscroll speed per piece (each has its own tempo): { a1: 3, p1: 4, … }
+    homeTab: "all", // Home's tab over the evening, the one picked last (js/features/session-card.js): all | pooja | bhajan | aarti
   };
 }
 
