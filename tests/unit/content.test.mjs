@@ -208,3 +208,8 @@ describe("content checks", () => {
 test("the Atharvashirsha links its recording, from where the text starts", () => {
   expect(parseText(files["vedic-chant-atharvashirsha"], "a").recording).toBe("[Challakere Brothers](https://www.youtube.com/watch?v=OQhyYdoKW1k&t=90)");
 });
+
+// Jagjit Singh's Gaiye Ganapati from 0:15, where the singing starts (Viveka heard it there; Satish confirmed, 2026-11-23)
+test("Gaiye Ganapati links its recording, from where the singing starts", () => {
+  expect(parseText(files["bhajan-gaiye-ganapati-jagvandan"], "g").recording).toMatch(/aASYnk-eaXI&t=15\)$/);
+});
