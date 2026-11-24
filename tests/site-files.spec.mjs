@@ -126,8 +126,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(75_500);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
   // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then; 24 KB since
-  // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then)
-  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(24_000);
+  // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then; 25 KB since 2026-11-24: as in Nitya Upasana, who
+  // sings, the pill's singing choices with their drawings and the Reading sheet's rows, 24.2 KB then)
+  expect(gz(["index.html"]), "index.html, gzip bytes").toBeLessThanOrEqual(25_000);
 });
 
 // The Content-Security-Policy in _headers (Cloudflare Pages sends it; tests/serve.mjs too, so every test runs under it):
