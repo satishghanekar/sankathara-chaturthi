@@ -198,6 +198,7 @@ Sukhkarta Dukhharta, Varta Vighnachi |
 | `[dhrupad bold]` | The same, shown in bold (Ghalin Lotangan's closing mantra). |
 | `[dhrupad repeated]` | Right after `[dhrupad]`, only when the repeats are written differently from the top (Vitthal Aarti breaks its repeated dhrupad in two). |
 | `[refrain]` | Inside a block: the lines after it are refrain lines (shown as the refrain, or hidden with the dhrupad set to once). |
+| `[lead]`, `[chorus]`, `[together]` | Inside a block, between line pairs: who sings the pairs after it, up to the next one: the lead singer, the chorus, or all together (a text sung as recorded, its words from viveka-model's checked words-as-sung). A text with one has them in every block, before its first line pair. |
 | `[note: ↻ ३ वेळा \| 3 times]` | The small note between blocks, in both languages; part of the text, so shown whatever the dhrupad setting. |
 
 **Inside a line:**
