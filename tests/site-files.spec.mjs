@@ -102,8 +102,10 @@ test("the scripts, styles and page stay within their size budget", () => {
   // since 2026-11-19: the launch animation, js/features/launch.js and the splash's part, 242.5 KB then; 244 KB since
   // 2026-11-20: Terms of use, js/features/terms.js, in five languages, 243.2 KB then; 250.5 KB since 2026-11-21: as in
   // Nitya Upasana, the welcome, js/features/welcome.js, its town step and its words in five languages, 249.6 KB then; 252
-  // KB since 2026-11-22: Home's All | Pooja | Bhajan | Aarti tabs over the evening, in five languages, 251.6 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(252_000);
+  // KB since 2026-11-22: Home's All | Pooja | Bhajan | Aarti tabs over the evening, in five languages, 251.6 KB then; 257
+  // KB since 2026-11-24: who sings, js/features/who-sings.js, the switch, the turns and the printout's key, in five
+  // languages, 256.1 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(257_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -117,8 +119,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 69 KB since 2026-11-18: as in Nitya Upasana, the printout as a book, css/15-print.css, and the Print pop-up's Cover
   // switch: 68.08 KB then on a Mac; 70 KB since 2026-11-19: as in Nitya Upasana, the install page: 69.19 KB then; 71 KB
   // since 2026-11-19: the launch animation and the maker and version at the splash's foot, 70.19 KB then; 72 KB since
-  // 2026-11-21: as in Nitya Upasana, the welcome's two full-screen steps, 71.45 KB then)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(72_000);
+  // 2026-11-21: as in Nitya Upasana, the welcome's two full-screen steps, 71.45 KB then; 74.5 KB since 2026-11-24: as in
+  // Nitya Upasana, who sings, the switch, the group view's turns and their printout, 73.92 KB then on a Mac)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(74_500);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
   // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then; 24 KB since
   // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then)

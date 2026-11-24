@@ -43,8 +43,9 @@ describe("CONTENT from the text files", () => {
   // as written in Nitya Upasana, 2026-10-28)
   // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's; and since 2026-11-15 a credit is
   // written by the site from content/credits.json, each person and source once: tests/unit/credits.test.mjs checks the
-  // credits; nor the label of the switch between a text's versions, since 2026-11-15)
-  const { version, ...ui } = C.ui; // eslint-disable-line no-unused-vars
+  // credits; nor the label of the switch between a text's versions, since 2026-11-15, nor the who-sings words, since
+  // 2026-11-24)
+  const { version, who, ...ui } = C.ui; // eslint-disable-line no-unused-vars
   const SAME = {
     ui,
     pieces: pieces(C).map(({ text, credit, ...p }) => ({ ...p, items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars

@@ -55,6 +55,8 @@ export function defaults(env) {
     ason: 0, // show the autoscroll button in the bottom bar (Settings switch)
     asp: {}, // autoscroll speed per piece (each has its own tempo): { a1: 3, p1: 4, … }
     homeTab: "all", // Home's tab over the evening, the one picked last (js/features/session-card.js): all | pooja | bhajan | aarti
+    sing: "group", // a text marked with who sings (lead, chorus, together): group shows the turns, solo as one person sings it (js/features/who-sings.js)
+    part: "", // the part this reader sings in the group view: "" none | lead | chorus (their lines in full, the others muted)
   };
 }
 
@@ -69,6 +71,8 @@ function fits(k, v, d) {
   if (v === undefined) return false;
   if (k === "loc") return v === null || (!!v && typeof v === "object" && typeof v.lat === "number" && typeof v.lon === "number");
   if (k === "pref") return v === "" || v === 0 || v === 1;
+  if (k === "sing") return v === "group" || v === "solo";
+  if (k === "part") return v === "" || v === "lead" || v === "chorus";
   if (Array.isArray(d))
     return (
       Array.isArray(v) &&

@@ -65,6 +65,7 @@ var SITE_PARTS = (function () {
     "features/dhrupad-button",
     "features/reading-sheet",
     "features/where",
+    "features/who-sings",
     "features/wake-lock",
     "features/overlays",
     "features/history",
