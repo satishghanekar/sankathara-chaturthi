@@ -38,6 +38,7 @@ import { init as startBars } from "./features/bars.js";
 import { init as startSettingsPanel } from "./features/settings-panel.js";
 import { init as startReadingSheet } from "./features/reading-sheet.js";
 import { init as startWhere } from "./features/where.js";
+import { init as startWhoSings } from "./features/who-sings.js";
 import { init as startWakeLock } from "./features/wake-lock.js";
 import { init as startOverlays } from "./features/overlays.js";
 import { init as startHistory } from "./features/history.js";
@@ -91,6 +92,7 @@ function start() {
     run(startSettingsPanel); // Settings panel
     run(startReadingSheet); // Reading sheet: Aa in the bottom bar slides up language, text size and dhrupad
     run(startWhere); // Where am I, and Go to: in a long text or a session the top bar's title says where and opens #goto
+    run(startWhoSings); // Who sings, in a text marked with it: Solo or Group, and my part (data-sing, data-part)
     run(startWakeLock); // Keep the screen on (Wake Lock). Browsers drop the lock when the page is hidden, so it is re-requested.
     run(startOverlays); // The pages over the page: which button opened one, for focus to go back to (Safari focuses none)
     run(startHistory); // Back button

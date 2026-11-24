@@ -16,6 +16,7 @@ import { ovStep } from "./history.js";
 import { spSet } from "./languages.js";
 import { fillWords, menuWords } from "../core/strings.js";
 import { num, shown, ui } from "../core/words.js";
+import { whoMark } from "./who-sings.js";
 
 /** @type {{ y: number, acc: number, hold: number, h: number, show: any }} the tucking bars: the last scroll, the scroll
  * added up, no tucking until, the page height, the timer that brings them back */
@@ -317,6 +318,8 @@ export function apply() {
   qi.setAttribute("aria-label", qi.placeholder);
   root.setAttribute("data-ref", String(P.ref));
   root.setAttribute("data-hc", String(P.hc));
+  // who sings: Solo or Group, my part, and the turns' words in the language now read
+  whoMark();
   // (media queries answer without laying the page out; innerWidth would, right after the changes above)
   var wide = MQ900.matches,
     two = wide && (P.cols === 2 || (P.cols !== 1 && MQ1600.matches));
