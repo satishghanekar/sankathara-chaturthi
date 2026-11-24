@@ -6,6 +6,7 @@ stanza-numbers: as-written
 credit: traditional
 recording: [Jagjit Singh](https://www.youtube.com/watch?v=2zOJ9aZR-08&t=10)
 lines: 45
+letters: 1343
 ---
 [1]
 [lead]

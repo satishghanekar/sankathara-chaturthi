@@ -6,6 +6,7 @@ stanza-numbers: as-written
 credit: author tulsidas
 recording: [Jagjit Singh](https://www.youtube.com/watch?v=aASYnk-eaXI&t=15)
 lines: 37
+letters: 786
 ---
 [1]
 [lead]
