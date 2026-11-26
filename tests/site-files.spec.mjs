@@ -104,8 +104,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // Nitya Upasana, the welcome, js/features/welcome.js, its town step and its words in five languages, 249.6 KB then; 252
   // KB since 2026-11-22: Home's All | Pooja | Bhajan | Aarti tabs over the evening, in five languages, 251.6 KB then; 257
   // KB since 2026-11-24: who sings, js/features/who-sings.js, the switch, the turns and the printout's key, in five
-  // languages, 256.1 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(257_000);
+  // languages, 256.1 KB then; 259 KB since 2026-11-26: as in Nitya Upasana, the Listen card at the top of a text with a
+  // recording, and its word in five languages, 258.08 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(259_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since

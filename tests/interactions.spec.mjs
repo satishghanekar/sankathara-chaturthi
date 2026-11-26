@@ -1794,3 +1794,46 @@ test("a tap ends the launch animation, and there is none for less motion @mobile
   await openSite(calm, {}, { launch: true });
   await expect(calm.locator("#spl")).not.toHaveClass(/launch/);
 });
+
+// The recordings were hard to find under the credit at the end (Satish, 2026-11-26): a card for each at the top, under
+// the heading, "▶ Listen: the chanters" with YouTube under it, the same link; the line at the end stays (as in Nitya
+// Upasana)
+test("a text with a recording has a Listen card at the top: the chanters, YouTube, a whole 44px target @mobile", async ({ page }) => {
+  const errors = [];
+  await openSite(page, SETUPS.marathi, { hash: "#bhajan-gaiye-ganapati-jagvandan", errors });
+  const sec = page.locator("#bhajan-gaiye-ganapati-jagvandan");
+  const card = sec.locator(".listen-card");
+  await expect(card).toHaveCount(1);
+  await expect(card).toBeVisible();
+  // (what shows: the other language's word is hidden, so read as a person sees it, not the element's whole text)
+  expect(await card.evaluate((e) => e.innerText.replace(/\s+/g, " ").trim())).toBe("ऐका: Jagjit Singh YouTube ↗");
+  await expect(card).toHaveAccessibleName(/^ऐका ?: Jagjit Singh YouTube$/);
+  await expect(card).toHaveAttribute("href", "https://www.youtube.com/watch?v=aASYnk-eaXI&t=15");
+  await expect(card).toHaveAttribute("target", "_blank");
+  await expect(card).toHaveAttribute("rel", "noopener");
+  // above the words, right under the heading, and a whole target
+  const [c, h, v] = await Promise.all([card.boundingBox(), sec.locator("header").boundingBox(), sec.locator(".verse").first().boundingBox()]);
+  expect(c.y).toBeGreaterThanOrEqual(h.y + h.height - 1);
+  expect(c.y + c.height).toBeLessThan(v.y);
+  expect(c.height).toBeGreaterThanOrEqual(44);
+  expect(c.x + c.width).toBeLessThanOrEqual(await page.evaluate(() => document.documentElement.clientWidth));
+  await expect(sec.locator(".cr .rec a")).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
+
+for (const [setup, word] of [
+  ["english", "Listen"],
+  ["both", "ऐका"],
+]) {
+  test(`the Listen card in ${setup}: ${word}, once @mobile`, async ({ page }) => {
+    await openSite(page, SETUPS[setup], { hash: "#bhajan-gaiye-ganapati-jagvandan" });
+    const card = page.locator("#bhajan-gaiye-ganapati-jagvandan .listen-card");
+    expect(await card.evaluate((e) => e.innerText.replace(/\s+/g, " ").trim())).toBe(word + ": Jagjit Singh YouTube ↗");
+  });
+}
+
+test("a text with no recording has no Listen card", async ({ page }) => {
+  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await expect(page.locator("#a1")).toBeVisible();
+  await expect(page.locator(".listen-card:visible")).toHaveCount(0);
+});
