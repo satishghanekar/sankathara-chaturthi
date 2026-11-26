@@ -104,8 +104,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // Nitya Upasana, the welcome, js/features/welcome.js, its town step and its words in five languages, 249.6 KB then; 252
   // KB since 2026-11-22: Home's All | Pooja | Bhajan | Aarti tabs over the evening, in five languages, 251.6 KB then; 257
   // KB since 2026-11-24: who sings, js/features/who-sings.js, the switch, the turns and the printout's key, in five
-  // languages, 256.1 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(257_000);
+  // languages, 256.1 KB then; 259 KB since 2026-11-26: as in Nitya Upasana, the Listen card at the top of a text with a
+  // recording, and its word in five languages, 258.08 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(259_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -123,7 +124,9 @@ test("the scripts, styles and page stay within their size budget", () => {
   // Nitya Upasana, who sings, the switch, the group view's turns and their printout, 73.92 KB then on a Mac; 75.5 KB since
   // 2026-11-24 too: the pill shown while the page scrolls as the singing choices and the Reading sheet's rows, 74.8 KB
   // then on a Mac)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(75_500);
+  // (76.5 KB since 2026-11-26: as in Nitya Upasana, the Listen card at the top of a text with a recording, 75.83 KB then
+  // on GitHub's)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(76_500);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
   // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then; 24 KB since
   // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then; 25 KB since 2026-11-24: as in Nitya Upasana, who

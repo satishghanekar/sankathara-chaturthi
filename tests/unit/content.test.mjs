@@ -44,11 +44,11 @@ describe("CONTENT from the text files", () => {
   // (nor a recording to hear under the credit, since 1.8.35: the Atharvashirsha's; and since 2026-11-15 a credit is
   // written by the site from content/credits.json, each person and source once: tests/unit/credits.test.mjs checks the
   // credits; nor the label of the switch between a text's versions, since 2026-11-15, nor the who-sings words, since
-  // 2026-11-24)
+  // 2026-11-24; nor, since 2026-11-26, the Listen card at the top of a text with a recording)
   const { version, who, ...ui } = C.ui; // eslint-disable-line no-unused-vars
   const SAME = {
     ui,
-    pieces: pieces(C).map(({ text, credit, ...p }) => ({ ...p, items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
+    pieces: pieces(C).map(({ text, credit, listen, ...p }) => ({ ...p, items: p.items.map(({ nt, ...i }) => i) })), // eslint-disable-line no-unused-vars
   };
   const WAS = { ui: OLD.ui, pieces: pieces(OLD).map(({ credit, ...p }) => p) }; // eslint-disable-line no-unused-vars
   test("is identical to the old content/pieces.js: the same pieces, in the same order", () => {
