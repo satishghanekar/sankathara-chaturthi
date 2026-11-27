@@ -726,12 +726,12 @@ YouTube
 સાંભળો: Jagjit Singh
 YouTube
 ↗
-ગાયન
-સોલો
-સમૂહ
-મારો ભાગ
-ગાયક
-કોરસ
+Singing
+Solo
+Group
+My part
+Lead
+Chorus
 
 ગણપતી બાપ્પા મોરયા, ​મંગલ મૂર્તી મોરયા
 
@@ -831,12 +831,12 @@ YouTube
 સાંભળો: Jagjit Singh
 YouTube
 ↗
-ગાયન
-સોલો
-સમૂહ
-મારો ભાગ
-ગાયક
-કોરસ
+Singing
+Solo
+Group
+My part
+Lead
+Chorus
 
 વંદે ગણપતી વિઘ્નવિનાશન, ​હે લંબોદર ગજાનના
 
@@ -979,12 +979,12 @@ YouTube
 સાંભળો: Jagjit Singh
 YouTube
 ↗
-ગાયન
-સોલો
-સમૂહ
-મારો ભાગ
-ગાયક
-કોરસ
+Singing
+Solo
+Group
+My part
+Lead
+Chorus
 
 ગાઇયે ગણપતિ જગવંદન
 
