@@ -270,6 +270,8 @@ function draw() {
     })
     .join("");
   kindTabs(byKind, s);
+  // the list was drawn again (another tab, language or day): Play all follows it (js/features/play.js)
+  document.dispatchEvent(new Event("session-drawn"));
   if (!tabs) return;
   // Morning | Afternoon | Evening: only the sessions with texts, and only when there are two or more
   tabs.hidden = have.length < 2;
@@ -331,6 +333,17 @@ function openText(id) {
     /** @type {HTMLElement} */ (el).scrollIntoView();
   }, "#" + sec[id]);
   document.dispatchEvent(new Event("nitya-session"));
+}
+
+/** The texts the list shows now (the tab picked), in its order: Play mode plays these (js/features/play.js) */
+export function shownIds() {
+  return showing.slice();
+}
+
+/** Read the session shown from this text on, as a title tapped there does: Play mode turns to each text so
+ * @param {string} id */
+export function readFrom(id) {
+  startAt(id);
 }
 
 /** Read the session shown from this text on @param {string} id */

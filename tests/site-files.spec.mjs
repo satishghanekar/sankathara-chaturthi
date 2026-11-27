@@ -105,8 +105,10 @@ test("the scripts, styles and page stay within their size budget", () => {
   // KB since 2026-11-22: Home's All | Pooja | Bhajan | Aarti tabs over the evening, in five languages, 251.6 KB then; 257
   // KB since 2026-11-24: who sings, js/features/who-sings.js, the switch, the turns and the printout's key, in five
   // languages, 256.1 KB then; 259 KB since 2026-11-26: as in Nitya Upasana, the Listen card at the top of a text with a
-  // recording, and its word in five languages, 258.08 KB then)
-  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(259_000);
+  // recording, and its word in five languages, 258.08 KB then; 270 KB since 2026-11-26:
+  // Play mode, js/features/play.js, js/features/youtube.js and js/core/play-queue.js, and its words in five languages,
+  // 268.63 KB then)
+  expect(gz([...parts.scripts, ...parts.modules]), "scripts, gzip bytes").toBeLessThanOrEqual(270_000);
   // (58.5 KB since 2026-11-11: the symbols' face and the chosen script's at the head of every font list, Traditional's
   // English and bold faces, as in Nitya Upasana: 58.09 KB then on a Mac; 60.5 KB since 2026-11-13: the bars as floating
   // pills, css/16-floating-bars.css, as in Nitya Upasana: 59.95 KB then; 62 KB since
@@ -125,8 +127,8 @@ test("the scripts, styles and page stay within their size budget", () => {
   // 2026-11-24 too: the pill shown while the page scrolls as the singing choices and the Reading sheet's rows, 74.8 KB
   // then on a Mac)
   // (76.5 KB since 2026-11-26: as in Nitya Upasana, the Listen card at the top of a text with a recording, 75.83 KB then
-  // on GitHub's)
-  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(76_500);
+  // on GitHub's; 78 KB since 2026-11-26: Play mode, its button, video and bar, 77.02 KB then on a Mac)
+  expect(gz(parts.css), "styles, gzip bytes").toBeLessThanOrEqual(78_000);
   // (22.5 KB since 2026-11-19: as in Nitya Upasana, the install page and Help's iOS 26 picture: 22.04 KB then; 23 KB
   // since 2026-11-20: the maker's line with Contact and Terms of use, and the Terms dialog, 22.68 KB then; 24 KB since
   // 2026-11-21: the welcome's two steps and Help on them, 23.4 KB then; 25 KB since 2026-11-24: as in Nitya Upasana, who
@@ -140,7 +142,10 @@ test("every file carries the Content-Security-Policy: this site only, no inline 
   for (const path of ["./", "sw.js", "js/main.js"]) {
     const csp = (await request.get(path)).headers()["content-security-policy"] || "";
     expect(csp, path).toContain("default-src 'self'");
-    expect(csp, path).toMatch(/script-src 'self'(;|$)/);
+    // the one exception, YouTube's player for Play mode (Satish, 2026-11-26: js/features/youtube.js): its script from
+    // www.youtube.com and the player on youtube-nocookie.com, nothing else from elsewhere
+    expect(csp, path).toMatch(/script-src 'self' https:\/\/www\.youtube\.com(;|$)/);
+    expect(csp, path).toMatch(/frame-src 'self' blob: https:\/\/www\.youtube-nocookie\.com(;|$)/);
   }
 });
 

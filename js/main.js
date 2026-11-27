@@ -44,6 +44,7 @@ import { init as startOverlays } from "./features/overlays.js";
 import { init as startHistory } from "./features/history.js";
 import { init as startLanguages } from "./features/languages.js";
 import { init as startSessionCard } from "./features/session-card.js";
+import { init as startPlay } from "./features/play.js";
 import { init as startContentsList } from "./features/contents-list.js";
 import { init as startClicks } from "./features/clicks.js";
 import { init as startPinch } from "./features/pinch.js";
@@ -98,6 +99,7 @@ function start() {
     run(startHistory); // Back button
     run(startLanguages); // Settings page: languages
     run(startSessionCard); // Home: the evening's texts (content/routines.json), as Nitya Upasana's Today card
+    run(startPlay); // Play mode: ▶ Play all over Home's list and ▶ on a Listen card play the recordings one after another
     run(startContentsList); // Contents list inside the contents + search overlay (built from the home page contents)
     run(startClicks); // Clicks: contents links (data-go) jump to a piece; tapping a verse line highlights it
     run(startPinch); // Pinch with two fingers to change the text size (the page itself never zooms)

@@ -539,4 +539,51 @@ export default {
     listen: "ಕೇಳಿ",
     lang: { sa: "ಸಂಸ್ಕೃತ", mr: "ಮರಾಠಿ", hi: "ಹಿಂದಿ" },
   },
+  // Play mode (js/features/play.js), as in js/strings/en.js
+  play: {
+    playAll: "ಎಲ್ಲವನ್ನೂ ಕೇಳಿ",
+    /** @param {string} n @param {string} all */
+    playAllNote: function (n, all) {
+      return all + " ರಲ್ಲಿ " + n + " ಕ್ಕೆ ಧ್ವನಿಮುದ್ರಣವಿದೆ · ಉಳಿದವು ಬಿಡಲ್ಪಡುತ್ತವೆ";
+    },
+    bar: "ಪ್ಲೇಯರ್",
+    /** @param {string} i @param {string} n */
+    playing: function (i, n) {
+      return n + " ರಲ್ಲಿ " + i + " ನುಡಿಸುತ್ತಿದೆ";
+    },
+    /** @param {string} i @param {string} n */
+    paused: function (i, n) {
+      return "ನಿಲ್ಲಿಸಲಾಗಿದೆ · " + n + " ರಲ್ಲಿ " + i;
+    },
+    /** @param {string} name */
+    next: function (name) {
+      return "ಮುಂದೆ: " + name;
+    },
+    last: "ಕೊನೆಯದು",
+    prev: "ಹಿಂದಿನ",
+    pause: "ನಿಲ್ಲಿಸಿ",
+    resume: "ನುಡಿಸಿ",
+    nextButton: "ಮುಂದಿನ",
+    stop: "ಮುಗಿಸಿ",
+    /** @param {string} who */
+    here: function (who) {
+      return "ಇಲ್ಲೇ ಕೇಳಿ: " + who;
+    },
+    stopped: "ಮುಗಿಸಲಾಗಿದೆ · ಮುಂದುವರಿಸಲು ▶ ಒತ್ತಿ",
+    /** @param {string} names */
+    skipped: function (names) {
+      return "ಧ್ವನಿಮುದ್ರಣವಿಲ್ಲ, ಬಿಡಲಾಗಿದೆ: " + names;
+    },
+    /** @param {string} name */
+    cant: function (name) {
+      return name + " ಈಗ ನುಡಿಸಲಾಗುತ್ತಿಲ್ಲ: ಮುಂದಿನದಕ್ಕೆ ಹೋಗುತ್ತಿದೆ";
+    },
+    locked: "ಫೋನ್ ಲಾಕ್ ಆದಾಗ ನಿಂತಿತು · ಮುಂದುವರಿಸಲು ▶ ಒತ್ತಿ",
+    tap: "ಆರಂಭಿಸಲು ▶ ಒತ್ತಿ",
+    /** @param {string} n */
+    done: function (n) {
+      return "ಎಲ್ಲ " + n + " ಧ್ವನಿಮುದ್ರಣಗಳು ಮುಗಿದವು";
+    },
+    noYouTube: "YouTube ತೆರೆಯಲಿಲ್ಲ: ಇಂಟರ್ನೆಟ್ ಆನ್ ಇದೆಯೇ?",
+  },
 };

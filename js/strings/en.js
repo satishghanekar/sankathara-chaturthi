@@ -547,4 +547,51 @@ export default {
     listen: "Listen",
     lang: { sa: "Sanskrit", mr: "Marathi", hi: "Hindi" },
   },
+  // Play mode (js/features/play.js): the day's recordings one after another, the player bar, what it says
+  play: {
+    playAll: "Play all",
+    /** @param {string} n @param {string} all */
+    playAllNote: function (n, all) {
+      return n + " of " + all + " have a recording · the others are skipped";
+    },
+    bar: "Player",
+    /** @param {string} i @param {string} n */
+    playing: function (i, n) {
+      return "Playing " + i + " of " + n;
+    },
+    /** @param {string} i @param {string} n */
+    paused: function (i, n) {
+      return "Paused · " + i + " of " + n;
+    },
+    /** @param {string} name */
+    next: function (name) {
+      return "next: " + name;
+    },
+    last: "the last one",
+    prev: "Previous",
+    pause: "Pause",
+    resume: "Play",
+    nextButton: "Next",
+    stop: "Stop",
+    /** the Listen card's play button @param {string} who */
+    here: function (who) {
+      return "Play here: " + who;
+    },
+    stopped: "Stopped · tap ▶ to carry on",
+    /** @param {string} names */
+    skipped: function (names) {
+      return "Skipped, no recording: " + names;
+    },
+    /** @param {string} name */
+    cant: function (name) {
+      return "Can’t play " + name + " now: going on to the next";
+    },
+    locked: "Paused when the phone was locked · tap ▶ to carry on",
+    tap: "Tap ▶ to start",
+    /** @param {string} n */
+    done: function (n) {
+      return "All " + n + " recordings played";
+    },
+    noYouTube: "YouTube did not load: is the internet on?",
+  },
 };
