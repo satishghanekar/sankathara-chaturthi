@@ -35,7 +35,9 @@
     "mr": "स्तोत्र",
     "en": "Stotra"
    },
-   "texts": []
+   "texts": [
+    "stotra-ganesha-pancharatnam"
+   ]
   },
   {
    "id": "ashtak",
@@ -52,10 +54,8 @@
     "en": "Bhajan"
    },
    "texts": [
-    "bhajan-vakratunda-mahakaya",
     "bhajan-ganapati-bappa-morya",
     "bhajan-vande-ganapati",
-    "bhajan-ganesha-pancharatnam",
     "bhajan-gaiye-ganapati-jagvandan"
    ]
   }

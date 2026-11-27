@@ -127,7 +127,7 @@ test("browser menu print gives every text @chromium-only", async ({ browser }) =
   expect(await page.evaluate(() => document.documentElement.hasAttribute("data-print"))).toBe(false);
   const at = markerPages(pdf.pages);
   const pieces = await page.evaluate(() => [...document.querySelectorAll("#pv .pvs")].map((s) => s.dataset.sid));
-  expect(pieces).toHaveLength(16);
+  expect(pieces).toHaveLength(15);
   for (const id of pieces) expect(at[id + ":0:s"], `${id} printed`).toBeGreaterThan(0);
   await context.close();
 });
@@ -146,12 +146,13 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await expect(page.locator("#prgp")).toBeHidden();
   await expect(page.locator("#prnx")).toBeFocused();
   const boxes = page.locator("#prwl .tpkl input");
-  await expect(boxes).toHaveCount(16);
+  await expect(boxes).toHaveCount(15);
   expect(await boxes.evaluateAll((l) => l.every((x) => x.checked))).toBe(true);
-  await expect(page.locator("#prsum")).toContainText("16 texts");
+  await expect(page.locator("#prsum")).toContainText("15 texts");
   // the groups of the reading page, in its order
-  await expect(page.locator("#prwl .prgr")).toHaveCount(3);
-  expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["vedic-chant", "aarti", "bhajan"]);
+  // (Stotra since 2026-11-26: Ganesha Pancharatnam)
+  await expect(page.locator("#prwl .prgr")).toHaveCount(4);
+  expect(await page.locator("#prwl .prgr").evaluateAll((l) => l.map((x) => x.dataset.cat))).toEqual(["vedic-chant", "aarti", "stotra", "bhajan"]);
   // Clear everything: nothing to print, so Next waits
   await page.locator('.prcb[data-cat=""]').click();
   await expect(page.locator("#prsum")).toContainText("Pick at least one text");
@@ -185,7 +186,7 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   const pdf = await pdfPages(page, "Letter");
   const at = markerPages(pdf.pages);
   expect(at["a5:0:s"]).toBeGreaterThan(at["p1:0:s"]);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(14);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("aarti2-prefs")).pskip.length)).toBe(13);
   await page.emulateMedia({ media: "screen" });
   // Safari laying the page out again after afterprint (its print sheet) still prints the two
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
@@ -343,7 +344,7 @@ test("print builder: Open in Safari carries the texts ticked @chromium-only", as
     .catch(() => {});
   const to = await page.locator("#prsf").getAttribute("data-to");
   const s = JSON.parse(decodeURIComponent(/&s=([^&]*)/.exec(to)[1]));
-  expect(s.pskip).toHaveLength(15);
+  expect(s.pskip).toHaveLength(14);
   expect(s.pskip).not.toContain("a3");
   // Safari, opened at that address, prints just that text
   const sf = await browser.newContext({ ...IPHONE, locale: "en-US", serviceWorkers: "block" });
@@ -836,7 +837,6 @@ const SKIP_ALL_BUT = (keep) =>
     "a9",
     "a10",
     "bhajan-ganesha-pancharatnam",
-    "bhajan-vakratunda-mahakaya",
     "bhajan-ganapati-bappa-morya",
     "bhajan-vande-ganapati",
     "bhajan-gaiye-ganapati-jagvandan",

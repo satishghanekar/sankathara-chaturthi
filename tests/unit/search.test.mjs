@@ -88,7 +88,7 @@ describe("ranking", () => {
     // The Atharvashirsha names Ganesha in its lines (gaṇeśavidyā), but only Jai Ganesh Deva and the Ganesha
     // Pancharatnam have Ganesh in their titles
     const r = search(ix, "ganesh");
-    expect(r.texts.map((t) => t.id).sort()).toEqual(["aarti-jai-ganesh-deva", "bhajan-ganesha-pancharatnam"]);
+    expect(r.texts.map((t) => t.id).sort()).toEqual(["aarti-jai-ganesh-deva", "stotra-ganesha-pancharatnam"]);
     expect(r.lines.map((l) => l.text)).toContain("vedic-chant-atharvashirsha");
     expect(r.texts.every((t) => t.score >= SCORE.titleTypo)).toBe(true);
   });
