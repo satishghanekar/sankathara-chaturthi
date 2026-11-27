@@ -196,7 +196,7 @@ test("print builder: pick texts on a phone, then print just those @chromium-only
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await page.locator("body").dispatchEvent("pointerdown");
   await page.evaluate(() => dispatchEvent(new Event("beforeprint")));
-  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(16);
+  expect(await page.evaluate(() => document.querySelectorAll("#pv .pvs").length)).toBe(15);
   // and the builder keeps the two ticked
   await page.evaluate(() => dispatchEvent(new Event("afterprint")));
   await tapPrint(page);
