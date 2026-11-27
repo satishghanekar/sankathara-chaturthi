@@ -48,6 +48,8 @@ async function stubYouTube(page) {
   return asked;
 }
 
+/** Settings → Reading → Play in the app turned on (P.yt; off on a new phone) */
+const ON = { ...SETUPS.marathi, yt: 1 };
 const video = (page) => page.evaluate(() => window.__yt && window.__yt.player.video);
 /** The video loaded is playing (only an end after it has played counts, js/features/youtube.js) */
 const playing = (page) => expect.poll(() => page.evaluate(() => window.__yt && window.__yt.player.state)).toBe(1);
@@ -56,7 +58,7 @@ const shown = (loc) => loc.evaluate((e) => e.innerText.replace(/\s+/g, " ").trim
 test("Play all: the evening's recordings in turn, the texts with none passed over, ⏮ ❚❚ ⏭, and Stop @mobile", async ({ page }) => {
   const errors = [];
   const asked = await stubYouTube(page);
-  await openSite(page, SETUPS.marathi, { errors });
+  await openSite(page, ON, { errors });
   const all = page.locator("#play-all");
   await expect(all).toBeVisible();
   expect(await shown(all)).toBe("Play all 4 of 15 have a recording · the others are skipped");
@@ -108,7 +110,7 @@ test("Play all: the evening's recordings in turn, the texts with none passed ove
 
 test("the last one ends: all played, and Play mode stops @mobile", async ({ page }) => {
   await stubYouTube(page);
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, ON);
   await page.locator("#text-kind-bhajan").click();
   await expect(page.locator("#play-all-note")).toHaveText("3 of 3 have a recording · the others are skipped");
   await page.locator("#play-all").click();
@@ -123,7 +125,7 @@ test("the last one ends: all played, and Play mode stops @mobile", async ({ page
 
 test("a Listen card's ▶ plays from that text on; its link still opens YouTube; Back stops it @mobile", async ({ page }) => {
   await stubYouTube(page);
-  await openSite(page, SETUPS.marathi, { hash: "#bhajan-gaiye-ganapati-jagvandan" });
+  await openSite(page, ON, { hash: "#bhajan-gaiye-ganapati-jagvandan" });
   const sec = page.locator("#bhajan-gaiye-ganapati-jagvandan");
   const play = sec.locator(".listen-play");
   await expect(play).toBeVisible();
@@ -141,7 +143,7 @@ test("a Listen card's ▶ plays from that text on; its link still opens YouTube;
 
 test("a video that can't be played is said, and the next one follows @mobile", async ({ page }) => {
   await stubYouTube(page);
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, ON);
   await page.locator("#play-all").click();
   await expect.poll(() => video(page)).toBe("OQhyYdoKW1k");
   await page.evaluate(() => window.__yt.fail(150));
@@ -151,7 +153,7 @@ test("a video that can't be played is said, and the next one follows @mobile", a
 
 test("Play mode's words in Marathi menus @mobile", async ({ page }) => {
   await stubYouTube(page);
-  await openSite(page, SETUPS["marathi-menus"]);
+  await openSite(page, { ...SETUPS["marathi-menus"], yt: 1 });
   expect(await shown(page.locator("#play-all"))).toBe("सर्व ऐका १५ पैकी ४ रचनांचे रेकॉर्डिंग आहे · बाकीच्या वगळल्या जातील");
   await page.locator("#play-all").click();
   await expect(page.locator("#play-count")).toHaveText("४ पैकी १ वाजत आहे");
@@ -159,10 +161,42 @@ test("Play mode's words in Marathi menus @mobile", async ({ page }) => {
 
 test("no ▶ Play all where no text has a recording; no YouTube without a tap @mobile", async ({ page }) => {
   const asked = await stubYouTube(page);
-  await openSite(page, SETUPS.marathi);
+  await openSite(page, ON);
   await page.locator("#text-kind-aarti").click();
   await expect(page.locator("#play-all")).toBeHidden();
   await page.locator("#text-kind-all").click();
   await expect(page.locator("#play-all")).toBeVisible();
   expect(asked).toEqual([]);
+});
+
+// Off unless turned on (Satish, 2026-11-27: the whole of it, no YouTube): no Listen card and no recording line under the
+// credit, no ▶ Play all; Settings → Reading → Play in the app brings them, the card itself playing here; off again
+// takes them away
+test("Play in the app: off on a new phone, no recording shown; turned on, the card plays here; off again @mobile", async ({ page }) => {
+  const asked = await stubYouTube(page);
+  await openSite(page, SETUPS.marathi, { hash: "#bhajan-gaiye-ganapati-jagvandan" });
+  const sec = page.locator("#bhajan-gaiye-ganapati-jagvandan");
+  await expect(sec.locator(".listen-card")).toBeHidden();
+  await expect(sec.locator(".cr .rec")).toBeHidden();
+  await expect(page.locator("#play-all")).toBeHidden();
+  await page.locator("#aa").click();
+  const sw = page.locator("#play-setting");
+  await expect(sw).toHaveAttribute("aria-pressed", "false");
+  await expect(sw).toHaveAccessibleName(/^Play in the app/);
+  await sw.click();
+  await expect(sw).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-yt", "");
+  await sw.click();
+  await expect(page.locator("html")).not.toHaveAttribute("data-yt", /.*/);
+  await sw.click();
+  await page.keyboard.press("Escape");
+  await expect(sec.locator(".listen-play")).toHaveCount(1);
+  // a tap on the card plays here, never a page of YouTube's
+  const opened = [];
+  page.context().on("page", (p) => opened.push(p.url()));
+  await sec.locator(".listen-card").click();
+  await expect(page.locator("#play-bar")).toBeVisible();
+  await expect.poll(() => video(page)).toBeTruthy();
+  expect(opened).toEqual([]);
+  expect(asked.filter((u) => !u.endsWith("/iframe_api"))).toEqual([]);
 });

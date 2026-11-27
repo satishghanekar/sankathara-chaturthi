@@ -335,6 +335,10 @@ export default {
     sepia: "Sepia",
     dark: "Dark",
     highContrast: "High contrast",
+    // Settings → Reading: a recording played here or in YouTube (js/features/play.js)
+    recordings: "Recordings",
+    playInApp: "Play in the app",
+    playInAppHint: "A recording plays here, above the text. Off: no recordings are shown",
     keepScreenOn: "Keep screen on",
     afterLastTouch: "Minutes after the last touch",
     off: "Off",

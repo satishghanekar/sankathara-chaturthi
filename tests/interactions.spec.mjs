@@ -1799,7 +1799,7 @@ test("a tap ends the launch animation, and there is none for less motion @mobile
 // Upasana)
 test("a text with a recording has a Listen card at the top: the chanters, YouTube, a whole 44px target @mobile", async ({ page }) => {
   const errors = [];
-  await openSite(page, SETUPS.marathi, { hash: "#bhajan-gaiye-ganapati-jagvandan", errors });
+  await openSite(page, { ...SETUPS.marathi, yt: 1 }, { hash: "#bhajan-gaiye-ganapati-jagvandan", errors });
   const sec = page.locator("#bhajan-gaiye-ganapati-jagvandan");
   const card = sec.locator(".listen-card");
   await expect(card).toHaveCount(1);
@@ -1825,14 +1825,14 @@ for (const [setup, word] of [
   ["both", "ऐका"],
 ]) {
   test(`the Listen card in ${setup}: ${word}, once @mobile`, async ({ page }) => {
-    await openSite(page, SETUPS[setup], { hash: "#bhajan-gaiye-ganapati-jagvandan" });
+    await openSite(page, { ...SETUPS[setup], yt: 1 }, { hash: "#bhajan-gaiye-ganapati-jagvandan" });
     const card = page.locator("#bhajan-gaiye-ganapati-jagvandan .listen-card");
     expect(await card.evaluate((e) => e.innerText.replace(/\s+/g, " ").trim())).toBe(word + ": Jagjit Singh YouTube ↗");
   });
 }
 
 test("a text with no recording has no Listen card", async ({ page }) => {
-  await openSite(page, SETUPS.marathi, { hash: "#a1" });
+  await openSite(page, { ...SETUPS.marathi, yt: 1 }, { hash: "#a1" });
   await expect(page.locator("#a1")).toBeVisible();
   await expect(page.locator(".listen-card:visible")).toHaveCount(0);
 });

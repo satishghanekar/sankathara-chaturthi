@@ -221,6 +221,13 @@ describe("settings from every older version are upgraded as js/core/state.js alw
     for (const bad of ["duet", 1, null]) expect(p({ sing: bad }).sing).toBe("group");
     for (const bad of ["together", "LEAD", 0]) expect(p({ part: bad }).part).toBe("");
   });
+  test("Play in the app (2026-11-27): off unless turned on; only 0 or 1 kept", () => {
+    const p = (o) => migratePrefs({ sv: 6, ...o }, PHONE).prefs;
+    expect(p({}).yt).toBe(0);
+    expect(p({ yt: 1 }).yt).toBe(1);
+    for (const bad of [2, "1", true, null]) expect(p({ yt: bad }).yt).toBe(0);
+  });
+
   test("v5: autoscroll speeds kept, dhrupad after every verse kept", () => {
     const p = migratePrefs(SHAPES.v5, DESK).prefs;
     expect([p.ref, p.as, p.ason, p.wake, p.cols]).toEqual([0, 5, 1, 0, 1]);
