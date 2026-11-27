@@ -9,6 +9,9 @@ documents, dotfiles and `tests/`): never commit anything private. A new document
 ## The stack: keep it
 - No build step, no framework, no bundler, no runtime npm packages. `index.html`, plain CSS and ES modules are served
   exactly as they are in the repository.
+- One exception (agreed 2026-11-26): YouTube's player for Play mode (`js/features/youtube.js`), its script from
+  www.youtube.com and the player on youtube-nocookie.com, allowed in `_headers` and loaded only after a tap on ▶, never
+  with the page. Nothing else from other sites.
 - All tooling lives in `tests/` (its own `package.json`: eslint, stylelint, tsc, Vitest, Playwright, Lighthouse). Never
   add a `package.json` at the root.
 - Oldest browsers supported: `tests/.browserslistrc` (iOS / Safari 15.4, Chrome and Firefox 100). `npm run lint` fails
@@ -34,7 +37,7 @@ documents, dotfiles and `tests/`): never commit anything private. A new document
   Comments are wrapped by hand at about 120. Anything written into HTML goes
   through `esc()` (`js/core/words.js`).
 - No inline `<script>` and no `on…=` attributes: the Content-Security-Policy in `_headers` blocks them (the tests run
-  under it, `tests/serve.mjs`). Anything the page loads comes from this site.
+  under it, `tests/serve.mjs`). Anything the page loads comes from this site (YouTube's player for Play mode apart, above).
 - No `console.log`. `console.warn` / `console.error` only where a failure is caught and the site carries on (the tests
   fail on any console error).
 - Comments say why, in plain English, as the existing ones do.
