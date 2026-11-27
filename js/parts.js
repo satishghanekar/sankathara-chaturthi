@@ -115,10 +115,9 @@ var SITE_PARTS = (function () {
     "texts/aarti-ghalin-lotangan.txt",
     "texts/aarti-jai-ganesh-deva.txt",
     "texts/aarti-jai-jagdish-hare.txt",
-    "texts/bhajan-vakratunda-mahakaya.txt",
+    "texts/stotra-ganesha-pancharatnam.txt",
     "texts/bhajan-ganapati-bappa-morya.txt",
     "texts/bhajan-vande-ganapati.txt",
-    "texts/bhajan-ganesha-pancharatnam.txt",
     "texts/bhajan-gaiye-ganapati-jagvandan.txt",
   ].map(function (f) {
     return "content/" + f;

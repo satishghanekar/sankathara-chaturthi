@@ -63,15 +63,15 @@
 डिसें.
 ‹ मागील वर्षाच्या तारखा
 सर्व
-१६
+१५
 पूजा
-१
+२
 भजन
-५
+३
 आरती
 १०
 संध्याकाळ · Evening
-१६ रचना
+१५ रचना
 १.
 गणपत्यथर्वशीर्षोपनिषत्
 Ganapati Atharvashirsha
@@ -81,58 +81,54 @@ Ganapati Atharvashirsha
 Ganesha Pancharatnam
 संस्कृत
 ३.
-वक्रतुंड महाकाय
-Vakratunda Mahakaya
-संस्कृत
-४.
 गणपती बाप्पा मोरया
 Ganapati Bappa Morya
 मराठी
-५.
+४.
 वंदे गणपती विघ्नविनाशन
 Vande Ganapati Vighnavinashan
 हिंदी
-६.
+५.
 गाइये गणपति जगवंदन
 Gaiye Ganapati Jagavandan
 हिंदी
-७.
+६.
 सुखकर्ता दुःखहर्ता
 Sukhkarta Dukhharta
 मराठी
-८.
+७.
 शेंदुर लाल चढ़ायो
 Shendur Laal Chadhayo
 हिंदी
-९.
+८.
 देवीची आरती
 Devi Aarti
 मराठी
-१०.
+९.
 शंकराची आरती
 Shankar Aarti
 मराठी
-११.
+१०.
 दत्ताची आरती
 Dattatreya Aarti
 मराठी
-१२.
+११.
 ज्ञानेश्वरांची आरती
 Dnyaneshwar Aarti
 मराठी
-१३.
+१२.
 विठ्ठलाची आरती
 Vitthal Aarti
 मराठी
-१४.
+१३.
 घालीन लोटांगण
 Ghalin Lotangan
 मराठी
-१५.
+१४.
 आरती जय गणेश देवा
 Aarti Jai Ganesh Deva
 हिंदी
-१६.
+१५.
 आरती जय जगदीश हरे
 Aarti Jai Jagdish Hare
 हिंदी

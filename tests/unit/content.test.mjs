@@ -26,13 +26,7 @@ const count = (s, re) => (s.match(re) || []).length;
 // (the old file had groups, पूजा and आरती; the texts are now by category, as in Nitya Upasana)
 const pieces = (C) => (C.categories || C.groups).flatMap((g) => g.pieces);
 // The texts added since the old file, which the comparisons with it leave out (each is checked like every text below)
-const ADDED = [
-  "bhajan-vakratunda-mahakaya",
-  "bhajan-ganapati-bappa-morya",
-  "bhajan-vande-ganapati",
-  "bhajan-ganesha-pancharatnam",
-  "bhajan-gaiye-ganapati-jagvandan",
-];
+const ADDED = ["bhajan-ganapati-bappa-morya", "bhajan-vande-ganapati", "stotra-ganesha-pancharatnam", "bhajan-gaiye-ganapati-jagvandan"];
 const migrated = (C) => ({ ...C, categories: (C.categories || C.groups).map((g) => ({ ...g, pieces: g.pieces.filter((p) => !ADDED.includes(p.text)) })) });
 const allLines = (C) => pieces(C).flatMap((p) => [...(p.refrain ? p.refrain.lines : []), ...p.items.flatMap((i) => i.lines || [])]);
 
@@ -64,8 +58,10 @@ describe("CONTENT from the text files", () => {
       ["vedic-chant", "Vedic Chant", 1],
       ["aarti", "Aarti", 10],
     ]);
-    // and, since 2026-11-20, भजन with the Ganesh bhajans
-    expect(CONTENT.categories.filter((c) => c.pieces.length).map((c) => [c.id, c.pieces.map((p) => p.text)])).toContainEqual(["bhajan", ADDED]);
+    // and, since 2026-11-20, भजन with the Ganesh bhajans (Ganesha Pancharatnam a stotra since 2026-11-26)
+    const filled = CONTENT.categories.filter((c) => c.pieces.length).map((c) => [c.id, c.pieces.map((p) => p.text)]);
+    expect(filled).toContainEqual(["bhajan", ADDED.filter((id) => id.startsWith("bhajan-"))]);
+    expect(filled).toContainEqual(["stotra", ["stotra-ganesha-pancharatnam"]]);
     expect(shown.map((c) => c.pieces.map((p) => p.id))).toEqual(OLD.groups.map((g) => g.pieces.map((p) => p.id)));
   });
   // (60 <br>: the Vitthal Aarti's dhrupad breaks after its first half in English and at the top too, Satish 2026-10-23)
@@ -190,8 +186,9 @@ describe("content checks", () => {
     for (const c of LIBRARY.categories) for (const id of c.texts) kinds[id] = kindOf(c.id);
     const evening = textsFor(routines, 5, "evening");
     expect(ofKind(evening, kinds, "all")).toEqual(evening);
-    expect(ofKind(evening, kinds, "pooja")).toEqual(["vedic-chant-atharvashirsha"]);
-    expect(ofKind(evening, kinds, "bhajan")).toHaveLength(5);
+    // (Ganesha Pancharatnam a stotra, so Pooja's, since 2026-11-26; Vakratunda Mahakaya removed then too)
+    expect(ofKind(evening, kinds, "pooja")).toEqual(["vedic-chant-atharvashirsha", "stotra-ganesha-pancharatnam"]);
+    expect(ofKind(evening, kinds, "bhajan")).toHaveLength(3);
     expect(ofKind(evening, kinds, "aarti")[0]).toBe("aarti-sukhkarta");
     expect(["pooja", "bhajan", "aarti"].reduce((n, k) => n + ofKind(evening, kinds, k).length, 0)).toBe(evening.length);
   });
