@@ -12,6 +12,7 @@
 // One part of the site script; js/main.js runs each part's init() in order. See js/README.md.
 
 import { menuWords } from "../core/strings.js";
+import { P, change } from "../core/state.js";
 import { nameLang, num, scr } from "../core/words.js";
 import { byId, note, onPiece, root, warn } from "../core/page.js";
 import { clock, placeOf, skipped, startAt, step, trackOf } from "../core/play-queue.js";
@@ -67,10 +68,24 @@ export function init() {
   byId("play-all").addEventListener("click", function () {
     begin(shownIds(), "");
   });
+  // Settings → Reading → Play in the app (P.yt): off, as on a new phone, no Listen card and nothing here plays or opens
+  // YouTube; on, the card and the ▶ beside it play the recording here
+  byId("play-setting").addEventListener("click", function () {
+    change({ yt: P.yt ? 0 : 1 }, playMark);
+  });
+  playMark();
   // the ▶ on each text's Listen card plays from that text on
   onPiece(addPlayButtons);
   document.addEventListener("click", function (e) {
-    var b = /** @type {HTMLElement | null} */ (/** @type {HTMLElement} */ (e.target).closest(".listen-play"));
+    var t = /** @type {HTMLElement} */ (e.target),
+      b = /** @type {HTMLElement | null} */ (t.closest(".listen-play")),
+      card = t.closest(".listen-card.can-play");
+    // the card itself plays here too, as its ▶ does (Satish, 2026-11-27: nothing opens YouTube)
+    if (!b && card) {
+      e.preventDefault();
+      b = /** @type {HTMLElement | null} */ (card.previousElementSibling);
+      if (!b || !b.classList.contains("listen-play")) return;
+    }
     if (!b) return;
     var id = b.dataset.text || "",
       ids = shownIds();
@@ -119,11 +134,38 @@ function playAllButton() {
     n = ids.filter(function (id) {
       return !!track(id);
     }).length;
-  b.hidden = !n;
+  b.hidden = !n || !P.yt;
   if (n) byId("play-all-note").textContent = W().playAllNote(num(n), num(ids.length));
 }
 
-/** A ▶ on each Listen card of a text built, beside the card's link to YouTube (which stays) @param {HTMLElement} sec */
+/**
+ * Play mode on or off (P.yt, Settings → Reading → Play in the app): the switch pressed as it is, the ▶ on the Listen
+ * cards of the texts built and ▶ Play all there or not; turned off while a recording plays, it stops. Run at start-up, on a tap,
+ * and whenever the settings are applied again (js/features/bars.js apply(): another person on this phone).
+ */
+export function playMark() {
+  byId("play-setting").setAttribute("aria-pressed", String(!!P.yt));
+  // off: no Listen card and no recording line under the credit, so nothing here opens YouTube (css/08-contents-book.css)
+  if (P.yt) root.setAttribute("data-yt", "");
+  else root.removeAttribute("data-yt");
+  if (P.yt)
+    document.querySelectorAll(".ash").forEach(function (s) {
+      addPlayButtons(/** @type {HTMLElement} */ (s));
+    });
+  else {
+    end(false);
+    document.querySelectorAll(".listen-play").forEach(function (b) {
+      b.remove();
+    });
+    document.querySelectorAll(".listen-card.can-play").forEach(function (c) {
+      c.classList.remove("can-play");
+    });
+  }
+  playAllButton();
+}
+
+/** A ▶ on each Listen card of a text built, the card playing here too (its link to YouTube kept for copying only)
+ * @param {HTMLElement} sec */
 function addPlayButtons(sec) {
   /** @type {any} */
   var C = /** @type {any} */ (window).CONTENT,
@@ -133,7 +175,7 @@ function addPlayButtons(sec) {
       if (p.id === sec.id) piece = p;
     });
   });
-  if (!piece) return;
+  if (!piece || !P.yt) return;
   var id = /** @type {any} */ (piece).text,
     t = track(id),
     card = sec.querySelector(".listen-card");
